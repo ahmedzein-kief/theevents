@@ -1,0 +1,67 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
+import 'package:event_app/provider/customer/Repository/customer_repository.dart';
+import 'package:event_app/provider/vendor/vendor_repository.dart';
+import 'package:event_app/vendor/components/services/alert_services.dart';
+import 'package:flutter/cupertino.dart';
+
+import '../../../data/vendor/data/response/ApiResponse.dart';
+import '../../../models/account_models/customer_upload_profile_pic_model.dart';
+import '../../../models/vendor_models/common_models/common_post_request_model.dart';
+import '../../../core/utils/custom_toast.dart';
+import '../../../utils/storage/shared_preferences_helper.dart';
+
+class CustomerUploadProfilePicViewModel with ChangeNotifier {
+  String? _token;
+
+  setToken() async {
+    _token = await SharedPreferencesUtil.getToken();
+  }
+
+  bool _isLoading = true;
+
+  bool get isLoading => _isLoading;
+
+  void setLoading(val) {
+    _isLoading = val;
+    notifyListeners();
+  }
+
+  final _myRepo = CustomerRepository();
+  ApiResponse<CustomerUploadProfilePicModel> _apiResponse = ApiResponse.none();
+  ApiResponse<CustomerUploadProfilePicModel> get apiResponse => _apiResponse;
+  set setApiResponse(ApiResponse<CustomerUploadProfilePicModel> response) {
+    _apiResponse = response;
+    notifyListeners();
+  }
+
+  Future<bool> customerUploadProfilePicture({required File file, required BuildContext context}) async {
+    try {
+      setLoading(true);
+      setApiResponse = ApiResponse.loading();
+      await setToken();
+
+      Map<String, String> headers = <String, String>{
+        "Authorization": _token!,
+      };
+
+
+      FormData formData = FormData.fromMap({
+        'avatar_file': await MultipartFile.fromFile(file.path,filename: file.path.split('/').last),
+      });
+
+
+      CustomerUploadProfilePicModel response = await _myRepo.customerUploadProfilePicture(headers: headers, formData: formData);
+      setApiResponse = ApiResponse.completed(response);
+      CustomSnackbar.showSuccess(context, apiResponse.data?.message?.toString() ?? 'Success');
+      setLoading(false);
+      return true;
+    } catch (error) {
+      setApiResponse = ApiResponse.error(error.toString());
+      CustomSnackbar.showError(context, '${error.toString()}');
+      setLoading(false);
+      return false;
+    }
+  }
+}

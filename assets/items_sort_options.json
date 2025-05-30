@@ -1,0 +1,22 @@
+[
+  {
+    "value": "default_sorting",
+    "label": "Default Sorting"
+  },
+  {
+    "value": "date_asc",
+    "label": "Oldest"
+  },
+  {
+    "value": "date_desc",
+    "label": "Newest"
+  },
+  {
+    "value": "name_asc",
+    "label": "Name: A-Z"
+  },
+  {
+    "value": "name_desc",
+    "label": "Name: Z-A"
+  }
+]

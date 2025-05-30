@@ -1,0 +1,71 @@
+import 'dart:developer';
+
+import 'package:flutter/cupertino.dart';
+
+import '../../core/styles/custom_text_styles.dart';
+import '../../core/widgets/custom_items_views/custom_add_to_cart_button.dart';
+import '../home_screens_shortcode/shortcode_information_icons/gift_card/payments_methods.dart';
+
+class ShippingAddressScreen extends StatefulWidget {
+  final void Function(Map<String, String> paymentMethod) onNext;
+
+  const ShippingAddressScreen({super.key, required this.onNext});
+
+  @override
+  State<ShippingAddressScreen> createState() => _ShippingAddressScreenState();
+}
+
+class _ShippingAddressScreenState extends State<ShippingAddressScreen> {
+  Map<String, String> paymentMethod = {};
+
+  @override
+  Widget build(BuildContext context) {
+    dynamic screenWidth = MediaQuery.sizeOf(context).width;
+    dynamic screenHeight = MediaQuery.sizeOf(context).height;
+    return Center(
+      child: Column(
+        children: <Widget>[
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(top: screenHeight * 0.08, right: screenWidth * 0.02, left: screenHeight * 0.02),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text("Choose a Payment Method", style: chooseStyle(context)),
+                        Text("You will not be charged until you review this order on the next page.", style: description(context)),
+                        SizedBox(height: screenHeight * 0.04),
+                        PaymentMethods(
+                          onSelectionChanged: (selectedMethod) {
+
+                            paymentMethod = selectedMethod;
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          // Button at the bottom
+
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: screenHeight * 0.01),
+            child: AppCustomButton(
+              onPressed: () {
+                log('paymentMethod: $paymentMethod');
+                widget.onNext(paymentMethod);
+              },
+              icon: CupertinoIcons.forward,
+              title: "Continue To Payment",
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

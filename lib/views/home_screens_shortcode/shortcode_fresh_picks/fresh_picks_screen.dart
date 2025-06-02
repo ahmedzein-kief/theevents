@@ -30,24 +30,40 @@ class _FreshPicksViewState extends State<FreshPicksScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (mounted) {
-        await fetchDataFreshPicks();
-        await fetchWishListItems();
-      }
+      await safeAsyncCall(() => fetchDataFreshPicks());
+      await safeAsyncCall(() => fetchWishListItems());
     });
   }
 
-  ///  ------------  FOR TAKING THE  ICON HEART AS THEIR STATE RED ON WISHLIST ADD BASIS ------------
+  /// دالة مساعدة لتنفيذ العمليات غير المتزامنة بأمان
+  Future<void> safeAsyncCall(Future<void> Function() callback) async {
+    if (!mounted) return;
+    try {
+      await callback();
+    } catch (e) {
+      if (mounted) {
+        print('Async operation error: $e');
+      }
+    }
+  }
 
+  ///  ------------  FOR TAKING THE  ICON HEART AS THEIR STATE RED ON WISHLIST ADD BASIS ------------
   Future<void> fetchWishListItems() async {
-    final token = await SharedPreferencesUtil.getToken();
+    if (!mounted) return;
+
+    final token = await SecurePreferencesUtil.getToken();
+    if (!mounted) return;
+
     final provider = Provider.of<WishlistProvider>(context, listen: false);
     provider.fetchWishlist(token ?? '', context);
   }
 
   ///   --------------- FRESH  PICKS   MAIN 12 ITEMS DATA HOME PAGE --------------------
   Future<void> fetchDataFreshPicks() async {
-    await Provider.of<FreshPicksProvider>(context, listen: false).fetchData(context, perPage: 12, page: 1, random: 1);
+    if (!mounted) return;
+
+    await Provider.of<FreshPicksProvider>(context, listen: false)
+        .fetchData(context, perPage: 12, page: 1, random: 1);
   }
 
   @override
@@ -76,88 +92,92 @@ class _FreshPicksViewState extends State<FreshPicksScreen> {
                 provider.records?.isEmpty ?? true
                     ? SizedBox.shrink()
                     : Container(
-                        color: AppColors.infoBackGround,
-                        child: Padding(
-                          padding: EdgeInsets.only(left: screenWidth * 0.02, right: screenWidth * 0.02, top: screenHeight * 0.02, bottom: screenHeight * 0.02),
-                          child: SizedBox(
-                            child: GridView.builder(
-                              itemCount: records?.length ?? 0,
-                              physics: const BouncingScrollPhysics(),
-                              shrinkWrap: true,
-                              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                                childAspectRatio: 0.6,
-                                mainAxisSpacing: 14,
-                                crossAxisSpacing: 10,
-                              ),
-                              itemBuilder: (context, index) {
-                                Records? record = records?[index];
-                                final item = freshPicksProvider.records?[index];
+                  color: AppColors.infoBackGround,
+                  child: Padding(
+                    padding: EdgeInsets.only(left: screenWidth * 0.02, right: screenWidth * 0.02, top: screenHeight * 0.02, bottom: screenHeight * 0.02),
+                    child: SizedBox(
+                      child: GridView.builder(
+                        itemCount: records?.length ?? 0,
+                        physics: const BouncingScrollPhysics(),
+                        shrinkWrap: true,
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 0.6,
+                          mainAxisSpacing: 14,
+                          crossAxisSpacing: 10,
+                        ),
+                        itemBuilder: (context, index) {
+                          Records? record = records?[index];
+                          final item = freshPicksProvider.records?[index];
 
-                                /// Calculate the percentage off
-                                /// Check if both frontSalePrice and price are non-null and non-zero to avoid division by zero
-                                dynamic frontSalePrice = record?.prices?.frontSalePrice;
-                                dynamic price = record?.prices?.price;
-                                String offPercentage = '';
+                          /// Calculate the percentage off
+                          /// Check if both frontSalePrice and price are non-null and non-zero to avoid division by zero
+                          dynamic frontSalePrice = record?.prices?.frontSalePrice;
+                          dynamic price = record?.prices?.price;
+                          String offPercentage = '';
 
-                                if (frontSalePrice != null && price != null && price > 0) {
-                                  // Calculate the discount percentage
-                                  dynamic discount = 100 - ((frontSalePrice / price) * 100);
-                                  // offPercentage = discount.toStringAsFixed(0);
-                                  if (discount > 0) {
-                                    offPercentage = discount.toStringAsFixed(0);
-                                  }
+                          if (frontSalePrice != null && price != null && price > 0) {
+                            // Calculate the discount percentage
+                            dynamic discount = 100 - ((frontSalePrice / price) * 100);
+                            if (discount > 0) {
+                              offPercentage = discount.toStringAsFixed(0);
+                            }
+                          }
+
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ProductDetailScreen(
+                                    key: ValueKey(item?.slug?.toString()),
+                                    slug: item?.slug?.toString(),
+                                  ),
+                                ),
+                              );
+                            },
+                            child: ProductCard(
+                              isOutOfStock: record?.outOfStock ?? false,
+                              off: offPercentage.isNotEmpty ? '$offPercentage%off' : '',
+                              priceWithTaxes: (record?.prices?.frontSalePrice ?? 0) < (record?.prices?.price ?? 0) ? record?.prices!.priceWithTaxes : null,
+                              imageUrl: record?.image,
+                              name: record?.name,
+                              frontSalePriceWithTaxes: record?.review?.rating?.toString() ?? '0',
+                              storeName: record?.store?.name,
+                              price: record?.prices!.frontSalePrice.toString(),
+                              reviewsCount: record?.review?.reviewsCount,
+                              itemsId: record?.id ?? 0,
+                              optionalIcon: Icons.shopping_cart,
+                              onOptionalIconTap: () => safeAsyncCall(() async {
+                                final token = await SecurePreferencesUtil.getToken();
+                                if (token != null && mounted) {
+                                  await cartProvider.addToCart(record?.id, context, 1);
+                                }
+                              }),
+                              isHeartObscure: wishlistProvider.wishlist?.data?.products.any((wishlistProduct) => wishlistProduct.id == item?.id) ?? false,
+                              onHeartTap: () => safeAsyncCall(() async {
+                                final token = await SecurePreferencesUtil.getToken();
+                                if (!mounted) return;
+
+                                bool isInWishlist = wishlistProvider.wishlist?.data?.products.any((wishlistProduct) => wishlistProduct.id == item?.id) ?? false;
+
+                                if (isInWishlist) {
+                                  await wishlistProvider.deleteWishlistItem(item?.id ?? 0, context, token ?? '');
+                                } else {
+                                  await freshPicksProvider.handleHeartTap(context, item?.id ?? 0);
                                 }
 
-                                return GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => ProductDetailScreen(
-                                          key: ValueKey(item?.slug?.toString()),
-                                          slug: item?.slug?.toString(),
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  child: ProductCard(
-                                    isOutOfStock: record?.outOfStock ?? false,
-                                    off: offPercentage.isNotEmpty ? '$offPercentage%off' : '',
-                                    // Display the discount percentage
-                                    priceWithTaxes: (record?.prices?.frontSalePrice ?? 0) < (record?.prices?.price ?? 0) ? record?.prices!.priceWithTaxes : null,
-                                    imageUrl: record?.image,
-                                    name: record?.name,
-                                    frontSalePriceWithTaxes: record?.review?.rating?.toString() ?? '0',
-                                    storeName: record?.store?.name,
-                                    price: record?.prices!.frontSalePrice.toString(),
-                                    reviewsCount: record?.review?.reviewsCount,
-                                    itemsId: record?.id ?? 0,
-                                    optionalIcon: Icons.shopping_cart,
-                                    onOptionalIconTap: () async {
-                                      final token = await SharedPreferencesUtil.getToken();
-                                      if (token != null) {
-                                        await cartProvider.addToCart(record?.id, context, 1);
-                                      }
-                                    },
-                                    isHeartObscure: wishlistProvider.wishlist?.data?.products.any((wishlistProduct) => wishlistProduct.id == item?.id) ?? false,
-                                    onHeartTap: () async {
-                                      final token = await SharedPreferencesUtil.getToken();
-                                      bool isInWishlist = wishlistProvider.wishlist?.data?.products.any((wishlistProduct) => wishlistProduct.id == item?.id) ?? false;
-                                      if (isInWishlist) {
-                                        await wishlistProvider.deleteWishlistItem(item?.id ?? 0, context, token ?? '');
-                                      } else {
-                                        await freshPicksProvider.handleHeartTap(context, item?.id ?? 0);
-                                      }
-                                      await wishlistProvider.fetchWishlist(token ?? '', context);
-                                    },
-                                  ),
-                                );
-                              },
+                                if (mounted) {
+                                  await wishlistProvider.fetchWishlist(token ?? '', context);
+                                }
+                              }),
                             ),
-                          ),
-                        ),
-                      )
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                )
               ],
             );
           },

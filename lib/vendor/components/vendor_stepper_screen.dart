@@ -40,14 +40,14 @@ class _StepperScreenState extends State<VendorStepperScreen> {
 
   void checkLoginData() async {
     final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString(SharedPreferencesUtil.tokenKey);
+    final token = prefs.getString(SecurePreferencesUtil.tokenKey);
     if (token == null || token.isEmpty) return;
 
     if (!isVerified && !isApproved) {
       setState(() {
         activeStep = 1;
-        isVerified = prefs.getBool(SharedPreferencesUtil.verified) ?? false;
-        isApproved = prefs.getBool(SharedPreferencesUtil.approved) ?? false;
+        isVerified = prefs.getBool(SecurePreferencesUtil.verified) ?? false;
+        isApproved = prefs.getBool(SecurePreferencesUtil.approved) ?? false;
       });
     }
 
@@ -55,7 +55,7 @@ class _StepperScreenState extends State<VendorStepperScreen> {
       final metaResponse = await getAllMetaData();
       setState(() {
         if (metaResponse != null) {
-          SharedPreferencesUtil.saveServerStep(int.parse(metaResponse.data["step"] ?? '1'));
+          SecurePreferencesUtil.saveServerStep(int.parse(metaResponse.data["step"] ?? '1'));
           activeStep = int.parse(metaResponse.data["step"] ?? '1');
         } else {
           activeStep = 1;
@@ -113,7 +113,7 @@ class _StepperScreenState extends State<VendorStepperScreen> {
                       padding: const EdgeInsets.only(left: 10, right: 10),
                       child: GestureDetector(
                         onTap: () async {
-                          int serverStep = await SharedPreferencesUtil.getServerStep() ?? 0;
+                          int serverStep = await SecurePreferencesUtil.getServerStep() ?? 0;
                           print('Tapped on step index ==> ${index} || activeStep==> $activeStep || serverStep==> $serverStep');
                           if (index > 0 && index != activeStep && index <= serverStep) {
                             setState(() {
@@ -213,7 +213,7 @@ class _StepperScreenState extends State<VendorStepperScreen> {
       case 5:
         return PaymentSubscriptionScreen();
       default:
-        SharedPreferencesUtil.saveServerStep(0);
+        SecurePreferencesUtil.saveServerStep(0);
         return VendorLoginInfoScreen(
           onNext: () {
             setState(() {

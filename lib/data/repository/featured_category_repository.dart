@@ -11,7 +11,7 @@ class FeatureCategoryRepository {
   /// +++++++++++++++++++++   FEATURED CATEGORY BANNER  ----------------------------------
   Future<PageData> featureCategoryBanner(BuildContext context) async {
     try {
-      final tokenLogin = await SharedPreferencesUtil.getToken();
+      final tokenLogin = await SecurePreferencesUtil.getToken();
       final url = ApiEndpoints.categoryViewAllBanner;
       final headers = {
         'Authorization': 'Bearer $tokenLogin',
@@ -37,7 +37,7 @@ class FeatureCategoryRepository {
 
   Future<PageData> orderScreenBanner(BuildContext context) async {
     try {
-      final tokenLogin = await SharedPreferencesUtil.getToken();
+      final tokenLogin = await SecurePreferencesUtil.getToken();
       final url = ApiEndpoints.orderScreenBanner;
       final headers = {
         'Authorization': 'Bearer $tokenLogin',

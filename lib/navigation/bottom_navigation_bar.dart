@@ -38,8 +38,8 @@ class _HomeScreenState extends State<BaseHomeScreen> {
   Future<void> _loadLoginState() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      _isLoggedIn = prefs.getBool(SharedPreferencesUtil.loggedInKey) ?? false;
-      _isTempLoggedIn = (prefs.getString(SharedPreferencesUtil.tokenKey) ?? '').isNotEmpty;
+      _isLoggedIn = prefs.getBool(SecurePreferencesUtil.loggedInKey) ?? false;
+      _isTempLoggedIn = (prefs.getString(SecurePreferencesUtil.tokenKey) ?? '').isNotEmpty;
     });
   }
 

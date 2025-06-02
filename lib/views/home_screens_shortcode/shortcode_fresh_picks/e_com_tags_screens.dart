@@ -166,7 +166,7 @@ class _EComTagsScreensState extends State<EComTagsScreens> {
   ///  ------------  FOR TAKING THE  ICON HEART AS THEIR STATE RED ON WISHLIST ADD BASIS ------------
 
   Future<void> fetchWishListItems() async {
-    final token = await SharedPreferencesUtil.getToken();
+    final token = await SecurePreferencesUtil.getToken();
     final provider = Provider.of<WishlistProvider>(context, listen: false);
     provider.fetchWishlist(token ?? '', context);
   }
@@ -686,7 +686,7 @@ class _EComTagsScreensState extends State<EComTagsScreens> {
                                     imageUrl: product.image,
                                     optionalIcon: Icons.shopping_cart,
                                     onOptionalIconTap: () async {
-                                      final token = await SharedPreferencesUtil.getToken();
+                                      final token = await SecurePreferencesUtil.getToken();
                                       if (token != null) {
                                         await cartProvider.addToCart(product.id, context, 1);
                                       }
@@ -698,7 +698,7 @@ class _EComTagsScreensState extends State<EComTagsScreens> {
                                     reviewsCount: product.review!.reviewsCount!.toInt(),
                                     isHeartObscure: wishlistProvider.wishlist?.data?.products.any((wishlistProduct) => wishlistProduct.id == product.id) ?? false,
                                     onHeartTap: () async {
-                                      final token = await SharedPreferencesUtil.getToken();
+                                      final token = await SecurePreferencesUtil.getToken();
                                       bool isInWishlist = wishlistProvider.wishlist?.data?.products.any((wishlistProduct) => wishlistProduct.id == product.id) ?? false;
                                       if (isInWishlist) {
                                         await wishlistProvider.deleteWishlistItem(product.id ?? 0, context, token ?? '');
@@ -837,7 +837,7 @@ class _EComTagsScreensState extends State<EComTagsScreens> {
                                 priceWithTaxes: (product.prices?.frontSalePrice ?? 0) < (product.prices?.price ?? 0) ? product.prices!.priceWithTaxes : null,
                                 optionalIcon: Icons.shopping_cart,
                                 onOptionalIconTap: () async {
-                                  final token = await SharedPreferencesUtil.getToken();
+                                  final token = await SecurePreferencesUtil.getToken();
                                   final cartProvider = Provider.of<CartProvider>(context, listen: false);
                                   if (token != null) {
                                     await cartProvider.addToCart(product.id, context, 1);
@@ -852,7 +852,7 @@ class _EComTagsScreensState extends State<EComTagsScreens> {
                                 reviewsCount: product.review!.reviewsCount!.toInt(),
                                 isHeartObscure: wishlistProvider.wishlist?.data?.products.any((wishlistProduct) => wishlistProduct.id == product.id) ?? false,
                                 onHeartTap: () async {
-                                  final token = await SharedPreferencesUtil.getToken();
+                                  final token = await SecurePreferencesUtil.getToken();
                                   bool isInWishlist = wishlistProvider.wishlist?.data?.products.any((wishlistProduct) => wishlistProduct.id == product.id) ?? false;
                                   if (isInWishlist) {
                                     await wishlistProvider.deleteWishlistItem(product.id ?? 0, context, token ?? '');

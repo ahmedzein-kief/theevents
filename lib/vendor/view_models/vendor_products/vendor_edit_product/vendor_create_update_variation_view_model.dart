@@ -14,7 +14,7 @@ class VendorCreateUpdateVariationViewModel with ChangeNotifier {
   String? _token;
 
   loadUserSettings() async {
-    _token = await SharedPreferencesUtil.getToken();
+    _token = await SecurePreferencesUtil.getToken();
   }
 
   bool _isLoading = true;

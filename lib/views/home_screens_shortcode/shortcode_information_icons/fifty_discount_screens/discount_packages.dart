@@ -197,7 +197,7 @@ class _FeaturedBrandsProductsScreenState extends State<DiscountPackages> {
 
                                     optionalIcon: Icons.shopping_cart,
                                     onOptionalIconTap: () async {
-                                      final token = await SharedPreferencesUtil.getToken();
+                                      final token = await SecurePreferencesUtil.getToken();
                                       if (token != null) {
                                         await cartProvider.addToCart(product.id, context, 1);
                                       }

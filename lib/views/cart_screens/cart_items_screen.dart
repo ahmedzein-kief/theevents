@@ -48,28 +48,28 @@ class _CartItemsScreensState extends State<CartItemsScreen> {
   }
 
   Future<void> fetchCartData(BuildContext? context) async {
-    final token = await SharedPreferencesUtil.getToken();
+    final token = await SecurePreferencesUtil.getToken();
     if (!mounted) return;
     final provider = Provider.of<CartProvider>(context!, listen: false);
     await provider.fetchCartData(token ?? '', context);
   }
 
   Future<Response?> fetchCheckoutData(BuildContext? context, String checkoutToken) async {
-    final token = await SharedPreferencesUtil.getToken();
+    final token = await SecurePreferencesUtil.getToken();
     if (!mounted) return null;
     final provider = Provider.of<CartProvider>(context!, listen: false);
     return await provider.fetchCheckoutData(token ?? '', context, checkoutToken);
   }
 
   Future<void> handleDelete(String rowId) async {
-    final token = await SharedPreferencesUtil.getToken();
+    final token = await SecurePreferencesUtil.getToken();
     if (!mounted) return;
     final provider = Provider.of<CartProvider>(context, listen: false);
     await provider.deleteCartListItem(rowId, context, token ?? '');
   }
 
   Future<void> update(String rowId, int qty, List<Product>? products) async {
-    final token = await SharedPreferencesUtil.getToken();
+    final token = await SecurePreferencesUtil.getToken();
     if (token == null) return;
     final provider = Provider.of<CartProvider>(context, listen: false);
 

@@ -301,14 +301,14 @@ class _VendorLoginInfoScreenState extends State<VendorLoginInfoScreen> {
                     final signUpResponse = await signUp(vendorSignUpPostData);
                     if (signUpResponse != null) {
                       if (signUpResponse.data != null) {
-                        await SharedPreferencesUtil.setVendorData(
+                        await SecurePreferencesUtil.setVendorData(
                           approved: signUpResponse.data?.isApproved ?? false,
                           verified: signUpResponse.data?.isVerified ?? false,
                           vendor: signUpResponse.data?.isVendor == true ? 1 : 0,
                         );
                         if (signUpResponse.data?.isVendor == true) {
-                          await SharedPreferencesUtil.saveToken("Bearer ${signUpResponse.data!.token}");
-                          await SharedPreferencesUtil.setBool(SharedPreferencesUtil.isLoggedInKey, true);
+                          await SecurePreferencesUtil.saveToken("Bearer ${signUpResponse.data!.token}");
+                          await SecurePreferencesUtil.setBool(SecurePreferencesUtil.isLoggedInKey, true);
                           widget.onNext();
                         }
                       }

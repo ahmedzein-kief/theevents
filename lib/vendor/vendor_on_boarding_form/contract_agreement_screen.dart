@@ -70,7 +70,7 @@ class _ContractAgreementScreenState extends State<ContractAgreementScreen> {
       /**
        * Parsing contract agreement data
        */
-      SharedPreferencesUtil.saveServerStep(int.parse(response.data["step"] ?? '1'));
+      SecurePreferencesUtil.saveServerStep(int.parse(response.data["step"] ?? '1'));
       caModel.signImage = response.data["sign_image"] ?? '';
       caModel.companyStampFileName = _stampTextEditingController.text = response.data["company_stamp_file_name"] ?? '';
       caModel.companyStampFileServerPath = response.data["company_stamp_file_path"] ?? '';

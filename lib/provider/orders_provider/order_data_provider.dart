@@ -40,7 +40,7 @@ class OrderDataProvider with ChangeNotifier {
     bool isPending,
   ) async {
     _isLoading = true;
-    final token = await SharedPreferencesUtil.getToken();
+    final token = await SecurePreferencesUtil.getToken();
     var url = "";
     if (isPending) {
       url = '${ApiEndpoints.customerOrders}?per-page=10&page=1&only-pending=true';
@@ -84,7 +84,7 @@ class OrderDataProvider with ChangeNotifier {
 
   Future<void> getOrderDetails(BuildContext context, String orderID) async {
     _isLoading = true;
-    final token = await SharedPreferencesUtil.getToken();
+    final token = await SecurePreferencesUtil.getToken();
     final url = '${ApiEndpoints.customerOrdersView}/$orderID';
 
     final headers = {'Authorization': 'Bearer $token'};
@@ -118,7 +118,7 @@ class OrderDataProvider with ChangeNotifier {
 
   Future<void> cancelOrder(BuildContext context, String orderID) async {
     _isLoading = true;
-    final token = await SharedPreferencesUtil.getToken();
+    final token = await SecurePreferencesUtil.getToken();
     final url = '${ApiEndpoints.customerOrdersCancel}/$orderID';
 
     final headers = {'Authorization': 'Bearer $token'};
@@ -150,7 +150,7 @@ class OrderDataProvider with ChangeNotifier {
 
   Future<CommonDataResponse?> uploadProof(BuildContext context, String filePath, String fileName, String orderId) async {
     _isLoading = true;
-    final token = await SharedPreferencesUtil.getToken();
+    final token = await SecurePreferencesUtil.getToken();
     final url = '${ApiEndpoints.customerOrders}/$orderId/${ApiEndpoints.uploadProof}';
 
     final headers = {'Authorization': 'Bearer $token'};
@@ -194,7 +194,7 @@ class OrderDataProvider with ChangeNotifier {
 
   Future<String?> downloadProof(BuildContext context, String orderId) async {
     _isLoading = true;
-    final token = await SharedPreferencesUtil.getToken();
+    final token = await SecurePreferencesUtil.getToken();
     final url = '${ApiEndpoints.customerOrders}/$orderId/${ApiEndpoints.downloadProof}';
 
     final headers = {'Authorization': 'Bearer $token'};
@@ -226,7 +226,7 @@ class OrderDataProvider with ChangeNotifier {
 
   Future<String?> getInvoice(BuildContext context, String orderID) async {
     _isLoading = true;
-    final token = await SharedPreferencesUtil.getToken();
+    final token = await SecurePreferencesUtil.getToken();
     final url = '${ApiEndpoints.customerOrdersPrint}/$orderID';
 
     final headers = {'Authorization': 'Bearer $token'};

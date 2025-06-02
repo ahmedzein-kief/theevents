@@ -12,7 +12,7 @@ class VendorEditProductAttributesViewModel with ChangeNotifier {
   String? _token;
 
   setToken() async {
-    _token = await SharedPreferencesUtil.getToken();
+    _token = await SecurePreferencesUtil.getToken();
   }
 
   bool _isLoading = true;

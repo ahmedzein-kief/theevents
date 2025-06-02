@@ -66,7 +66,7 @@ class _FeaturedBrandsItemsScreenState extends State<FeaturedBrandsItemsScreen> {
   ///  ------------  FOR TAKING THE  ICON HEART AS THEIR STATE RED ON WISHLIST ADD BASIS ------------
 
   Future<void> fetchWishListItems() async {
-    final token = await SharedPreferencesUtil.getToken();
+    final token = await SecurePreferencesUtil.getToken();
     final provider = Provider.of<WishlistProvider>(context, listen: false);
     provider.fetchWishlist(token ?? '', context);
   }
@@ -443,14 +443,14 @@ class _FeaturedBrandsItemsScreenState extends State<FeaturedBrandsItemsScreen> {
                                   optionalIcon: Icons.shopping_cart_checkout_rounded,
                                   reviewsCount: product.review?.reviewsCount?.toInt(),
                                   onOptionalIconTap: () async {
-                                    final token = await SharedPreferencesUtil.getToken();
+                                    final token = await SecurePreferencesUtil.getToken();
                                     if (token != null) {
                                       await cartProvider.addToCart(product.id, context, 1);
                                     }
                                   },
                                   isHeartObscure: wishlistProvider.wishlist?.data?.products.any((wishlistProduct) => wishlistProduct.id == product.id) ?? false,
                                   onHeartTap: () async {
-                                    final token = await SharedPreferencesUtil.getToken();
+                                    final token = await SecurePreferencesUtil.getToken();
                                     bool isInWishlist = wishlistProvider.wishlist?.data?.products.any((wishlistProduct) => wishlistProduct.id == product.id) ?? false;
                                     if (isInWishlist) {
                                       await wishlistProvider.deleteWishlistItem(product.id ?? 0, context, token ?? '');
@@ -599,7 +599,7 @@ class _FeaturedBrandsItemsScreenState extends State<FeaturedBrandsItemsScreen> {
                                         priceWithTaxes: (product.prices?.frontSalePrice ?? 0) < (product.prices?.price ?? 0) ? product.prices!.priceWithTaxes : null,
                                         optionalIcon: Icons.shopping_cart_checkout_rounded,
                                         onOptionalIconTap: () async {
-                                          final token = await SharedPreferencesUtil.getToken();
+                                          final token = await SecurePreferencesUtil.getToken();
                                           if (token != null) {
                                             await cartProvider.addToCart(product.id, context, 1);
                                           }
@@ -607,7 +607,7 @@ class _FeaturedBrandsItemsScreenState extends State<FeaturedBrandsItemsScreen> {
 
                                         isHeartObscure: wishlistProvider.wishlist?.data?.products.any((wishlistProduct) => wishlistProduct.id == product.id) ?? false,
                                         onHeartTap: () async {
-                                          final token = await SharedPreferencesUtil.getToken();
+                                          final token = await SecurePreferencesUtil.getToken();
                                           bool isInWishlist = wishlistProvider.wishlist?.data?.products.any((wishlistProduct) => wishlistProduct.id == product.id) ?? false;
                                           if (isInWishlist) {
                                             await wishlistProvider.deleteWishlistItem(product.id ?? 0, context, token ?? '');

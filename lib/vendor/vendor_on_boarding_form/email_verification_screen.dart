@@ -112,7 +112,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                                       if (resultVerified.isVerified == true) {
                                         CustomSnackbar.showSuccess(context, "Account has been verified.");
                                         final prefs = await SharedPreferences.getInstance();
-                                        prefs.setBool(SharedPreferencesUtil.verified, true);
+                                        prefs.setBool(SecurePreferencesUtil.verified, true);
                                         setState(() {
                                           widget.onNext();
                                         });

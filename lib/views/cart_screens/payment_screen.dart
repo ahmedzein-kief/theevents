@@ -67,7 +67,7 @@ class _ShippingAddressScreenState extends State<PaymentScreen> {
     SessionCheckoutData? sessionCheckoutData,
     Map<String, String> shippingMethod,
   ) async {
-    final token = await SharedPreferencesUtil.getToken();
+    final token = await SecurePreferencesUtil.getToken();
     final provider = Provider.of<CheckoutProvider>(context, listen: false);
     return await provider.fetchCheckoutData(
       context,
@@ -81,7 +81,7 @@ class _ShippingAddressScreenState extends State<PaymentScreen> {
   Future<String?> checkoutPayment(CheckoutResponse? checkoutData, Map<String, String> paymentMethod) async {
     if (checkoutData == null) return null;
 
-    final token = await SharedPreferencesUtil.getToken();
+    final token = await SecurePreferencesUtil.getToken();
     final provider = Provider.of<CheckoutProvider>(context, listen: false);
 
     setState(() {
@@ -97,7 +97,7 @@ class _ShippingAddressScreenState extends State<PaymentScreen> {
   }
 
   Future<bool> applyRemoveCouponCode(String couponCode, bool isApply) async {
-    final token = await SharedPreferencesUtil.getToken();
+    final token = await SecurePreferencesUtil.getToken();
     final provider = Provider.of<CheckoutProvider>(context, listen: false);
 
     setState(() {

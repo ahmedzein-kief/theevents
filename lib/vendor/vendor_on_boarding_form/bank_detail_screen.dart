@@ -55,7 +55,7 @@ class _BankDetailScreenState extends State<BankDetailScreen> {
       /**
        * Parsing bank details data
        */
-      SharedPreferencesUtil.saveServerStep(int.parse(response.data["step"] ?? '1'));
+      SecurePreferencesUtil.saveServerStep(int.parse(response.data["step"] ?? '1'));
       bdModel.bankName = _bankNameController.text = response.data["bank_name"] ?? '';
       bdModel.ibanNumber = _iBANNumberController.text = response.data["iban_number"] ?? '';
       bdModel.accountName = _accountNameController.text = response.data["account_name"] ?? '';

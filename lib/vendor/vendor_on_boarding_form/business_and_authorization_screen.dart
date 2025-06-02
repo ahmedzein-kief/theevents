@@ -33,7 +33,7 @@ class _BusinessAndAuthorizationScreenState extends State<BusinessAndAuthorizatio
     var response = await provider.getAllMetaData(context);
 
     if (response != null) {
-      SharedPreferencesUtil.saveServerStep(int.parse(response.data["step"] ?? '1'));
+      SecurePreferencesUtil.saveServerStep(int.parse(response.data["step"] ?? '1'));
       _radioValue = response.data["user_information_type"]?.toLowerCase() == "owner" ? 0 : 1;
       /**
        * Parsing business data

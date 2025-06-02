@@ -122,7 +122,7 @@ class AuthProvider with ChangeNotifier {
     setLoading(true);
     _isLoading = true;
     notifyListeners();
-    final token = await SharedPreferencesUtil.getToken();
+    final token = await SecurePreferencesUtil.getToken();
     if (token == null || token.isEmpty) {
       setLoading(false);
       _isLoading = false;
@@ -146,7 +146,7 @@ class AuthProvider with ChangeNotifier {
       final responseBody = jsonDecode(response.body);
       UserLogoutModel userLogoutModel = UserLogoutModel.fromJson(responseBody);
       if (userLogoutModel.error == false) {
-        await SharedPreferencesUtil.clearSharedPreferences();
+        await SecurePreferencesUtil.clearSharedPreferences();
 
         Navigator.of(context).popUntil((route) => route.isFirst);
         Navigator.pushReplacement(context, CupertinoPageRoute(builder: (context) => BaseHomeScreen()));
@@ -215,7 +215,7 @@ class AuthProvider with ChangeNotifier {
   /// +++++++++++++++++++  FUNCTIONS  =================================
 
   Future<bool> checkLoginState() async {
-    return SharedPreferencesUtil.getBool(SharedPreferencesUtil.isLoggedInKey);
+    return SecurePreferencesUtil.getBool(SecurePreferencesUtil.isLoggedInKey);
   }
 
   void setLoading(bool value) {

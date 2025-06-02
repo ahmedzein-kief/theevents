@@ -68,7 +68,7 @@ class _ShortcodeInformationIconsScreenState extends State<ShortcodeInformationIc
                     String routeName;
                     switch (index) {
                       case 0:
-                        bool isLoggedIn = await SharedPreferencesUtil.isLoggedIn();
+                        bool isLoggedIn = await SecurePreferencesUtil.isLoggedIn();
                         if (!isLoggedIn) {
                           // PersistentNavBarNavigator.pushNewScreen(
                           //   context,

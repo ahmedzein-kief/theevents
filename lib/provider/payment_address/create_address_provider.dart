@@ -97,7 +97,7 @@ class AddressProvider with ChangeNotifier {
     setStatus(ApiStatus.loading);
     _isLoading = true;
     notifyListeners();
-    final token = await SharedPreferencesUtil.getToken();
+    final token = await SecurePreferencesUtil.getToken();
     final urlCreateAddress = ApiEndpoints.createCustomerAddress;
     final url = urlCreateAddress;
     final headers = {

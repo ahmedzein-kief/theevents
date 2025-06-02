@@ -55,7 +55,7 @@ class ProductItemsProvider with ChangeNotifier {
 
     try {
       final url = '${ApiEndpoints.products}$slug';
-      final token = await SharedPreferencesUtil.getToken();
+      final token = await SecurePreferencesUtil.getToken();
       final headers = {'Authorization': '$token'};
 
       print(url);
@@ -93,7 +93,7 @@ class ProductItemsProvider with ChangeNotifier {
 
     try {
       final url = '${ApiEndpoints.customerReviews}$productId?per-page=10&page=1';
-      final token = await SharedPreferencesUtil.getToken();
+      final token = await SecurePreferencesUtil.getToken();
       final headers = {'Authorization': '$token'};
 
       print(url);
@@ -138,7 +138,7 @@ class ProductItemsProvider with ChangeNotifier {
       String queryString = attributeIds.map((id) => 'attributes[]=$id').join('&');
 
       final url = '${ApiEndpoints.productVariations}$productID?$queryString';
-      final token = await SharedPreferencesUtil.getToken();
+      final token = await SecurePreferencesUtil.getToken();
       final headers = {'Authorization': 'Bearer $token'};
 
       final response = await _apiResponseHandler.getRequest(url, context: context, headers: headers);

@@ -17,7 +17,7 @@ class VendorGetProductVariationsViewModel with ChangeNotifier {
   List<ProductVariationRecord> get list => _list;
 
   setToken() async {
-    _token = await SharedPreferencesUtil.getToken();
+    _token = await SecurePreferencesUtil.getToken();
   }
 
   bool _isLoading = true;

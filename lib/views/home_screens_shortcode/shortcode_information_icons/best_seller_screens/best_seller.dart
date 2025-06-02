@@ -111,7 +111,7 @@ class _BestSellerScreenState extends State<BestSellerScreen> {
   ///  FOR HEART ICON STATE =================================================================
 
   Future<void> fetchWishListItems() async {
-    final token = await SharedPreferencesUtil.getToken();
+    final token = await SecurePreferencesUtil.getToken();
     final provider = Provider.of<WishlistProvider>(context, listen: false);
     provider.fetchWishlist(token!, context);
   }
@@ -422,14 +422,14 @@ class _BestSellerScreenState extends State<BestSellerScreen> {
                               reviewsCount: product.review!.reviewsCount!.toInt(),
                               optionalIcon: Icons.shopping_cart,
                               onOptionalIconTap: () async {
-                                final token = await SharedPreferencesUtil.getToken();
+                                final token = await SecurePreferencesUtil.getToken();
                                 if (token != null) {
                                   await cartProvider.addToCart(product.id, context, 1);
                                 }
                               },
                               isHeartObscure: wishlistProvider.wishlist?.data?.products.any((wishListProduct) => wishListProduct.id == product.id) ?? false,
                               onHeartTap: () async {
-                                final token = await SharedPreferencesUtil.getToken();
+                                final token = await SecurePreferencesUtil.getToken();
                                 bool isInWishlist = wishlistProvider.wishlist?.data?.products.any((wishListProduct) => wishListProduct.id == product.id) ?? false;
                                 if (isInWishlist) {
                                   await wishlistProvider.deleteWishlistItem(product.id ?? 0, context, token ?? '');

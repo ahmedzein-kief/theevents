@@ -70,7 +70,7 @@ class _ProfileAddressScreenState extends State<ProfileAddressScreen> {
       setState(() {
         _isFetchingMore = true;
       });
-      final token = await SharedPreferencesUtil.getToken();
+      final token = await SecurePreferencesUtil.getToken();
       final provider = Provider.of<CustomerAddressProvider>(context, listen: false);
       await provider.fetchCustomerAddresses(
         token ?? '',
@@ -322,7 +322,7 @@ class _ProfileAddressScreenState extends State<ProfileAddressScreen> {
                                   /// _update Address Api call
                                   int? id = customerAddress.id;
                                   if (id != null) {
-                                    final token = await SharedPreferencesUtil.getToken();
+                                    final token = await SecurePreferencesUtil.getToken();
                                     final response = await Provider.of<CustomerAddress>(context, listen: false).updateAddress(address, token ?? '', id, context);
                                     if (response) {
                                       await fetchDataOfCustomer();
@@ -367,12 +367,12 @@ class _ProfileAddressScreenState extends State<ProfileAddressScreen> {
         isDefault: _isChecked,
       );
 
-      final token = await SharedPreferencesUtil.getToken();
+      final token = await SecurePreferencesUtil.getToken();
       if (token == null) return;
 
       Provider.of<AddressProvider>(context, listen: false).saveAddress(address).then((_) async {
         /// Re-fetch the list at here of address
-        final token = await SharedPreferencesUtil.getToken();
+        final token = await SecurePreferencesUtil.getToken();
         final provider = Provider.of<CustomerAddressProvider>(context, listen: false);
         await provider.fetchCustomerAddresses(token ?? '', context);
         Navigator.pop(context);

@@ -104,7 +104,7 @@ class ChangePasswordScreen extends StatelessWidget {
 
   Future<void> forChangePassword(BuildContext context) async {
     final provider = Provider.of<ChangePasswordProvider>(context, listen: false);
-    final token = await SharedPreferencesUtil.getToken();
+    final token = await SecurePreferencesUtil.getToken();
     final oldPassword = _currentPasswordController.text;
     final newPassword = _changePasswordController.text;
     final reEnterPassword = _reEnterPasswordController.text;

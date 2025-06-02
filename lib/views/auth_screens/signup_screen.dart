@@ -254,8 +254,8 @@ class _SignupScreenState extends State<SignupScreen> {
 
                                                   final result = await authProvider.signUp(_nameController.text, _emailController.text, _passwordController.text, _confirmPasswordController.text, context);
                                                   if (result != null) {
-                                                    await SharedPreferencesUtil.saveUserName(result.data?.name ?? '');
-                                                    await SharedPreferencesUtil.saveUserMail(result.data?.email ?? '');
+                                                    await SecurePreferencesUtil.saveUserName(result.data?.name ?? '');
+                                                    await SecurePreferencesUtil.saveUserMail(result.data?.email ?? '');
                                                     Navigator.pushReplacement(context, CupertinoPageRoute(builder: (context) => AuthScreen()));
                                                   }
                                                 }

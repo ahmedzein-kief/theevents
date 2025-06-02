@@ -25,7 +25,7 @@ class CustomerAddress extends ChangeNotifier {
       CustomSnackbar.showSuccess(context, "Address Update successfully!");
 
       /// --------------------------- RE-FETCH THE DATA OF THE CUSTOMER ------------------------------
-      final token = await SharedPreferencesUtil.getToken();
+      final token = await SecurePreferencesUtil.getToken();
       final reFetchUserData = Provider.of<CustomerAddressProvider>(context, listen: false);
       await reFetchUserData.fetchCustomerAddresses(token ?? '', context);
       notifyListeners();

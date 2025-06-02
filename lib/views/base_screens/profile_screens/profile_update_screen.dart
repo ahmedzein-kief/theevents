@@ -40,7 +40,7 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
   }
 
   Future<void> fetchUserData() async {
-    final token = await SharedPreferencesUtil.getToken();
+    final token = await SecurePreferencesUtil.getToken();
     final provider = Provider.of<UserProvider>(context, listen: false);
     provider.fetchUserData(token ?? '', context);
   }
@@ -171,7 +171,7 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
 
   Future<void> forUpdateProfile(BuildContext context) async {
     final provider = Provider.of<ProfileUpdateProvider>(context, listen: false);
-    final token = await SharedPreferencesUtil.getToken();
+    final token = await SecurePreferencesUtil.getToken();
     final fullName = _fullNameController.text;
     final fullEmail = _fullEmailController.text;
     final phoneNumber = _phoneNumberController.text;
@@ -215,7 +215,7 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
 
   Future<void> _deleteAccount(BuildContext context) async {
     final provider = Provider.of<ProfileUpdateProvider>(context, listen: false);
-    final token = await SharedPreferencesUtil.getToken();
+    final token = await SecurePreferencesUtil.getToken();
 
     final isDeleted = await provider.deleteAccount(token ?? '', context);
 

@@ -77,7 +77,7 @@ void main() async {
   await Hive.openBox('wishlist');
 
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  await SharedPreferencesUtil.init(); // Initialize shared preferences
+  await SecurePreferencesUtil.init(); // Initialize shared preferences
   runApp(MyApp());
 }
 

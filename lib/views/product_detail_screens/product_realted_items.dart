@@ -32,7 +32,7 @@ class ProductRelatedItemsScreen extends StatefulWidget {
 
 class _ProductRelatedItemsScreenState extends State<ProductRelatedItemsScreen> {
   Future<void> fetchWishListItems() async {
-    final token = await SharedPreferencesUtil.getToken();
+    final token = await SecurePreferencesUtil.getToken();
     final provider = Provider.of<WishlistProvider>(context, listen: false);
     provider.fetchWishlist(token ?? '', context);
   }
@@ -98,7 +98,7 @@ class _ProductRelatedItemsScreenState extends State<ProductRelatedItemsScreen> {
                       optionalIcon: Icons.shopping_cart,
                       onOptionalIconTap: () async {
                         widget.onActionUpdate(true);
-                        final token = await SharedPreferencesUtil.getToken();
+                        final token = await SecurePreferencesUtil.getToken();
                         if (token != null) {
                           await cartProvider.addToCart(product.id, context, 1);
                         }
@@ -108,7 +108,7 @@ class _ProductRelatedItemsScreenState extends State<ProductRelatedItemsScreen> {
                       isHeartObscure: wishlistProvider.wishlist?.data?.products.any((wishlistProduct) => wishlistProduct.id == product.id) ?? false,
                       onHeartTap: () async {
                         widget.onActionUpdate(true);
-                        final token = await SharedPreferencesUtil.getToken();
+                        final token = await SecurePreferencesUtil.getToken();
                         bool isInWishlist = wishlistProvider.wishlist?.data?.products.any((wishlistProduct) => wishlistProduct.id == product.id) ?? false;
                         if (isInWishlist) {
                           await wishlistProvider.deleteWishlistItem(product.id ?? 0, context, token ?? '');

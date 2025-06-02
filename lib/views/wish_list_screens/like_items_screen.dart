@@ -49,14 +49,14 @@ class _WishListScreenState extends State<WishListScreen> {
   }
 
   Future<void> fetchItems(BuildContext context) async {
-    final token = await SharedPreferencesUtil.getToken();
+    final token = await SecurePreferencesUtil.getToken();
     if (!mounted) return;
     final provider = Provider.of<WishlistProvider>(context, listen: false);
     await provider.fetchWishlist(token ?? '', context);
   }
 
   Future<void> handleDelete(int itemId) async {
-    final token = await SharedPreferencesUtil.getToken();
+    final token = await SecurePreferencesUtil.getToken();
     if (token == null) return;
     final provider = Provider.of<WishlistProvider>(context, listen: false);
     await provider.deleteWishlistItem(itemId, context, token);
@@ -269,7 +269,7 @@ class _WishListScreenState extends State<WishListScreen> {
                                                         children: [
                                                           GestureDetector(
                                                             onTap: () async {
-                                                              final token = await SharedPreferencesUtil.getToken();
+                                                              final token = await SecurePreferencesUtil.getToken();
                                                               if (token != null) {
                                                                 await cartProvider.addToCart(product.id, context, 1);
                                                               }

@@ -12,7 +12,7 @@ class CheckoutScreenRepository {
 
   Future<CheckoutResponse> checkout(BuildContext context, String token) async {
     try {
-      final tokenLogin = await SharedPreferencesUtil.getToken();
+      final tokenLogin = await SecurePreferencesUtil.getToken();
       final url = ApiEndpoints.checkout;
       final headers = {
         'Authorization': 'Bearer $tokenLogin',

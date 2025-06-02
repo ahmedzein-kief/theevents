@@ -87,7 +87,7 @@ class VendorSignUpProvider with ChangeNotifier {
     notifyListeners();
 
     final url = '${VendorApiEndpoints.meta}';
-    final token = await SharedPreferencesUtil.getToken();
+    final token = await SecurePreferencesUtil.getToken();
     final headers = {
       'Authorization': token,
       'Content-Type': 'multipart/form-data',
@@ -218,7 +218,7 @@ class VendorSignUpProvider with ChangeNotifier {
     notifyListeners();
 
     final url = '${VendorApiEndpoints.meta}';
-    final token = await SharedPreferencesUtil.getToken();
+    final token = await SecurePreferencesUtil.getToken();
     final headers = {
       'Authorization': token ?? '',
       'Content-Type': 'multipart/form-data',
@@ -323,7 +323,7 @@ class VendorSignUpProvider with ChangeNotifier {
     notifyListeners();
 
     final url = '${VendorApiEndpoints.meta}';
-    final token = await SharedPreferencesUtil.getToken();
+    final token = await SecurePreferencesUtil.getToken();
     final headers = {
       'Authorization': token ?? '',
       'Content-Type': 'multipart/form-data',
@@ -385,7 +385,7 @@ class VendorSignUpProvider with ChangeNotifier {
     notifyListeners();
 
     final url = '${VendorApiEndpoints.meta}';
-    final token = await SharedPreferencesUtil.getToken();
+    final token = await SecurePreferencesUtil.getToken();
     final headers = {
       'Authorization': token ?? '',
       'Content-Type': 'multipart/form-data',
@@ -447,7 +447,7 @@ class VendorSignUpProvider with ChangeNotifier {
     notifyListeners();
 
     final url = '${VendorApiEndpoints.meta}';
-    final token = await SharedPreferencesUtil.getToken();
+    final token = await SecurePreferencesUtil.getToken();
     final headers = {
       'Authorization': token ?? '',
       'Content-Type': 'multipart/form-data',
@@ -494,7 +494,7 @@ class VendorSignUpProvider with ChangeNotifier {
     notifyListeners();
 
     final url = '${VendorApiEndpoints.meta}';
-    final token = await SharedPreferencesUtil.getToken();
+    final token = await SecurePreferencesUtil.getToken();
     final headers = {
       'Authorization': token ?? '',
     };
@@ -536,7 +536,7 @@ class VendorSignUpProvider with ChangeNotifier {
     notifyListeners();
 
     final url = '${VendorApiEndpoints.previewAgreement}';
-    final token = await SharedPreferencesUtil.getToken();
+    final token = await SecurePreferencesUtil.getToken();
     final headers = {
       'Authorization': token ?? '',
     };
@@ -581,7 +581,7 @@ class VendorSignUpProvider with ChangeNotifier {
     notifyListeners();
 
     final url = '${VendorApiEndpoints.emailResend}';
-    final token = await SharedPreferencesUtil.getToken();
+    final token = await SecurePreferencesUtil.getToken();
     final headers = {
       'Authorization': token ?? '',
     };
@@ -696,7 +696,7 @@ class VendorSignUpProvider with ChangeNotifier {
   Future<UserModel?> fetchUserData(BuildContext context) async {
     notifyListeners();
     final url = ApiEndpoints.getCustomer;
-    final token = await SharedPreferencesUtil.getToken();
+    final token = await SecurePreferencesUtil.getToken();
     final headers = {
       'Authorization': 'Bearer $token',
     };

@@ -185,16 +185,16 @@ class LoginScreenState extends State<LoginScreen> {
                                           );
 
                                           if (userData?.data != null) {
-                                            await SharedPreferencesUtil.setVendorData(
+                                            await SecurePreferencesUtil.setVendorData(
                                               approved: userData?.data?.isApproved ?? false,
                                               verified: userData?.data?.isVerified ?? false,
                                               vendor: userData?.data?.isVendor ?? 0,
                                             );
 
                                             if (userData?.data?.isVendor == 1) {
-                                              await SharedPreferencesUtil.saveToken("Bearer ${userData?.data!.token}");
+                                              await SecurePreferencesUtil.saveToken("Bearer ${userData?.data!.token}");
                                               if (_rememberMe) {
-                                                await SharedPreferencesUtil.setBool(SharedPreferencesUtil.isLoggedInKey, true);
+                                                await SecurePreferencesUtil.setBool(SecurePreferencesUtil.isLoggedInKey, true);
                                               }
                                               if (userData?.data?.isApproved == true && userData?.data?.isVerified == true) {
                                                 Navigator.of(context).popUntil((route) => route.isFirst);
@@ -205,8 +205,8 @@ class LoginScreenState extends State<LoginScreen> {
                                                 Navigator.of(context).push(MaterialPageRoute(builder: (_) => VendorStepperScreen()),);
                                               }
                                             } else {
-                                              await SharedPreferencesUtil.saveToken("Bearer ${userData?.data!.token}");
-                                              if (_rememberMe) {await SharedPreferencesUtil.setBool(SharedPreferencesUtil.isLoggedInKey, true);}
+                                              await SecurePreferencesUtil.saveToken("Bearer ${userData?.data!.token}");
+                                              if (_rememberMe) {await SecurePreferencesUtil.setBool(SecurePreferencesUtil.isLoggedInKey, true);}
                                               Navigator.of(context).popUntil((route) => route.isFirst);
                                               Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => BaseHomeScreen()),
                                               );

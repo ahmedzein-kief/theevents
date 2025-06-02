@@ -62,7 +62,7 @@ class _BaseScreenState extends State<BaseAppBar> {
 
   /// +++++++++++++++++++ FUNCTION to fetch the cart item count   =================================================================
   Future<void> _fetchCartItemCount() async {
-    final token = await SharedPreferencesUtil.getToken();
+    final token = await SecurePreferencesUtil.getToken();
     final cartProvider = Provider.of<CartProvider>(context, listen: false);
     await cartProvider.fetchCartData(token ?? '', context);
   }
@@ -70,7 +70,7 @@ class _BaseScreenState extends State<BaseAppBar> {
   /// +++++++++++++++++++ FUNCTION FOR  FETCH THE WISH LIST ITEM COUNT  =================================================================
 
   Future<void> _fetchWishListCount() async {
-    final token = await SharedPreferencesUtil.getToken();
+    final token = await SecurePreferencesUtil.getToken();
     final cartProvider = Provider.of<WishlistProvider>(context, listen: false);
     await cartProvider.fetchWishlist(token ?? '', context); // Ensure the provider fetches cart data
   }

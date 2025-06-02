@@ -70,7 +70,7 @@ class _UserTypeInnerPageScreenState extends State<UserTypeInnerPageScreen> {
   ///  ------------  FOR TAKING THE  ICON HEART AS THEIR STATE RED ON WISHLIST ADD BASIS ------------
 
   Future<void> fetchWishListItems() async {
-    final token = await SharedPreferencesUtil.getToken();
+    final token = await SecurePreferencesUtil.getToken();
     final provider = Provider.of<WishlistProvider>(context, listen: false);
     provider.fetchWishlist(token ?? '', context);
   }
@@ -669,7 +669,7 @@ class _UserTypeInnerPageScreenState extends State<UserTypeInnerPageScreen> {
                                       price: product.prices!.price.toString(),
                                       optionalIcon: Icons.shopping_cart,
                                       onOptionalIconTap: () async {
-                                        final token = await SharedPreferencesUtil.getToken();
+                                        final token = await SecurePreferencesUtil.getToken();
                                         if (token != null) {
                                           await cartProvider.addToCart(product.id, context, 1);
                                         }
@@ -677,7 +677,7 @@ class _UserTypeInnerPageScreenState extends State<UserTypeInnerPageScreen> {
                                       reviewsCount: product.review!.reviewsCount!.toInt(),
                                       isHeartObscure: wishlistProvider.wishlist?.data?.products.any((wishlistProduct) => wishlistProduct.id == product.id) ?? false,
                                       onHeartTap: () async {
-                                        final token = await SharedPreferencesUtil.getToken();
+                                        final token = await SecurePreferencesUtil.getToken();
                                         bool isInWishlist = wishlistProvider.wishlist?.data?.products.any((wishlistProduct) => wishlistProduct.id == product.id) ?? false;
                                         if (isInWishlist) {
                                           await wishlistProvider.deleteWishlistItem(product.id ?? 0, context, token ?? '');
@@ -813,7 +813,7 @@ class _UserTypeInnerPageScreenState extends State<UserTypeInnerPageScreen> {
                               productName: product.name.toString(),
                               price: product.prices?.price.toString() ?? '',
                               addInCart: () async {
-                                final token = await SharedPreferencesUtil.getToken();
+                                final token = await SecurePreferencesUtil.getToken();
                                 if (token != null) {
                                   await cartProvider.addToCart(product.id, context, 1);
                                 }
@@ -821,7 +821,7 @@ class _UserTypeInnerPageScreenState extends State<UserTypeInnerPageScreen> {
                               isHeartObscure: wishlistProvider.wishlist?.data?.products.any((wishlistProduct) => wishlistProduct.id == product.id) ?? false,
                               // isHeartObscure: true,
                               onHeartTap: () async {
-                                final token = await SharedPreferencesUtil.getToken();
+                                final token = await SecurePreferencesUtil.getToken();
                                 bool isInWishlist = wishlistProvider.wishlist?.data?.products.any((wishlistProduct) => wishlistProduct.id == product.id) ?? false;
 
                                 if (isInWishlist) {

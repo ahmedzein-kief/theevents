@@ -62,9 +62,9 @@ class _ProductCardState extends State<ProductCard> {
   Future<bool> _isLoggedIn() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    print('token prefs ===> ${prefs.getString(SharedPreferencesUtil.tokenKey)}');
+    print('token prefs ===> ${prefs.getString(SecurePreferencesUtil.tokenKey)}');
 
-    return prefs.getString(SharedPreferencesUtil.tokenKey)?.isNotEmpty ?? false;
+    return prefs.getString(SecurePreferencesUtil.tokenKey)?.isNotEmpty ?? false;
   }
 
   void _onHeartTap() async {

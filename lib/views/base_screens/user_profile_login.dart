@@ -66,9 +66,9 @@ class _UserProfileLoginScreenState extends State<UserProfileLoginScreen> {
   Future checkLoginData() async {
     final prefs = await SharedPreferences.getInstance();
 
-    final bool isVerified = prefs.getBool(SharedPreferencesUtil.verified) ?? false;
-    final bool isApproved = prefs.getBool(SharedPreferencesUtil.approved) ?? false;
-    final int vendor = prefs.getInt(SharedPreferencesUtil.vendor) ?? 0;
+    final bool isVerified = prefs.getBool(SecurePreferencesUtil.verified) ?? false;
+    final bool isApproved = prefs.getBool(SecurePreferencesUtil.approved) ?? false;
+    final int vendor = prefs.getInt(SecurePreferencesUtil.vendor) ?? 0;
 
     if (vendor == 1) {
       isVendor = true;
@@ -106,7 +106,7 @@ class _UserProfileLoginScreenState extends State<UserProfileLoginScreen> {
   }
 
   Future<void> fetchUserData() async {
-    final token = await SharedPreferencesUtil.getToken();
+    final token = await SecurePreferencesUtil.getToken();
     final provider = Provider.of<UserProvider>(context, listen: false);
     provider.fetchUserData(token ?? '', context);
   }

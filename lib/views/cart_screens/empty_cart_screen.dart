@@ -44,7 +44,7 @@ class _EmptyCartScreenState extends State<EmptyCartScreen> {
                     ),
                     GestureDetector(
                       onTap: () async {
-                        bool isLoggedIn = await SharedPreferencesUtil.isLoggedIn();
+                        bool isLoggedIn = await SecurePreferencesUtil.isLoggedIn();
                         if (isLoggedIn)
                           Navigator.pop(context);
                         else

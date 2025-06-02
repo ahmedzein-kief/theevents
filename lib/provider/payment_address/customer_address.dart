@@ -224,7 +224,7 @@ class CustomerAddressProvider with ChangeNotifier {
       _isLoadingDelete = true;
       notifyListeners();
 
-      final token = await SharedPreferencesUtil.getToken();
+      final token = await SecurePreferencesUtil.getToken();
       final url = '${ApiEndpoints.customerAddressDelete}$addressId';
       final headers = {'Authorization': token ?? ''};
 

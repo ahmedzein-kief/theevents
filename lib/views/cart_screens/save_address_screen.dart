@@ -143,7 +143,7 @@ class _SaveAddressScreenState extends State<SaveAddressScreen> {
       setState(() {
         _isFetchingMore = true;
       });
-      final token = await SharedPreferencesUtil.getToken();
+      final token = await SecurePreferencesUtil.getToken();
       final provider = Provider.of<CustomerAddressProvider>(context, listen: false);
       final result = await provider.fetchCustomerAddresses(
         token ?? '',
@@ -190,7 +190,7 @@ class _SaveAddressScreenState extends State<SaveAddressScreen> {
 
   /// +++++++++++++++++++ FUNCTION FOR FETCHING THE USER ADDRESS FROM API   ============================
   Future<void> fetchUserData() async {
-    final token = await SharedPreferencesUtil.getToken();
+    final token = await SecurePreferencesUtil.getToken();
     final provider = Provider.of<UserProvider>(context, listen: false);
     provider.fetchUserData(token ?? '', context);
   }
@@ -346,7 +346,7 @@ class _SaveAddressScreenState extends State<SaveAddressScreen> {
                                   child: AppCustomButton(
                                     title: "Continue",
                                     onPressed: () async {
-                                      final token = await SharedPreferencesUtil.getToken();
+                                      final token = await SecurePreferencesUtil.getToken();
                                       // Ensure selectedAddress is set and use its ID
                                       int addressId = selectedAddress?.id ?? 0; // Use the addressId from selectedAddress
                                       var result = await Provider.of<SubMitCheckoutInformationProvider>(context, listen: false).submitCheckoutInformation(
@@ -405,7 +405,7 @@ class _SaveAddressScreenState extends State<SaveAddressScreen> {
                             padding: const EdgeInsets.only(top: 20, left: 5, right: 5),
                             child: AppCustomButton(
                               onPressed: () async {
-                                final token = await SharedPreferencesUtil.getToken();
+                                final token = await SecurePreferencesUtil.getToken();
 
                                 var result = await Provider.of<SubMitCheckoutInformationProvider>(context, listen: false).submitCheckoutInformation(
                                   context: context,
@@ -553,7 +553,7 @@ class _SaveAddressScreenState extends State<SaveAddressScreen> {
   ///  +++++++++++++++++++++++++++++  FUNCTION FOR SAVE THE NEW ADDRESS OF THE CUSTOMER --------------------------------
 
   void _saveAddress() async {
-    final token = await SharedPreferencesUtil.getToken();
+    final token = await SecurePreferencesUtil.getToken();
     if (token == null) return;
 
     if (_formKey.currentState!.validate()) {

@@ -46,7 +46,7 @@ class _NewProductPageScreenState extends State<NewProductPageScreen> {
   ///  ------------  FOR TAKING THE  ICON HEART AS THEIR STATE RED ON WISHLIST ADD BASIS ------------
 
   Future<void> fetchWishListItems() async {
-    final token = await SharedPreferencesUtil.getToken();
+    final token = await SecurePreferencesUtil.getToken();
     final provider = Provider.of<WishlistProvider>(context, listen: false);
     provider.fetchWishlist(token ?? '', context);
   }
@@ -281,14 +281,14 @@ class _NewProductPageScreenState extends State<NewProductPageScreen> {
 
                                                     optionalIcon: Icons.shopping_cart,
                                                     onOptionalIconTap: () async {
-                                                      final token = await SharedPreferencesUtil.getToken();
+                                                      final token = await SecurePreferencesUtil.getToken();
                                                       if (token != null) {
                                                         await cartProvider.addToCart(product.id, context, 1);
                                                       }
                                                     },
                                                     isHeartObscure: wishlistProvider.wishlist?.data?.products.any((wishlistProduct) => wishlistProduct.id == product.id) ?? false,
                                                     onHeartTap: () async {
-                                                      final token = await SharedPreferencesUtil.getToken();
+                                                      final token = await SecurePreferencesUtil.getToken();
                                                       bool isInWishlist =
                                                           wishlistProvider.wishlist?.data?.products.any((wishlistProduct) => wishlistProduct.id == product.id) ?? false;
                                                       if (isInWishlist) {

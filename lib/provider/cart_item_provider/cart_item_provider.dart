@@ -42,7 +42,7 @@ class CartProvider with ChangeNotifier {
   {
     _isLoading = true;
     notifyListeners();
-    final token = await SharedPreferencesUtil.getToken();
+    final token = await SecurePreferencesUtil.getToken();
     final url = '${ApiEndpoints.addToCart}';
 
     final headers = {
@@ -159,7 +159,7 @@ class CartProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         _cartResponse = CartModel.fromJson(json.decode(response.body));
-        final token = await SharedPreferencesUtil.getToken();
+        final token = await SecurePreferencesUtil.getToken();
         final provider = Provider.of<UserProvider>(context, listen: false);
         provider.fetchUserData(token ?? '', context);
         notifyListeners();

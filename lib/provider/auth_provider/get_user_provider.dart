@@ -73,7 +73,7 @@ class UserProvider with ChangeNotifier {
     notifyListeners();
 
     final url = '${VendorApiEndpoints.downloadAgreement}';
-    final token = await SharedPreferencesUtil.getToken();
+    final token = await SecurePreferencesUtil.getToken();
     final headers = {
       'Authorization': token ?? '',
     };

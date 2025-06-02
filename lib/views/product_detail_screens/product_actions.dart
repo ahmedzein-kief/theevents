@@ -4,7 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../provider/cart_item_provider/cart_item_provider.dart';
 import '../../provider/product_package_provider/product_details_provider.dart';
@@ -16,7 +15,8 @@ import '../../utils/storage/shared_preferences_helper.dart';
 import '../auth_screens/auth_page_view.dart';
 
 class ProductActions extends StatefulWidget {
-  final void Function(List<Map<String, dynamic>> extraOptionErrorData) onExtraOptionsError;
+  final void Function(List<Map<String, dynamic>> extraOptionErrorData)
+      onExtraOptionsError;
   final void Function(bool loader) updateLoader;
   final int mainProductID;
   final int productVariationID;
@@ -49,32 +49,42 @@ class _ProductActionsState extends State<ProductActions> {
   bool _isLoading = false;
   var inWishList = false;
 
-  Future<bool> _isLoggedIn() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString(SharedPreferencesUtil.tokenKey) != null;
-  }
+  // Future<bool> _isLoggedIn() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   return prefs.getString(SecurePreferencesUtil.tokenKey) != null;
+  // }
+
+  Future<bool> _isLoggedIn() async =>
+      (await SecurePreferencesUtil.getToken()) != null;
 
   void _handleAddToCart(BuildContext context) async {
     List<Map<String, dynamic>> extraOptionErrorData = [];
-    if (widget.productItemsProvider.apiResponse?.data?.record?.options.isNotEmpty == true) {
+    if (widget.productItemsProvider.apiResponse?.data?.record?.options
+            .isNotEmpty ==
+        true) {
       widget.productItemsProvider.apiResponse?.data?.record?.options.forEach(
         (action) {
           var selectedOption = widget.selectedExtraOptions['${action.id}'];
-          var optionData = (selectedOption is Map<String, dynamic>) ? selectedOption : null;
+          var optionData =
+              (selectedOption is Map<String, dynamic>) ? selectedOption : null;
 
-          if (optionData == null && action.optionType.toLowerCase() != 'textarea') {
+          if (optionData == null &&
+              action.optionType.toLowerCase() != 'textarea') {
             var errorData = {
               'option_id': action.id,
               'error': true,
             };
             extraOptionErrorData.add(errorData);
-          } else if (optionData?['values'] == null && action.optionType.toLowerCase() != 'textarea') {
+          } else if (optionData?['values'] == null &&
+              action.optionType.toLowerCase() != 'textarea') {
             var errorData = {
               'option_id': action.id,
               'error': true,
             };
             extraOptionErrorData.add(errorData);
-          } else if ((optionData?['values'] == null || optionData?['values'] == "null") && action.optionType.toLowerCase() == 'datepicker') {
+          } else if ((optionData?['values'] == null ||
+                  optionData?['values'] == "null") &&
+              action.optionType.toLowerCase() == 'datepicker') {
             var errorData = {
               'option_id': action.id,
               'error': true,
@@ -91,7 +101,8 @@ class _ProductActionsState extends State<ProductActions> {
       );
     }
 
-    if (extraOptionErrorData.every((errorData) => errorData['error'] == false)) {
+    if (extraOptionErrorData
+        .every((errorData) => errorData['error'] == false)) {
       widget.onExtraOptionsError(extraOptionErrorData);
     } else {
       widget.onExtraOptionsError(extraOptionErrorData);
@@ -115,7 +126,7 @@ class _ProductActionsState extends State<ProductActions> {
         },
       );
     } else {
-      final token = await SharedPreferencesUtil.getToken();
+      final token = await SecurePreferencesUtil.getToken();
       if (token != null) {
         setState(() {
           _isLoading = true;
@@ -134,17 +145,23 @@ class _ProductActionsState extends State<ProductActions> {
     }
   }
 
-  Future<WishlistResponseModels?> addRemoveWishList(BuildContext context, bool isInWishlist) async {
-    return await widget.freshPicksProvider.addRemoveWishList(context, widget.mainProductID);
+  Future<WishlistResponseModels?> addRemoveWishList(
+      BuildContext context, bool isInWishlist) async {
+    return await widget.freshPicksProvider
+        .addRemoveWishList(context, widget.mainProductID);
   }
 
   @override
   Widget build(BuildContext context) {
     final cartProvider = Provider.of<CartProvider>(context, listen: true);
-    final wishlistProvider = Provider.of<WishlistProvider>(context, listen: true);
+    final wishlistProvider =
+        Provider.of<WishlistProvider>(context, listen: true);
 
-    var isOutOfStock = widget.productItemsProvider.apiResponse?.data?.record?.outOfStock ?? false;
-    var inCart = widget.productItemsProvider.apiResponse?.data?.record?.inCart ?? false;
+    var isOutOfStock =
+        widget.productItemsProvider.apiResponse?.data?.record?.outOfStock ??
+            false;
+    var inCart =
+        widget.productItemsProvider.apiResponse?.data?.record?.inCart ?? false;
 
     return Container(
       color: Colors.white,
@@ -186,24 +203,30 @@ class _ProductActionsState extends State<ProductActions> {
                     return null;
                   }
                   widget.updateLoader(true);
-                  final wishResult = await addRemoveWishList(context, inWishList);
+                  final wishResult =
+                      await addRemoveWishList(context, inWishList);
                   if (wishResult != null) {
-                    final mainProvider = Provider.of<ProductItemsProvider>(context, listen: false);
-                    mainProvider.updateWishListData(wishResult.data?.added ?? false);
+                    final mainProvider = Provider.of<ProductItemsProvider>(
+                        context,
+                        listen: false);
+                    mainProvider
+                        .updateWishListData(wishResult.data?.added ?? false);
                     // setState(() {
                     //   inWishList = wishResult.data?.added ?? false;
                     // });
                     setState(() {});
-                    final token = await SharedPreferencesUtil.getToken();
+                    final token = await SecurePreferencesUtil.getToken();
                     await wishlistProvider.fetchWishlist(token ?? '', context);
                   }
                   widget.updateLoader(false);
                 },
                 child: Consumer<ProductItemsProvider>(
                   builder: (context, provider, child) {
-                    inWishList = provider.apiResponse?.data?.record?.inWishList ?? false;
+                    inWishList =
+                        provider.apiResponse?.data?.record?.inWishList ?? false;
                     return Container(
-                      decoration: BoxDecoration(border: Border.all(color: Colors.red)),
+                      decoration:
+                          BoxDecoration(border: Border.all(color: Colors.red)),
                       padding: const EdgeInsets.all(10),
                       height: 45,
                       child: Row(
@@ -212,7 +235,9 @@ class _ProductActionsState extends State<ProductActions> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(
-                            inWishList ? CupertinoIcons.heart_fill : CupertinoIcons.heart,
+                            inWishList
+                                ? CupertinoIcons.heart_fill
+                                : CupertinoIcons.heart,
                             color: inWishList ? Colors.red : Colors.grey,
                           ),
                           Padding(

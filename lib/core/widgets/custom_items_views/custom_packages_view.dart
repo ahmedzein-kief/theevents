@@ -45,7 +45,7 @@ class _CustomPackagesViewState extends State<CustomPackagesView> {
   ///   ----------------------- FUNCTION TO CHECK THE USER IS LOGIN INTO THE APP OR NOT -------------------------
   Future<bool> _isLoggedIn() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(SharedPreferencesUtil.isLoggedInKey) ?? false;
+    return prefs.getBool(SecurePreferencesUtil.isLoggedInKey) ?? false;
   }
 
   void _onCartTap() async {

@@ -134,7 +134,7 @@ class FreshPicksProvider extends ChangeNotifier {
   Future<void> handleHeartTap(BuildContext context, int itemId) async {
     _isLoading = true;
     notifyListeners();
-    final token = await SharedPreferencesUtil.getToken();
+    final token = await SecurePreferencesUtil.getToken();
     final url = '${ApiEndpoints.wishList}$itemId';
     final response = await http.post(
       Uri.parse(url),
@@ -161,7 +161,7 @@ class FreshPicksProvider extends ChangeNotifier {
   Future<WishlistResponseModels?> addRemoveWishList(BuildContext context, int itemId) async {
     _isLoading = true;
     notifyListeners();
-    final token = await SharedPreferencesUtil.getToken();
+    final token = await SecurePreferencesUtil.getToken();
     final url = '${ApiEndpoints.wishList}$itemId';
     final response = await http.post(
       Uri.parse(url),

@@ -25,7 +25,7 @@ class DioNetworkApiServices extends DioBaseApiServices {
         logger.d('Response Data: ${response.data}');
         return handler.next(response);
       },
-      onError: (DioError e, handler) {
+      onError: (DioException e, handler) {
         logger.e('Error: ${e.message}');
         if (e.response != null) {
           logger.e('Error Response Status: ${e.response?.statusCode}');
@@ -188,28 +188,28 @@ class DioNetworkApiServices extends DioBaseApiServices {
   }
 
   AppExceptions _handleError(dynamic error) {
-    if (error is DioError) {
+    if (error is DioException) {
       switch (error.type) {
-        case DioErrorType.connectionTimeout:
+        case DioExceptionType.connectionTimeout:
           return FetchDataException('Connection timeout');
-        case DioErrorType.sendTimeout:
+        case DioExceptionType.sendTimeout:
           return FetchDataException('Send timeout');
-        case DioErrorType.receiveTimeout:
+        case DioExceptionType.receiveTimeout:
           return FetchDataException('Receive timeout');
-        case DioErrorType.badResponse:
+        case DioExceptionType.badResponse:
           // Check for status code 422 specifically
           //   if (error.response?.statusCode == 422) {
           if (error.response?.statusCode != null) {
             return ValidationException(_errorMessage(error.response!));
           }
           return FetchDataException('Received invalid status code: ${error.response?.statusCode}');
-        case DioErrorType.cancel:
+        case DioExceptionType.cancel:
           return FetchDataException('Request cancelled');
-        case DioErrorType.badCertificate:
+        case DioExceptionType.badCertificate:
           return FetchDataException('Certification Error');
-        case DioErrorType.connectionError:
+        case DioExceptionType.connectionError:
           return FetchDataException('Connection Error occurred');
-        case DioErrorType.unknown:
+        case DioExceptionType.unknown:
           // return FetchDataException('Unexpected error: ${error.message}');
           return FetchDataException(' ${error.message}');
       }

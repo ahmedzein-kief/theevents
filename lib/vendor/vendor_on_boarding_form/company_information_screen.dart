@@ -81,7 +81,7 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
     var response = await provider.getAllMetaData(context);
 
     if (response != null) {
-      SharedPreferencesUtil.saveServerStep(int.parse(response.data["step"] ?? '1'));
+      SecurePreferencesUtil.saveServerStep(int.parse(response.data["step"] ?? '1'));
       /**
        * Parsing company information data
        */

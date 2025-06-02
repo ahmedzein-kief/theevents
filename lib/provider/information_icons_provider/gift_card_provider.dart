@@ -71,7 +71,7 @@ class CreateGiftCardProvider with ChangeNotifier {
     _loading = true;
     notifyListeners();
 
-    final token = await SharedPreferencesUtil.getToken();
+    final token = await SecurePreferencesUtil.getToken();
 
     final headers = {
       'Authorization': 'Bearer $token',

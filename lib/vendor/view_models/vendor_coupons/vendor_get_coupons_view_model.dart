@@ -15,7 +15,7 @@ class VendorGetCouponsViewModel with ChangeNotifier {
   List<CouponRecords> get list => _list;
 
   setToken() async {
-    _token = await SharedPreferencesUtil.getToken();
+    _token = await SecurePreferencesUtil.getToken();
   }
 
   bool _isLoading = true;

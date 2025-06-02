@@ -14,7 +14,7 @@ class VendorReviewsViewModel with ChangeNotifier {
   List<ReviewRecord> get list => _list;
 
   setToken() async {
-    _token = await SharedPreferencesUtil.getToken();
+    _token = await SecurePreferencesUtil.getToken();
   }
 
   bool _isLoading = true;

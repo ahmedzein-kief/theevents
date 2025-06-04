@@ -1,7 +1,5 @@
 class WishlistResponseModels {
-  final bool? error; // Dynamic type
-  final WishlistData? data; // Dynamic type
-  final String? message; // Dynamic type
+  // Dynamic type
 
   WishlistResponseModels({
     this.error,
@@ -9,20 +7,19 @@ class WishlistResponseModels {
     this.message,
   });
 
-  factory WishlistResponseModels.fromJson(Map<String, dynamic> json) {
-    return WishlistResponseModels(
-      error: json['error'] ?? false,
-      data: json['data'] != null ? WishlistData.fromJson(json['data']) : null,
-      message: json['message'] ?? null,
-    );
-  }
+  factory WishlistResponseModels.fromJson(Map<String, dynamic> json) =>
+      WishlistResponseModels(
+        error: json['error'] ?? false,
+        data: json['data'] != null ? WishlistData.fromJson(json['data']) : null,
+        message: json['message'],
+      );
+  final bool? error; // Dynamic type
+  final WishlistData? data; // Dynamic type
+  final String? message;
 }
 
 class WishlistData {
-  final int? count; // Dynamic type
-  final dynamic ids; // Dynamic type
-  final bool added; // Dynamic type
-  final String? message; // Dynamic type
+  // Dynamic type
 
   WishlistData({
     this.count,
@@ -31,12 +28,14 @@ class WishlistData {
     this.message,
   });
 
-  factory WishlistData.fromJson(Map<String, dynamic> json) {
-    return WishlistData(
-      count: json['count'] ?? null,
-      ids: json['ids'] ?? null,
-      added: json['added'] ?? false,
-      message: json['message'] ?? '',
-    );
-  }
+  factory WishlistData.fromJson(Map<String, dynamic> json) => WishlistData(
+        count: json['count'],
+        ids: json['ids'],
+        added: json['added'] ?? false,
+        message: json['message'] ?? '',
+      );
+  final int? count; // Dynamic type
+  final dynamic ids; // Dynamic type
+  final bool added; // Dynamic type
+  final String? message;
 }

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
+import 'package:event_app/core/network/api_endpoints/vendor_api_end_point.dart';
 import 'package:event_app/data/vendor/data/network/dio/DioBaseApiServices.dart';
 import 'package:event_app/data/vendor/data/network/dio/DioNetworkApiServices.dart';
 import 'package:event_app/models/vendor_models/common_models/common_post_request_model.dart';
@@ -33,7 +34,6 @@ import 'package:event_app/models/vendor_models/vendor_settings_models/vendor_get
 import 'package:event_app/models/vendor_models/vendor_settings_models/vendor_settings_model.dart';
 import 'package:event_app/models/vendor_models/vendor_withdrawals_model/vendor_get_withdrawals_model.dart';
 import 'package:event_app/models/vendor_models/vendor_withdrawals_model/vendor_show_withdrawal_model.dart';
-import 'package:event_app/utils/apiendpoints/vendor_api_end_point.dart';
 
 class VendorRepository {
   final DioBaseApiServices _dioBaseApiServices = DioNetworkApiServices();
@@ -46,7 +46,8 @@ class VendorRepository {
     try {
       // API call
       final response = await _dioBaseApiServices.dioDeleteApiService(
-        url: VendorApiEndpoints.vendorDeleteProductVariation + "$productVariationId",
+        url:
+            '${VendorApiEndpoints.vendorDeleteProductVariation}$productVariationId',
         headers: headers,
       );
 
@@ -54,9 +55,9 @@ class VendorRepository {
       return CommonDataResponse.fromJson(response);
     } catch (e, stacktrace) {
       // Log the error with stacktrace
-      log("Error in fetching vendor products: $e", stackTrace: stacktrace);
+      log('Error in fetching vendor products: $e', stackTrace: stacktrace);
       // Throw a custom exception
-      throw Exception("Failed to fetch vendor products: $e");
+      throw Exception('Failed to fetch vendor products: $e');
     }
   }
 
@@ -77,9 +78,9 @@ class VendorRepository {
       return VendorGetProductsModel.fromJson(response);
     } catch (e, stacktrace) {
       // Log the error with stacktrace
-      log("Error in fetching vendor products: $e", stackTrace: stacktrace);
+      log('Error in fetching vendor products: $e', stackTrace: stacktrace);
       // Throw a custom exception
-      throw Exception("Failed to fetch vendor products: $e");
+      throw Exception('Failed to fetch vendor products: $e');
     }
   }
 
@@ -112,7 +113,10 @@ class VendorRepository {
   }) async {
     // try {
     // API call
-    final response = await _dioBaseApiServices.dioPostApiService(url: VendorApiEndpoints.vendorGenerateCouponCode, headers: headers, body: null);
+    final response = await _dioBaseApiServices.dioPostApiService(
+        url: VendorApiEndpoints.vendorGenerateCouponCode,
+        headers: headers,
+        body: null);
 
     // Map the response to the model
     return VendorGenerateCouponCodeModel.fromJson(response);
@@ -127,10 +131,13 @@ class VendorRepository {
   /// vendor create coupon
   Future<VendorCreateCouponModel> vendorCreateCoupon({
     required Map<String, String> headers,
-    required dynamic body,
+    required body,
   }) async {
     // API call
-    final response = await _dioBaseApiServices.dioPostApiService(url: VendorApiEndpoints.vendorCreateCoupon, headers: headers, body: body);
+    final response = await _dioBaseApiServices.dioPostApiService(
+        url: VendorApiEndpoints.vendorCreateCoupon,
+        headers: headers,
+        body: body);
 
     // Map the response to the model
     return VendorCreateCouponModel.fromJson(response);
@@ -166,12 +173,13 @@ class VendorRepository {
 
   /// vendor settings - store, tax info, bank info
   Future<VendorSettingsModel> vendorSettings({
-    required dynamic url,
-    required dynamic body,
+    required url,
+    required body,
     required Map<String, String> headers,
   }) async {
     // API call
-    final response = await _dioBaseApiServices.dioMultipartApiService(method: 'POST', url: url, headers: headers, data: body);
+    final response = await _dioBaseApiServices.dioMultipartApiService(
+        method: 'POST', url: url, headers: headers, data: body);
     // Map the response to the model
     return VendorSettingsModel.fromJson(response);
   }
@@ -179,7 +187,7 @@ class VendorRepository {
   /// vendor delete coupons
   Future<VendorDeleteCouponModel> vendorDeleteCoupon({
     required Map<String, String> headers,
-    required dynamic couponId,
+    required couponId,
   }) async {
     // API call
     final response = await _dioBaseApiServices.dioDeleteApiService(
@@ -229,7 +237,8 @@ class VendorRepository {
         VendorApiEndpoints.vendorGenerateOrderInvoice + orderId,
         options: Options(
           headers: headers,
-          responseType: ResponseType.bytes, // Receive the response as bytes (binary data)
+          responseType:
+              ResponseType.bytes, // Receive the response as bytes (binary data)
           extra: {
             'cache': true, // Enable cache for this request
           },
@@ -239,7 +248,7 @@ class VendorRepository {
       // Check if the response contains the expected PDF data as bytes
       if (response.data is List<int>) {
         // If the response is a List<int> (PDF byte array), you can process it further
-        List<int> pdfBytes = response.data as List<int>;
+        final List<int> pdfBytes = response.data as List<int>;
 
         // You can save the PDF bytes to a file or process them as needed
         return pdfBytes;
@@ -248,7 +257,7 @@ class VendorRepository {
         throw Exception('Unexpected response format');
       }
     } catch (e) {
-      throw (e);
+      rethrow;
     }
   }
 
@@ -331,9 +340,12 @@ class VendorRepository {
   Future<VendorUpdateShipmentStatusModel> vendorUpdateShipmentStatus({
     required Map<String, String> headers,
     required String shipmentID,
-    required dynamic body,
+    required body,
   }) async {
-    final response = await _dioBaseApiServices.dioPostApiService(url: VendorApiEndpoints.vendorUpdateShippingStatus + shipmentID, headers: headers, body: body);
+    final response = await _dioBaseApiServices.dioPostApiService(
+        url: VendorApiEndpoints.vendorUpdateShippingStatus + shipmentID,
+        headers: headers,
+        body: body);
 
     // Map the response to the model
     return VendorUpdateShipmentStatusModel.fromJson(response);
@@ -343,9 +355,12 @@ class VendorRepository {
   Future<CommonPostRequestModel> vendorUpdateOrder({
     required Map<String, String> headers,
     required String orderID,
-    required dynamic body,
+    required body,
   }) async {
-    final response = await _dioBaseApiServices.dioPostApiService(url: VendorApiEndpoints.vendorUpdateOrder + orderID, headers: headers, body: body);
+    final response = await _dioBaseApiServices.dioPostApiService(
+        url: VendorApiEndpoints.vendorUpdateOrder + orderID,
+        headers: headers,
+        body: body);
     // Map the response to the model
     return CommonPostRequestModel.fromJson(response);
   }
@@ -513,7 +528,7 @@ class VendorRepository {
   /// vendor get product variations listing
   Future<VendorGetProductVariationsModel> vendorGetProductVariations({
     required Map<String, String> headers,
-    required dynamic body,
+    required body,
     required String productID,
   }) async {
     final response = await _dioBaseApiServices.dioPostApiService(
@@ -531,7 +546,8 @@ class VendorRepository {
     required String productVariationID,
   }) async {
     final response = await _dioBaseApiServices.dioPostApiService(
-      url: VendorApiEndpoints.vendorSetDefaultProductVariation + productVariationID,
+      url: VendorApiEndpoints.vendorSetDefaultProductVariation +
+          productVariationID,
       headers: headers,
       body: null,
     );
@@ -570,7 +586,7 @@ class VendorRepository {
   Future<CommonPostRequestModel> vendorEditProductAttributes({
     required Map<String, String> headers,
     required String productID,
-    required dynamic body,
+    required body,
   }) async {
     final response = await _dioBaseApiServices.dioPostApiService(
       url: VendorApiEndpoints.vendorEditProductAttributes + productID,
@@ -587,7 +603,7 @@ class VendorRepository {
     required FormData formData,
   }) async {
     final response = await _dioBaseApiServices.dioMultipartApiService(
-      method: "POST",
+      method: 'POST',
       url: VendorApiEndpoints.vendorUploadImages,
       headers: headers,
       data: formData,
@@ -599,7 +615,7 @@ class VendorRepository {
   /// create product attributes
   Future<CreateProductDataResponse> createProduct({
     required Map<String, String> headers,
-    required dynamic body,
+    required body,
   }) async {
     final response = await _dioBaseApiServices.dioMultipartApiService(
       url: VendorApiEndpoints.vendorCreateProduct,
@@ -616,7 +632,7 @@ class VendorRepository {
     required Map<String, String> headers,
   }) async {
     final response = await _dioBaseApiServices.dioGetApiService(
-      url: VendorApiEndpoints.vendorProducts + '/$productId',
+      url: '${VendorApiEndpoints.vendorProducts}/$productId',
       headers: headers,
     );
     // Map the response to the model
@@ -627,7 +643,7 @@ class VendorRepository {
     required String productVariationId,
     required Map<String, String> headers,
   }) async {
-    final url = VendorApiEndpoints.vendorGetVersion + '$productVariationId';
+    final url = '${VendorApiEndpoints.vendorGetVersion}$productVariationId';
     final response = await _dioBaseApiServices.dioGetApiService(
       url: url,
       headers: headers,
@@ -656,7 +672,7 @@ class VendorRepository {
   /// vendor delete product
   Future<CommonPostRequestModel> vendorDeleteProduct({
     required Map<String, String> headers,
-    required dynamic productID,
+    required productID,
   }) async {
     // API call
     final response = await _dioBaseApiServices.dioDeleteApiService(
@@ -682,9 +698,13 @@ class VendorRepository {
   /// create package
   Future<CreateProductDataResponse> vendorCreatePackage({
     required Map<String, String> headers,
-    required dynamic body,
+    required body,
   }) async {
-    final response = await _dioBaseApiServices.dioMultipartApiService(url: VendorApiEndpoints.vendorCreatePackage, headers: headers, data: body, method: 'POST');
+    final response = await _dioBaseApiServices.dioMultipartApiService(
+        url: VendorApiEndpoints.vendorCreatePackage,
+        headers: headers,
+        data: body,
+        method: 'POST');
     // Map the response to the model
     return CreateProductDataResponse.fromJson(response);
   }
@@ -692,7 +712,7 @@ class VendorRepository {
   /// vendor delete package
   Future<CommonPostRequestModel> vendorDeletePackage({
     required Map<String, String> headers,
-    required dynamic packageID,
+    required packageID,
   }) async {
     // API call
     final response = await _dioBaseApiServices.dioDeleteApiService(
@@ -719,10 +739,14 @@ class VendorRepository {
   /// vendor update package
   Future<CommonPostRequestModel> vendorUpdatePackage({
     required Map<String, String> headers,
-    required dynamic body,
+    required body,
     required String packageID,
   }) async {
-    final response = await _dioBaseApiServices.dioMultipartApiService(url: VendorApiEndpoints.vendorUpdatePackage + packageID, headers: headers, data: body, method: 'POST');
+    final response = await _dioBaseApiServices.dioMultipartApiService(
+        url: VendorApiEndpoints.vendorUpdatePackage + packageID,
+        headers: headers,
+        data: body,
+        method: 'POST');
     // Map the response to the model
     return CommonPostRequestModel.fromJson(response);
   }
@@ -730,7 +754,7 @@ class VendorRepository {
   /// vendor create update withdrawal
   Future<CommonPostRequestModel> vendorCreateUpdateWithdrawal({
     required Map<String, String> headers,
-    required dynamic body,
+    required body,
     required String url,
   }) async {
     final response = await _dioBaseApiServices.dioPostApiService(
@@ -772,7 +796,7 @@ class VendorRepository {
   /// vendor update product
   Future<CommonPostRequestModel> vendorUpdateProduct({
     required Map<String, String> headers,
-    required dynamic body,
+    required body,
     required String productID,
   }) async {
     final response = await _dioBaseApiServices.dioMultipartApiService(
@@ -800,32 +824,38 @@ class VendorRepository {
     return CommonPostRequestModel.fromJson(response);
   }
 
-
-
   /// vendor create variation
   Future<CommonPostRequestModel> vendorCreateProductVariation({
     required Map<String, String> headers,
-    required dynamic body,
+    required body,
     required String productID,
   }) async {
-    final response = await _dioBaseApiServices.dioMultipartApiService(url: VendorApiEndpoints.vendorCreateProductVariation + productID, headers: headers, data: body, method: 'POST');
+    final response = await _dioBaseApiServices.dioMultipartApiService(
+        url: VendorApiEndpoints.vendorCreateProductVariation + productID,
+        headers: headers,
+        data: body,
+        method: 'POST');
     // Map the response to the model
     return CommonPostRequestModel.fromJson(response);
   }
-
 
   /// vendor update variation
   Future<CommonPostRequestModel> vendorUpdateProductVariation({
     required Map<String, String> headers,
-    required dynamic body,
+    required body,
     required String productVariationID,
   }) async {
-    final response = await _dioBaseApiServices.dioMultipartApiService(url: VendorApiEndpoints.vendorUpdateProductVariation + productVariationID, headers: headers, data: body, method: 'POST');
+    final response = await _dioBaseApiServices.dioMultipartApiService(
+        url: VendorApiEndpoints.vendorUpdateProductVariation +
+            productVariationID,
+        headers: headers,
+        data: body,
+        method: 'POST');
     // Map the response to the model
     return CommonPostRequestModel.fromJson(response);
   }
 
-  String _errorMessage(dynamic response) {
+  String _errorMessage(response) {
     var errors;
     var error;
     var message;
@@ -833,7 +863,7 @@ class VendorRepository {
     if (response is Response) {
       if (response.data != null) {
         final errorData = response.data;
-        errors = errorData['errors'] == null ? errorData['data'] : errorData['errors'];
+        errors = errorData['errors'] ?? errorData['data'];
         error = errorData['error'];
         message = errorData['message'];
       }
@@ -854,7 +884,7 @@ class VendorRepository {
       if (errors != null && errors is Map) {
         errors.forEach((key, value) {
           if (value is List) {
-            for (var msg in value) {
+            for (final msg in value) {
               allErrors += '$key: $msg\n'; // Append each error message
             }
           }
@@ -883,6 +913,4 @@ class VendorRepository {
       return 'Unknown error occurred with status code: ${response.statusCode}';
     }
   }
-
-
 }

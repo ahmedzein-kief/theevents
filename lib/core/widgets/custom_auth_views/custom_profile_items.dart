@@ -4,6 +4,16 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../styles/custom_text_styles.dart';
 
 class ProfileItem extends StatelessWidget {
+  const ProfileItem(
+      {super.key,
+      required this.imagePath,
+      required this.title,
+      this.textWidth,
+      this.onTap,
+      this.routeName,
+      this.arguments,
+      this.width,
+      this.height});
   final String imagePath;
   final String title;
   final VoidCallback? onTap;
@@ -13,12 +23,8 @@ class ProfileItem extends StatelessWidget {
   final double? textWidth;
   final double? height;
 
-  const ProfileItem({Key? key, required this.imagePath, required this.title, this.textWidth, this.onTap, this.routeName, this.arguments, this.width, this.height})
-      : super(key: key);
-
   @override
   Widget build(BuildContext context) {
-    final dynamic screenWidth = MediaQuery.sizeOf(context).width;
     final dynamic screenHeight = MediaQuery.sizeOf(context).height;
     return GestureDetector(
       onTap: () {
@@ -42,14 +48,17 @@ class ProfileItem extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              SvgPicture.asset(imagePath,
-                  width: width ?? 30, // Default width is 30
-                  height: height ?? 30, // Default height is 30
-                  color: Theme.of(context).colorScheme.onPrimary),
+              SvgPicture.asset(
+                imagePath,
+                width: width ?? 30, // Default width is 30
+                height: height ?? 30, // Default height is 30
+                color: Theme.of(context).colorScheme.onPrimary,
+              ),
               SizedBox(width: textWidth ?? screenHeight * 0.02),
               Text(
                 title,
-                style: profileItems(context), // Assuming this is defined elsewhere
+                style:
+                    profileItems(context), // Assuming this is defined elsewhere
               ),
             ],
           ),

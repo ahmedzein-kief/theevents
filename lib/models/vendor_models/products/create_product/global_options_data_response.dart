@@ -2,7 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 
-GlobalOptionsDataResponse globalOptionsDataResponseFromJson(String str) => GlobalOptionsDataResponse.fromJson(json.decode(str));
+GlobalOptionsDataResponse globalOptionsDataResponseFromJson(String str) =>
+    GlobalOptionsDataResponse.fromJson(json.decode(str));
 
 class GlobalOptionsDataResponse {
   GlobalOptionsDataResponse({
@@ -11,15 +12,18 @@ class GlobalOptionsDataResponse {
     required this.message,
   });
 
+  factory GlobalOptionsDataResponse.fromJson(Map<dynamic, dynamic> json) =>
+      GlobalOptionsDataResponse(
+        data: json['data'] != null
+            ? GlobalOptionsData.fromJson(json['data'])
+            : null,
+        error: json['error'],
+        message: json['message'],
+      );
+
   GlobalOptionsData? data;
   bool error;
   String? message;
-
-  factory GlobalOptionsDataResponse.fromJson(Map<dynamic, dynamic> json) => GlobalOptionsDataResponse(
-        data: json["data"] != null ? GlobalOptionsData.fromJson(json["data"]) : null,
-        error: json["error"],
-        message: json["message"],
-      );
 }
 
 class GlobalOptionsData {
@@ -35,6 +39,20 @@ class GlobalOptionsData {
     required this.optionTypeController,
   });
 
+  factory GlobalOptionsData.fromJson(Map<dynamic, dynamic> json) =>
+      GlobalOptionsData(
+        updatedAt: json['updated_at'],
+        optionType: json['option_type'],
+        values: List<GlobalOptionsValues>.from(
+            json['values'].map((x) => GlobalOptionsValues.fromJson(x))),
+        name: json['name'],
+        createdAt: json['created_at'],
+        id: json['id'],
+        required: json['required'],
+        nameController: TextEditingController(),
+        optionTypeController: TextEditingController(),
+      );
+
   String updatedAt;
   String optionType;
   List<GlobalOptionsValues> values;
@@ -45,32 +63,22 @@ class GlobalOptionsData {
   TextEditingController nameController;
   TextEditingController optionTypeController;
 
-  String getType(){
+  String getType() {
     String result;
     switch (true) {
-      case var _ when optionType.contains("Botble\\Ecommerce\\Option\\OptionType\\"):
-        result = optionType.replaceAll("Botble\\Ecommerce\\Option\\OptionType\\", "");
+      case var _
+          when optionType.contains('Botble\\Ecommerce\\Option\\OptionType\\'):
+        result = optionType.replaceAll(
+            'Botble\\Ecommerce\\Option\\OptionType\\', '');
         break;
-      case var _ when optionType.contains("Botble\\Ecommerce\\Enums\\"):
-        result = optionType.replaceAll("Botble\\Ecommerce\\Enums\\", "");
+      case var _ when optionType.contains('Botble\\Ecommerce\\Enums\\'):
+        result = optionType.replaceAll('Botble\\Ecommerce\\Enums\\', '');
         break;
       default:
         result = optionType;
     }
     return result;
   }
-
-  factory GlobalOptionsData.fromJson(Map<dynamic, dynamic> json) => GlobalOptionsData(
-        updatedAt: json["updated_at"],
-        optionType: json["option_type"],
-        values: List<GlobalOptionsValues>.from(json["values"].map((x) => GlobalOptionsValues.fromJson(x))),
-        name: json["name"],
-        createdAt: json["created_at"],
-        id: json["id"],
-        required: json["required"],
-        nameController: TextEditingController(),
-        optionTypeController: TextEditingController(),
-      );
 }
 
 class GlobalOptionsValues {
@@ -87,6 +95,33 @@ class GlobalOptionsValues {
     required this.optionValueController,
   });
 
+  factory GlobalOptionsValues.fromJson(Map<dynamic, dynamic> json) =>
+      GlobalOptionsValues(
+        updatedAt: json['updated_at'],
+        affectType: json['affect_type'],
+        createdAt: json['created_at'],
+        optionId: json['option_id'],
+        optionValue: json['option_value'],
+        affectPrice: json['affect_price'],
+        id: json['id'],
+        order: json['order'],
+        priceController: TextEditingController(text: '0'),
+        optionValueController: TextEditingController(),
+      );
+
+  factory GlobalOptionsValues.defaultData() => GlobalOptionsValues(
+        updatedAt: '',
+        affectType: 0,
+        createdAt: '',
+        optionId: 0,
+        optionValue: '',
+        affectPrice: 0,
+        id: 0,
+        order: 0,
+        priceController: TextEditingController(),
+        optionValueController: TextEditingController(),
+      );
+
   String updatedAt;
   int affectType;
   String createdAt;
@@ -97,30 +132,4 @@ class GlobalOptionsValues {
   int order;
   TextEditingController priceController;
   TextEditingController optionValueController;
-
-  factory GlobalOptionsValues.fromJson(Map<dynamic, dynamic> json) => GlobalOptionsValues(
-        updatedAt: json["updated_at"],
-        affectType: json["affect_type"],
-        createdAt: json["created_at"],
-        optionId: json["option_id"],
-        optionValue: json["option_value"],
-        affectPrice: json["affect_price"],
-        id: json["id"],
-        order: json["order"],
-        priceController: TextEditingController(text: '0'),
-        optionValueController: TextEditingController(),
-      );
-
-  factory GlobalOptionsValues.defaultData() => GlobalOptionsValues(
-        updatedAt: "",
-        affectType: 0,
-        createdAt: "",
-        optionId: 0,
-        optionValue: "",
-        affectPrice: 0,
-        id: 0,
-        order: 0,
-        priceController: TextEditingController(),
-        optionValueController: TextEditingController(),
-      );
 }

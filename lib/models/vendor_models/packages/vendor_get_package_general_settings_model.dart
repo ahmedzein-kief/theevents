@@ -1,19 +1,26 @@
 import 'dart:convert';
 
 import '../products/vendor_get_product_general_settings_model.dart';
-VendorGetPackageGeneralSettingsModel vendorGetPackageGeneralSettingsModelFromJson(String str) => VendorGetPackageGeneralSettingsModel.fromJson(json.decode(str));
-String vendorGetPackageGeneralSettingsModelToJson(VendorGetPackageGeneralSettingsModel data) => json.encode(data.toJson());
+
+VendorGetPackageGeneralSettingsModel
+    vendorGetPackageGeneralSettingsModelFromJson(String str) =>
+        VendorGetPackageGeneralSettingsModel.fromJson(json.decode(str));
+String vendorGetPackageGeneralSettingsModelToJson(
+        VendorGetPackageGeneralSettingsModel data) =>
+    json.encode(data.toJson());
+
 class VendorGetPackageGeneralSettingsModel {
   VendorGetPackageGeneralSettingsModel({
-      bool? error, 
-      Data? data, 
-      dynamic message,}){
+    bool? error,
+    Data? data,
+    message,
+  }) {
     _error = error;
     _data = data;
     _message = message;
-}
+  }
 
-  VendorGetPackageGeneralSettingsModel.fromJson(dynamic json) {
+  VendorGetPackageGeneralSettingsModel.fromJson(json) {
     _error = json['error'];
     _data = json['data'] != null ? Data.fromJson(json['data']) : null;
     _message = json['message'];
@@ -35,28 +42,29 @@ class VendorGetPackageGeneralSettingsModel {
     map['message'] = _message;
     return map;
   }
-
 }
 
 Data dataFromJson(String str) => Data.fromJson(json.decode(str));
 String dataToJson(Data data) => json.encode(data.toJson());
+
 class Data {
   Data({
-      List<StockStatuses>? stockStatuses, 
-      String? sku, 
-      List<Brands>? brands, 
-      List<Faqs>? faqs, 
-      List<ProductCollections>? productCollections, 
-      List<ProductLabels>? productLabels, 
-      List<String>? productTypes, 
-      int? defaultDiscountPercent, 
-      bool? isTaxEnabled, 
-      bool? isEnabledProductOptions, 
-      List<Taxes>? taxes, 
-      List<GlobalOptions>? globalOptions, 
-      GlobalOptionsEnum? globalOptionsEnum, 
-      List<ProductCategories>? productCategories, 
-      List<dynamic>? productAttributeSets,}){
+    List<StockStatuses>? stockStatuses,
+    String? sku,
+    List<Brands>? brands,
+    List<Faqs>? faqs,
+    List<ProductCollections>? productCollections,
+    List<ProductLabels>? productLabels,
+    List<String>? productTypes,
+    int? defaultDiscountPercent,
+    bool? isTaxEnabled,
+    bool? isEnabledProductOptions,
+    List<Taxes>? taxes,
+    List<GlobalOptions>? globalOptions,
+    GlobalOptionsEnum? globalOptionsEnum,
+    List<ProductCategories>? productCategories,
+    List<dynamic>? productAttributeSets,
+  }) {
     _stockStatuses = stockStatuses;
     _sku = sku;
     _brands = brands;
@@ -72,9 +80,9 @@ class Data {
     _globalOptionsEnum = globalOptionsEnum;
     _productCategories = productCategories;
     _productAttributeSets = productAttributeSets;
-}
+  }
 
-  Data.fromJson(dynamic json) {
+  Data.fromJson(json) {
     if (json['stockStatuses'] != null) {
       _stockStatuses = [];
       json['stockStatuses'].forEach((v) {
@@ -106,7 +114,8 @@ class Data {
         _productLabels?.add(ProductLabels.fromJson(v));
       });
     }
-    _productTypes = json['productTypes'] != null ? json['productTypes'].cast<String>() : [];
+    _productTypes =
+        json['productTypes'] != null ? json['productTypes'].cast<String>() : [];
     _defaultDiscountPercent = json['defaultDiscountPercent'];
     _isTaxEnabled = json['isTaxEnabled'];
     _isEnabledProductOptions = json['isEnabledProductOptions'];
@@ -122,7 +131,9 @@ class Data {
         _globalOptions?.add(GlobalOptions.fromJson(v));
       });
     }
-    _globalOptionsEnum = json['globalOptionsEnum'] != null ? GlobalOptionsEnum.fromJson(json['globalOptionsEnum']) : null;
+    _globalOptionsEnum = json['globalOptionsEnum'] != null
+        ? GlobalOptionsEnum.fromJson(json['globalOptionsEnum'])
+        : null;
     if (json['productCategories'] != null) {
       _productCategories = [];
       json['productCategories'].forEach((v) {
@@ -181,7 +192,8 @@ class Data {
       map['faqs'] = _faqs?.map((v) => v.toJson()).toList();
     }
     if (_productCollections != null) {
-      map['productCollections'] = _productCollections?.map((v) => v.toJson()).toList();
+      map['productCollections'] =
+          _productCollections?.map((v) => v.toJson()).toList();
     }
     if (_productLabels != null) {
       map['productLabels'] = _productLabels?.map((v) => v.toJson()).toList();
@@ -200,29 +212,13 @@ class Data {
       map['globalOptionsEnum'] = _globalOptionsEnum?.toJson();
     }
     if (_productCategories != null) {
-      map['productCategories'] = _productCategories?.map((v) => v.toJson()).toList();
+      map['productCategories'] =
+          _productCategories?.map((v) => v.toJson()).toList();
     }
     if (_productAttributeSets != null) {
-      map['productAttributeSets'] = _productAttributeSets?.map((v) => v.toJson()).toList();
+      map['productAttributeSets'] =
+          _productAttributeSets?.map((v) => v.toJson()).toList();
     }
     return map;
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,15 +1,14 @@
+import 'package:event_app/core/helper/mixins/media_query_mixin.dart';
+import 'package:event_app/core/styles/app_colors.dart';
+import 'package:event_app/core/styles/app_sizes.dart';
 import 'package:event_app/data/vendor/data/response/apis_status.dart';
 import 'package:event_app/models/vendor_models/vendor_withdrawals_model/vendor_get_withdrawals_model.dart';
-import 'package:event_app/core/styles/app_colors.dart';
-import 'package:event_app/utils/mixins_and_constants/constants.dart';
-import 'package:event_app/utils/mixins_and_constants/media_query_mixin.dart';
 import 'package:event_app/vendor/components/common_widgets/vendor_action_cell.dart';
 import 'package:event_app/vendor/components/common_widgets/vendor_data_list_builder.dart';
 import 'package:event_app/vendor/components/data_tables/custom_data_tables.dart';
 import 'package:event_app/vendor/components/list_tiles/records_list_tile.dart';
 import 'package:event_app/vendor/components/status_constants/withdrawal_status_constants.dart';
 import 'package:event_app/vendor/components/utils/utils.dart';
-import 'package:event_app/vendor/vendor_home/vendor_orders/vendor_edit_order_view.dart';
 import 'package:event_app/vendor/vendor_home/vendor_withdrawals/vendor_create_update_withdrawal_view.dart';
 import 'package:event_app/vendor/view_models/vendor_withdrawal/vendor_withdrawal_view_model.dart';
 import 'package:flutter/cupertino.dart';
@@ -26,11 +25,12 @@ class VendorWithdrawalsView extends StatefulWidget {
   State<VendorWithdrawalsView> createState() => _VendorWithdrawalsViewState();
 }
 
-class _VendorWithdrawalsViewState extends State<VendorWithdrawalsView> with MediaQueryMixin {
+class _VendorWithdrawalsViewState extends State<VendorWithdrawalsView>
+    with MediaQueryMixin {
   /// To show modal progress hud
   bool _isProcessing = false;
 
-  setProcessing(bool value) {
+  void setProcessing(bool value) {
     setState(() {
       _isProcessing = value;
     });
@@ -44,21 +44,23 @@ class _VendorWithdrawalsViewState extends State<VendorWithdrawalsView> with Medi
 
   Future _onRefresh() async {
     try {
-      final provider = Provider.of<VendorWithdrawalsViewModel>(context, listen: false);
+      final provider =
+          Provider.of<VendorWithdrawalsViewModel>(context, listen: false);
 
       /// clear list on refresh
       provider.clearList();
       setState(() {});
       await provider.vendorWithdrawals(search: _searchController.text);
       setState(() {});
-    } catch (e) {
-    }
+    } catch (e) {}
   }
 
-  void _loadMoreData() async {
+  Future<void> _loadMoreData() async {
     // Load more data here
-    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent) {
-      final provider = Provider.of<VendorWithdrawalsViewModel>(context, listen: false);
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent) {
+      final provider =
+          Provider.of<VendorWithdrawalsViewModel>(context, listen: false);
       if (provider.apiResponse.status != ApiStatus.LOADING) {
         await provider.vendorWithdrawals(search: _searchController.text);
       }
@@ -87,56 +89,59 @@ class _VendorWithdrawalsViewState extends State<VendorWithdrawalsView> with Medi
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.bgColor,
-      body: Utils.modelProgressHud(processing: _isProcessing, child: Utils.pageRefreshIndicator(onRefresh: _onRefresh, child: _buildUi(context))),
-    );
-  }
+  Widget build(BuildContext context) => Scaffold(
+        backgroundColor: AppColors.bgColor,
+        body: Utils.modelProgressHud(
+            processing: _isProcessing,
+            child: Utils.pageRefreshIndicator(
+                onRefresh: _onRefresh, child: _buildUi(context))),
+      );
 
-  Widget _buildUi(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: kSmallPadding),
-      child: Column(
-        children: [
-          /// Toolbar
-          _toolBar(),
-          kMediumSpace,
-          Expanded(
-            child: Consumer<VendorWithdrawalsViewModel>(
-              builder: (context, provider, _) {
-                /// current api status
-                final ApiStatus? apiStatus = provider.apiResponse.status;
-                if (apiStatus == ApiStatus.LOADING && provider.list.isEmpty) {
-                  return Utils.pageLoadingIndicator(context: context);
-                }
-                if (apiStatus == ApiStatus.ERROR) {
-                  return ListView(physics: AlwaysScrollableScrollPhysics(), children: [Utils.somethingWentWrong()]);
-                }
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    VendorDataListBuilder(
-                      scrollController: _scrollController,
-                      listLength: provider.list.length,
-                      loadingMoreData: provider.apiResponse.status == ApiStatus.LOADING,
-                      contentBuilder: (context) => _buildRecordsList(provider: provider),
-                    ),
-                  ],
-                );
-              },
+  Widget _buildUi(BuildContext context) => Padding(
+        padding: EdgeInsets.symmetric(horizontal: kSmallPadding),
+        child: Column(
+          children: [
+            /// Toolbar
+            _toolBar(),
+            kMediumSpace,
+            Expanded(
+              child: Consumer<VendorWithdrawalsViewModel>(
+                builder: (context, provider, _) {
+                  /// current api status
+                  final ApiStatus? apiStatus = provider.apiResponse.status;
+                  if (apiStatus == ApiStatus.LOADING && provider.list.isEmpty) {
+                    return Utils.pageLoadingIndicator(context: context);
+                  }
+                  if (apiStatus == ApiStatus.ERROR) {
+                    return ListView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        children: [Utils.somethingWentWrong()]);
+                  }
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      VendorDataListBuilder(
+                        scrollController: _scrollController,
+                        listLength: provider.list.length,
+                        loadingMoreData:
+                            provider.apiResponse.status == ApiStatus.LOADING,
+                        contentBuilder: (context) =>
+                            _buildRecordsList(provider: provider),
+                      ),
+                    ],
+                  );
+                },
+              ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
+          ],
+        ),
+      );
 
-  Widget _buildRecordsList({required VendorWithdrawalsViewModel provider}) {
-    return ListView.builder(
+  Widget _buildRecordsList({required VendorWithdrawalsViewModel provider}) =>
+      ListView.builder(
         shrinkWrap: true,
-        physics: NeverScrollableScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
         itemCount: provider.list.length,
         itemBuilder: (context, index) {
           final record = provider.list[index];
@@ -146,114 +151,141 @@ class _VendorWithdrawalsViewState extends State<VendorWithdrawalsView> with Medi
                 onTap: () => _onRowTap(rowData: record, context: context),
                 // imageAddress: record.image.toString(),
                 title: record.amountFormat?.toString() ?? '--',
-                leading: Text(record.id?.toString() ?? '--', style: dataRowTextStyle(),),
-                subtitleAsWidget: RichText(text: TextSpan(
-                  children: [
-                    TextSpan(
-                      text: "Fee: ",
-                      style: TextStyle(fontSize: 10,fontWeight: FontWeight.w500,color: Colors.black)
-                    ),
-                    TextSpan(
-                      text: "${record.amountFormat?.toString() ?? '--'}",
-                      style: TextStyle(fontSize: 10,fontWeight: FontWeight.w500,color: AppColors.pumpkinOrange)
-                    ),
-                  ]
-                )),
+                leading: Text(
+                  record.id?.toString() ?? '--',
+                  style: dataRowTextStyle(),
+                ),
+                subtitleAsWidget: RichText(
+                  text: TextSpan(
+                    children: [
+                      const TextSpan(
+                        text: 'Fee: ',
+                        style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black),
+                      ),
+                      TextSpan(
+                        text: record.amountFormat?.toString() ?? '--',
+                        style: const TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.pumpkinOrange),
+                      ),
+                    ],
+                  ),
+                ),
                 status: record.status?.label?.toString() ?? '--',
-                statusTextStyle: TextStyle(color: AppColors.getWithdrawalStatusColor(record.status?.value?.toString())),
+                statusTextStyle: TextStyle(
+                    color: AppColors.getWithdrawalStatusColor(
+                        record.status?.value?.toString())),
                 actionCell: VendorActionCell(
-                    mainAxisSize: MainAxisSize.min,
-                    isDeleting: false,
-                    showEdit: record.status?.value == WithdrawalStatusConstants.PENDING,
-                    showView: record.status?.value != WithdrawalStatusConstants.PENDING,
-                    onEdit: ()=> _onEditRecord(rowData: record),
-                    onView: ()=> _onEditRecord(rowData: record),
-                    showDelete: false,
-                    onDelete: () {},
+                  mainAxisSize: MainAxisSize.min,
+                  isDeleting: false,
+                  showEdit:
+                      record.status?.value == WithdrawalStatusConstants.PENDING,
+                  showView:
+                      record.status?.value != WithdrawalStatusConstants.PENDING,
+                  onEdit: () => _onEditRecord(rowData: record),
+                  onView: () => _onEditRecord(rowData: record),
+                  showDelete: false,
+                  onDelete: () {},
                 ),
               ),
               kSmallSpace,
             ],
           );
-        });
-  }
+        },
+      );
 
   /// Tool Bar
-  Widget _toolBar() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        kSmallSpace,
-        Row(
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            Expanded(
-              child: VendorToolbarWidgets.vendorSearchWidget(
-                  onSearchTap: () async{
-                    if(_searchController.text.isNotEmpty){
+  Widget _toolBar() => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          kSmallSpace,
+          Row(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Expanded(
+                child: VendorToolbarWidgets.vendorSearchWidget(
+                  onSearchTap: () async {
+                    if (_searchController.text.isNotEmpty) {
                       await _onRefresh();
                     }
                   },
                   textEditingController: _searchController,
                   onChanged: (value) =>
                       debouncedSearch<VendorWithdrawalsViewModel>(
-                        context: context,
-                        value: value,
-                        providerGetter: (context)=>context.read<VendorWithdrawalsViewModel>(),
-                        refreshFunction: _onRefresh,
-                      )),
+                    context: context,
+                    value: value,
+                    providerGetter: (context) =>
+                        context.read<VendorWithdrawalsViewModel>(),
+                    refreshFunction: _onRefresh,
+                  ),
+                ),
+              ),
+              kExtraSmallSpace,
+              VendorToolbarWidgets.vendorCreateButton(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      CupertinoPageRoute(
+                          builder: (context) =>
+                              VendorCreateUpdateWithdrawalView()));
+                },
+                isLoading: false,
+              ),
+            ],
+          ),
+        ],
+      );
+
+  void _onRowTap(
+      {required BuildContext context,
+      required VendorWithdrawalRecords rowData}) {
+    /// showing through bottom sheet
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => BottomSheet(
+        // dragHandleColor: AppColors.lightCoral,
+        onClosing: () {},
+        builder: (context) => Container(
+          decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(kCardRadius)),
+          child: SafeArea(
+            child: Padding(
+              padding: EdgeInsets.all(kSmallPadding),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    buildRow('ID', rowData.id?.toString()),
+                    buildRow('Amount', rowData.amountFormat?.toString()),
+                    buildRow('Fee', rowData.feeFormat?.toString()),
+                    buildRow('Created At', rowData.createdAt?.toString()),
+                    buildStatusRow(
+                      label: 'Status',
+                      buttonText: (rowData.status?.value == null)
+                          ? '--'
+                          : rowData.status!.label!,
+                      color: AppColors.getWithdrawalStatusColor(
+                          rowData.status?.value),
+                    ),
+                  ],
+                ),
+              ),
             ),
-            kExtraSmallSpace,
-            VendorToolbarWidgets.vendorCreateButton(
-              onTap: () {
-                Navigator.push(context, CupertinoPageRoute(builder: (context)=>VendorCreateUpdateWithdrawalView()));
-              },
-              isLoading: false,
-            ),
-          ],
+          ),
         ),
-      ],
+      ),
     );
   }
 
-  _onRowTap({required BuildContext context, required VendorWithdrawalRecords rowData}) {
-    /// showing through bottom sheet
-    showModalBottomSheet(
-        context: context,
-        builder: (context) {
-          return BottomSheet(
-              // dragHandleColor: AppColors.lightCoral,
-              onClosing: () {},
-              builder: (context) {
-                return Container(
-                  decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(kCardRadius)),
-                  child: SafeArea(
-                    child: Padding(
-                      padding: EdgeInsets.all(kSmallPadding),
-                      child: SingleChildScrollView(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            buildRow("ID", rowData.id?.toString()),
-                            buildRow("Amount", rowData.amountFormat?.toString()),
-                            buildRow("Fee", rowData.feeFormat?.toString()),
-                            buildRow("Created At", rowData.createdAt?.toString()),
-                            buildStatusRow(
-                                label: "Status",
-                                buttonText: (rowData.status?.value == null) ? '--' : rowData.status!.label!,
-                                color: AppColors.getWithdrawalStatusColor(rowData.status?.value),),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              });
-        });
-  }
-
-  _onEditRecord({required VendorWithdrawalRecords rowData}){
+  void _onEditRecord({required VendorWithdrawalRecords rowData}) {
     /// Move to Edit Order View
-    Navigator.of(context).push(CupertinoPageRoute(builder: (context) => VendorCreateUpdateWithdrawalView(withdrawalID: rowData.id.toString())));
+    Navigator.of(context).push(CupertinoPageRoute(
+        builder: (context) => VendorCreateUpdateWithdrawalView(
+            withdrawalID: rowData.id.toString())));
   }
 }

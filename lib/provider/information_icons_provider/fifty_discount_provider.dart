@@ -1,8 +1,8 @@
 import 'dart:convert';
 
+import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/models/product_packages_models/product_filters_model.dart';
 import 'package:event_app/provider/api_response_handler.dart';
-import 'package:event_app/utils/apiendpoints/api_end_point.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../../models/dashboard/information_icons_models/fifty_percent_discount_models.dart';
@@ -80,13 +80,13 @@ class FiftyPercentDiscountProvider extends ChangeNotifier {
     notifyListeners();
 
     // Convert selectedFilters to query parameters
-    String filtersQuery = filters.entries
+    final String filtersQuery = filters.entries
         .where((entry) => entry.value.isNotEmpty) // Exclude empty lists
         .map((entry) {
       if (entry.key == 'Prices') {
         // Handle Price range specifically
-        int minPrice = entry.value[0];
-        int maxPrice = entry.value[1];
+        final int minPrice = entry.value[0];
+        final int maxPrice = entry.value[1];
         return 'min_price=$minPrice&max_price=$maxPrice';
       } else {
         // Handle all other filters
@@ -100,9 +100,11 @@ class FiftyPercentDiscountProvider extends ChangeNotifier {
       }
     }).join('&');
 
-    final baseUrl = '${ApiEndpoints.fiftyPercentDiscountProducts}?per-page=$perPage&page=$page&sort-by=$sortBy';
-    final url = filtersQuery.isNotEmpty ? '$baseUrl&$filtersQuery&allcategories=1' : baseUrl;
-
+    final baseUrl =
+        '${ApiEndpoints.fiftyPercentDiscountProducts}?per-page=$perPage&page=$page&sort-by=$sortBy';
+    final url = filtersQuery.isNotEmpty
+        ? '$baseUrl&$filtersQuery&allcategories=1'
+        : baseUrl;
 
     try {
       final response = await _apiResponseHandler.getRequest(
@@ -115,7 +117,8 @@ class FiftyPercentDiscountProvider extends ChangeNotifier {
         // final jsonResponse = NewProductsModels.fromJson(jsonData).data?.records ?? [];
 
         final Map<String, dynamic> jsonResponse = json.decode(response.body);
-        final HalfDiscountProductsModels apiResponse = HalfDiscountProductsModels.fromJson(jsonResponse);
+        final HalfDiscountProductsModels apiResponse =
+            HalfDiscountProductsModels.fromJson(jsonResponse);
 
         if (page == 1) {
           _products = apiResponse.data?.records ?? [];
@@ -125,10 +128,8 @@ class FiftyPercentDiscountProvider extends ChangeNotifier {
           _products.addAll(apiResponse.data?.records ?? []);
           _productFilters = apiResponse.data?.filters;
         }
-      } else {
-      }
-    } catch (error) {
-    }
+      } else {}
+    } catch (error) {}
     _isLoadingProducts = false;
     // _isLoading = false;
     _isMoreLoading = false;
@@ -142,14 +143,18 @@ class FiftyPercentDiscountProvider extends ChangeNotifier {
 
   List<Records> get packages => _packages;
 
-  Future<void> fetchPackagesNew(BuildContext context, {int page = 1, int perPage = 12, String sortBy = 'default_sorting'}) async {
+  Future<void> fetchPackagesNew(BuildContext context,
+      {int page = 1,
+      int perPage = 12,
+      String sortBy = 'default_sorting'}) async {
     // _isLoading = false;
 
     if (page == 1) {
     } else {}
     notifyListeners();
 
-    final url = '${ApiEndpoints.fiftyPercentDiscountPackages}?per-page=$perPage&page=$page&sort-by=$sortBy';
+    final url =
+        '${ApiEndpoints.fiftyPercentDiscountPackages}?per-page=$perPage&page=$page&sort-by=$sortBy';
 
     try {
       final response = await _apiResponseHandler.getRequest(
@@ -161,7 +166,8 @@ class FiftyPercentDiscountProvider extends ChangeNotifier {
         // final jsonResponse = NewProductsModels.fromJson(jsonData).data?.records ?? [];
 
         final Map<String, dynamic> jsonResponse = json.decode(response.body);
-        final HalfDiscountProductsModels apiResponse = HalfDiscountProductsModels.fromJson(jsonResponse);
+        final HalfDiscountProductsModels apiResponse =
+            HalfDiscountProductsModels.fromJson(jsonResponse);
 
         if (page == 1) {
           _packages = apiResponse.data?.records ?? [];
@@ -169,10 +175,8 @@ class FiftyPercentDiscountProvider extends ChangeNotifier {
         } else {
           _packages.addAll(apiResponse.data?.records ?? []);
         }
-      } else {
-      }
-    } catch (error) {
-    }
+      } else {}
+    } catch (error) {}
     _isLoading = false;
     _isMoreLoading = false;
     notifyListeners();

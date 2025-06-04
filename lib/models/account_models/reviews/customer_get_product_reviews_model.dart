@@ -7,7 +7,7 @@ class CustomerGetProductReviewsModel {
     this.message,
   });
 
-  CustomerGetProductReviewsModel.fromJson(dynamic json) {
+  CustomerGetProductReviewsModel.fromJson(json) {
     error = json['error'];
     data = json['data'] != null ? Data.fromJson(json['data']) : null;
     message = json['message'];
@@ -24,7 +24,7 @@ class Data {
     this.products,
   });
 
-  Data.fromJson(dynamic json) {
+  Data.fromJson(json) {
     reviews =
         json['reviews'] != null ? Reviews.fromJson(json['reviews']) : null;
     if (json['products'] != null) {
@@ -50,7 +50,7 @@ class ProductsAvailableForReview {
     this.slugPrefix,
   });
 
-  ProductsAvailableForReview.fromJson(dynamic json) {
+  ProductsAvailableForReview.fromJson(json) {
     id = json['id'];
     image = json['image'];
     name = json['name'];
@@ -75,7 +75,7 @@ class Reviews {
     this.records,
   });
 
-  Reviews.fromJson(dynamic json) {
+  Reviews.fromJson(json) {
     pagination = json['pagination'] != null
         ? Pagination.fromJson(json['pagination'])
         : null;
@@ -92,22 +92,6 @@ class Reviews {
 }
 
 class ReviewedRecords {
-  int? id;
-  String? image;
-  String? name;
-  String? cleanName;
-  String? slug;
-  String? slugPrefix;
-  String? type;
-  String? sku;
-  String? createdAt;
-  int? star;
-  String? comment;
-  String? sortComment;
-  String? storeName;
-  String? storeSlug;
-  bool isDeleting;
-
   ReviewedRecords({
     this.id,
     this.image,
@@ -142,9 +126,23 @@ class ReviewedRecords {
         storeName = json['store']?['name'],
         storeSlug = json['store']?['slug'],
         isDeleting = false;
+  int? id;
+  String? image;
+  String? name;
+  String? cleanName;
+  String? slug;
+  String? slugPrefix;
+  String? type;
+  String? sku;
+  String? createdAt;
+  int? star;
+  String? comment;
+  String? sortComment;
+  String? storeName;
+  String? storeSlug;
+  bool isDeleting;
 
   void setIsDeleting(bool value) {
     isDeleting = value;
   }
 }
-

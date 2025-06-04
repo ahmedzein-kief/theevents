@@ -1,6 +1,7 @@
 import 'dart:convert';
 
-ProductVariationModel productVariationModelFromJson(String str) => ProductVariationModel.fromJson(json.decode(str));
+ProductVariationModel productVariationModelFromJson(String str) =>
+    ProductVariationModel.fromJson(json.decode(str));
 
 class ProductVariationModel {
   ProductVariationModel({
@@ -8,13 +9,14 @@ class ProductVariationModel {
     required this.error,
   });
 
+  factory ProductVariationModel.fromJson(Map<dynamic, dynamic> json) =>
+      ProductVariationModel(
+        data: Data.fromJson(json['data']),
+        error: json['error'],
+      );
+
   Data data;
   bool error;
-
-  factory ProductVariationModel.fromJson(Map<dynamic, dynamic> json) => ProductVariationModel(
-        data: Data.fromJson(json["data"]),
-        error: json["error"],
-      );
 }
 
 class Data {
@@ -46,6 +48,37 @@ class Data {
     required this.name,
   });
 
+  factory Data.fromJson(Map<dynamic, dynamic> json) => Data(
+        originalPrice: json['original_price'],
+        description: json['description'],
+        isOutOfStock: json['is_out_of_stock'],
+        price: json['price'],
+        id: json['id'],
+        displaySalePrice: json['display_sale_price'],
+        sku: json['sku'],
+        slug: json['slug'],
+        height: json['height'],
+        imageWithSizes: ImageWithSizes.fromJson(json['image_with_sizes']),
+        quantity: json['quantity'],
+        displayPrice: json['display_price'],
+        wide: json['wide'],
+        unavailableAttributeIds:
+            List<dynamic>.from(json['unavailable_attribute_ids'].map((x) => x)),
+        length: json['length'],
+        weight: json['weight'],
+        withStorehouseManagement: json['with_storehouse_management'],
+        salePrice: json['sale_price'],
+        salePercentage: json['sale_percentage'],
+        selectedAttributes: List<SelectedAttribute>.from(
+            json['selected_attributes']
+                .map((x) => SelectedAttribute.fromJson(x))),
+        stockStatusLabel: json['stock_status_label'],
+        stockStatusHtml: json['stock_status_html'],
+        successMessage: json['success_message'],
+        errorMessage: json['error_message'],
+        name: json['name'],
+      );
+
   int originalPrice;
   String description;
   bool isOutOfStock;
@@ -71,34 +104,6 @@ class Data {
   String? successMessage;
   String? errorMessage;
   String name;
-
-  factory Data.fromJson(Map<dynamic, dynamic> json) => Data(
-        originalPrice: json["original_price"],
-        description: json["description"],
-        isOutOfStock: json["is_out_of_stock"],
-        price: json["price"],
-        id: json["id"],
-        displaySalePrice: json["display_sale_price"],
-        sku: json["sku"],
-        slug: json["slug"],
-        height: json["height"],
-        imageWithSizes: ImageWithSizes.fromJson(json["image_with_sizes"]),
-        quantity: json["quantity"] != null ? json["quantity"] : null,
-        displayPrice: json["display_price"],
-        wide: json["wide"],
-        unavailableAttributeIds: List<dynamic>.from(json["unavailable_attribute_ids"].map((x) => x)),
-        length: json["length"],
-        weight: json["weight"],
-        withStorehouseManagement: json["with_storehouse_management"],
-        salePrice: json["sale_price"],
-        salePercentage: json["sale_percentage"],
-        selectedAttributes: List<SelectedAttribute>.from(json["selected_attributes"].map((x) => SelectedAttribute.fromJson(x))),
-        stockStatusLabel: json["stock_status_label"],
-        stockStatusHtml: json["stock_status_html"],
-        successMessage: json["success_message"],
-        errorMessage: json["error_message"],
-        name: json["name"],
-      );
 }
 
 class ImageWithSizes {
@@ -107,17 +112,17 @@ class ImageWithSizes {
     required this.origin,
   });
 
+  factory ImageWithSizes.fromJson(Map<dynamic, dynamic> json) => ImageWithSizes(
+        thumb: List<String>.from(json['thumb'].map((x) => x)),
+        origin: List<String>.from(json['origin'].map((x) => x)),
+      );
+
   List<String> thumb;
   List<String> origin;
 
-  factory ImageWithSizes.fromJson(Map<dynamic, dynamic> json) => ImageWithSizes(
-        thumb: List<String>.from(json["thumb"].map((x) => x)),
-        origin: List<String>.from(json["origin"].map((x) => x)),
-      );
-
   Map<dynamic, dynamic> toJson() => {
-        "thumb": List<dynamic>.from(thumb.map((x) => x)),
-        "origin": List<dynamic>.from(origin.map((x) => x)),
+        'thumb': List<dynamic>.from(thumb.map((x) => x)),
+        'origin': List<dynamic>.from(origin.map((x) => x)),
       };
 }
 
@@ -129,15 +134,16 @@ class SelectedAttribute {
     required this.slug,
   });
 
+  factory SelectedAttribute.fromJson(Map<dynamic, dynamic> json) =>
+      SelectedAttribute(
+        setSlug: json['set_slug'],
+        setId: json['set_id'],
+        id: json['id'],
+        slug: json['slug'],
+      );
+
   String setSlug;
   int setId;
   int id;
   String slug;
-
-  factory SelectedAttribute.fromJson(Map<dynamic, dynamic> json) => SelectedAttribute(
-        setSlug: json["set_slug"],
-        setId: json["set_id"],
-        id: json["id"],
-        slug: json["slug"],
-      );
 }

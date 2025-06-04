@@ -3,25 +3,24 @@ import 'package:flutter/material.dart';
 
 /// EARNING REVENUE CARD
 class EarningsRevenueCard extends StatelessWidget {
+  const EarningsRevenueCard({
+    super.key,
+    required this.title,
+    required this.amount,
+    required this.icon,
+    required this.containerColor,
+    required this.onTap,
+  });
   final String title;
   final String amount;
   final IconData icon;
   final Color containerColor;
   final VoidCallback? onTap;
 
-  const EarningsRevenueCard({
-    Key? key,
-    required this.title,
-    required this.amount,
-    required this.icon,
-    required this.containerColor,
-    required this.onTap,
-  }) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.sizeOf(context).width;
-    double screenHeight = MediaQuery.sizeOf(context).height;
+    final double screenWidth = MediaQuery.sizeOf(context).width;
+    final double screenHeight = MediaQuery.sizeOf(context).height;
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -46,7 +45,8 @@ class EarningsRevenueCard extends StatelessWidget {
                     ),
                   ],
                 ),
-                padding: const EdgeInsets.all(4), // Increased padding for better spacing
+                padding: const EdgeInsets.all(
+                    4), // Increased padding for better spacing
                 child: Row(
                   children: [
                     Icon(icon),

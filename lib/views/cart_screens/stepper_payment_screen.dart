@@ -9,9 +9,8 @@ import '../base_screens/base_app_bar.dart';
 import 'payment_screen.dart';
 
 class StepperScreen extends StatefulWidget {
+  const StepperScreen({super.key, this.tracked_start_checkout});
   final String? tracked_start_checkout;
-
-  StepperScreen({this.tracked_start_checkout});
 
   @override
   _StepperScreenState createState() => _StepperScreenState();
@@ -24,13 +23,13 @@ class _StepperScreenState extends State<StepperScreen> {
 
   final List<String> stepsName = [
     'Shipping',
-    'Payment' /*, 'Review'*/
+    'Payment', /*, 'Review'*/
   ];
 
   @override
   Widget build(BuildContext context) {
-    dynamic screenWidth = MediaQuery.sizeOf(context).width;
-    dynamic screenHeight = MediaQuery.sizeOf(context).height;
+    final dynamic screenWidth = MediaQuery.sizeOf(context).width;
+    final dynamic screenHeight = MediaQuery.sizeOf(context).height;
     return Scaffold(
       appBar: PreferredSize(
         // AppBar or BaseAppBar stays outside and fixed at the top
@@ -56,7 +55,8 @@ class _StepperScreenState extends State<StepperScreen> {
                         padding: EdgeInsets.only(left: screenWidth * 0.04),
                         child: GestureDetector(
                           onTap: () {
-                            Navigator.of(context).pop(); // Cancel button functionality
+                            Navigator.of(context)
+                                .pop(); // Cancel button functionality
                           },
                           child: Text(
                             'Cancel',
@@ -88,8 +88,9 @@ class _StepperScreenState extends State<StepperScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   crossAxisAlignment: CrossAxisAlignment.center,
-                  children: List.generate(2, (index) {
-                    return Row(
+                  children: List.generate(
+                    2,
+                    (index) => Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
@@ -99,8 +100,11 @@ class _StepperScreenState extends State<StepperScreen> {
                           height: 25,
                           decoration: BoxDecoration(
                             color: (index == 2 && activeStep != 2)
-                                ? Colors.grey // Set color to grey for step 3 if activeStep is not 2
-                                : (index <= activeStep ? AppColors.peachyPink : Colors.black),
+                                ? Colors
+                                    .grey // Set color to grey for step 3 if activeStep is not 2
+                                : (index <= activeStep
+                                    ? AppColors.peachyPink
+                                    : Colors.black),
                             shape: BoxShape.circle,
                           ),
                           alignment: Alignment.center,
@@ -131,8 +135,8 @@ class _StepperScreenState extends State<StepperScreen> {
                           ),
                         const SizedBox(width: 5),
                       ],
-                    );
-                  }),
+                    ),
+                  ),
                 ),
               ),
             ),

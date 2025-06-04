@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 
 import '../../../vendor/Components/vendor_text_style.dart';
 
-class VendorModifySectionsAppBar extends StatelessWidget implements PreferredSizeWidget {
+class VendorModifySectionsAppBar extends StatelessWidget
+    implements PreferredSizeWidget {
+  const VendorModifySectionsAppBar(
+      {super.key, required this.title, this.onGoBack});
   final String title;
   final Function()? onGoBack;
-
-  const VendorModifySectionsAppBar({super.key, required this.title, this.onGoBack});
 
   @override
   Widget build(BuildContext context) {
@@ -20,12 +21,12 @@ class VendorModifySectionsAppBar extends StatelessWidget implements PreferredSiz
         style: vendorName(context),
       ),
       leading: IconButton(
-        icon: Icon(Icons.arrow_back),
+        icon: const Icon(Icons.arrow_back),
         onPressed: onGoBack,
       ),
     );
   }
 
   @override
-  Size get preferredSize => Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }

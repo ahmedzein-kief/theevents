@@ -5,13 +5,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../provider/home_shortcode_provider/users_by_type_provider.dart';
 import '../../../core/widgets/custom_home_views/custom_user_by_type_box.dart';
+import '../../../provider/home_shortcode_provider/users_by_type_provider.dart';
 
 class UsersByTypeScreen extends StatefulWidget {
-  final dynamic data;
-
   const UsersByTypeScreen({super.key, required this.data});
+  final dynamic data;
 
   @override
   State<UsersByTypeScreen> createState() => _UsersByTypeScreenState();
@@ -32,48 +31,51 @@ class _UsersByTypeScreenState extends State<UsersByTypeScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          Consumer<UsersByTypeProvider>(
-            builder: (context, provider, _) {
-              final attributes = widget.data?['attributes'];
-              if (attributes == null) {
-                return const Center(child: Text(''));
-              }
-              final typeId = int.tryParse(attributes['type_id'].toString()) ?? 2;
-              final items = provider.getRecordsByTypeId(typeId);
-              return CustomUserByTypeBox(
-                fetchData: fetchCelebrityData,
-                onTap: (item) {
-                  Navigator.push(
+  Widget build(BuildContext context) => SingleChildScrollView(
+        child: Column(
+          children: [
+            Consumer<UsersByTypeProvider>(
+              builder: (context, provider, _) {
+                final attributes = widget.data?['attributes'];
+                if (attributes == null) {
+                  return const Center(child: Text(''));
+                }
+                final typeId =
+                    int.tryParse(attributes['type_id'].toString()) ?? 2;
+                final items = provider.getRecordsByTypeId(typeId);
+                return CustomUserByTypeBox(
+                  fetchData: fetchCelebrityData,
+                  onTap: (item) {
+                    Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => UserTypeInnerPageScreen(
-                                typeId: typeId,
-                                title: attributes['title'],
-                                id: item.id,
-                              )));
-                },
-                isLoading: provider.isLoading,
-                items: items,
-                title: attributes['title'],
-                seeAllText: AppStrings.viewAll,
-                onSeeAllTap: () {
-                  Navigator.push(
+                        builder: (context) => UserTypeInnerPageScreen(
+                          typeId: typeId,
+                          title: attributes['title'],
+                          id: item.id,
+                        ),
+                      ),
+                    );
+                  },
+                  isLoading: provider.isLoading,
+                  items: items,
+                  title: attributes['title'],
+                  seeAllText: AppStrings.viewAll,
+                  onSeeAllTap: () {
+                    Navigator.push(
                       context,
                       CupertinoPageRoute(
-                          builder: (context) => UserByTypeItemsScreen(
-                                title: attributes['title'],
-                                typeId: typeId,
-                              )));
-                },
-              );
-            },
-          ),
-        ],
-      ),
-    );
-  }
+                        builder: (context) => UserByTypeItemsScreen(
+                          title: attributes['title'],
+                          typeId: typeId,
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+          ],
+        ),
+      );
 }

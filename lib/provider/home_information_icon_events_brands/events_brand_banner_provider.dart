@@ -4,38 +4,23 @@ import 'package:event_app/provider/api_response_handler.dart';
 import 'package:flutter/material.dart';
 
 class EventsBrand {
-  bool error;
-  Data data;
-  String? message;
-
   EventsBrand({
     required this.error,
     required this.data,
     this.message,
   });
 
-  factory EventsBrand.fromJson(Map<String, dynamic> json) {
-    return EventsBrand(
-      error: json['error'],
-      data: Data.fromJson(json['data']),
-      message: json['message'],
-    );
-  }
+  factory EventsBrand.fromJson(Map<String, dynamic> json) => EventsBrand(
+        error: json['error'],
+        data: Data.fromJson(json['data']),
+        message: json['message'],
+      );
+  bool error;
+  Data data;
+  String? message;
 }
 
 class Data {
-  int id;
-  String name;
-  String? description;
-  String slug;
-  String image;
-  String thumb;
-  String coverImage;
-  int items;
-  String? website;
-  int isFeatured;
-  SeoMeta seoMeta;
-
   Data({
     required this.id,
     required this.name,
@@ -50,29 +35,33 @@ class Data {
     required this.seoMeta,
   });
 
-  factory Data.fromJson(Map<String, dynamic> json) {
-    return Data(
-      id: json['id'],
-      name: json['name'],
-      description: json['description'],
-      slug: json['slug'],
-      image: json['image'],
-      thumb: json['thumb'],
-      coverImage: json['cover_image'],
-      items: json['items'],
-      website: json['website'],
-      isFeatured: json['is_featured'],
-      seoMeta: SeoMeta.fromJson(json['seo_meta']),
-    );
-  }
+  factory Data.fromJson(Map<String, dynamic> json) => Data(
+        id: json['id'],
+        name: json['name'],
+        description: json['description'],
+        slug: json['slug'],
+        image: json['image'],
+        thumb: json['thumb'],
+        coverImage: json['cover_image'],
+        items: json['items'],
+        website: json['website'],
+        isFeatured: json['is_featured'],
+        seoMeta: SeoMeta.fromJson(json['seo_meta']),
+      );
+  int id;
+  String name;
+  String? description;
+  String slug;
+  String image;
+  String thumb;
+  String coverImage;
+  int items;
+  String? website;
+  int isFeatured;
+  SeoMeta seoMeta;
 }
 
 class SeoMeta {
-  String title;
-  String description;
-  String image;
-  String robots;
-
   SeoMeta({
     required this.title,
     required this.description,
@@ -80,14 +69,16 @@ class SeoMeta {
     required this.robots,
   });
 
-  factory SeoMeta.fromJson(Map<String, dynamic> json) {
-    return SeoMeta(
-      title: json['title'],
-      description: json['description'],
-      image: json['image'],
-      robots: json['robots'],
-    );
-  }
+  factory SeoMeta.fromJson(Map<String, dynamic> json) => SeoMeta(
+        title: json['title'],
+        description: json['description'],
+        image: json['image'],
+        robots: json['robots'],
+      );
+  String title;
+  String description;
+  String image;
+  String robots;
 }
 
 class EventsBrandProvider extends ChangeNotifier {
@@ -97,7 +88,8 @@ class EventsBrandProvider extends ChangeNotifier {
   final ApiResponseHandler _apiResponseHandler = ApiResponseHandler();
 
   Future<void> fetchEventsBrand(BuildContext context) async {
-    final url = 'https://api.staging.theevents.ae/api/v1/collections/events-brand';
+    const url =
+        'https://api.staging.theevents.ae/api/v1/collections/events-brand';
 
     try {
       isLoading = true;

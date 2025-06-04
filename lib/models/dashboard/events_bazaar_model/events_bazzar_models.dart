@@ -1,58 +1,52 @@
 class EventsBazaarModels {
-  bool? error;
-  Data? data;
-  Null message;
-
   EventsBazaarModels({this.error, this.data, this.message});
 
   EventsBazaarModels.fromJson(Map<String, dynamic> json) {
     error = json['error'];
-    data = json['data'] != null ? new Data.fromJson(json['data']) : null;
+    data = json['data'] != null ? Data.fromJson(json['data']) : null;
     message = json['message'];
   }
+  bool? error;
+  Data? data;
+  Null message;
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['error'] = this.error;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['error'] = error;
     if (this.data != null) {
       data['data'] = this.data!.toJson();
     }
-    data['message'] = this.message;
+    data['message'] = message;
     return data;
   }
 }
 
 class Data {
-  List<EventList>? list;
-  bool? isMulti;
-
   Data({this.list, this.isMulti});
 
   Data.fromJson(Map<String, dynamic> json) {
     if (json['list'] != null) {
       list = <EventList>[];
       json['list'].forEach((v) {
-        list!.add(new EventList.fromJson(v));
+        list!.add(EventList.fromJson(v));
       });
     }
     isMulti = json['is_multi'];
   }
+  List<EventList>? list;
+  bool? isMulti;
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.list != null) {
-      data['list'] = this.list!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if (list != null) {
+      data['list'] = list!.map((v) => v.toJson()).toList();
     }
-    data['is_multi'] = this.isMulti;
+    data['is_multi'] = isMulti;
     return data;
   }
 }
 
 class EventList {
-  String? label;
-  String? value;
-  String? title;
-
   EventList({this.label, this.value, this.title});
 
   EventList.fromJson(Map<String, dynamic> json) {
@@ -60,12 +54,15 @@ class EventList {
     value = json['value'];
     title = json['title'];
   }
+  String? label;
+  String? value;
+  String? title;
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['label'] = this.label;
-    data['value'] = this.value;
-    data['title'] = this.title;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['label'] = label;
+    data['value'] = value;
+    data['title'] = title;
     return data;
   }
 }

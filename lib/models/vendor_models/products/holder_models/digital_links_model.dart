@@ -24,7 +24,7 @@ class DigitalLinksModel {
         fileName = fileName ?? '',
         fileLink = fileLink ?? '',
         size = size ?? '',
-        fileNameController =  TextEditingController(text: fileName),
+        fileNameController = TextEditingController(text: fileName),
         fileLinkController = TextEditingController(text: fileLink),
         sizeController = TextEditingController(text: size),
         unit = unit ?? '';
@@ -33,15 +33,13 @@ class DigitalLinksModel {
   String toString() {
     return 'DigitalLinksModel{isSaved: $isSaved, fileName: $fileName, fileLink: $fileLink, size: $size, unit: $unit, fileNameController: $fileNameController, fileLinkController: $fileLinkController, sizeController: $sizeController}';
   }
-
 }
 
-extension DigitalLinksModelExtension on DigitalLinksModel{
-  Map<String,dynamic> toJson()=>
-      {
-        'name':fileName,
-        'link':fileLink,
-        'size':size,
+extension DigitalLinksModelExtension on DigitalLinksModel {
+  Map<String, dynamic> toJson() => {
+        'name': fileName,
+        'link': fileLink,
+        'size': size,
         'unit': unit,
       };
 }

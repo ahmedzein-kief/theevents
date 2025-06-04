@@ -21,11 +21,6 @@ import 'login_models.dart';
 //   }
 // }
 class SignUpResponse {
-  bool? error;
-  UserAuthData? data;
-  Map<String, List<String>>? errors;
-  String? message;
-
   SignUpResponse({
     this.error,
     this.data,
@@ -40,18 +35,25 @@ class SignUpResponse {
       error: json['error'] as bool?,
       data: json['data'] != null ? UserAuthData.fromJson(json['data']) : null,
       errors: json['errors'] != null
-          ? (json['errors'] as Map?)?.map((key, value) => MapEntry(
-          key.toString(), (value as List?)?.map((e) => e.toString()).toList() ?? []))
+          ? (json['errors'] as Map?)?.map(
+              (key, value) => MapEntry(
+                key.toString(),
+                (value as List?)?.map((e) => e.toString()).toList() ?? [],
+              ),
+            )
           : null,
       message: json['message'] as String?,
     );
   }
+  bool? error;
+  UserAuthData? data;
+  Map<String, List<String>>? errors;
+  String? message;
 }
 
 extension SignUpResponseExtension on SignUpResponse {
   String get formattedErrors {
-    if (errors == null || errors!.isEmpty) return "";
-    return errors!.values.map((list) => list.first).join("\n");
+    if (errors == null || errors!.isEmpty) return '';
+    return errors!.values.map((list) => list.first).join('\n');
   }
 }
-

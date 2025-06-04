@@ -1,17 +1,17 @@
 import 'dart:io';
 
 import 'package:camera_gallery_image_picker/camera_gallery_image_picker.dart';
+import 'package:event_app/core/constants/app_strings.dart';
+import 'package:event_app/core/router/app_routes.dart';
+import 'package:event_app/core/services/image_picker.dart';
+import 'package:event_app/core/services/shared_preferences_helper.dart';
+import 'package:event_app/core/styles/app_colors.dart';
+import 'package:event_app/core/styles/custom_text_styles.dart';
+import 'package:event_app/core/widgets/custom_auth_views/custom_profile_items.dart';
 import 'package:event_app/data/vendor/data/response/apis_status.dart';
-import 'package:event_app/navigation/app_routes.dart';
 import 'package:event_app/provider/auth_provider/get_user_provider.dart';
 import 'package:event_app/provider/auth_provider/user_auth_provider.dart';
 import 'package:event_app/provider/customer/account_view_models/customer_upload_profile_pic_view_model.dart';
-import 'package:event_app/core/styles/app_colors.dart';
-import 'package:event_app/core/constants/app_strings.dart';
-import 'package:event_app/core/styles/custom_text_styles.dart';
-import 'package:event_app/core/widgets/custom_auth_views/custom_profile_items.dart';
-import 'package:event_app/utils/storage/image_picker.dart';
-import 'package:event_app/utils/storage/shared_preferences_helper.dart';
 import 'package:event_app/vendor/components/utils/utils.dart';
 import 'package:event_app/vendor/components/vendor_stepper_screen.dart';
 import 'package:event_app/vendor/vendor_home/vendor_drawer_screen.dart';
@@ -20,13 +20,11 @@ import 'package:event_app/views/base_screens/profile_screens/profile_address_scr
 import 'package:event_app/views/base_screens/profile_screens/profile_review_screen.dart';
 import 'package:event_app/views/base_screens/profile_screens/profile_update_screen.dart';
 import 'package:event_app/views/home_screens_shortcode/shortcode_information_icons/order_pages_screens/order_page.dart';
-import 'package:event_app/views/home_screens_shortcode/shortcode_information_icons/order_pages_screens/pdf_downloader.dart';
 import 'package:event_app/views/profile_page_screens/about_us_screen.dart';
 import 'package:event_app/views/profile_page_screens/privacy_policy_screen.dart';
 import 'package:event_app/views/profile_page_screens/terms_and_condtion_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -44,7 +42,7 @@ class _UserProfileLoginScreenState extends State<UserProfileLoginScreen> {
   bool isLoggedIn = false;
   bool isVendorApprovedVerified = false;
   bool isVendor = false;
-  File? _imageFile = null;
+  File? _imageFile;
   String? _selectedImageUrl;
   final ImagePickerHelper _imagePickerHelper = ImagePickerHelper();
 
@@ -66,8 +64,10 @@ class _UserProfileLoginScreenState extends State<UserProfileLoginScreen> {
   Future checkLoginData() async {
     final prefs = await SharedPreferences.getInstance();
 
-    final bool isVerified = prefs.getBool(SecurePreferencesUtil.verified) ?? false;
-    final bool isApproved = prefs.getBool(SecurePreferencesUtil.approved) ?? false;
+    final bool isVerified =
+        prefs.getBool(SecurePreferencesUtil.verified) ?? false;
+    final bool isApproved =
+        prefs.getBool(SecurePreferencesUtil.approved) ?? false;
     final int vendor = prefs.getInt(SecurePreferencesUtil.vendor) ?? 0;
 
     if (vendor == 1) {
@@ -84,7 +84,7 @@ class _UserProfileLoginScreenState extends State<UserProfileLoginScreen> {
 
   // Load the saved image from SharedPreferences and show
   Future<void> _loadImage() async {
-    String? imagePath = await _imagePickerHelper.getSavedImage();
+    final String? imagePath = await _imagePickerHelper.getSavedImage();
     if (imagePath != null) {
       setState(() {
         _selectedImageUrl = imagePath;
@@ -93,12 +93,15 @@ class _UserProfileLoginScreenState extends State<UserProfileLoginScreen> {
   }
 
   /// Implement upload profile picture functionality
-  void _onUploadProfilePicture() async {
+  Future<void> _onUploadProfilePicture() async {
     if (_imageFile != null) {
-      final uploadProfilePictureProvider = context.read<CustomerUploadProfilePicViewModel>();
-      final result = await uploadProfilePictureProvider.customerUploadProfilePicture(file: _imageFile!, context: context);
+      final uploadProfilePictureProvider =
+          context.read<CustomerUploadProfilePicViewModel>();
+      final result = await uploadProfilePictureProvider
+          .customerUploadProfilePicture(file: _imageFile!, context: context);
       if (result) {
-        await _imagePickerHelper.saveImageToPreferences(uploadProfilePictureProvider.apiResponse.data?.data?.url ?? '');
+        await _imagePickerHelper.saveImageToPreferences(
+            uploadProfilePictureProvider.apiResponse.data?.data?.url ?? '');
         await _loadImage();
       }
     }
@@ -113,8 +116,8 @@ class _UserProfileLoginScreenState extends State<UserProfileLoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var screenWidth = MediaQuery.sizeOf(context).width;
-    var screenHeight = MediaQuery.sizeOf(context).height;
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final screenHeight = MediaQuery.sizeOf(context).height;
     final authProvider = Provider.of<AuthProvider>(context, listen: true);
     final userProvider = Provider.of<UserProvider>(context, listen: true);
 
@@ -124,17 +127,26 @@ class _UserProfileLoginScreenState extends State<UserProfileLoginScreen> {
           children: [
             SingleChildScrollView(
               child: Padding(
-                padding: EdgeInsets.only(left: screenWidth * 0.05, right: screenWidth * 0.05, bottom: 40),
+                padding: EdgeInsets.only(
+                    left: screenWidth * 0.05,
+                    right: screenWidth * 0.05,
+                    bottom: 40),
                 child: Consumer<UserProvider>(
-                  builder: (BuildContext context, UserProvider provider, Widget? child) {
+                  builder: (BuildContext context, UserProvider provider,
+                      Widget? child) {
                     final user = provider.user;
                     return Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Padding(
-                          padding: EdgeInsets.only(top: screenHeight * 0.04, bottom: screenWidth * 0.02),
-                          child: Align(alignment: Alignment.center, child: Text(AppStrings.account, style: accountTextStyle(context))),
+                          padding: EdgeInsets.only(
+                              top: screenHeight * 0.04,
+                              bottom: screenWidth * 0.02),
+                          child: Align(
+                              alignment: Alignment.center,
+                              child: Text(AppStrings.account,
+                                  style: accountTextStyle(context))),
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.start,
@@ -144,23 +156,39 @@ class _UserProfileLoginScreenState extends State<UserProfileLoginScreen> {
                               children: [
                                 Consumer<CustomerUploadProfilePicViewModel>(
                                   builder: (context, provider, _) {
-                                    final _uploading = provider.apiResponse.status == ApiStatus.LOADING;
+                                    final uploading =
+                                        provider.apiResponse.status ==
+                                            ApiStatus.LOADING;
                                     return Container(
                                       width: 90,
                                       height: 90,
-                                      child: _uploading ? Utils.pageLoadingIndicator(context: context) : null,
                                       decoration: BoxDecoration(
-                                        border: _uploading ? Border.all(color: AppColors.peachyPink, width: 0.2) : null,
+                                        border: uploading
+                                            ? Border.all(
+                                                color: AppColors.peachyPink,
+                                                width: 0.2)
+                                            : null,
                                         shape: BoxShape.circle,
                                         color: Colors.grey.shade300,
-                                        image: _uploading
+                                        image: uploading
                                             ? null
                                             : DecorationImage(
-                                          image: (_selectedImageUrl != null && _selectedImageUrl?.isNotEmpty == true)
-                                                    ? NetworkImage(_selectedImageUrl!)
-                                                    : AssetImage("assets/boy.png") as ImageProvider,
+                                                image: (_selectedImageUrl !=
+                                                            null &&
+                                                        _selectedImageUrl
+                                                                ?.isNotEmpty ==
+                                                            true)
+                                                    ? NetworkImage(
+                                                        _selectedImageUrl!)
+                                                    : const AssetImage(
+                                                            'assets/boy.png')
+                                                        as ImageProvider,
                                               ),
                                       ),
+                                      child: uploading
+                                          ? Utils.pageLoadingIndicator(
+                                              context: context)
+                                          : null,
                                     );
                                   },
                                 ),
@@ -171,103 +199,154 @@ class _UserProfileLoginScreenState extends State<UserProfileLoginScreen> {
                                   bottom: 0,
                                   child: GestureDetector(
                                     onTap: () async {
-                                      _imageFile = await CameraGalleryImagePicker.pickImage(
+                                      _imageFile =
+                                          await CameraGalleryImagePicker
+                                              .pickImage(
                                         context: context,
                                         source: ImagePickerSource.both,
                                       );
                                       _onUploadProfilePicture();
                                     },
                                     child: Container(
-                                        width: 25,
-                                        height: 25,
-                                        decoration: const BoxDecoration(
-                                          shape: BoxShape.circle,
-                                        ),
-                                        child: SvgPicture.asset(
-                                          'assets/camera_icon.svg',
-                                        )
+                                      width: 25,
+                                      height: 25,
+                                      decoration: const BoxDecoration(
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: SvgPicture.asset(
+                                        'assets/camera_icon.svg',
+                                      ),
 
-                                        // SvgPicture.asset('assets/camera_icon.svg')
-                                        ),
+                                      // SvgPicture.asset('assets/camera_icon.svg')
+                                    ),
                                   ),
                                 ),
                               ],
                             ),
                             Expanded(
                               child: Padding(
-                                padding: EdgeInsets.only(left: screenWidth * 0.01),
+                                padding:
+                                    EdgeInsets.only(left: screenWidth * 0.01),
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(user?.name.toUpperCase() ?? '', maxLines: 1, softWrap: true, style: nameTextStyle(context)),
-                                    Text(user?.email ?? '', maxLines: 2, softWrap: true, style: mailTextStyle(context))
+                                    Text(user?.name.toUpperCase() ?? '',
+                                        maxLines: 1,
+                                        softWrap: true,
+                                        style: nameTextStyle(context)),
+                                    Text(user?.email ?? '',
+                                        maxLines: 2,
+                                        softWrap: true,
+                                        style: mailTextStyle(context)),
                                   ],
                                 ),
                               ),
-                            )
+                            ),
                           ],
                         ),
                         Padding(
-                          padding: EdgeInsets.only(top: screenHeight * 0.04, bottom: screenHeight * 0.02),
+                          padding: EdgeInsets.only(
+                              top: screenHeight * 0.04,
+                              bottom: screenHeight * 0.02),
                           child: Container(
-                            decoration: BoxDecoration(color: Colors.blue.withOpacity(0.06), borderRadius: BorderRadius.circular(screenHeight * 0.01)),
+                            decoration: BoxDecoration(
+                                color: Colors.blue.withOpacity(0.06),
+                                borderRadius:
+                                    BorderRadius.circular(screenHeight * 0.01)),
                             child: Padding(
-                              padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05, vertical: screenWidth * 0.05),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: screenWidth * 0.05,
+                                  vertical: screenWidth * 0.05),
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   Container(
-                                    decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary, borderRadius: BorderRadius.circular(5)),
+                                    decoration: BoxDecoration(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
+                                        borderRadius: BorderRadius.circular(5)),
                                     child: Column(
                                       children: [
                                         Padding(
-                                          padding: EdgeInsets.only(top: screenHeight * 0.02, left: screenWidth * 0.02, bottom: screenHeight * 0.02),
+                                          padding: EdgeInsets.only(
+                                              top: screenHeight * 0.02,
+                                              left: screenWidth * 0.02,
+                                              bottom: screenHeight * 0.02),
                                           child: Column(
-                                            mainAxisAlignment: MainAxisAlignment.start,
-                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             children: [
                                               ProfileItem(
-                                                imagePath: 'assets/account_profile.svg',
+                                                imagePath:
+                                                    'assets/account_profile.svg',
                                                 // imagePath: AppStrings.userFill,
                                                 title: 'Profile',
                                                 onTap: () {
-                                                  Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileUpdateScreen()));
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              const ProfileUpdateScreen()));
                                                 },
                                               ),
                                               ProfileItem(
                                                 imagePath: 'assets/orders.svg',
                                                 title: 'Orders',
                                                 onTap: () {
-                                                  Navigator.push(context, MaterialPageRoute(builder: (context) => OrderPageScreen()));
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              const OrderPageScreen()));
                                                 },
                                               ),
                                               ProfileItem(
                                                 imagePath: 'assets/Reviews.svg',
                                                 title: 'Reviews',
                                                 onTap: () {
-                                                  Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileReviewScreen()));
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              const ProfileReviewScreen()));
                                                 },
                                               ),
-                                              ProfileItem(
-                                                imagePath: 'assets/gift_cards.svg',
+                                              const ProfileItem(
+                                                imagePath:
+                                                    'assets/gift_cards.svg',
                                                 title: 'Gift Cards',
                                                 routeName: AppRoutes.giftCard,
-                                                arguments: {'title': 'Gift Card'}, // Optional argument
+                                                arguments: {
+                                                  'title': 'Gift Card'
+                                                }, // Optional argument
                                               ),
                                               ProfileItem(
                                                 imagePath: 'assets/Address.svg',
                                                 title: 'Address',
                                                 onTap: () {
-                                                  Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileAddressScreen()));
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              const ProfileAddressScreen()));
                                                 },
                                               ),
                                               ProfileItem(
-                                                imagePath: 'assets/change_password.svg',
-                                                title: AppStrings.changePassword,
+                                                imagePath:
+                                                    'assets/change_password.svg',
+                                                title:
+                                                    AppStrings.changePassword,
                                                 onTap: () {
-                                                  Navigator.push(context, MaterialPageRoute(builder: (context) => ChangePasswordScreen()));
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              ChangePasswordScreen()));
                                                 },
                                               ),
                                               ProfileItem(
@@ -277,7 +356,11 @@ class _UserProfileLoginScreenState extends State<UserProfileLoginScreen> {
                                                 imagePath: 'assets/Privacy.svg',
                                                 title: AppStrings.privacyPolicy,
                                                 onTap: () {
-                                                  Navigator.push(context, MaterialPageRoute(builder: (context) => PrivacyPolicyScreen()));
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              const PrivacyPolicyScreen()));
                                                 },
                                               ),
                                               ProfileItem(
@@ -287,32 +370,58 @@ class _UserProfileLoginScreenState extends State<UserProfileLoginScreen> {
                                                 imagePath: 'assets/Info.svg',
                                                 title: AppStrings.aboutUs,
                                                 onTap: () {
-                                                  Navigator.push(context, MaterialPageRoute(builder: (context) => AboutUsScreen()));
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              const AboutUsScreen()));
                                                 },
                                               ),
                                               ProfileItem(
                                                 width: 23,
                                                 height: 23,
                                                 textWidth: screenWidth * 0.06,
-                                                imagePath: 'assets/termsandcon.svg',
-                                                title: AppStrings.termsConditions,
+                                                imagePath:
+                                                    'assets/termsandcon.svg',
+                                                title:
+                                                    AppStrings.termsConditions,
                                                 onTap: () {
-                                                  Navigator.push(context, MaterialPageRoute(builder: (context) => TermsAndCondtionScreen()));
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              const TermsAndCondtionScreen()));
                                                 },
                                               ),
-                                              if (isVendor && isVendorApprovedVerified) ...{
+                                              if (isVendor &&
+                                                  isVendorApprovedVerified) ...{
                                                 Padding(
-                                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                      horizontal: 10,
+                                                      vertical: 10),
                                                   child: GestureDetector(
                                                     onTap: () {
-                                                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => VendorDrawerScreen()));
+                                                      Navigator.pushReplacement(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                              builder: (context) =>
+                                                                  VendorDrawerScreen()));
                                                       // Navigator.pushNamed(context, AppRoutes.vendorLogin);
                                                     },
                                                     child: Row(
                                                       children: [
-                                                        SvgPicture.asset('assets/Join_seller.svg', color: Theme.of(context).colorScheme.onPrimary),
-                                                        const SizedBox(width: 16),
-                                                        Text(AppStrings.vendor, style: profileItems(context)),
+                                                        SvgPicture.asset(
+                                                            'assets/Join_seller.svg',
+                                                            color: Theme.of(
+                                                                    context)
+                                                                .colorScheme
+                                                                .onPrimary),
+                                                        const SizedBox(
+                                                            width: 16),
+                                                        Text(AppStrings.vendor,
+                                                            style: profileItems(
+                                                                context)),
 
                                                         // Icon(iconData, color: iconColor, size: iconSize,),
                                                       ],
@@ -320,19 +429,37 @@ class _UserProfileLoginScreenState extends State<UserProfileLoginScreen> {
                                                   ),
                                                 ),
                                               },
-                                              if (isVendor && !isVendorApprovedVerified)
+                                              if (isVendor &&
+                                                  !isVendorApprovedVerified)
                                                 Padding(
-                                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                      horizontal: 10,
+                                                      vertical: 10),
                                                   child: GestureDetector(
                                                     onTap: () {
-                                                      Navigator.push(context, MaterialPageRoute(builder: (context) => VendorStepperScreen()));
+                                                      Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                              builder: (context) =>
+                                                                  const VendorStepperScreen()));
                                                       // Navigator.pushNamed(context, AppRoutes.vendorLogin);
                                                     },
                                                     child: Row(
                                                       children: [
-                                                        SvgPicture.asset('assets/Join_seller.svg', color: Theme.of(context).colorScheme.onPrimary),
-                                                        const SizedBox(width: 16),
-                                                        Text(AppStrings.joinAsSeller, style: profileItems(context)),
+                                                        SvgPicture.asset(
+                                                            'assets/Join_seller.svg',
+                                                            color: Theme.of(
+                                                                    context)
+                                                                .colorScheme
+                                                                .onPrimary),
+                                                        const SizedBox(
+                                                            width: 16),
+                                                        Text(
+                                                            AppStrings
+                                                                .joinAsSeller,
+                                                            style: profileItems(
+                                                                context)),
 
                                                         // Icon(iconData, color: iconColor, size: iconSize,),
                                                       ],
@@ -354,13 +481,15 @@ class _UserProfileLoginScreenState extends State<UserProfileLoginScreen> {
                           alignment: Alignment.center,
                           child: GestureDetector(
                             onTap: () {
-                              showLogoutConfirmationDialog(context, authProvider);
+                              showLogoutConfirmationDialog(
+                                  context, authProvider);
                             },
                             child: SizedBox(
                               width: screenWidth * 0.4,
                               child: Container(
                                 height: 45,
-                                margin: EdgeInsets.only(top: screenHeight * 0.01),
+                                margin:
+                                    EdgeInsets.only(top: screenHeight * 0.01),
                                 decoration: const BoxDecoration(
                                   color: Colors.black,
                                 ),
@@ -369,20 +498,29 @@ class _UserProfileLoginScreenState extends State<UserProfileLoginScreen> {
                                         child: SizedBox(
                                           width: 20,
                                           height: 20,
-                                          child: LoadingAnimationWidget.stretchedDots(
-                                            color: Theme.of(context).colorScheme.primary,
+                                          child: LoadingAnimationWidget
+                                              .stretchedDots(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary,
                                             size: 25,
                                           ),
                                         ),
                                       )
                                     : Row(
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
                                         children: [
-                                          Text('Logout', style: logoutTextStyle(context)),
+                                          Text('Logout',
+                                              style: logoutTextStyle(context)),
                                           Padding(
-                                            padding: EdgeInsets.only(left: screenWidth * 0.04),
-                                            child: SvgPicture.asset('assets/logoutBtn.svg', color: Colors.white),
+                                            padding: EdgeInsets.only(
+                                                left: screenWidth * 0.04),
+                                            child: SvgPicture.asset(
+                                                'assets/logoutBtn.svg',
+                                                color: Colors.white),
                                           ),
                                         ],
                                       ),
@@ -400,9 +538,10 @@ class _UserProfileLoginScreenState extends State<UserProfileLoginScreen> {
               Container(
                 color: Colors.black.withOpacity(0.5),
                 // Semi-transparent background
-                child: Center(
+                child: const Center(
                   child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.peachyPink),
+                    valueColor:
+                        AlwaysStoppedAnimation<Color>(AppColors.peachyPink),
                   ),
                 ),
               ),
@@ -412,52 +551,52 @@ class _UserProfileLoginScreenState extends State<UserProfileLoginScreen> {
     );
   }
 
-  void showLogoutConfirmationDialog(BuildContext mainContext, AuthProvider authProvider) {
+  void showLogoutConfirmationDialog(
+      BuildContext mainContext, AuthProvider authProvider) {
     showDialog(
       context: mainContext,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Confirm Logout'),
-          content: Text('Are you sure you want to log out?'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
-              child: Text('Cancel'),
-              style: TextButton.styleFrom(
-                foregroundColor: AppColors.peachyPink, // Set the text color
-                textStyle: TextStyle(
-                  fontSize: 16.0, // Optional: Adjust font size
-                  fontWeight: FontWeight.bold, // Optional: Adjust font weight
-                ),
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Confirm Logout'),
+        content: const Text('Are you sure you want to log out?'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // Close the dialog
+            },
+            style: TextButton.styleFrom(
+              foregroundColor: AppColors.peachyPink, // Set the text color
+              textStyle: const TextStyle(
+                fontSize: 16.0, // Optional: Adjust font size
+                fontWeight: FontWeight.bold, // Optional: Adjust font weight
               ),
             ),
-            TextButton(
-              onPressed: () async {
-                // Close the dialog
-                Navigator.of(context).pop();
-                SharedPreferences sp = await SharedPreferences.getInstance();
-                final token = sp.getString("token") ?? '';
-                await authProvider.logout(mainContext, token);
-                final provider = Provider.of<UserProvider>(context, listen: true);
-                provider.setUser(null);
-                _onRefresh();
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              // Close the dialog
+              Navigator.of(context).pop();
+              final SharedPreferences sp =
+                  await SharedPreferences.getInstance();
+              final token = sp.getString('token') ?? '';
+              await authProvider.logout(mainContext, token);
+              final provider = Provider.of<UserProvider>(context, listen: true);
+              provider.setUser(null);
+              _onRefresh();
 
-                /// refreshing the page
-              },
-              child: Text('Yes'),
-              style: TextButton.styleFrom(
-                foregroundColor: AppColors.peachyPink, // Set the text color
-                textStyle: TextStyle(
-                  fontSize: 16.0, // Optional: Adjust font size
-                  fontWeight: FontWeight.bold, // Optional: Adjust font weight
-                ),
+              /// refreshing the page
+            },
+            style: TextButton.styleFrom(
+              foregroundColor: AppColors.peachyPink, // Set the text color
+              textStyle: const TextStyle(
+                fontSize: 16.0, // Optional: Adjust font size
+                fontWeight: FontWeight.bold, // Optional: Adjust font weight
               ),
             ),
-          ],
-        );
-      },
+            child: const Text('Yes'),
+          ),
+        ],
+      ),
     );
   }
 }

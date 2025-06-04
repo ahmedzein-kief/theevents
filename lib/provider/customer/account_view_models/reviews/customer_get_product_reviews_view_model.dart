@@ -1,8 +1,6 @@
+import 'package:event_app/core/services/shared_preferences_helper.dart';
 import 'package:event_app/data/vendor/data/response/ApiResponse.dart';
-import 'package:event_app/models/vendor_models/reviews/reviews_data_response.dart';
 import 'package:event_app/provider/customer/Repository/customer_repository.dart';
-import 'package:event_app/provider/vendor/vendor_repository.dart';
-import 'package:event_app/utils/storage/shared_preferences_helper.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../../../../models/account_models/reviews/customer_get_product_reviews_model.dart';
@@ -20,7 +18,7 @@ class CustomerGetProductReviewsViewModel with ChangeNotifier {
 
   List<ReviewedRecords> get reviewedProductList => _reviewedProductList;
 
-  setToken() async {
+  Future<void> setToken() async {
     _token = await SecurePreferencesUtil.getToken();
   }
 
@@ -43,12 +41,12 @@ class CustomerGetProductReviewsViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  customerGetProductReviews({String? search}) async {
+  Future<void> customerGetProductReviews({String? search}) async {
     await setToken();
     try {
-      Map<String, String> headers = <String, String>{
+      final Map<String, String> headers = <String, String>{
         // 'Content-Type': 'application/json',
-        "Authorization": _token!,
+        'Authorization': _token!,
       };
 
       final Map<String, String> queryParams = {
@@ -60,7 +58,9 @@ class CustomerGetProductReviewsViewModel with ChangeNotifier {
       // If successful, increment the current page and append data
       if (_currentPage <= _lastPage) {
         setApiResponse = ApiResponse.loading();
-        final CustomerGetProductReviewsModel response = await _myRepo.customerGetProductReviews(headers: headers, queryParams: queryParams);
+        final CustomerGetProductReviewsModel response =
+            await _myRepo.customerGetProductReviews(
+                headers: headers, queryParams: queryParams);
         setLastPage(response);
         resetList(response);
         setApiResponse = ApiResponse.completed(response);
@@ -91,7 +91,7 @@ class CustomerGetProductReviewsViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  void removeElementFromList({required dynamic id}) {
+  void removeElementFromList({required id}) {
     _reviewedProductList.removeWhere((element) => element.id == id);
     // _list.removeWhere((element) => element.id == id);
     notifyListeners();

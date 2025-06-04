@@ -1,8 +1,4 @@
 class TopBrandsProducts {
-  bool? error;
-  Data? data;
-  String? message;
-
   TopBrandsProducts({this.error, this.data, this.message});
 
   TopBrandsProducts.fromJson(Map<String, dynamic> json) {
@@ -10,35 +6,40 @@ class TopBrandsProducts {
     data = json['data'] != null ? Data.fromJson(json['data']) : null;
     message = json['message'];
   }
+  bool? error;
+  Data? data;
+  String? message;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['error'] = this.error;
+    data['error'] = error;
     if (this.data != null) {
       data['data'] = this.data!.toJson();
     }
-    data['message'] = this.message;
+    data['message'] = message;
     return data;
   }
 }
 
 class Data {
-  Pagination? pagination;
-  List<Records>? records;
-  Filters? filters;
-
   Data({this.pagination, this.records, this.filters});
 
   Data.fromJson(Map<String, dynamic> json) {
-    pagination = json['pagination'] != null ? Pagination.fromJson(json['pagination']) : null;
+    pagination = json['pagination'] != null
+        ? Pagination.fromJson(json['pagination'])
+        : null;
     if (json['records'] != null) {
       records = <Records>[];
       json['records'].forEach((v) {
         records!.add(Records.fromJson(v));
       });
     }
-    filters = json['filters'] != null ? Filters.fromJson(json['filters']) : null;
+    filters =
+        json['filters'] != null ? Filters.fromJson(json['filters']) : null;
   }
+  Pagination? pagination;
+  List<Records>? records;
+  Filters? filters;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
@@ -56,11 +57,6 @@ class Data {
 }
 
 class Pagination {
-  int? total;
-  int? lastPage;
-  int? currentPage;
-  int? perPage;
-
   Pagination({this.total, this.lastPage, this.currentPage, this.perPage});
 
   Pagination.fromJson(Map<String, dynamic> json) {
@@ -69,6 +65,10 @@ class Pagination {
     currentPage = json['current_page'];
     perPage = json['per_page'];
   }
+  int? total;
+  int? lastPage;
+  int? currentPage;
+  int? perPage;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
@@ -81,17 +81,6 @@ class Pagination {
 }
 
 class Records {
-  dynamic id;
-  String? name;
-  String? slug;
-  int? isFeatured;
-  String? productType;
-  dynamic image;
-  bool? outOfStock;
-  bool? cartEnabled;
-  Review? review;
-  Prices? prices;
-
   Records({
     this.id,
     this.name,
@@ -117,6 +106,16 @@ class Records {
     review = json['review'] != null ? Review.fromJson(json['review']) : null;
     prices = json['prices'] != null ? Prices.fromJson(json['prices']) : null;
   }
+  dynamic id;
+  String? name;
+  String? slug;
+  int? isFeatured;
+  String? productType;
+  dynamic image;
+  bool? outOfStock;
+  bool? cartEnabled;
+  Review? review;
+  Prices? prices;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
@@ -139,15 +138,14 @@ class Records {
 }
 
 class Review {
-  double? rating;
-  int? reviewsCount;
-
   Review({this.rating, this.reviewsCount});
 
   Review.fromJson(Map<String, dynamic> json) {
     rating = json['rating']?.toDouble();
     reviewsCount = json['reviews_count'];
   }
+  double? rating;
+  int? reviewsCount;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
@@ -158,12 +156,11 @@ class Review {
 }
 
 class Prices {
-  int? frontSalePrice;
-  dynamic price;
-  String? frontSalePriceWithTaxes;
-  String? priceWithTaxes;
-
-  Prices({this.frontSalePrice, this.price, this.frontSalePriceWithTaxes, this.priceWithTaxes});
+  Prices(
+      {this.frontSalePrice,
+      this.price,
+      this.frontSalePriceWithTaxes,
+      this.priceWithTaxes});
 
   Prices.fromJson(Map<String, dynamic> json) {
     frontSalePrice = json['front_sale_price'];
@@ -171,6 +168,10 @@ class Prices {
     frontSalePriceWithTaxes = json['front_sale_price_with_taxes'];
     priceWithTaxes = json['price_with_taxes'];
   }
+  int? frontSalePrice;
+  dynamic price;
+  String? frontSalePriceWithTaxes;
+  String? priceWithTaxes;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
@@ -183,9 +184,6 @@ class Prices {
 }
 
 class Filters {
-  List<Categories>? categories;
-  List<Brands>? brands;
-
   Filters({this.categories, this.brands});
 
   Filters.fromJson(Map<String, dynamic> json) {
@@ -202,6 +200,8 @@ class Filters {
       });
     }
   }
+  List<Categories>? categories;
+  List<Brands>? brands;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
@@ -216,15 +216,14 @@ class Filters {
 }
 
 class Categories {
-  int? id;
-  String? name;
-
   Categories({this.id, this.name});
 
   Categories.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     name = json['name'];
   }
+  int? id;
+  String? name;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
@@ -235,15 +234,14 @@ class Categories {
 }
 
 class Brands {
-  int? id;
-  String? name;
-
   Brands({this.id, this.name});
 
   Brands.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     name = json['name'];
   }
+  int? id;
+  String? name;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};

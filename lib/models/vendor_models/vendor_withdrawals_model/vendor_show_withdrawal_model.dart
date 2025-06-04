@@ -1,13 +1,13 @@
-
 import 'package:event_app/models/vendor_models/products/VendorGetProductsModel.dart';
 
 class VendorShowWithdrawalModel {
   VendorShowWithdrawalModel({
-      this.error, 
-      this.data, 
-      this.message,});
+    this.error,
+    this.data,
+    this.message,
+  });
 
-  VendorShowWithdrawalModel.fromJson(dynamic json) {
+  VendorShowWithdrawalModel.fromJson(json) {
     error = json['error'];
     data = json['data'] != null ? Data.fromJson(json['data']) : null;
     message = json['message'];
@@ -15,29 +15,29 @@ class VendorShowWithdrawalModel {
   bool? error;
   Data? data;
   dynamic message;
-
 }
 
 class Data {
   Data({
-      this.id, 
-      this.fee, 
-      this.feeFormat, 
-      this.amount, 
-      this.amountFormat, 
-      this.currentBalance, 
-      this.currentBalanceFormat, 
-      this.currency, 
-      this.description, 
-      this.bankInfo, 
-      this.paymentChannel, 
-      this.status, 
-      this.transactionId, 
-      this.images, 
-      this.createdAt, 
-      this.updatedAt,});
+    this.id,
+    this.fee,
+    this.feeFormat,
+    this.amount,
+    this.amountFormat,
+    this.currentBalance,
+    this.currentBalanceFormat,
+    this.currency,
+    this.description,
+    this.bankInfo,
+    this.paymentChannel,
+    this.status,
+    this.transactionId,
+    this.images,
+    this.createdAt,
+    this.updatedAt,
+  });
 
-  Data.fromJson(dynamic json) {
+  Data.fromJson(json) {
     id = json['id'];
     fee = json['fee'];
     feeFormat = json['fee_format'];
@@ -47,7 +47,8 @@ class Data {
     currentBalanceFormat = json['current_balance_format'];
     currency = json['currency'];
     description = json['description'];
-    bankInfo = json['bank_info'] != null ? BankInfo.fromJson(json['bank_info']) : null;
+    bankInfo =
+        json['bank_info'] != null ? BankInfo.fromJson(json['bank_info']) : null;
     paymentChannel = json['payment_channel'];
     status = json['status'] != null ? Status.fromJson(json['status']) : null;
     transactionId = json['transaction_id'];
@@ -76,22 +77,20 @@ class Data {
   List<dynamic>? images;
   String? createdAt;
   String? updatedAt;
-
-
 }
-
 
 class BankInfo {
   BankInfo({
-      this.name, 
-      this.code, 
-      this.fullName, 
-      this.number, 
-      this.paypalId, 
-      this.upiId, 
-      this.description,});
+    this.name,
+    this.code,
+    this.fullName,
+    this.number,
+    this.paypalId,
+    this.upiId,
+    this.description,
+  });
 
-  BankInfo.fromJson(dynamic json) {
+  BankInfo.fromJson(json) {
     name = json['name'];
     code = json['code'];
     fullName = json['full_name'];
@@ -107,5 +106,4 @@ class BankInfo {
   dynamic paypalId;
   dynamic upiId;
   dynamic description;
-
 }

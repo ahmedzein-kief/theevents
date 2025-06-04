@@ -4,22 +4,24 @@ import 'dart:convert';
 /// data : {"pagination":{"total":2,"last_page":1,"current_page":1,"per_page":10},"records":[{"id":3113,"name":"Test Product 2","order":0,"status":{"value":"pending","label":"Pending"},"sku":"MF-2443-XLVBV","image":"https://api.staging.theevents.ae/storage/stores/apple/1024-1024-image-1-250x250.jpg","price":100,"price_format":"AED100.00","sale_price":100,"sale_price_format":"AED100.00","start_date":null,"end_date":null,"quantity":null,"with_storehouse_management":false,"created_at":"2025-01-24 09:28:53"},{"id":3112,"name":"Test Product","order":0,"status":{"value":"published","label":"Published"},"sku":"MF-2443-JXODU","image":"https://api.staging.theevents.ae/vendor/core/core/base/images/placeholder.png","price":10,"price_format":"AED10.00","sale_price":10,"sale_price_format":"AED10.00","start_date":null,"end_date":null,"quantity":1000,"with_storehouse_management":true,"created_at":"2025-01-24 09:24:38"}]}
 /// message : null
 
-VendorGetProductsModel vendorGetProductsModelFromJson(String str) => VendorGetProductsModel.fromJson(json.decode(str));
+VendorGetProductsModel vendorGetProductsModelFromJson(String str) =>
+    VendorGetProductsModel.fromJson(json.decode(str));
 
-String vendorGetProductsModelToJson(VendorGetProductsModel data) => json.encode(data.toJson());
+String vendorGetProductsModelToJson(VendorGetProductsModel data) =>
+    json.encode(data.toJson());
 
 class VendorGetProductsModel {
   VendorGetProductsModel({
     bool? error,
     Data? data,
-    dynamic message,
+    message,
   }) {
     _error = error;
     _data = data;
     _message = message;
   }
 
-  VendorGetProductsModel.fromJson(dynamic json) {
+  VendorGetProductsModel.fromJson(json) {
     _error = json['error'];
     _data = json['data'] != null ? Data.fromJson(json['data']) : null;
     _message = json['message'];
@@ -32,7 +34,7 @@ class VendorGetProductsModel {
   VendorGetProductsModel copyWith({
     bool? error,
     Data? data,
-    dynamic message,
+    message,
   }) =>
       VendorGetProductsModel(
         error: error ?? _error,
@@ -73,8 +75,10 @@ class Data {
     _records = records;
   }
 
-  Data.fromJson(dynamic json) {
-    _pagination = json['pagination'] != null ? Pagination.fromJson(json['pagination']) : null;
+  Data.fromJson(json) {
+    _pagination = json['pagination'] != null
+        ? Pagination.fromJson(json['pagination'])
+        : null;
     if (json['records'] != null) {
       _records = [];
       json['records'].forEach((v) {
@@ -111,28 +115,28 @@ class Data {
   }
 }
 
-GetProductRecords recordsFromJson(String str) => GetProductRecords.fromJson(json.decode(str));
+GetProductRecords recordsFromJson(String str) =>
+    GetProductRecords.fromJson(json.decode(str));
 
 String recordsToJson(GetProductRecords data) => json.encode(data.toJson());
 
 class GetProductRecords {
   GetProductRecords({
-    dynamic id,
+    id,
     String? name,
-    dynamic order,
+    order,
     Status? status,
     String? sku,
     String? image,
-    dynamic price,
+    price,
     String? priceFormat,
-    dynamic salePrice,
+    salePrice,
     String? salePriceFormat,
-    dynamic startDate,
-    dynamic endDate,
-    dynamic quantity,
+    startDate,
+    endDate,
+    quantity,
     bool? withStorehouseManagement,
     String? createdAt,
-    bool isDeleting = false,
     bool isDefault = false,
   }) {
     _id = id;
@@ -153,7 +157,7 @@ class GetProductRecords {
     _isDefault = isDefault;
   }
 
-  GetProductRecords.fromJson(dynamic json) {
+  GetProductRecords.fromJson(json) {
     _id = json['id'];
     _name = json['name'];
     _order = json['order'];
@@ -192,19 +196,19 @@ class GetProductRecords {
   bool _isDefault = false;
 
   GetProductRecords copyWith({
-    dynamic id,
+    id,
     String? name,
-    dynamic order,
+    order,
     Status? status,
     String? sku,
     String? image,
-    dynamic price,
+    price,
     String? priceFormat,
-    dynamic salePrice,
+    salePrice,
     String? salePriceFormat,
-    dynamic startDate,
-    dynamic endDate,
-    dynamic quantity,
+    startDate,
+    endDate,
+    quantity,
     bool? withStorehouseManagement,
     String? createdAt,
   }) =>
@@ -222,7 +226,8 @@ class GetProductRecords {
         startDate: startDate ?? _startDate,
         endDate: endDate ?? _endDate,
         quantity: quantity ?? _quantity,
-        withStorehouseManagement: withStorehouseManagement ?? _withStorehouseManagement,
+        withStorehouseManagement:
+            withStorehouseManagement ?? _withStorehouseManagement,
         createdAt: createdAt ?? _createdAt,
       );
 
@@ -307,7 +312,7 @@ class Status {
     _label = label;
   }
 
-  Status.fromJson(dynamic json) {
+  Status.fromJson(json) {
     _value = json['value'];
     _label = json['label'];
   }
@@ -341,16 +346,17 @@ class Status {
 /// current_page : 1
 /// per_page : 10
 
-Pagination paginationFromJson(String str) => Pagination.fromJson(json.decode(str));
+Pagination paginationFromJson(String str) =>
+    Pagination.fromJson(json.decode(str));
 
 String paginationToJson(Pagination data) => json.encode(data.toJson());
 
 class Pagination {
   Pagination({
-    dynamic total,
-    dynamic lastPage,
-    dynamic currentPage,
-    dynamic perPage,
+    total,
+    lastPage,
+    currentPage,
+    perPage,
   }) {
     _total = total;
     _lastPage = lastPage;
@@ -358,7 +364,7 @@ class Pagination {
     _perPage = perPage;
   }
 
-  Pagination.fromJson(dynamic json) {
+  Pagination.fromJson(json) {
     _total = json['total'];
     _lastPage = json['last_page'];
     _currentPage = json['current_page'];
@@ -371,10 +377,10 @@ class Pagination {
   dynamic _perPage;
 
   Pagination copyWith({
-    dynamic total,
-    dynamic lastPage,
-    dynamic currentPage,
-    dynamic perPage,
+    total,
+    lastPage,
+    currentPage,
+    perPage,
   }) =>
       Pagination(
         total: total ?? _total,

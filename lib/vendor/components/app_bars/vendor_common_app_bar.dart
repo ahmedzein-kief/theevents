@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 
 import '../../../vendor/Components/vendor_text_style.dart';
 
-class VendorCommonAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final String title;
-
+class VendorCommonAppBar extends StatelessWidget
+    implements PreferredSizeWidget {
   const VendorCommonAppBar({super.key, required this.title});
+  final String title;
 
   @override
   Widget build(BuildContext context) {
@@ -32,5 +32,5 @@ class VendorCommonAppBar extends StatelessWidget implements PreferredSizeWidget 
   }
 
   @override
-  Size get preferredSize => Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }

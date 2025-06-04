@@ -1,7 +1,7 @@
 import 'dart:convert';
 
+import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/provider/api_response_handler.dart';
-import 'package:event_app/utils/apiendpoints/api_end_point.dart';
 import 'package:flutter/cupertino.dart';
 
 class ForgotPasswordProvider with ChangeNotifier {
@@ -24,17 +24,20 @@ class ForgotPasswordProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      final url = ApiEndpoints.forgotPassword;
+      const url = ApiEndpoints.forgotPassword;
       final headers = {'Content-Type': 'application/json'};
 
-      final response = await _apiResponseHandler.postRequest(url, headers: headers, body: {'email': email});
+      final response = await _apiResponseHandler
+          .postRequest(url, headers: headers, body: {'email': email});
 
       final responseData = json.decode(response.body);
       if (response.statusCode == 200) {
-        ForgotPasswordResponse forgotPasswordResponse = ForgotPasswordResponse.fromJson(responseData);
+        final ForgotPasswordResponse forgotPasswordResponse =
+            ForgotPasswordResponse.fromJson(responseData);
         _message = forgotPasswordResponse.message;
       } else {
-        ForgotPasswordResponse forgotPasswordResponse = ForgotPasswordResponse.fromJson(responseData);
+        final ForgotPasswordResponse forgotPasswordResponse =
+            ForgotPasswordResponse.fromJson(responseData);
         _message = forgotPasswordResponse.message;
         _errors = forgotPasswordResponse.errors;
       }
@@ -50,15 +53,13 @@ class ForgotPasswordProvider with ChangeNotifier {
 //  __________________________________________  FORGOT PASSWORD MODELS ________________________________________
 
 class ForgotPasswordResponse {
-  final String? message;
-  final Map<String, dynamic>? errors;
-
   ForgotPasswordResponse({this.message, this.errors});
 
-  factory ForgotPasswordResponse.fromJson(Map<String, dynamic> json) {
-    return ForgotPasswordResponse(
-      message: json['message'],
-      errors: json['errors'],
-    );
-  }
+  factory ForgotPasswordResponse.fromJson(Map<String, dynamic> json) =>
+      ForgotPasswordResponse(
+        message: json['message'],
+        errors: json['errors'],
+      );
+  final String? message;
+  final Map<String, dynamic>? errors;
 }

@@ -4,9 +4,11 @@ import 'dart:convert';
 /// message : "The email field is required. (and 2 more errors)"
 /// errors : {"email":["The email field is required."],"phone":["The phone field is required."],"country":["The country field is required."]}
 
-VendorSettingsModel vendorSettingsModelFromJson(String str) => VendorSettingsModel.fromJson(json.decode(str));
+VendorSettingsModel vendorSettingsModelFromJson(String str) =>
+    VendorSettingsModel.fromJson(json.decode(str));
 
-String vendorSettingsModelToJson(VendorSettingsModel data) => json.encode(data.toJson());
+String vendorSettingsModelToJson(VendorSettingsModel data) =>
+    json.encode(data.toJson());
 
 class VendorSettingsModel {
   VendorSettingsModel({
@@ -19,7 +21,7 @@ class VendorSettingsModel {
     _errors = errors;
   }
 
-  VendorSettingsModel.fromJson(dynamic json) {
+  VendorSettingsModel.fromJson(json) {
     _data = json['data'];
     _message = json['message'];
     _errors = json['errors'] != null ? Errors.fromJson(json['errors']) : null;
@@ -76,7 +78,7 @@ class Errors {
     _country = country;
   }
 
-  Errors.fromJson(dynamic json) {
+  Errors.fromJson(json) {
     _email = json['email'] != null ? json['email'].cast<String>() : [];
     _phone = json['phone'] != null ? json['phone'].cast<String>() : [];
     _country = json['country'] != null ? json['country'].cast<String>() : [];

@@ -2,14 +2,14 @@ class HomePageData {
   HomePageData({
     bool? error,
     Data? data,
-    dynamic message,
+    message,
   }) {
     _error = error;
     _data = data;
     _message = message;
   }
 
-  HomePageData.fromJson(dynamic json) {
+  HomePageData.fromJson(json) {
     _error = json['error'];
     _data = json['data'] != null ? Data.fromJson(json['data']) : null;
     _message = json['message'];
@@ -22,7 +22,7 @@ class HomePageData {
   HomePageData copyWith({
     bool? error,
     Data? data,
-    dynamic message,
+    message,
   }) =>
       HomePageData(
         error: error ?? _error,
@@ -74,13 +74,14 @@ class Data {
     _content = content;
   }
 
-  Data.fromJson(dynamic json) {
+  Data.fromJson(json) {
     _view = json['view'];
     _name = json['name'];
     _slug = json['slug'];
     _image = json['image'];
     _coverImage = json['cover_image'];
-    _seoMeta = json['seo_meta'] != null ? SeoMeta.fromJson(json['seo_meta']) : null;
+    _seoMeta =
+        json['seo_meta'] != null ? SeoMeta.fromJson(json['seo_meta']) : null;
     _content = json['content'];
   }
 
@@ -149,7 +150,7 @@ class SeoMeta {
   SeoMeta({
     String? title,
     String? description,
-    dynamic image,
+    image,
     String? robots,
   }) {
     _title = title;
@@ -158,7 +159,7 @@ class SeoMeta {
     _robots = robots;
   }
 
-  SeoMeta.fromJson(dynamic json) {
+  SeoMeta.fromJson(json) {
     _title = json['title'];
     _description = json['description'];
     _image = json['image'];
@@ -173,7 +174,7 @@ class SeoMeta {
   SeoMeta copyWith({
     String? title,
     String? description,
-    dynamic image,
+    image,
     String? robots,
   }) =>
       SeoMeta(

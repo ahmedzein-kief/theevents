@@ -2,21 +2,15 @@ import 'package:event_app/views/product_detail_screens/product_detail_screen.dar
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../core/network/api_endpoints/api_end_point.dart';
+import '../../core/services/shared_preferences_helper.dart';
+import '../../core/widgets/custom_items_views/product_card.dart';
 import '../../models/product_packages_models/product_models.dart';
 import '../../provider/cart_item_provider/cart_item_provider.dart';
 import '../../provider/shortcode_fresh_picks_provider/fresh_picks_provider.dart';
 import '../../provider/wishlist_items_provider/wishlist_provider.dart';
-import '../../core/widgets/custom_items_views/product_card.dart';
-import '../../utils/apiendpoints/api_end_point.dart';
-import '../../utils/storage/shared_preferences_helper.dart';
 
 class ProductRelatedItemsScreen extends StatefulWidget {
-  final double screenWidth;
-  final List<RecordProduct> relatedProducts;
-  final String offPercentage;
-  final Function() onBackNavigation;
-  final Function(bool loader) onActionUpdate;
-
   const ProductRelatedItemsScreen({
     super.key,
     required this.screenWidth,
@@ -25,9 +19,15 @@ class ProductRelatedItemsScreen extends StatefulWidget {
     required this.onBackNavigation,
     required this.onActionUpdate,
   });
+  final double screenWidth;
+  final List<RecordProduct> relatedProducts;
+  final String offPercentage;
+  final Function() onBackNavigation;
+  final Function(bool loader) onActionUpdate;
 
   @override
-  State<ProductRelatedItemsScreen> createState() => _ProductRelatedItemsScreenState();
+  State<ProductRelatedItemsScreen> createState() =>
+      _ProductRelatedItemsScreenState();
 }
 
 class _ProductRelatedItemsScreenState extends State<ProductRelatedItemsScreen> {
@@ -40,17 +40,18 @@ class _ProductRelatedItemsScreenState extends State<ProductRelatedItemsScreen> {
   @override
   Widget build(BuildContext context) {
     final freshPicksProvider = Provider.of<FreshPicksProvider>(context);
-    final wishlistProvider = Provider.of<WishlistProvider>(context, listen: false);
+    final wishlistProvider =
+        Provider.of<WishlistProvider>(context, listen: false);
     final cartProvider = Provider.of<CartProvider>(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Title
-        Padding(
-          padding: const EdgeInsets.all(8.0),
+        const Padding(
+          padding: EdgeInsets.all(8.0),
           child: Text(
-            "Related Products", // Title for the list
+            'Related Products', // Title for the list
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -64,12 +65,14 @@ class _ProductRelatedItemsScreenState extends State<ProductRelatedItemsScreen> {
             scrollDirection: Axis.horizontal,
             itemCount: widget.relatedProducts.length,
             itemBuilder: (context, index) {
-              var product = widget.relatedProducts[index];
+              final product = widget.relatedProducts[index];
 
               return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0), // Add horizontal padding
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 8.0), // Add horizontal padding
                 child: SizedBox(
-                  width: widget.screenWidth * 0.4, // Set a fixed width for each item
+                  width: widget.screenWidth *
+                      0.4, // Set a fixed width for each item
                   child: GestureDetector(
                     onTap: () {
                       Navigator.push(
@@ -87,11 +90,20 @@ class _ProductRelatedItemsScreenState extends State<ProductRelatedItemsScreen> {
                     },
                     child: ProductCard(
                       isOutOfStock: product.outOfStock ?? false,
-                      off: widget.offPercentage.isNotEmpty ? '${widget.offPercentage}% off' : '',
-                      priceWithTaxes: (product.prices?.frontSalePrice ?? 0) < (product.prices?.price ?? 0) ? product.prices!.priceWithTaxes : null,
+                      off: widget.offPercentage.isNotEmpty
+                          ? '${widget.offPercentage}% off'
+                          : '',
+                      priceWithTaxes: (product.prices?.frontSalePrice ?? 0) <
+                              (product.prices?.price ?? 0)
+                          ? product.prices!.priceWithTaxes
+                          : null,
                       itemsId: product.id,
-                      imageUrl: (product.image != null && product.image!.isNotEmpty) ? (ApiEndpoints.imageBaseURL + product.image!) : '',
-                      frontSalePriceWithTaxes: product.review?.rating?.toString() ?? '0',
+                      imageUrl:
+                          (product.image != null && product.image!.isNotEmpty)
+                              ? (ApiEndpoints.imageBaseURL + product.image!)
+                              : '',
+                      frontSalePriceWithTaxes:
+                          product.review?.rating?.toString() ?? '0',
                       name: product.name,
                       storeName: product.store!.name.toString(),
                       price: product.prices!.price.toString(),
@@ -105,17 +117,27 @@ class _ProductRelatedItemsScreenState extends State<ProductRelatedItemsScreen> {
                         widget.onActionUpdate(false);
                       },
                       reviewsCount: product.review?.reviewsCount?.toInt(),
-                      isHeartObscure: wishlistProvider.wishlist?.data?.products.any((wishlistProduct) => wishlistProduct.id == product.id) ?? false,
+                      isHeartObscure: wishlistProvider.wishlist?.data?.products
+                              .any((wishlistProduct) =>
+                                  wishlistProduct.id == product.id) ??
+                          false,
                       onHeartTap: () async {
                         widget.onActionUpdate(true);
                         final token = await SecurePreferencesUtil.getToken();
-                        bool isInWishlist = wishlistProvider.wishlist?.data?.products.any((wishlistProduct) => wishlistProduct.id == product.id) ?? false;
+                        final bool isInWishlist = wishlistProvider
+                                .wishlist?.data?.products
+                                .any((wishlistProduct) =>
+                                    wishlistProduct.id == product.id) ??
+                            false;
                         if (isInWishlist) {
-                          await wishlistProvider.deleteWishlistItem(product.id ?? 0, context, token ?? '');
+                          await wishlistProvider.deleteWishlistItem(
+                              product.id ?? 0, context, token ?? '');
                         } else {
-                          await freshPicksProvider.handleHeartTap(context, product.id ?? 0);
+                          await freshPicksProvider.handleHeartTap(
+                              context, product.id ?? 0);
                         }
-                        await wishlistProvider.fetchWishlist(token ?? '', context);
+                        await wishlistProvider.fetchWishlist(
+                            token ?? '', context);
                         widget.onActionUpdate(false);
                       },
                     ),

@@ -17,9 +17,12 @@ class ApiResponseHandler {
     required BuildContext context,
   }) async {
     try {
-      Uri uri = queryParams.isNotEmpty ? Uri.parse(url).replace(queryParameters: queryParams) : Uri.parse(url);
+      final Uri uri = queryParams.isNotEmpty
+          ? Uri.parse(url).replace(queryParameters: queryParams)
+          : Uri.parse(url);
 
-      Map<String, String>? headersOrNull = headers.isNotEmpty ? headers : null;
+      final Map<String, String>? headersOrNull =
+          headers.isNotEmpty ? headers : null;
 
       final response = await http.get(uri, headers: headersOrNull);
 
@@ -33,7 +36,9 @@ class ApiResponseHandler {
         throw HttpException('Failed with status code: ${response.statusCode}');
       }
     } catch (e) {
-      throw authService ? _handleException(e) : Exception('Error during API request: $e');
+      throw authService
+          ? _handleException(e)
+          : Exception('Error during API request: $e');
     }
   }
 
@@ -43,9 +48,12 @@ class ApiResponseHandler {
     Map<String, String> queryParams = const {},
   }) async {
     try {
-      Uri uri = queryParams.isNotEmpty ? Uri.parse(url).replace(queryParameters: queryParams) : Uri.parse(url);
+      final Uri uri = queryParams.isNotEmpty
+          ? Uri.parse(url).replace(queryParameters: queryParams)
+          : Uri.parse(url);
 
-      Map<String, String>? headersOrNull = headers.isNotEmpty ? headers : null;
+      final Map<String, String>? headersOrNull =
+          headers.isNotEmpty ? headers : null;
 
       final response = await http.delete(uri, headers: headersOrNull);
 
@@ -63,22 +71,25 @@ class ApiResponseHandler {
     String url, {
     Map<String, String> headers = const {},
     Map<String, dynamic> body = const {},
-    String bodyString = "",
+    String bodyString = '',
     Map<String, dynamic> queryParams = const {},
     bool authService = false,
   }) async {
     try {
-      Uri uri = queryParams.isNotEmpty ? Uri.parse(url).replace(queryParameters: queryParams) : Uri.parse(url);
+      final Uri uri = queryParams.isNotEmpty
+          ? Uri.parse(url).replace(queryParameters: queryParams)
+          : Uri.parse(url);
 
-      Map<String, String>? headersOrNull = headers.isNotEmpty ? headers : null;
-      dynamic bodyOrNull = body.isNotEmpty
+      final Map<String, String>? headersOrNull =
+          headers.isNotEmpty ? headers : null;
+      final dynamic bodyOrNull = body.isNotEmpty
           ? body
           : bodyString.isNotEmpty
               ? bodyString
               : null;
 
-      final response = await http.post(uri, headers: headersOrNull, body: bodyOrNull);
-
+      final response =
+          await http.post(uri, headers: headersOrNull, body: bodyOrNull);
 
       if (response.statusCode != 401) {
         return authService ? _handleResponse(response) : response;
@@ -86,7 +97,9 @@ class ApiResponseHandler {
         throw HttpException('Failed with status code: ${response.statusCode}');
       }
     } catch (e) {
-      throw authService ? _handleException(e) : Exception('Error during API request: $e');
+      throw authService
+          ? _handleException(e)
+          : Exception('Error during API request: $e');
     }
   }
 
@@ -102,7 +115,7 @@ class ApiResponseHandler {
         url,
         data: formData,
         options: Options(
-          method: "POST",
+          method: 'POST',
           headers: headers,
           contentType: 'multipart/form-data',
         ),
@@ -110,10 +123,7 @@ class ApiResponseHandler {
     } catch (e) {
       if (e is DioException) {
         final errorDetails = e.response?.data;
-
-      } else {
-
-      }
+      } else {}
       // Re-throw the exception or return a dummy response if needed
       throw Exception('Dio request failed: $e');
     }
@@ -122,7 +132,7 @@ class ApiResponseHandler {
   Future<Response<dynamic>> getDioRequest(
     String url, {
     Map<String, String> headers = const {},
-    ResponseType? responseType = null,
+    ResponseType? responseType,
   }) {
     // Make Dio request
     final dio = Dio();
@@ -131,7 +141,7 @@ class ApiResponseHandler {
       return dio.get(
         url,
         options: Options(
-          method: "GET",
+          method: 'GET',
           headers: headers,
           responseType: responseType,
         ),
@@ -139,10 +149,7 @@ class ApiResponseHandler {
     } catch (e) {
       if (e is DioException) {
         final errorDetails = e.response?.data;
-
-      } else {
-
-      }
+      } else {}
       // Re-throw the exception or return a dummy response if needed
       throw Exception('Dio request failed: $e');
     }
@@ -170,7 +177,8 @@ class ApiResponseHandler {
       case HttpStatus.forbidden:
         return {
           'status': false,
-          'message': 'Forbidden. You do not have permission to access this resource.',
+          'message':
+              'Forbidden. You do not have permission to access this resource.',
         };
       case HttpStatus.internalServerError:
         return {
@@ -178,7 +186,8 @@ class ApiResponseHandler {
           'message': 'Internal server error. Please try again later.',
         };
       default:
-        final errorMessages = responseBody['message'] ?? 'Unknown error occurred';
+        final errorMessages =
+            responseBody['message'] ?? 'Unknown error occurred';
         return {'status': false, 'message': errorMessages};
     }
   }
@@ -187,7 +196,8 @@ class ApiResponseHandler {
     if (e is SocketException) {
       return {
         'status': false,
-        'message': 'No internet connection. Please check your network settings.',
+        'message':
+            'No internet connection. Please check your network settings.',
       };
     } else if (e is TimeoutException) {
       return {

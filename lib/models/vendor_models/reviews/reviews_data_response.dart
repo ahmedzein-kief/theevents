@@ -1,6 +1,7 @@
 import 'dart:convert';
 
-ReviewsDataResponse reviewsDataResponseFromJson(String str) => ReviewsDataResponse.fromJson(json.decode(str));
+ReviewsDataResponse reviewsDataResponseFromJson(String str) =>
+    ReviewsDataResponse.fromJson(json.decode(str));
 
 class ReviewsDataResponse {
   ReviewsDataResponse({
@@ -8,13 +9,14 @@ class ReviewsDataResponse {
     required this.error,
   });
 
+  factory ReviewsDataResponse.fromJson(Map<dynamic, dynamic> json) =>
+      ReviewsDataResponse(
+        data: Data.fromJson(json['data']),
+        error: json['error'],
+      );
+
   Data? data;
   bool error;
-
-  factory ReviewsDataResponse.fromJson(Map<dynamic, dynamic> json) => ReviewsDataResponse(
-        data: Data.fromJson(json["data"]),
-        error: json["error"],
-      );
 }
 
 class Data {
@@ -23,13 +25,14 @@ class Data {
     required this.records,
   });
 
+  factory Data.fromJson(Map<dynamic, dynamic> json) => Data(
+        pagination: Pagination.fromJson(json['pagination']),
+        records: List<ReviewRecord>.from(
+            json['records'].map((x) => ReviewRecord.fromJson(x))),
+      );
+
   Pagination? pagination;
   List<ReviewRecord> records;
-
-  factory Data.fromJson(Map<dynamic, dynamic> json) => Data(
-        pagination: Pagination.fromJson(json["pagination"]),
-        records: List<ReviewRecord>.from(json["records"].map((x) => ReviewRecord.fromJson(x))),
-      );
 }
 
 class Pagination {
@@ -40,17 +43,17 @@ class Pagination {
     required this.currentPage,
   });
 
+  factory Pagination.fromJson(Map<dynamic, dynamic> json) => Pagination(
+        perPage: json['per_page'],
+        total: json['total'],
+        lastPage: json['last_page'],
+        currentPage: json['current_page'],
+      );
+
   int perPage;
   int total;
   int lastPage;
   int currentPage;
-
-  factory Pagination.fromJson(Map<dynamic, dynamic> json) => Pagination(
-        perPage: json["per_page"],
-        total: json["total"],
-        lastPage: json["last_page"],
-        currentPage: json["current_page"],
-      );
 }
 
 class ReviewRecord {
@@ -66,6 +69,18 @@ class ReviewRecord {
     required this.productName,
   });
 
+  factory ReviewRecord.fromJson(Map<dynamic, dynamic> json) => ReviewRecord(
+        images: List<dynamic>.from(json['images'].map((x) => x)),
+        star: json['star'],
+        productId: json['product_id'],
+        createdAt: DateTime.parse(json['created_at']),
+        comment: json['comment'],
+        id: json['id'],
+        customerName: json['customer_name'],
+        customerId: json['customer_id'],
+        productName: json['product_name'],
+      );
+
   List<dynamic> images;
   int star;
   int productId;
@@ -75,16 +90,4 @@ class ReviewRecord {
   String customerName;
   int customerId;
   String productName;
-
-  factory ReviewRecord.fromJson(Map<dynamic, dynamic> json) => ReviewRecord(
-        images: List<dynamic>.from(json["images"].map((x) => x)),
-        star: json["star"],
-        productId: json["product_id"],
-        createdAt: DateTime.parse(json["created_at"]),
-        comment: json["comment"],
-        id: json["id"],
-        customerName: json["customer_name"],
-        customerId: json["customer_id"],
-        productName: json["product_name"],
-      );
 }

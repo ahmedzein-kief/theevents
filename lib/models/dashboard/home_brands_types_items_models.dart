@@ -1,61 +1,56 @@
 class HomeBrandsTypesModels {
-  bool? error;
-  Data? data;
-  Null message;
-
   HomeBrandsTypesModels({this.error, this.data, this.message});
 
   HomeBrandsTypesModels.fromJson(Map<String, dynamic> json) {
     error = json['error'];
-    data = json['data'] != null ? new Data.fromJson(json['data']) : null;
+    data = json['data'] != null ? Data.fromJson(json['data']) : null;
     message = json['message'];
   }
+  bool? error;
+  Data? data;
+  Null message;
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['error'] = this.error;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['error'] = error;
     if (this.data != null) {
       data['data'] = this.data!.toJson();
     }
-    data['message'] = this.message;
+    data['message'] = message;
     return data;
   }
 }
 
 class Data {
-  Pagination? pagination;
-  List<Records>? records;
-
   Data({this.pagination, this.records});
 
   Data.fromJson(Map<String, dynamic> json) {
-    pagination = json['pagination'] != null ? new Pagination.fromJson(json['pagination']) : null;
+    pagination = json['pagination'] != null
+        ? Pagination.fromJson(json['pagination'])
+        : null;
     if (json['records'] != null) {
       records = <Records>[];
       json['records'].forEach((v) {
-        records!.add(new Records.fromJson(v));
+        records!.add(Records.fromJson(v));
       });
     }
   }
+  Pagination? pagination;
+  List<Records>? records;
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.pagination != null) {
-      data['pagination'] = this.pagination!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if (pagination != null) {
+      data['pagination'] = pagination!.toJson();
     }
-    if (this.records != null) {
-      data['records'] = this.records!.map((v) => v.toJson()).toList();
+    if (records != null) {
+      data['records'] = records!.map((v) => v.toJson()).toList();
     }
     return data;
   }
 }
 
 class Pagination {
-  int? total;
-  int? lastPage;
-  int? currentPage;
-  int? perPage;
-
   Pagination({this.total, this.lastPage, this.currentPage, this.perPage});
 
   Pagination.fromJson(Map<String, dynamic> json) {
@@ -64,29 +59,32 @@ class Pagination {
     currentPage = json['current_page'];
     perPage = json['per_page'];
   }
+  int? total;
+  int? lastPage;
+  int? currentPage;
+  int? perPage;
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['total'] = this.total;
-    data['last_page'] = this.lastPage;
-    data['current_page'] = this.currentPage;
-    data['per_page'] = this.perPage;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['total'] = total;
+    data['last_page'] = lastPage;
+    data['current_page'] = currentPage;
+    data['per_page'] = perPage;
     return data;
   }
 }
 
 class Records {
-  int? id;
-  String? name;
-  Null title;
-  String? description;
-  String? slug;
-  int? items;
-  String? image;
-  String? thumb;
-  String? coverImage;
-
-  Records({this.id, this.name, this.title, this.description, this.slug, this.items, this.image, this.thumb, this.coverImage});
+  Records(
+      {this.id,
+      this.name,
+      this.title,
+      this.description,
+      this.slug,
+      this.items,
+      this.image,
+      this.thumb,
+      this.coverImage});
 
   Records.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -99,18 +97,27 @@ class Records {
     thumb = json['thumb'];
     coverImage = json['cover_image'];
   }
+  int? id;
+  String? name;
+  Null title;
+  String? description;
+  String? slug;
+  int? items;
+  String? image;
+  String? thumb;
+  String? coverImage;
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['name'] = this.name;
-    data['title'] = this.title;
-    data['description'] = this.description;
-    data['slug'] = this.slug;
-    data['items'] = this.items;
-    data['image'] = this.image;
-    data['thumb'] = this.thumb;
-    data['cover_image'] = this.coverImage;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['name'] = name;
+    data['title'] = title;
+    data['description'] = description;
+    data['slug'] = slug;
+    data['items'] = items;
+    data['image'] = image;
+    data['thumb'] = thumb;
+    data['cover_image'] = coverImage;
     return data;
   }
 }

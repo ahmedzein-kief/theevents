@@ -1,13 +1,13 @@
+import 'package:event_app/core/services/shared_preferences_helper.dart';
 import 'package:event_app/data/vendor/data/response/ApiResponse.dart';
 import 'package:event_app/models/vendor_models/dashboard/dashboard_data_response.dart';
 import 'package:event_app/provider/vendor/vendor_repository.dart';
-import 'package:event_app/utils/storage/shared_preferences_helper.dart';
 import 'package:flutter/cupertino.dart';
 
 class VendorDashboardViewModel with ChangeNotifier {
   String? _token;
 
-  setToken() async {
+  Future<void> setToken() async {
     _token = await SecurePreferencesUtil.getToken();
   }
 
@@ -31,12 +31,12 @@ class VendorDashboardViewModel with ChangeNotifier {
   }
 
   /// get products method
-  getDashboardData(String startDate, String endDate) async {
+  Future<void> getDashboardData(String startDate, String endDate) async {
     await setToken();
     try {
-      Map<String, String> headers = <String, String>{
+      final Map<String, String> headers = <String, String>{
         // 'Content-Type': 'application/json',
-        "Authorization": _token!,
+        'Authorization': _token!,
       };
 
       /*'date_from': '2022-09-01',
@@ -50,7 +50,8 @@ class VendorDashboardViewModel with ChangeNotifier {
       // If successful, increment the current page and append data
 
       setApiResponse = ApiResponse.loading();
-      final DashboardDataResponse response = await _myRepo.getDashboardData(headers: headers, queryParams: queryParams);
+      final DashboardDataResponse response = await _myRepo.getDashboardData(
+          headers: headers, queryParams: queryParams);
       setApiResponse = ApiResponse.completed(response);
     } catch (error) {
       setApiResponse = ApiResponse.error(error.toString());

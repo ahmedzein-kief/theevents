@@ -1,7 +1,7 @@
 import 'dart:convert';
 
+import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/provider/api_response_handler.dart';
-import 'package:event_app/utils/apiendpoints/api_end_point.dart';
 import 'package:flutter/material.dart';
 
 import '../../models/dashboard/events_bazaar_model/events_bazaar_banner_model.dart';
@@ -25,7 +25,7 @@ class EventBazaarProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
     // final response = await http.get(Uri.parse('https://api.staging.theevents.ae/api/v1/countries/list'));
-    final url = ApiEndpoints.eventsBazaarList;
+    const url = ApiEndpoints.eventsBazaarList;
 
     final response = await _apiResponseHandler.getRequest(
       url,
@@ -36,7 +36,8 @@ class EventBazaarProvider with ChangeNotifier {
       final data = json.decode(response.body);
       final eventsBazaarModels = EventsBazaarModels.fromJson(data);
       _events = eventsBazaarModels.data?.list ?? [];
-      _events = _events.where((event) => countries.contains(event.value)).toList();
+      _events =
+          _events.where((event) => countries.contains(event.value)).toList();
     } else {
       throw Exception('Failed to load ');
     }
@@ -56,7 +57,7 @@ class EventBazaarProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    final url = ApiEndpoints.eventsBazaarBanner;
+    const url = ApiEndpoints.eventsBazaarBanner;
 
     final response = await _apiResponseHandler.getRequest(
       url,

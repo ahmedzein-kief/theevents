@@ -1,24 +1,27 @@
 import 'dart:io';
-import 'package:path_provider/path_provider.dart';
+
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:event_app/core/styles/app_colors.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:file_saver/file_saver.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:file_picker/file_picker.dart';
 
 class PDFDownloader {
   // Function to save a file in the Downloads folder
   Future<String?> saveFileInDownloads(
-      BuildContext context, String content, String filename) async {
+    BuildContext context,
+    String content,
+    String filename,
+  ) async {
     try {
       if (Platform.isAndroid) {
         // Request storage permission on Android
-        bool isPermissionGranted =
+        final bool isPermissionGranted =
             await requestManageExternalStoragePermission(context);
         if (!isPermissionGranted) {
-          return "Permission Denied";
+          return 'Permission Denied';
         }
       }
 
@@ -29,7 +32,7 @@ class PDFDownloader {
 
       if (Platform.isIOS) {
         // Ask user where to save the file
-        String? selectedDirectory =
+        final String? selectedDirectory =
             await FilePicker.platform.getDirectoryPath();
 
         if (selectedDirectory == null) {
@@ -58,14 +61,17 @@ class PDFDownloader {
   }
 
   Future<String?> saveFileInDownloadsUint(
-      BuildContext context, Uint8List? binaryData, String filename) async {
+    BuildContext context,
+    Uint8List? binaryData,
+    String filename,
+  ) async {
     try {
       if (Platform.isAndroid) {
         // Request storage permission on Android
-        bool isPermissionGranted =
+        final bool isPermissionGranted =
             await requestManageExternalStoragePermission(context);
         if (!isPermissionGranted) {
-          return "Permission Denied";
+          return 'Permission Denied';
         }
       }
 
@@ -73,7 +79,7 @@ class PDFDownloader {
 
       if (Platform.isIOS) {
         // Ask user where to save the file
-        String? selectedDirectory =
+        final String? selectedDirectory =
             await FilePicker.platform.getDirectoryPath();
 
         if (selectedDirectory == null) {
@@ -102,7 +108,8 @@ class PDFDownloader {
   }
 
   Future<bool> requestManageExternalStoragePermission(
-      BuildContext context) async {
+    BuildContext context,
+  ) async {
     // Check if permission is already granted
     if (await checkAndroidVersion10orGreater()) {
       return true;
@@ -114,41 +121,40 @@ class PDFDownloader {
       // Show a dialog explaining why the permission is needed
       final shouldRequest = await showDialog<bool>(
         context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Storage Permission Required'),
-            content: Text(
-                'This app requires access to your device\'s external storage to store the invoice. Please grant the permission to proceed.'),
-            actions: [
-              TextButton(
-                  onPressed: () =>
-                      Navigator.of(context).pop(false), // User declines
-                  child: Text(
-                    'Cancel',
-                  ),
-                  style: TextButton.styleFrom(
-                    foregroundColor:
-                        AppColors.lightCoral, // Set text color for "No"
-                  )),
-              TextButton(
-                  onPressed: () =>
-                      Navigator.of(context).pop(true), // User agrees
-                  child: Text('Allow'),
-                  style: TextButton.styleFrom(
-                    foregroundColor:
-                        AppColors.lightCoral, // Set text color for "No"
-                  )),
-            ],
-          );
-        },
+        builder: (BuildContext context) => AlertDialog(
+          title: const Text('Storage Permission Required'),
+          content: const Text(
+            'This app requires access to your device\'s external storage to store the invoice. Please grant the permission to proceed.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              style: TextButton.styleFrom(
+                foregroundColor:
+                    AppColors.lightCoral, // Set text color for "No"
+              ), // User declines
+              child: const Text(
+                'Cancel',
+              ),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              style: TextButton.styleFrom(
+                foregroundColor:
+                    AppColors.lightCoral, // Set text color for "No"
+              ), // User agrees
+              child: const Text('Allow'),
+            ),
+          ],
+        ),
       );
 
       if (shouldRequest == true) {
         // Request the permission
-        var status = await Permission.storage.status;
+        final status = await Permission.storage.status;
 
         if (!status.isGranted) {
-          var result = await Permission.storage.request();
+          final result = await Permission.storage.request();
           return result.isGranted == true;
         }
       }

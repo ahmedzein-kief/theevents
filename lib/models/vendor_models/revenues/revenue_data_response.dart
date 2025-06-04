@@ -1,6 +1,7 @@
 import 'dart:convert';
 
-RevenueDataResponse revenueDataResponseFromJson(String str) => RevenueDataResponse.fromJson(json.decode(str));
+RevenueDataResponse revenueDataResponseFromJson(String str) =>
+    RevenueDataResponse.fromJson(json.decode(str));
 
 class RevenueDataResponse {
   RevenueDataResponse({
@@ -8,13 +9,14 @@ class RevenueDataResponse {
     required this.error,
   });
 
+  factory RevenueDataResponse.fromJson(Map<dynamic, dynamic> json) =>
+      RevenueDataResponse(
+        data: Data.fromJson(json['data']),
+        error: json['error'],
+      );
+
   Data? data;
   bool error;
-
-  factory RevenueDataResponse.fromJson(Map<dynamic, dynamic> json) => RevenueDataResponse(
-        data: Data.fromJson(json["data"]),
-        error: json["error"],
-      );
 }
 
 class Data {
@@ -23,13 +25,14 @@ class Data {
     required this.records,
   });
 
+  factory Data.fromJson(Map<dynamic, dynamic> json) => Data(
+        pagination: Pagination.fromJson(json['pagination']),
+        records: List<RevenueRecord>.from(
+            json['records'].map((x) => RevenueRecord.fromJson(x))),
+      );
+
   Pagination? pagination;
   List<RevenueRecord> records;
-
-  factory Data.fromJson(Map<dynamic, dynamic> json) => Data(
-        pagination: Pagination.fromJson(json["pagination"]),
-        records: List<RevenueRecord>.from(json["records"].map((x) => RevenueRecord.fromJson(x))),
-      );
 }
 
 class Pagination {
@@ -40,17 +43,17 @@ class Pagination {
     required this.currentPage,
   });
 
+  factory Pagination.fromJson(Map<dynamic, dynamic> json) => Pagination(
+        perPage: json['per_page'],
+        total: json['total'],
+        lastPage: json['last_page'],
+        currentPage: json['current_page'],
+      );
+
   int perPage;
   int total;
   int lastPage;
   int currentPage;
-
-  factory Pagination.fromJson(Map<dynamic, dynamic> json) => Pagination(
-        perPage: json["per_page"],
-        total: json["total"],
-        lastPage: json["last_page"],
-        currentPage: json["current_page"],
-      );
 }
 
 class RevenueRecord {
@@ -68,6 +71,20 @@ class RevenueRecord {
     required this.orderId,
   });
 
+  factory RevenueRecord.fromJson(Map<dynamic, dynamic> json) => RevenueRecord(
+        orderCode: json['order_code'],
+        amount: json['amount'],
+        subAmount: json['sub_amount'],
+        subAmountFormat: json['sub_amount_format'],
+        fee: json['fee'],
+        feeFormat: json['fee_format'],
+        createdAt: DateTime.parse(json['created_at']),
+        id: json['id'],
+        type: json['type'],
+        amountFormat: json['amount_format'],
+        orderId: json['order_id'],
+      );
+
   String orderCode;
   String amount;
   String subAmount;
@@ -79,18 +96,4 @@ class RevenueRecord {
   String type;
   String amountFormat;
   int orderId;
-
-  factory RevenueRecord.fromJson(Map<dynamic, dynamic> json) => RevenueRecord(
-        orderCode: json["order_code"],
-        amount: json["amount"],
-        subAmount: json["sub_amount"],
-        subAmountFormat: json["sub_amount_format"],
-        fee: json["fee"],
-        feeFormat: json["fee_format"],
-        createdAt: DateTime.parse(json["created_at"]),
-        id: json["id"],
-        type: json["type"],
-        amountFormat: json["amount_format"],
-        orderId: json["order_id"],
-      );
 }

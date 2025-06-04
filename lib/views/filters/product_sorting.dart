@@ -5,16 +5,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // For loading the JSON file
 
 class SortAndFilterDropdown extends StatefulWidget {
-  final String selectedSortBy;
-  final Function(String) onSortChanged;
-  final VoidCallback onFilterPressed; // Callback for the filter action
+  // Callback for the filter action
 
   const SortAndFilterDropdown({
-    Key? key,
+    super.key,
     required this.selectedSortBy,
     required this.onSortChanged,
     required this.onFilterPressed, // Required for filter button
-  }) : super(key: key);
+  });
+  final String selectedSortBy;
+  final Function(String) onSortChanged;
+  final VoidCallback onFilterPressed;
 
   @override
   _SortAndFilterDropdownState createState() => _SortAndFilterDropdownState();
@@ -33,23 +34,26 @@ class _SortAndFilterDropdownState extends State<SortAndFilterDropdown> {
 
   // Load and parse the JSON file for sort options
   Future<void> _loadSortOptions() async {
-    final String response = await rootBundle.loadString('assets/sort_options.json');
+    final String response =
+        await rootBundle.loadString('assets/sort_options.json');
     final List<dynamic> data = jsonDecode(response);
 
     setState(() {
       sortOptions = data
-          .map((item) => {
-                'value': item['value'] as String,
-                'label': item['label'] as String,
-              })
+          .map(
+            (item) => {
+              'value': item['value'] as String,
+              'label': item['label'] as String,
+            },
+          )
           .toList();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.sizeOf(context).width;
-    double height = MediaQuery.sizeOf(context).height;
+    final double width = MediaQuery.sizeOf(context).width;
+    final double height = MediaQuery.sizeOf(context).height;
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -66,14 +70,14 @@ class _SortAndFilterDropdownState extends State<SortAndFilterDropdown> {
             //   tooltip: 'Filter Options',
             // ),
 
-            Container(
+            SizedBox(
               height: height * 0.05, // 5% of the screen height
               width: width * 0.1, // 10% of the screen width
               child: Tooltip(
-                message: "Filter Options",
+                message: 'Filter Options',
                 child: InkWell(
                   onTap: widget.onFilterPressed,
-                  child: Row(
+                  child: const Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [Icon(size: 25, Icons.filter_list_rounded)],
                   ),
@@ -98,12 +102,15 @@ class _SortAndFilterDropdownState extends State<SortAndFilterDropdown> {
                           widget.onSortChanged(newValue);
                         }
                       },
-                      items: sortOptions.map((option) {
-                        return DropdownMenuItem<String>(
-                          value: option['value'],
-                          child: Text(option['label']!, style: sortingStyle(context)),
-                        );
-                      }).toList(),
+                      items: sortOptions
+                          .map(
+                            (option) => DropdownMenuItem<String>(
+                              value: option['value'],
+                              child: Text(option['label']!,
+                                  style: sortingStyle(context)),
+                            ),
+                          )
+                          .toList(),
                     ),
                   ),
                 ),

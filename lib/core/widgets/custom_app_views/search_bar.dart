@@ -8,18 +8,17 @@ import '../../../provider/search_bar_provider/search_bar_provider.dart';
 import '../../styles/app_colors.dart';
 
 class CustomSearchBar extends StatefulWidget {
-  final TextEditingController? controller;
-  final String hintText;
-  final bool autofocus;
-  final Color borderColor;
-
-  CustomSearchBar({
-    Key? key,
+  const CustomSearchBar({
+    super.key,
     this.hintText = 'Search Events',
     this.controller,
     this.autofocus = false,
     this.borderColor = const Color(0xFFF3A095),
-  }) : super(key: key);
+  });
+  final TextEditingController? controller;
+  final String hintText;
+  final bool autofocus;
+  final Color borderColor;
 
   @override
   State<CustomSearchBar> createState() => _CustomSearchBarState();
@@ -42,11 +41,16 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
 
   @override
   Widget build(BuildContext context) {
-    double screenHeight = MediaQuery.sizeOf(context).height;
-    double screenWidth = MediaQuery.sizeOf(context).width;
-    final searchProvider = Provider.of<SearchBarProvider>(context, listen: false);
+    final double screenHeight = MediaQuery.sizeOf(context).height;
+    final double screenWidth = MediaQuery.sizeOf(context).width;
+    final searchProvider =
+        Provider.of<SearchBarProvider>(context, listen: false);
     return Padding(
-      padding: EdgeInsets.only(left: screenWidth * 0.02, right: screenWidth * 0.02, bottom: screenHeight * 0.005, top: screenHeight * 0.01),
+      padding: EdgeInsets.only(
+          left: screenWidth * 0.02,
+          right: screenWidth * 0.02,
+          bottom: screenHeight * 0.005,
+          top: screenHeight * 0.01),
       child: Container(
         height: screenHeight * 0.06,
         width: double.infinity,
@@ -63,7 +67,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SvgPicture.asset(
-                "assets/searchBar.svg",
+                'assets/searchBar.svg',
                 height: 24,
                 width: 24,
                 // color: Colors.black,
@@ -94,11 +98,13 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
                   textAlign: TextAlign.start,
                   onSubmitted: (value) {
                     Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (builder) => SearchScreen(
-                                  query: value,
-                                )));
+                      context,
+                      MaterialPageRoute(
+                        builder: (builder) => SearchScreen(
+                          query: value,
+                        ),
+                      ),
+                    );
                     //    ert
                     if (value.isEmpty) {
                       searchProvider.fetchProductsNew(

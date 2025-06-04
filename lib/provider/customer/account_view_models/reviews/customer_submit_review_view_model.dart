@@ -3,14 +3,14 @@ import 'package:event_app/models/vendor_models/common_models/common_post_request
 import 'package:event_app/provider/customer/Repository/customer_repository.dart';
 import 'package:flutter/cupertino.dart';
 
-import '../../../../data/vendor/data/response/ApiResponse.dart';
+import '../../../../core/services/shared_preferences_helper.dart';
 import '../../../../core/utils/custom_toast.dart';
-import '../../../../utils/storage/shared_preferences_helper.dart';
+import '../../../../data/vendor/data/response/ApiResponse.dart';
 
 class CustomerSubmitReviewViewModel with ChangeNotifier {
   String? _token;
 
-  setToken() async {
+  Future<void> setToken() async {
     _token = await SecurePreferencesUtil.getToken();
   }
 
@@ -31,24 +31,27 @@ class CustomerSubmitReviewViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> customerSubmitReview({required FormData form, required BuildContext context}) async {
+  Future<bool> customerSubmitReview(
+      {required FormData form, required BuildContext context}) async {
     try {
       setLoading(true);
       setApiResponse = ApiResponse.loading();
       await setToken();
 
-      Map<String, String> headers = <String, String>{
-        "Authorization": _token!,
+      final Map<String, String> headers = <String, String>{
+        'Authorization': _token!,
       };
 
-      CommonPostRequestModel response = await _myRepo.customerSubmitReview(headers: headers, form: form);
+      final CommonPostRequestModel response =
+          await _myRepo.customerSubmitReview(headers: headers, form: form);
       setApiResponse = ApiResponse.completed(response);
-      CustomSnackbar.showSuccess(context, apiResponse.data?.message?.toString() ?? 'Success');
+      CustomSnackbar.showSuccess(
+          context, apiResponse.data?.message?.toString() ?? 'Success');
       setLoading(false);
       return true;
     } catch (error) {
       setApiResponse = ApiResponse.error(error.toString());
-      CustomSnackbar.showError(context, '${error.toString()}');
+      CustomSnackbar.showError(context, error.toString());
       setLoading(false);
       return false;
     }

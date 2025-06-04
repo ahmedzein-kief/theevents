@@ -5,36 +5,40 @@ enum CouponType { amount, percentage, shipping }
 
 class CouponViewUtils {
   /// Label Text Style
-  static TextStyle couponLabelTextStyle() {
-    return TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.w700);
-  }
+  static TextStyle couponLabelTextStyle() => const TextStyle(
+      color: Colors.black, fontSize: 14, fontWeight: FontWeight.w700);
 
   /// discount filed prefix and suffix
-  static Widget discountFieldPrefixAndSuffix({required CouponType couponType, required bool isPrefix, required screenWidth}) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04, vertical: 0),
-          child: Text(
-            isPrefix ? getDiscountFieldPrefixText(couponType: couponType) : getDiscountFieldSuffixText(couponType: couponType),
-            style: discountPrefixStyle(),
-            textAlign: TextAlign.center,
+  static Widget discountFieldPrefixAndSuffix(
+          {required CouponType couponType,
+          required bool isPrefix,
+          required screenWidth}) =>
+      Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Padding(
+            padding: EdgeInsets.symmetric(
+                horizontal: screenWidth * 0.04, vertical: 0),
+            child: Text(
+              isPrefix
+                  ? getDiscountFieldPrefixText(couponType: couponType)
+                  : getDiscountFieldSuffixText(couponType: couponType),
+              style: discountPrefixStyle(),
+              textAlign: TextAlign.center,
+            ),
           ),
-        ),
-      ],
-    );
-  }
+        ],
+      );
 
   /// prefix text for discount field
   static String getDiscountFieldPrefixText({required CouponType couponType}) {
     switch (couponType) {
       case CouponType.amount:
-        return "Discount";
+        return 'Discount';
       case CouponType.percentage:
-        return "Discount";
+        return 'Discount';
       case CouponType.shipping:
-        return "When shipping is less than";
+        return 'When shipping is less than';
     }
   }
 
@@ -42,33 +46,35 @@ class CouponViewUtils {
   static String getDiscountFieldSuffixText({required CouponType couponType}) {
     switch (couponType) {
       case CouponType.amount:
-        return "AED";
+        return 'AED';
       case CouponType.percentage:
-        return "%";
+        return '%';
       case CouponType.shipping:
-        return "AED";
+        return 'AED';
     }
   }
 
   /// discount field prefix text style
-  static TextStyle discountPrefixStyle() {
-    return TextStyle(color: Colors.grey, fontSize: 14, fontWeight: FontWeight.w700);
-  }
+  static TextStyle discountPrefixStyle() => const TextStyle(
+      color: Colors.grey, fontSize: 14, fontWeight: FontWeight.w700);
 
   static List<DropdownMenuItem> couponTypeMenuItems() => [
-        DropdownMenuItem(value: CouponType.amount, child: Text("Amount - Fixed")),
-        DropdownMenuItem(value: CouponType.percentage, child: Text("Discount %")),
-        DropdownMenuItem(value: CouponType.shipping, child: Text("Free Shipping"))
+        const DropdownMenuItem(
+            value: CouponType.amount, child: Text('Amount - Fixed')),
+        const DropdownMenuItem(
+            value: CouponType.percentage, child: Text('Discount %')),
+        const DropdownMenuItem(
+            value: CouponType.shipping, child: Text('Free Shipping')),
       ];
 
   static String getTypeOption(CouponType couponType) {
     switch (couponType) {
       case CouponType.amount:
-        return "amount";
+        return 'amount';
       case CouponType.shipping:
-        return "shipping";
+        return 'shipping';
       case CouponType.percentage:
-        return "percentage";
+        return 'percentage';
     }
   }
 
@@ -84,7 +90,7 @@ class CouponViewUtils {
       case 'percentage':
         return "Discount ${value?.toStringAsFixed(1) ?? '0'}% for all orders";
       default:
-        return "Invalid coupon type";
+        return 'Invalid coupon type';
     }
   }
 }

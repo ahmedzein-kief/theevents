@@ -7,34 +7,35 @@ import '../../app_exceptions.dart';
 import 'DioBaseApiServices.dart';
 
 class DioNetworkApiServices extends DioBaseApiServices {
+  DioNetworkApiServices() {
+    // Initialize Logger
+    _dio.interceptors.add(
+      InterceptorsWrapper(
+        onRequest: (options, handler) {
+          logger.i('Request: ${options.method} ${options.uri}');
+          logger.i('Request Headers: ${options.headers}');
+          logger.d('Request Data: ${options.data}');
+          return handler.next(options);
+        },
+        onResponse: (response, handler) {
+          logger.d('Response Status: ${response.statusCode}');
+          logger.d('Response Data: ${response.data}');
+          return handler.next(response);
+        },
+        onError: (DioException e, handler) {
+          logger.e('Error: ${e.message}');
+          if (e.response != null) {
+            logger.e('Error Response Status: ${e.response?.statusCode}');
+            logger.e('Error Response Data: ${e.response?.data}');
+          }
+          return handler.next(e);
+        },
+      ),
+    );
+  }
   final Dio _dio = Dio();
 
   final logger = Logger();
-
-  DioNetworkApiServices() {
-    // Initialize Logger
-    _dio.interceptors.add(InterceptorsWrapper(
-      onRequest: (options, handler) {
-        logger.i('Request: ${options.method} ${options.uri}');
-        logger.i('Request Headers: ${options.headers}');
-        logger.d('Request Data: ${options.data}');
-        return handler.next(options);
-      },
-      onResponse: (response, handler) {
-        logger.d('Response Status: ${response.statusCode}');
-        logger.d('Response Data: ${response.data}');
-        return handler.next(response);
-      },
-      onError: (DioException e, handler) {
-        logger.e('Error: ${e.message}');
-        if (e.response != null) {
-          logger.e('Error Response Status: ${e.response?.statusCode}');
-          logger.e('Error Response Data: ${e.response?.data}');
-        }
-        return handler.next(e);
-      },
-    ));
-  }
 
   @override
   Future<dynamic> dioGetApiService({
@@ -64,7 +65,7 @@ class DioNetworkApiServices extends DioBaseApiServices {
   Future<dynamic> dioPostApiService({
     required String url,
     required Map<String, dynamic> headers,
-    required dynamic body,
+    required body,
   }) async {
     try {
       final response = await _dio.post(
@@ -85,7 +86,7 @@ class DioNetworkApiServices extends DioBaseApiServices {
   Future<dynamic> dioPutApiService({
     required String url,
     required Map<String, dynamic> headers,
-    required dynamic body,
+    required body,
   }) async {
     try {
       final response = await _dio.put(
@@ -106,7 +107,7 @@ class DioNetworkApiServices extends DioBaseApiServices {
   Future<dynamic> dioPatchApiService({
     required String url,
     required Map<String, dynamic> headers,
-    required dynamic body,
+    required body,
   }) async {
     try {
       final response = await _dio.patch(
@@ -183,11 +184,12 @@ class DioNetworkApiServices extends DioBaseApiServices {
       case 500:
         throw InternalServerErrorException(_errorMessage(response));
       default:
-        throw FetchDataException('Error occurred while communicating with server with status code ${response.statusCode}');
+        throw FetchDataException(
+            'Error occurred while communicating with server with status code ${response.statusCode}');
     }
   }
 
-  AppExceptions _handleError(dynamic error) {
+  AppExceptions _handleError(error) {
     if (error is DioException) {
       switch (error.type) {
         case DioExceptionType.connectionTimeout:
@@ -202,7 +204,8 @@ class DioNetworkApiServices extends DioBaseApiServices {
           if (error.response?.statusCode != null) {
             return ValidationException(_errorMessage(error.response!));
           }
-          return FetchDataException('Received invalid status code: ${error.response?.statusCode}');
+          return FetchDataException(
+              'Received invalid status code: ${error.response?.statusCode}');
         case DioExceptionType.cancel:
           return FetchDataException('Request cancelled');
         case DioExceptionType.badCertificate:
@@ -232,7 +235,6 @@ class DioNetworkApiServices extends DioBaseApiServices {
         final error = errorData['error'];
         final message = errorData['message'];
 
-
         // Initialize a variable to store error messages
         String allErrors = '';
 
@@ -240,7 +242,7 @@ class DioNetworkApiServices extends DioBaseApiServices {
         if (errors != null && errors is Map) {
           errors.forEach((key, value) {
             if (value is List) {
-              for (var msg in value) {
+              for (final msg in value) {
                 allErrors += '$key: $msg\n'; // Append each error message
               }
             }

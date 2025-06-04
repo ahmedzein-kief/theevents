@@ -1,6 +1,3 @@
-
-
-
 class WithdrawalStatusConstants {
   static const String PENDING = 'pending';
   static const String PROCESSING = 'processing';

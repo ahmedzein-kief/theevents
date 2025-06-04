@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../core/styles/app_colors.dart';
-import '../../core/widgets/custom_auth_views/app_custom_button.dart';
+import '../widgets/custom_auth_views/app_custom_button.dart';
+import 'app_colors.dart';
 
 double get kTinyPadding => 2.5;
 
@@ -53,25 +53,31 @@ double get kFileCardRadius => 2;
 
 Widget get kFormTitleFieldSpace => const SizedBox.square(dimension: 8);
 
-WidgetStateProperty<Color?> get kDataColumnColor => WidgetStateProperty.resolveWith((state) {
-      return Colors.white;
-    });
+WidgetStateProperty<Color?> get kDataColumnColor =>
+    WidgetStateProperty.resolveWith((state) => Colors.white);
 
-WidgetStateProperty<Color?> get kDataRowColor => WidgetStateProperty.resolveWith((states) {
+WidgetStateProperty<Color?> get kDataRowColor =>
+    WidgetStateProperty.resolveWith((states) {
       if (states.contains(WidgetState.selected)) {
         return AppColors.lavenderHaze;
       }
       return Colors.white; // Default color when no specific state matches
     });
 
-kCancelButton({required screenWidth,double? borderRadius, required BuildContext context}) => SizedBox(
-    width: screenWidth * 0.25,
-    child: CustomAppButton(
-        buttonText: "Cancel",
+SizedBox kCancelButton(
+        {required screenWidth,
+        double? borderRadius,
+        required BuildContext context}) =>
+    SizedBox(
+      width: screenWidth * 0.25,
+      child: CustomAppButton(
+        buttonText: 'Cancel',
         buttonColor: Colors.transparent,
         borderColor: Colors.black,
         borderRadius: borderRadius,
-        textStyle: TextStyle(color: Colors.black),
+        textStyle: const TextStyle(color: Colors.black),
         onTap: () {
           Navigator.pop(context);
-        }));
+        },
+      ),
+    );

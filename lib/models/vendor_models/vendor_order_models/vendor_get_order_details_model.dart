@@ -1,21 +1,23 @@
 import 'dart:convert';
 
-VendorGetOrderDetailsModel vendorGetOrderDetailsModelFromJson(String str) => VendorGetOrderDetailsModel.fromJson(json.decode(str));
+VendorGetOrderDetailsModel vendorGetOrderDetailsModelFromJson(String str) =>
+    VendorGetOrderDetailsModel.fromJson(json.decode(str));
 
-String vendorGetOrderDetailsModelToJson(VendorGetOrderDetailsModel data) => json.encode(data.toJson());
+String vendorGetOrderDetailsModelToJson(VendorGetOrderDetailsModel data) =>
+    json.encode(data.toJson());
 
 class VendorGetOrderDetailsModel {
   VendorGetOrderDetailsModel({
     bool? error,
     Data? data,
-    dynamic message,
+    message,
   }) {
     _error = error;
     _data = data;
     _message = message;
   }
 
-  VendorGetOrderDetailsModel.fromJson(dynamic json) {
+  VendorGetOrderDetailsModel.fromJson(json) {
     _error = json['error'];
     _data = json['data'] != null ? Data.fromJson(json['data']) : null;
     _message = json['message'];
@@ -48,14 +50,14 @@ String dataToJson(Data data) => json.encode(data.toJson());
 
 class Data {
   Data({
-    dynamic? id,
+    id,
     String? code,
-    dynamic? digitalProductsCount,
+    digitalProductsCount,
     bool? orderCompleted,
     OrderStatus? orderStatus,
     String? subTotal,
     String? subTotalFormat,
-    dynamic discountDescription,
+    discountDescription,
     String? discountAmount,
     String? discountAmountFormat,
     String? shippingMethodName,
@@ -68,14 +70,14 @@ class Data {
     String? amount,
     String? amountFormat,
     PaymentStatus? paymentStatus,
-    dynamic description,
+    description,
     List<Items>? items,
     bool? isConfirmed,
     bool? isCanceled,
     bool? cancelEnabled,
     bool? shippingEnabled,
     Shipping? shipping,
-    dynamic billing,
+    billing,
     Customer? customer,
     Shipment? shipment,
     List<History>? history,
@@ -117,12 +119,14 @@ class Data {
     _createdAt = createdAt;
   }
 
-  Data.fromJson(dynamic json) {
+  Data.fromJson(json) {
     _id = json['id'];
     _code = json['code'];
     _digitalProductsCount = json['digital_products_count'];
     _orderCompleted = json['order_completed'];
-    _orderStatus = json['order_status'] != null ? OrderStatus.fromJson(json['order_status']) : null;
+    _orderStatus = json['order_status'] != null
+        ? OrderStatus.fromJson(json['order_status'])
+        : null;
     _subTotal = json['sub_total'];
     _subTotalFormat = json['sub_total_format'];
     _discountDescription = json['discount_description'];
@@ -137,7 +141,9 @@ class Data {
     _paymentChannel = json['payment_channel'];
     _amount = json['amount'];
     _amountFormat = json['amount_format'];
-    _paymentStatus = json['payment_status'] != null ? PaymentStatus.fromJson(json['payment_status']) : null;
+    _paymentStatus = json['payment_status'] != null
+        ? PaymentStatus.fromJson(json['payment_status'])
+        : null;
     _description = json['description'];
     if (json['items'] != null) {
       _items = [];
@@ -149,10 +155,13 @@ class Data {
     _isCanceled = json['is_canceled'];
     _shippingEnabled = json['shipping_enabled'];
     _cancelEnabled = json['cancel_enabled'];
-    _shipping = json['shipping'] != null ? Shipping.fromJson(json['shipping']) : null;
+    _shipping =
+        json['shipping'] != null ? Shipping.fromJson(json['shipping']) : null;
     _billing = json['billing'];
-    _customer = json['customer'] != null ? Customer.fromJson(json['customer']) : null;
-    _shipment = json['shipment'] != null ? Shipment.fromJson(json['shipment']) : null;
+    _customer =
+        json['customer'] != null ? Customer.fromJson(json['customer']) : null;
+    _shipment =
+        json['shipment'] != null ? Shipment.fromJson(json['shipment']) : null;
     if (json['history'] != null) {
       _history = [];
       json['history'].forEach((v) {
@@ -168,9 +177,9 @@ class Data {
     _createdAt = json['created_at'];
   }
 
-  dynamic? _id;
+  dynamic _id;
   String? _code;
-  dynamic? _digitalProductsCount;
+  dynamic _digitalProductsCount;
   bool? _orderCompleted;
   OrderStatus? _orderStatus;
   String? _subTotal;
@@ -202,11 +211,11 @@ class Data {
   List<ShippingStatuses>? _shippingStatuses;
   String? _createdAt;
 
-  dynamic? get id => _id;
+  dynamic get id => _id;
 
   String? get code => _code;
 
-  dynamic? get digitalProductsCount => _digitalProductsCount;
+  dynamic get digitalProductsCount => _digitalProductsCount;
 
   bool? get orderCompleted => _orderCompleted;
 
@@ -315,16 +324,19 @@ class Data {
       map['history'] = _history?.map((v) => v.toJson()).toList();
     }
     if (_shippingStatuses != null) {
-      map['shipping_statuses'] = _shippingStatuses?.map((v) => v.toJson()).toList();
+      map['shipping_statuses'] =
+          _shippingStatuses?.map((v) => v.toJson()).toList();
     }
     map['created_at'] = _createdAt;
     return map;
   }
 }
 
-ShippingStatuses shippingStatusesFromJson(String str) => ShippingStatuses.fromJson(json.decode(str));
+ShippingStatuses shippingStatusesFromJson(String str) =>
+    ShippingStatuses.fromJson(json.decode(str));
 
-String shippingStatusesToJson(ShippingStatuses data) => json.encode(data.toJson());
+String shippingStatusesToJson(ShippingStatuses data) =>
+    json.encode(data.toJson());
 
 class ShippingStatuses {
   ShippingStatuses({
@@ -337,7 +349,7 @@ class ShippingStatuses {
     _class = statusClass;
   }
 
-  ShippingStatuses.fromJson(dynamic json) {
+  ShippingStatuses.fromJson(json) {
     _label = json['label'];
     _value = json['value'];
     _class = json['class'];
@@ -368,7 +380,7 @@ String historyToJson(History data) => json.encode(data.toJson());
 
 class History {
   History({
-    dynamic? id,
+    id,
     String? action,
     String? historyVariables,
     String? createdAt,
@@ -379,19 +391,19 @@ class History {
     _createdAt = createdAt;
   }
 
-  History.fromJson(dynamic json) {
+  History.fromJson(json) {
     _id = json['id'];
     _action = json['action'];
     _historyVariables = json['history_variables'];
     _createdAt = json['created_at'];
   }
 
-  dynamic? _id;
+  dynamic _id;
   String? _action;
   String? _historyVariables;
   String? _createdAt;
 
-  dynamic? get id => _id;
+  dynamic get id => _id;
 
   String? get action => _action;
 
@@ -415,15 +427,15 @@ String shipmentToJson(Shipment data) => json.encode(data.toJson());
 
 class Shipment {
   Shipment({
-    dynamic? id,
+    id,
     String? name,
     Status? status,
     String? shippingMethodName,
     String? weight,
     String? updatedAt,
-    dynamic codAmount,
-    dynamic codAmountFormat,
-    dynamic deliveryNote,
+    codAmount,
+    codAmountFormat,
+    deliveryNote,
   }) {
     _id = id;
     _name = name;
@@ -436,7 +448,7 @@ class Shipment {
     _deliveryNote = deliveryNote;
   }
 
-  Shipment.fromJson(dynamic json) {
+  Shipment.fromJson(json) {
     _id = json['id'];
     _name = json['name'];
     _status = json['status'] != null ? Status.fromJson(json['status']) : null;
@@ -448,7 +460,7 @@ class Shipment {
     _deliveryNote = json['delivery_note'];
   }
 
-  dynamic? _id;
+  dynamic _id;
   String? _name;
   Status? _status;
   String? _shippingMethodName;
@@ -458,7 +470,7 @@ class Shipment {
   dynamic _codAmountFormat;
   dynamic _deliveryNote;
 
-  dynamic? get id => _id;
+  dynamic get id => _id;
 
   String? get name => _name;
 
@@ -506,7 +518,7 @@ class Status {
     _label = label;
   }
 
-  Status.fromJson(dynamic json) {
+  Status.fromJson(json) {
     _value = json['value'];
     _label = json['label'];
   }
@@ -534,7 +546,7 @@ class Customer {
   Customer({
     String? name,
     String? email,
-    dynamic? totalOrders,
+    totalOrders,
     String? avatarUrl,
     String? haveAccountMessage,
   }) {
@@ -545,7 +557,7 @@ class Customer {
     _haveAccountMessage = haveAccountMessage;
   }
 
-  Customer.fromJson(dynamic json) {
+  Customer.fromJson(json) {
     _name = json['name'];
     _email = json['email'];
     _totalOrders = json['total_orders'];
@@ -555,7 +567,7 @@ class Customer {
 
   String? _name;
   String? _email;
-  dynamic? _totalOrders;
+  dynamic _totalOrders;
   String? _avatarUrl;
   String? _haveAccountMessage;
 
@@ -563,7 +575,7 @@ class Customer {
 
   String? get email => _email;
 
-  dynamic? get totalOrders => _totalOrders;
+  dynamic get totalOrders => _totalOrders;
 
   String? get avatarUrl => _avatarUrl;
 
@@ -586,7 +598,7 @@ String shippingToJson(Shipping data) => json.encode(data.toJson());
 
 class Shipping {
   Shipping({
-    dynamic? id,
+    id,
     String? name,
     String? email,
     String? phone,
@@ -594,7 +606,7 @@ class Shipping {
     String? cityName,
     String? stateName,
     String? countryName,
-    dynamic zipCode,
+    zipCode,
   }) {
     _id = id;
     _name = name;
@@ -607,7 +619,7 @@ class Shipping {
     _zipCode = zipCode;
   }
 
-  Shipping.fromJson(dynamic json) {
+  Shipping.fromJson(json) {
     _id = json['id'];
     _name = json['name'];
     _email = json['email'];
@@ -619,7 +631,7 @@ class Shipping {
     _zipCode = json['zip_code'];
   }
 
-  dynamic? _id;
+  dynamic _id;
   String? _name;
   String? _email;
   String? _phone;
@@ -629,7 +641,7 @@ class Shipping {
   String? _countryName;
   dynamic _zipCode;
 
-  dynamic? get id => _id;
+  dynamic get id => _id;
 
   String? get name => _name;
 
@@ -668,16 +680,16 @@ String itemsToJson(Items data) => json.encode(data.toJson());
 
 class Items {
   Items({
-    dynamic? id,
+    id,
     String? name,
     String? image,
     String? sku,
     String? attributes,
     String? shippingMethodName,
-    dynamic? qty,
-    dynamic? price,
+    qty,
+    price,
     String? priceFormat,
-    dynamic? totalAmount,
+    totalAmount,
     String? totalAmountFormat,
   }) {
     _id = id;
@@ -693,7 +705,7 @@ class Items {
     _totalAmountFormat = totalAmountFormat;
   }
 
-  Items.fromJson(dynamic json) {
+  Items.fromJson(json) {
     _id = json['id'];
     _name = json['name'];
     _image = json['image'];
@@ -707,19 +719,19 @@ class Items {
     _totalAmountFormat = json['total_amount_format'];
   }
 
-  dynamic? _id;
+  dynamic _id;
   String? _name;
   String? _image;
   String? _sku;
   String? _attributes;
   String? _shippingMethodName;
-  dynamic? _qty;
-  dynamic? _price;
+  dynamic _qty;
+  dynamic _price;
   String? _priceFormat;
-  dynamic? _totalAmount;
+  dynamic _totalAmount;
   String? _totalAmountFormat;
 
-  dynamic? get id => _id;
+  dynamic get id => _id;
 
   String? get name => _name;
 
@@ -731,13 +743,13 @@ class Items {
 
   String? get shippingMethodName => _shippingMethodName;
 
-  dynamic? get qty => _qty;
+  dynamic get qty => _qty;
 
-  dynamic? get price => _price;
+  dynamic get price => _price;
 
   String? get priceFormat => _priceFormat;
 
-  dynamic? get totalAmount => _totalAmount;
+  dynamic get totalAmount => _totalAmount;
 
   String? get totalAmountFormat => _totalAmountFormat;
 
@@ -758,7 +770,8 @@ class Items {
   }
 }
 
-PaymentStatus paymentStatusFromJson(String str) => PaymentStatus.fromJson(json.decode(str));
+PaymentStatus paymentStatusFromJson(String str) =>
+    PaymentStatus.fromJson(json.decode(str));
 
 String paymentStatusToJson(PaymentStatus data) => json.encode(data.toJson());
 
@@ -771,7 +784,7 @@ class PaymentStatus {
     _label = label;
   }
 
-  PaymentStatus.fromJson(dynamic json) {
+  PaymentStatus.fromJson(json) {
     _value = json['value'];
     _label = json['label'];
   }
@@ -791,7 +804,8 @@ class PaymentStatus {
   }
 }
 
-OrderStatus orderStatusFromJson(String str) => OrderStatus.fromJson(json.decode(str));
+OrderStatus orderStatusFromJson(String str) =>
+    OrderStatus.fromJson(json.decode(str));
 
 String orderStatusToJson(OrderStatus data) => json.encode(data.toJson());
 
@@ -804,7 +818,7 @@ class OrderStatus {
     _label = label;
   }
 
-  OrderStatus.fromJson(dynamic json) {
+  OrderStatus.fromJson(json) {
     _value = json['value'];
     _label = json['label'];
   }

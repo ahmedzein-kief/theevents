@@ -25,119 +25,113 @@ class _ProductsScreenState extends State<ProductsScreen> {
     return Scaffold(
       backgroundColor: VendorColors.vendorAppBackground,
       key: _scaffoldKey,
-      appBar: CustomAppBarVendor(
+      appBar: const CustomAppBarVendor(
         titleText: 'Products',
         isShowBack: true,
         // onDrawerTap: _openDrawer, // Opens the end drawer when tapped
       ),
       // endDrawer: CustomDrawer(),
       body: SafeArea(
-          child: SingleChildScrollView(
-        child: Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.only(top: screenHeight * 0.02, left: screenWidth * 0.02, right: screenHeight * 0.02),
-              child: Column(
-                children: [
-                  _actionAndSearchBar(),
-                  _createReload(),
-                ],
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Padding(
+                padding: EdgeInsets.only(
+                    top: screenHeight * 0.02,
+                    left: screenWidth * 0.02,
+                    right: screenHeight * 0.02),
+                child: Column(
+                  children: [
+                    _actionAndSearchBar(),
+                    _createReload(),
+                  ],
+                ),
               ),
-            ),
-            SizedBox(height: screenHeight * 0.02),
-            CustomAllProductHeading(
-              text1: "ID",
-              text2: "Image",
-              text3: "Name",
-              text4: "Operations",
-            ),
-          ],
+              SizedBox(height: screenHeight * 0.02),
+              const CustomAllProductHeading(
+                text1: 'ID',
+                text2: 'Image',
+                text3: 'Name',
+                text4: 'Operations',
+              ),
+            ],
+          ),
         ),
-      )),
+      ),
     );
   }
 
   /// --------------------- Widget  bulk Action and Search bar --------------------
 
-  Widget _actionAndSearchBar() {
-    return Column(
-      children: [
-        Row(
-          children: [
-            CustomIconContainer(
-              text: "Bulk Action",
-              suffixIcon: Icons.keyboard_arrow_down_rounded,
-              onTap: () {
-              },
-              borderColor: Colors.black,
-              // Border color
-              borderWidth: 0.5, // Border width
-            ),
-            CustomIconContainer(
-              text: "Filters",
-              onTap: () {
-              },
-              borderColor: Colors.black, // Border color
-              borderWidth: 0.5, // Border width
-            ),
-            Expanded(
-              child: CustomSearchBarVendor(
-                suffixIcon: Icons.search,
-                onSearch: (value) {
-                },
+  Widget _actionAndSearchBar() => Column(
+        children: [
+          Row(
+            children: [
+              CustomIconContainer(
+                text: 'Bulk Action',
+                suffixIcon: Icons.keyboard_arrow_down_rounded,
+                onTap: () {},
+                borderColor: Colors.black,
+                // Border color
+                borderWidth: 0.5, // Border width
               ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
+              CustomIconContainer(
+                text: 'Filters',
+                onTap: () {},
+                borderColor: Colors.black, // Border color
+                borderWidth: 0.5, // Border width
+              ),
+              Expanded(
+                child: CustomSearchBarVendor(
+                  suffixIcon: Icons.search,
+                  onSearch: (value) {},
+                ),
+              ),
+            ],
+          ),
+        ],
+      );
 
   /// --------------------- Widget  create and reload  --------------------
 
-  Widget _createReload() {
-    return Column(
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: CustomIconContainer(
-                text: "Create",
-                prefixIcon: Icons.add,
-                suffixIcon: Icons.keyboard_arrow_down_rounded,
-                onTap: () {
-                },
-                borderColor: Colors.black,
-                // Border color
-                borderWidth: 0.5, // Border width
+  Widget _createReload() => Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: CustomIconContainer(
+                  text: 'Create',
+                  prefixIcon: Icons.add,
+                  suffixIcon: Icons.keyboard_arrow_down_rounded,
+                  onTap: () {},
+                  borderColor: Colors.black,
+                  // Border color
+                  borderWidth: 0.5, // Border width
+                ),
               ),
-            ),
-            Expanded(
-              child: CustomIconContainer(
-                text: "Export",
-                prefixIcon: CupertinoIcons.cloud_download,
-                suffixIcon: Icons.keyboard_arrow_down_rounded,
-                onTap: () {
-                },
-                borderColor: Colors.black,
-                // Border color
-                borderWidth: 0.5, // Border width
+              Expanded(
+                child: CustomIconContainer(
+                  text: 'Export',
+                  prefixIcon: CupertinoIcons.cloud_download,
+                  suffixIcon: Icons.keyboard_arrow_down_rounded,
+                  onTap: () {},
+                  borderColor: Colors.black,
+                  // Border color
+                  borderWidth: 0.5, // Border width
+                ),
               ),
-            ),
-            Expanded(
-              child: CustomIconContainer(
-                text: "Reload",
-                prefixIcon: Icons.refresh,
-                onTap: () {
-                },
-                borderColor: Colors.black,
-                // Border color
-                borderWidth: 0.5, // Border width
+              Expanded(
+                child: CustomIconContainer(
+                  text: 'Reload',
+                  prefixIcon: Icons.refresh,
+                  onTap: () {},
+                  borderColor: Colors.black,
+                  // Border color
+                  borderWidth: 0.5, // Border width
+                ),
               ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
+            ],
+          ),
+        ],
+      );
 }

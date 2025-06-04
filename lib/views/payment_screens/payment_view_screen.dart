@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class PaymentViewScreen extends StatefulWidget {
+  const PaymentViewScreen({super.key, required this.checkoutUrl});
   final String checkoutUrl;
-
-  const PaymentViewScreen({Key? key, required this.checkoutUrl}) : super(key: key);
 
   @override
   State<PaymentViewScreen> createState() => PaymentViewState();
@@ -31,12 +30,9 @@ class PaymentViewState extends State<PaymentViewScreen> {
             Navigator.pop(context, false); // Pop with failure result
           }
         },
-        onPageFinished: (String url) {
-        },
-        onProgress: (int progress) {
-        },
-        onWebResourceError: (WebResourceError error) {
-        },
+        onPageFinished: (String url) {},
+        onProgress: (int progress) {},
+        onWebResourceError: (WebResourceError error) {},
         onNavigationRequest: (NavigationRequest request) {
           // Optionally block certain URLs
           if (request.url.contains('block-this-url')) {
@@ -46,7 +42,8 @@ class PaymentViewState extends State<PaymentViewScreen> {
           if (request.url.contains('success')) {
             Navigator.pop(context, true); // Pop with success result
           }
-          if (request.url.toLowerCase().contains('failure') || request.url.toLowerCase().contains('cancel')) {
+          if (request.url.toLowerCase().contains('failure') ||
+              request.url.toLowerCase().contains('cancel')) {
             Navigator.pop(context, false); // Pop with failure result
           }
           return NavigationDecision.navigate;
@@ -56,12 +53,10 @@ class PaymentViewState extends State<PaymentViewScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Payment"),
-      ),
-      body: WebViewWidget(controller: _controller),
-    );
-  }
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(
+          title: const Text('Payment'),
+        ),
+        body: WebViewWidget(controller: _controller),
+      );
 }

@@ -1,21 +1,23 @@
 import 'dart:convert';
 
-VendorGetSeoKeywordsModel vendorGetSeoKeywordsModelFromJson(String str) => VendorGetSeoKeywordsModel.fromJson(json.decode(str));
+VendorGetSeoKeywordsModel vendorGetSeoKeywordsModelFromJson(String str) =>
+    VendorGetSeoKeywordsModel.fromJson(json.decode(str));
 
-String vendorGetSeoKeywordsModelToJson(VendorGetSeoKeywordsModel data) => json.encode(data.toJson());
+String vendorGetSeoKeywordsModelToJson(VendorGetSeoKeywordsModel data) =>
+    json.encode(data.toJson());
 
 class VendorGetSeoKeywordsModel {
   VendorGetSeoKeywordsModel({
     bool? error,
     List<String>? data,
-    dynamic message,
+    message,
   }) {
     _error = error;
     _data = data;
     _message = message;
   }
 
-  VendorGetSeoKeywordsModel.fromJson(dynamic json) {
+  VendorGetSeoKeywordsModel.fromJson(json) {
     _error = json['error'];
     _data = json['data'] != null ? json['data'].cast<String>() : [];
     _message = json['message'];

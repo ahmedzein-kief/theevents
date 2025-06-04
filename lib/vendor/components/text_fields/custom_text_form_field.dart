@@ -1,11 +1,55 @@
-import 'package:event_app/utils/mixins_and_constants/constants.dart';
-import 'package:event_app/utils/vendor_utils.dart' show DecimalInputFormatter;
+import 'package:event_app/core/styles/app_sizes.dart';
+import 'package:event_app/core/utils/vendor_utils.dart'
+    show DecimalInputFormatter;
 import 'package:event_app/vendor/components/input_borders_hub/input_border_hub.dart';
 import 'package:event_app/vendor/components/vendor_text_style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class CustomTextFormField extends StatefulWidget {
+  CustomTextFormField({
+    super.key,
+    this.prefixIconColor,
+    this.borderSideColor,
+    this.suffixIconColor,
+    required this.labelText,
+    required this.required,
+    required this.hintText,
+    required this.controller,
+    this.keyboardType = TextInputType.text,
+    this.obscureText = false,
+    this.suffixIcon,
+    this.onIconPressed,
+    this.borderColor = Colors.grey,
+    this.focusNode,
+    this.nextFocusNode,
+    this.prefixIcon,
+    this.prefixText,
+    this.prefixContainerColor,
+    this.isPrefixFilled = false, // Default to not filled
+    this.validator,
+    this.onChanged,
+    this.maxLength,
+    this.maxLines,
+    this.suffix,
+    this.hintStyle,
+    this.contentPadding,
+    this.showTitle = true,
+    this.labelTextStyle,
+    this.borderWidth,
+    this.borderRadius,
+    this.prefix,
+    this.isOutlinedBorder = true,
+    this.filled,
+    this.fillColor,
+    this.height,
+    this.width,
+    this.readOnly = false,
+    this.onTap,
+    this.isExpanded = false,
+    this.textStyle,
+    this.errorText,
+  });
   final String labelText;
   final bool required;
   final String hintText;
@@ -47,50 +91,6 @@ class CustomTextFormField extends StatefulWidget {
   final TextStyle? textStyle;
   String? errorText;
 
-  CustomTextFormField({
-    Key? key,
-    this.prefixIconColor,
-    this.borderSideColor,
-    this.suffixIconColor,
-    required this.labelText,
-    required this.required,
-    required this.hintText,
-    required this.controller,
-    this.keyboardType = TextInputType.text,
-    this.obscureText = false,
-    this.suffixIcon,
-    this.onIconPressed,
-    this.borderColor = Colors.grey,
-    this.focusNode,
-    this.nextFocusNode,
-    this.prefixIcon,
-    this.prefixText,
-    this.prefixContainerColor,
-    this.isPrefixFilled = false, // Default to not filled
-    this.validator,
-    this.onChanged,
-    this.maxLength,
-    this.maxLines,
-    this.suffix,
-    this.hintStyle,
-    this.contentPadding,
-    this.showTitle = true,
-    this.labelTextStyle,
-    this.borderWidth,
-    this.borderRadius,
-    this.prefix,
-    this.isOutlinedBorder = true,
-    this.filled,
-    this.fillColor,
-    this.height,
-    this.width,
-    this.readOnly = false,
-    this.onTap,
-    this.isExpanded = false,
-    this.textStyle,
-    this.errorText,
-  }) : super(key: key);
-
   @override
   _CustomTextFormFieldState createState() => _CustomTextFormFieldState();
 }
@@ -100,21 +100,29 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
   Widget build(BuildContext context) {
     // creating border for text field
     final border = widget.isOutlinedBorder
-        ? InputBordersHub.getOutlinedInputBorder(borderColor: widget.borderColor, borderWidth: widget.borderWidth, borderRadius: widget.borderRadius)
-        : InputBordersHub.getUnderlinedInputBorder(borderColor: widget.borderColor, borderWidth: widget.borderWidth, borderRadius: widget.borderRadius);
+        ? InputBordersHub.getOutlinedInputBorder(
+            borderColor: widget.borderColor,
+            borderWidth: widget.borderWidth,
+            borderRadius: widget.borderRadius)
+        : InputBordersHub.getUnderlinedInputBorder(
+            borderColor: widget.borderColor,
+            borderWidth: widget.borderWidth,
+            borderRadius: widget.borderRadius);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        widget.showTitle
-            ? Padding(
-                padding: EdgeInsets.only(
-                  bottom: kTinyPadding,
-                ),
-                child: fieldTitle(text: widget.labelText, required: widget.required),
-              )
-            : kShowVoid,
+        if (widget.showTitle)
+          Padding(
+            padding: EdgeInsets.only(
+              bottom: kTinyPadding,
+            ),
+            child:
+                fieldTitle(text: widget.labelText, required: widget.required),
+          )
+        else
+          kShowVoid,
         SizedBox(
           height: widget.height,
           width: widget.width,
@@ -132,7 +140,8 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
 
             /// If field is required then only validate the field
             validator: (value) {
-              if (widget.required || (value != null && value.isNotEmpty == true)) {
+              if (widget.required ||
+                  (value != null && value.isNotEmpty == true)) {
                 return widget.validator?.call(value);
               }
               return null;
@@ -145,29 +154,36 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
                 FocusScope.of(context).requestFocus(widget.nextFocusNode);
               }
             },
-            inputFormatters: widget.keyboardType == TextInputType.numberWithOptions(decimal: true)
+            inputFormatters: widget.keyboardType ==
+                    const TextInputType.numberWithOptions(decimal: true)
                 ? [
                     FilteringTextInputFormatter.allow(
                       RegExp(r'^\d+\.?\d{0,2}'),
                     ),
-                    DecimalInputFormatter()
+                    DecimalInputFormatter(),
                   ]
                 : null,
             decoration: InputDecoration(
-                errorText: widget.errorText,
-                errorMaxLines: 100,
-                hintText: widget.hintText,
-                suffixIcon: widget.suffix,
-                hintStyle: widget.hintStyle ?? const TextStyle(color: Colors.grey, fontSize: 12),
-                prefixIcon: widget.prefix,
-                border: border,
-                focusedBorder: border,
-                enabledBorder: border,
-                contentPadding: widget.contentPadding ?? const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-                isCollapsed: false,
-                isDense: false,
-                filled: widget.filled ?? true,
-                fillColor: widget.fillColor ?? (widget.readOnly ?? false ? Colors.grey.shade200 : Colors.white)),
+              errorText: widget.errorText,
+              errorMaxLines: 100,
+              hintText: widget.hintText,
+              suffixIcon: widget.suffix,
+              hintStyle: widget.hintStyle ??
+                  const TextStyle(color: Colors.grey, fontSize: 12),
+              prefixIcon: widget.prefix,
+              border: border,
+              focusedBorder: border,
+              enabledBorder: border,
+              contentPadding: widget.contentPadding ??
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+              isCollapsed: false,
+              isDense: false,
+              filled: widget.filled ?? true,
+              fillColor: widget.fillColor ??
+                  (widget.readOnly ?? false
+                      ? Colors.grey.shade200
+                      : Colors.white),
+            ),
           ),
         ),
       ],
@@ -176,15 +192,19 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
 }
 
 /// field label
-Widget fieldTitle({required String text, TextStyle? textStyle, bool? required}) {
-  return Row(
-    mainAxisSize: MainAxisSize.max,
-    children: [
-      Text(text, style: textStyle ?? headingFields().copyWith(fontSize: 13, fontWeight: FontWeight.w400)),
-      Text(
-        required ?? false ? "*" : '',
-        style: headingFields().copyWith(fontSize: 13, fontWeight: FontWeight.w400, color: Colors.red),
-      ),
-    ],
-  );
-}
+Widget fieldTitle(
+        {required String text, TextStyle? textStyle, bool? required}) =>
+    Row(
+      mainAxisSize: MainAxisSize.max,
+      children: [
+        Text(text,
+            style: textStyle ??
+                headingFields()
+                    .copyWith(fontSize: 13, fontWeight: FontWeight.w400)),
+        Text(
+          required ?? false ? '*' : '',
+          style: headingFields().copyWith(
+              fontSize: 13, fontWeight: FontWeight.w400, color: Colors.red),
+        ),
+      ],
+    );

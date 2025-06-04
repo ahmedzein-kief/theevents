@@ -1,8 +1,8 @@
 import 'dart:convert';
 
+import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/models/dashboard/user_by_type_model/user_type_inner_page_banner_models.dart';
 import 'package:event_app/provider/api_response_handler.dart';
-import 'package:event_app/utils/apiendpoints/api_end_point.dart';
 import 'package:flutter/material.dart';
 
 import '../../models/dashboard/user_by_type_model/home_celebraties_models.dart';
@@ -16,7 +16,7 @@ class UsersByTypeProvider with ChangeNotifier {
 
   bool get isLoading => _isLoading;
 
-  Future<void> fetchCelebrities(BuildContext context, {required dynamic data}) async {
+  Future<void> fetchCelebrities(BuildContext context, {required data}) async {
     final typeId = int.tryParse(data['attributes']['type_id'].toString()) ?? 0;
     final limit = data['attributes']['limit'].toString();
     // final url = Uri.parse('https://api.staging.theevents.ae/api/v1/customers-by-type/$typeId');
@@ -38,8 +38,10 @@ class UsersByTypeProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = json.decode(response.body);
-        HomeCelebratiesModels homeCelebratiesModels = HomeCelebratiesModels.fromJson(responseData);
-        List<Records> fetchedRecords = homeCelebratiesModels.data?.records ?? [];
+        final HomeCelebratiesModels homeCelebratiesModels =
+            HomeCelebratiesModels.fromJson(responseData);
+        final List<Records> fetchedRecords =
+            homeCelebratiesModels.data?.records ?? [];
 
         // Save data based on type_id
         recordsByTypeId[typeId] = fetchedRecords;
@@ -51,15 +53,13 @@ class UsersByTypeProvider with ChangeNotifier {
       }
     } catch (error) {
       errorMessage = error.toString();
-      throw error;
+      rethrow;
     } finally {
       notifyListeners();
     }
   }
 
-  List<Records> getRecordsByTypeId(int typeId) {
-    return recordsByTypeId[typeId] ?? [];
-  }
+  List<Records> getRecordsByTypeId(int typeId) => recordsByTypeId[typeId] ?? [];
 
 //     ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ PROVIDER FOR THE USER TYPES BANNER PAGE +++++++++++++++++++++++++
 

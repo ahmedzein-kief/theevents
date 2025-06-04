@@ -1,14 +1,14 @@
 import 'package:event_app/provider/vendor/vendor_repository.dart';
 import 'package:flutter/cupertino.dart';
 
+import '../../../core/services/shared_preferences_helper.dart';
 import '../../../data/vendor/data/response/ApiResponse.dart';
 import '../../../models/vendor_models/vendor_coupons_models/vendor_generate_coupon_code_model.dart';
-import '../../../utils/storage/shared_preferences_helper.dart';
 
 class VendorGenerateCouponCodeViewModel with ChangeNotifier {
   String? _token;
 
-  setToken() async {
+  Future<void> setToken() async {
     _token = await SecurePreferencesUtil.getToken();
   }
 
@@ -37,12 +37,13 @@ class VendorGenerateCouponCodeViewModel with ChangeNotifier {
       setApiResponse = ApiResponse.loading();
       await setToken();
 
-      Map<String, String> headers = <String, String>{
+      final Map<String, String> headers = <String, String>{
         // 'Content-Type': 'application/json',
-        "Authorization": _token!,
+        'Authorization': _token!,
       };
 
-      VendorGenerateCouponCodeModel response = await _myRepo.vendorGenerateCouponCode(headers: headers);
+      final VendorGenerateCouponCodeModel response =
+          await _myRepo.vendorGenerateCouponCode(headers: headers);
 
       setApiResponse = ApiResponse.completed(response);
       setLoading(false);

@@ -1,7 +1,7 @@
 import 'dart:io';
 
+import 'package:event_app/core/helper/validators/validator.dart';
 import 'package:event_app/models/vendor_models/post_models/authorized_signatory_info_post_data.dart';
-import 'package:event_app/utils/validator/validator.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
@@ -12,20 +12,21 @@ import '../components/vendor_custom_text_fields.dart';
 import '../components/vendor_text_style.dart';
 
 class AuthorizedSignatoryInformationScreen extends StatefulWidget {
-  final AuthorizedSignatoryInfoPostData asiModel;
-  final Function(AuthorizedSignatoryInfoPostData) onASIModelUpdate;
-
   const AuthorizedSignatoryInformationScreen({
     super.key,
     required this.asiModel,
     required this.onASIModelUpdate,
   });
+  final AuthorizedSignatoryInfoPostData asiModel;
+  final Function(AuthorizedSignatoryInfoPostData) onASIModelUpdate;
 
   @override
-  State<AuthorizedSignatoryInformationScreen> createState() => _AuthorizedSignatoryInformationScreenState();
+  State<AuthorizedSignatoryInformationScreen> createState() =>
+      _AuthorizedSignatoryInformationScreenState();
 }
 
-class _AuthorizedSignatoryInformationScreenState extends State<AuthorizedSignatoryInformationScreen> {
+class _AuthorizedSignatoryInformationScreenState
+    extends State<AuthorizedSignatoryInformationScreen> {
   final _nameFocusNode = FocusNode();
   final _phNumberFocusNode = FocusNode();
   final _countryFocusNode = FocusNode();
@@ -47,7 +48,7 @@ class _AuthorizedSignatoryInformationScreenState extends State<AuthorizedSignato
   final _poaMoaController = TextEditingController();
 
   CountryModels? countryModel;
-  String countryCode = "";
+  String countryCode = '';
 
   Future<void> fetchCountryData() async {
     try {
@@ -55,21 +56,25 @@ class _AuthorizedSignatoryInformationScreenState extends State<AuthorizedSignato
       if (countryModel != null) {
         _nameController.text = widget.asiModel.ownerDisplayName ?? '';
         _phNumberController.text = widget.asiModel.ownerPhoneNumber ?? '';
-        _countryController.text = findCountryNameUsingCode(widget.asiModel.ownerCountry ?? '');
+        _countryController.text =
+            findCountryNameUsingCode(widget.asiModel.ownerCountry ?? '');
         _regionController.text = widget.asiModel.ownerRegion ?? '';
         _emiratesIdController.text = widget.asiModel.ownerEIDNumber ?? '';
-        _emiratesExpireDateController.text = widget.asiModel.ownerEIDExpiry ?? '';
+        _emiratesExpireDateController.text =
+            widget.asiModel.ownerEIDExpiry ?? '';
         _eidPdfController.text = widget.asiModel.ownerEIDFileName ?? '';
         _passportController.text = widget.asiModel.passportFileName ?? '';
         _poaMoaController.text = widget.asiModel.poamoaFileName ?? '';
       }
-    } catch (error) {
-    }
+    } catch (error) {}
   }
 
   String findCountryNameUsingCode(String code) {
     countryCode = code;
-    return countryModel?.data?.list?.firstWhere((countryData) => countryData.value == code).label ?? '';
+    return countryModel?.data?.list
+            ?.firstWhere((countryData) => countryData.value == code)
+            .label ??
+        '';
   }
 
   @override
@@ -107,12 +112,16 @@ class _AuthorizedSignatoryInformationScreenState extends State<AuthorizedSignato
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.sizeOf(context).width;
-    double screenHeight = MediaQuery.sizeOf(context).height;
+    final double screenWidth = MediaQuery.sizeOf(context).width;
+    final double screenHeight = MediaQuery.sizeOf(context).height;
     return Column(
       children: [
         Padding(
-          padding: EdgeInsets.only(left: screenWidth * 0.04, right: screenWidth * 0.04, top: screenHeight * 0.03, bottom: screenHeight * 0.015),
+          padding: EdgeInsets.only(
+              left: screenWidth * 0.04,
+              right: screenWidth * 0.04,
+              top: screenHeight * 0.03,
+              bottom: screenHeight * 0.015),
           child: Container(
             decoration: BoxDecoration(
               boxShadow: [
@@ -120,7 +129,7 @@ class _AuthorizedSignatoryInformationScreenState extends State<AuthorizedSignato
                   color: Colors.black.withOpacity(0.2), // Shadow color
                   spreadRadius: 2, // How much the shadow spreads
                   blurRadius: 5, // How blurry the shadow is
-                  offset: Offset(0, 2), // Shadow offset (X, Y)
+                  offset: const Offset(0, 2), // Shadow offset (X, Y)
                 ),
               ],
             ),
@@ -129,19 +138,20 @@ class _AuthorizedSignatoryInformationScreenState extends State<AuthorizedSignato
               color: Colors.white,
               elevation: 10,
               child: Padding(
-                padding: const EdgeInsets.only(top: 20, left: 10, right: 10, bottom: 30),
+                padding: const EdgeInsets.only(
+                    top: 20, left: 10, right: 10, bottom: 30),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                      "Authorized Signatory Information",
+                      'Authorized Signatory Information',
                       style: loginHeading(),
                     ),
                     VendorCustomTextFields(
                       labelText: 'Full Name',
                       hintText: 'Enter Full Name',
-                      textStar: " *",
+                      textStar: ' *',
                       controller: _nameController,
                       keyboardType: TextInputType.name,
                       focusNode: _nameFocusNode,
@@ -153,18 +163,18 @@ class _AuthorizedSignatoryInformationScreenState extends State<AuthorizedSignato
                       },
                     ),
                     VendorCustomTextFields(
-                      labelText: "Phone Number",
-                      textStar: "*",
-                      hintText: "Enter your number",
+                      labelText: 'Phone Number',
+                      textStar: '*',
+                      hintText: 'Enter your number',
                       controller: _phNumberController,
                       prefixIcon: Icons.keyboard_arrow_down_outlined,
-                      prefixText: "+971",
+                      prefixText: '+971',
                       isPrefixFilled: true,
                       focusNode: _phNumberFocusNode,
                       nextFocusNode: _countryFocusNode,
                       validator: Validator.businessInfoPhone,
                       onValueChanged: (value) {
-                        widget.asiModel.ownerPhoneCode = "+971";
+                        widget.asiModel.ownerPhoneCode = '+971';
                         widget.asiModel.ownerPhoneNumber = value;
                         widget.onASIModelUpdate(widget.asiModel);
                       },
@@ -172,7 +182,7 @@ class _AuthorizedSignatoryInformationScreenState extends State<AuthorizedSignato
                     VendorCustomTextFields(
                       labelText: 'Country',
                       hintText: 'Please select country',
-                      textStar: " *",
+                      textStar: ' *',
                       controller: _countryController,
                       keyboardType: TextInputType.name,
                       focusNode: _countryFocusNode,
@@ -182,8 +192,14 @@ class _AuthorizedSignatoryInformationScreenState extends State<AuthorizedSignato
                       suffixIcon: Icons.keyboard_arrow_down_outlined,
                       validator: Validator.country,
                       onIconPressed: () {
-                        if (countryModel != null && countryModel?.data != null) {
-                          List<CountryList> filteredList = countryModel?.data?.list?.where((value) => value.value?.toLowerCase() == "ae").toList() ?? [];
+                        if (countryModel != null &&
+                            countryModel?.data != null) {
+                          final List<CountryList> filteredList = countryModel
+                                  ?.data?.list
+                                  ?.where((value) =>
+                                      value.value?.toLowerCase() == 'ae')
+                                  .toList() ??
+                              [];
                           showDialog(
                             context: context,
                             builder: (context) => CountryPickerDialog(
@@ -192,8 +208,10 @@ class _AuthorizedSignatoryInformationScreenState extends State<AuthorizedSignato
                               onCountrySelected: (selectedCountry) {
                                 setState(() {
                                   countryCode = selectedCountry.value ?? '';
-                                  _countryController.text = selectedCountry.label ?? '';
-                                  widget.asiModel.ownerCountry = selectedCountry.value;
+                                  _countryController.text =
+                                      selectedCountry.label ?? '';
+                                  widget.asiModel.ownerCountry =
+                                      selectedCountry.value;
                                   widget.onASIModelUpdate(widget.asiModel);
                                 });
                               },
@@ -205,7 +223,7 @@ class _AuthorizedSignatoryInformationScreenState extends State<AuthorizedSignato
                     VendorCustomTextFields(
                       labelText: 'Region',
                       hintText: 'Please select region',
-                      textStar: " *",
+                      textStar: ' *',
                       controller: _regionController,
                       keyboardType: TextInputType.name,
                       focusNode: _regionFocusNode,
@@ -215,7 +233,8 @@ class _AuthorizedSignatoryInformationScreenState extends State<AuthorizedSignato
                       suffixIcon: Icons.keyboard_arrow_down_outlined,
                       validator: Validator.region,
                       onIconPressed: () async {
-                        final region = await showRegionDropdown(context, _regionController.text);
+                        final region = await showRegionDropdown(
+                            context, _regionController.text);
                         if (region != null) {
                           _regionController.text = region;
                           widget.asiModel.ownerRegion = region;
@@ -226,7 +245,7 @@ class _AuthorizedSignatoryInformationScreenState extends State<AuthorizedSignato
                     VendorCustomTextFields(
                       labelText: 'Emirates ID Number',
                       hintText: 'Enter ID Number',
-                      textStar: " *",
+                      textStar: ' *',
                       controller: _emiratesIdController,
                       keyboardType: TextInputType.name,
                       focusNode: _emiratesIdFocusNode,
@@ -238,30 +257,32 @@ class _AuthorizedSignatoryInformationScreenState extends State<AuthorizedSignato
                       },
                     ),
                     VendorCustomTextFields(
-                        labelText: 'Emirates ID Number Expiry Date',
-                        hintText: 'dd-MM-yyyy',
-                        textStar: " *",
-                        controller: _emiratesExpireDateController,
-                        keyboardType: TextInputType.name,
-                        focusNode: _emiratesExpireDateFocusNode,
-                        isEditable: false,
-                        nextFocusNode: _eidPdfFocusNode,
-                        suffixIcon: Icons.calendar_today_outlined,
-                        suffixIconColor: Colors.grey,
-                        validator: Validator.emiratesIdNumberDate,
-                        onIconPressed: () async {
-                          var result = await showDatePickerDialog(context, "dd-MM-yyyy");
-                          if (result != null) {
-                            final date = result.toString().split(" ")[0];
-                            _emiratesExpireDateController.text = date;
-                            widget.asiModel.ownerEIDExpiry = date;
-                            widget.onASIModelUpdate(widget.asiModel);
-                          }
-                        }),
+                      labelText: 'Emirates ID Number Expiry Date',
+                      hintText: 'dd-MM-yyyy',
+                      textStar: ' *',
+                      controller: _emiratesExpireDateController,
+                      keyboardType: TextInputType.name,
+                      focusNode: _emiratesExpireDateFocusNode,
+                      isEditable: false,
+                      nextFocusNode: _eidPdfFocusNode,
+                      suffixIcon: Icons.calendar_today_outlined,
+                      suffixIconColor: Colors.grey,
+                      validator: Validator.emiratesIdNumberDate,
+                      onIconPressed: () async {
+                        final result =
+                            await showDatePickerDialog(context, 'dd-MM-yyyy');
+                        if (result != null) {
+                          final date = result.toString().split(' ')[0];
+                          _emiratesExpireDateController.text = date;
+                          widget.asiModel.ownerEIDExpiry = date;
+                          widget.onASIModelUpdate(widget.asiModel);
+                        }
+                      },
+                    ),
                     VendorCustomTextFields(
                       labelText: 'Upload EID (pdf)',
                       hintText: 'No file Chosen',
-                      textStar: " *",
+                      textStar: ' *',
                       controller: _eidPdfController,
                       keyboardType: TextInputType.name,
                       focusNode: _eidPdfFocusNode,
@@ -271,23 +292,26 @@ class _AuthorizedSignatoryInformationScreenState extends State<AuthorizedSignato
                       prefixIconColor: Colors.black,
                       prefixIcon: Icons.upload_outlined,
                       prefixContainerColor: Colors.grey.shade300,
-                      borderSideColor: BorderSide(color: Colors.grey, width: 0.5),
+                      borderSideColor:
+                          const BorderSide(color: Colors.grey, width: 0.5),
                       validator: Validator.fieldRequired,
                       onIconPressed: () async {
-                        FilePickerResult? result = await FilePicker.platform.pickFiles(
+                        final FilePickerResult? result =
+                            await FilePicker.platform.pickFiles(
                           type: FileType.custom,
                           allowedExtensions: ['pdf'],
                         );
                         if (result != null) {
-                          File file = File(result.files.single.path!);
+                          final File file = File(result.files.single.path!);
                           _eidPdfController.text = result.files.single.name;
                           widget.asiModel.ownerEIDFile = file;
-                          widget.asiModel.ownerEIDFileName = result.files.single.name;
+                          widget.asiModel.ownerEIDFileName =
+                              result.files.single.name;
                           widget.onASIModelUpdate(widget.asiModel);
                         } else {
-                          _eidPdfController.text = "";
+                          _eidPdfController.text = '';
                           widget.asiModel.ownerEIDFile = null;
-                          widget.asiModel.ownerEIDFileName = "";
+                          widget.asiModel.ownerEIDFileName = '';
                           widget.onASIModelUpdate(widget.asiModel);
                         }
                       },
@@ -295,7 +319,7 @@ class _AuthorizedSignatoryInformationScreenState extends State<AuthorizedSignato
                     VendorCustomTextFields(
                       labelText: 'Upload Passport (pdf)',
                       hintText: 'No file Chosen',
-                      textStar: " *",
+                      textStar: ' *',
                       controller: _passportController,
                       keyboardType: TextInputType.name,
                       focusNode: _passportFocusNode,
@@ -305,23 +329,26 @@ class _AuthorizedSignatoryInformationScreenState extends State<AuthorizedSignato
                       prefixIcon: Icons.upload_outlined,
                       prefixContainerColor: Colors.grey.shade300,
                       prefixIconColor: Colors.black,
-                      borderSideColor: BorderSide(color: Colors.grey, width: 0.5),
+                      borderSideColor:
+                          const BorderSide(color: Colors.grey, width: 0.5),
                       validator: Validator.fieldRequired,
                       onIconPressed: () async {
-                        FilePickerResult? result = await FilePicker.platform.pickFiles(
+                        final FilePickerResult? result =
+                            await FilePicker.platform.pickFiles(
                           type: FileType.custom,
                           allowedExtensions: ['pdf'],
                         );
                         if (result != null) {
-                          File file = File(result.files.single.path!);
+                          final File file = File(result.files.single.path!);
                           _passportController.text = result.files.single.name;
                           widget.asiModel.passportFile = file;
-                          widget.asiModel.passportFileName = result.files.single.name;
+                          widget.asiModel.passportFileName =
+                              result.files.single.name;
                           widget.onASIModelUpdate(widget.asiModel);
                         } else {
-                          _passportController.text = "";
+                          _passportController.text = '';
                           widget.asiModel.passportFile = null;
-                          widget.asiModel.passportFileName = "";
+                          widget.asiModel.passportFileName = '';
                           widget.onASIModelUpdate(widget.asiModel);
                         }
                       },
@@ -329,7 +356,7 @@ class _AuthorizedSignatoryInformationScreenState extends State<AuthorizedSignato
                     VendorCustomTextFields(
                       labelText: 'POA /MOA (pdf)',
                       hintText: 'No file Chosen',
-                      textStar: " *",
+                      textStar: ' *',
                       controller: _poaMoaController,
                       keyboardType: TextInputType.name,
                       focusNode: _poaMoaFocusNode,
@@ -337,24 +364,27 @@ class _AuthorizedSignatoryInformationScreenState extends State<AuthorizedSignato
                       isPrefixFilled: true,
                       prefixIcon: Icons.upload_outlined,
                       prefixContainerColor: Colors.grey.shade300,
-                      borderSideColor: BorderSide(color: Colors.grey, width: 0.5),
+                      borderSideColor:
+                          const BorderSide(color: Colors.grey, width: 0.5),
                       prefixIconColor: Colors.black,
                       validator: Validator.fieldRequired,
                       onIconPressed: () async {
-                        FilePickerResult? result = await FilePicker.platform.pickFiles(
+                        final FilePickerResult? result =
+                            await FilePicker.platform.pickFiles(
                           type: FileType.custom,
                           allowedExtensions: ['pdf'],
                         );
                         if (result != null) {
-                          File file = File(result.files.single.path!);
+                          final File file = File(result.files.single.path!);
                           _poaMoaController.text = result.files.single.name;
                           widget.asiModel.poamoaFile = file;
-                          widget.asiModel.poamoaFileName = result.files.single.name;
+                          widget.asiModel.poamoaFileName =
+                              result.files.single.name;
                           widget.onASIModelUpdate(widget.asiModel);
                         } else {
-                          _poaMoaController.text = "";
+                          _poaMoaController.text = '';
                           widget.asiModel.poamoaFile = null;
-                          widget.asiModel.poamoaFileName = "";
+                          widget.asiModel.poamoaFileName = '';
                           widget.onASIModelUpdate(widget.asiModel);
                         }
                       },

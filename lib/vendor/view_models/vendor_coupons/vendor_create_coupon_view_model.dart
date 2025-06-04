@@ -5,14 +5,14 @@ import 'package:event_app/provider/vendor/vendor_repository.dart';
 import 'package:event_app/vendor/components/services/alert_services.dart';
 import 'package:flutter/cupertino.dart';
 
+import '../../../core/services/shared_preferences_helper.dart';
 import '../../../data/vendor/data/response/ApiResponse.dart';
 import '../../../models/vendor_models/vendor_coupons_models/vendor_create_coupon_model.dart';
-import '../../../utils/storage/shared_preferences_helper.dart';
 
 class VendorCreateCouponViewModel with ChangeNotifier {
   String? _token;
 
-  setToken() async {
+  Future<void> setToken() async {
     _token = await SecurePreferencesUtil.getToken();
   }
 
@@ -36,25 +36,26 @@ class VendorCreateCouponViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> vendorCreateCoupon({dynamic form, required BuildContext context}) async {
+  Future<bool> vendorCreateCoupon({form, required BuildContext context}) async {
     try {
       setLoading(true);
       setApiResponse = ApiResponse.loading();
       await setToken();
 
-      Map<String, String> headers = <String, String>{
+      final Map<String, String> headers = <String, String>{
         // 'Content-Type': 'application/json',
-        "Authorization": _token!,
+        'Authorization': _token!,
       };
       final body = jsonEncode(form);
 
-      VendorCreateCouponModel? response = await _myRepo.vendorCreateCoupon(headers: headers, body: body);
+      final VendorCreateCouponModel response =
+          await _myRepo.vendorCreateCoupon(headers: headers, body: body);
       setApiResponse = ApiResponse.completed(response);
-      AlertServices.showSuccessSnackBar(message: response.message.toString(), context: context);
+      AlertServices.showSuccessSnackBar(
+          message: response.message.toString(), context: context);
       setLoading(false);
       return true;
     } catch (error) {
-
       if (error is DioException) {
         print('yes dio exception');
       } else {
@@ -62,7 +63,8 @@ class VendorCreateCouponViewModel with ChangeNotifier {
       }
 
       setApiResponse = ApiResponse.error(error.toString());
-      AlertServices.showErrorSnackBar(message: error.toString(), context: context);
+      AlertServices.showErrorSnackBar(
+          message: error.toString(), context: context);
       setLoading(false);
       return false;
     }

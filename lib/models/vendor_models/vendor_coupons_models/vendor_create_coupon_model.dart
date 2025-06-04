@@ -4,14 +4,16 @@ import 'dart:convert';
 /// data : null
 /// message : "Created successfully"
 
-VendorCreateCouponModel vendorCreateCouponModelFromJson(String str) => VendorCreateCouponModel.fromJson(json.decode(str));
+VendorCreateCouponModel vendorCreateCouponModelFromJson(String str) =>
+    VendorCreateCouponModel.fromJson(json.decode(str));
 
-String vendorCreateCouponModelToJson(VendorCreateCouponModel data) => json.encode(data.toJson());
+String vendorCreateCouponModelToJson(VendorCreateCouponModel data) =>
+    json.encode(data.toJson());
 
 class VendorCreateCouponModel {
   VendorCreateCouponModel({
     bool? error,
-    dynamic data,
+    data,
     String? message,
   }) {
     _error = error;
@@ -19,7 +21,7 @@ class VendorCreateCouponModel {
     _message = message;
   }
 
-  VendorCreateCouponModel.fromJson(dynamic json) {
+  VendorCreateCouponModel.fromJson(json) {
     _error = json['error'];
     _data = json['data'];
     _message = json['message'];
@@ -31,7 +33,7 @@ class VendorCreateCouponModel {
 
   VendorCreateCouponModel copyWith({
     bool? error,
-    dynamic data,
+    data,
     String? message,
   }) =>
       VendorCreateCouponModel(

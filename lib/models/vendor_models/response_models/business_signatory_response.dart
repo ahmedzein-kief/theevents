@@ -1,8 +1,10 @@
 import 'dart:convert';
 
-BusinessSignatoryResponse businessSignatoryResponseFromJson(String str) => BusinessSignatoryResponse.fromJson(json.decode(str));
+BusinessSignatoryResponse businessSignatoryResponseFromJson(String str) =>
+    BusinessSignatoryResponse.fromJson(json.decode(str));
 
-String businessSignatoryResponseToJson(BusinessSignatoryResponse data) => json.encode(data.toJson());
+String businessSignatoryResponseToJson(BusinessSignatoryResponse data) =>
+    json.encode(data.toJson());
 
 class BusinessSignatoryResponse {
   BusinessSignatoryResponse({
@@ -10,16 +12,17 @@ class BusinessSignatoryResponse {
     required this.message,
   });
 
+  factory BusinessSignatoryResponse.fromJson(Map<dynamic, dynamic> json) =>
+      BusinessSignatoryResponse(
+        error: json['error'],
+        message: json['message'],
+      );
+
   bool error;
   String message;
 
-  factory BusinessSignatoryResponse.fromJson(Map<dynamic, dynamic> json) => BusinessSignatoryResponse(
-        error: json["error"],
-        message: json["message"],
-      );
-
   Map<dynamic, dynamic> toJson() => {
-        "error": error,
-        "message": message,
+        'error': error,
+        'message': message,
       };
 }

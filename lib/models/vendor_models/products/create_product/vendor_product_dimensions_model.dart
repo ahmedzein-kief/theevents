@@ -1,9 +1,4 @@
 class VendorProductDimensionsModel {
-  String weight;
-  String length;
-  String width;
-  String height;
-
   VendorProductDimensionsModel({
     required this.weight,
     required this.length,
@@ -12,22 +7,23 @@ class VendorProductDimensionsModel {
   });
 
   // Factory constructor to create a model from a map
-  factory VendorProductDimensionsModel.fromMap(Map<String, dynamic> map) {
-    return VendorProductDimensionsModel(
-      weight: map['weight'] ?? '',
-      length: map['length'] ?? '',
-      width: map['width'] ?? '',
-      height: map['height'] ?? '',
-    );
-  }
+  factory VendorProductDimensionsModel.fromMap(Map<String, dynamic> map) =>
+      VendorProductDimensionsModel(
+        weight: map['weight'] ?? '',
+        length: map['length'] ?? '',
+        width: map['width'] ?? '',
+        height: map['height'] ?? '',
+      );
+  String weight;
+  String length;
+  String width;
+  String height;
 
   // Convert model to a map
-  Map<String, dynamic> toMap() {
-    return {
-      'weight': weight,
-      'length': length,
-      'width': width,
-      'height': height,
-    };
-  }
+  Map<String, dynamic> toMap() => {
+        'weight': weight,
+        'length': length,
+        'width': width,
+        'height': height,
+      };
 }

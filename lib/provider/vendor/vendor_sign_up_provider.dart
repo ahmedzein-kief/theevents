@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
+import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
+import 'package:event_app/core/network/api_endpoints/vendor_api_end_point.dart';
 import 'package:event_app/models/auth_models/get_user_models.dart';
 import 'package:event_app/models/dashboard/information_icons_models/gift_card_models/checkout_payment_model.dart';
 import 'package:event_app/models/vendor_models/post_models/authorized_signatory_info_post_data.dart';
@@ -17,15 +19,13 @@ import 'package:event_app/models/vendor_models/response_models/email_resend_resp
 import 'package:event_app/models/vendor_models/response_models/meta_data_response.dart';
 import 'package:event_app/models/vendor_models/response_models/payment_methods_response.dart';
 import 'package:event_app/models/vendor_models/response_models/signup_response.dart';
-import 'package:event_app/utils/apiendpoints/api_end_point.dart';
-import 'package:event_app/utils/apiendpoints/vendor_api_end_point.dart';
 import 'package:flutter/cupertino.dart';
 
+import '../../core/services/shared_preferences_helper.dart';
+import '../../core/utils/custom_toast.dart';
 import '../../models/vendor_models/post_models/payment_post_data.dart';
 import '../../models/vendor_models/post_models/signup_post_data.dart';
 import '../../models/vendor_models/response_models/subscription_package_response.dart';
-import '../../core/utils/custom_toast.dart';
-import '../../utils/storage/shared_preferences_helper.dart';
 import '../api_response_handler.dart';
 
 class VendorSignUpProvider with ChangeNotifier {
@@ -41,12 +41,12 @@ class VendorSignUpProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    final url = '${VendorApiEndpoints.signup}';
+    const url = VendorApiEndpoints.signup;
     final headers = {
       'Content-Type': 'application/json; charset=UTF-8',
     };
 
-    Map<String, dynamic> postSignUpData = vendorSignUpPostData.toMap();
+    final Map<String, dynamic> postSignUpData = vendorSignUpPostData.toMap();
 
     try {
       final response = await _apiResponseHandler.postRequest(
@@ -86,7 +86,7 @@ class VendorSignUpProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    final url = '${VendorApiEndpoints.meta}';
+    const url = VendorApiEndpoints.meta;
     final token = await SecurePreferencesUtil.getToken();
     final headers = {
       'Authorization': token,
@@ -98,29 +98,35 @@ class VendorSignUpProvider with ChangeNotifier {
     formData.fields.addAll(boiData.toMapEntries(asiData == null));
     // Add files (if any)
     if (boiData.eidFile != null) {
-      formData.files.add(MapEntry(
-        'eid_file',
-        await MultipartFile.fromFile(
-          boiData.eidFile!.path,
-          filename: boiData.eidFileName,
+      formData.files.add(
+        MapEntry(
+          'eid_file',
+          await MultipartFile.fromFile(
+            boiData.eidFile!.path,
+            filename: boiData.eidFileName,
+          ),
         ),
-      ));
+      );
     } else {
       if (boiData.eidServerFilePath?.isNotEmpty == true) {
-        formData.fields.add(MapEntry("eid_file_name", boiData.eidFileName ?? ''));
+        formData.fields
+            .add(MapEntry('eid_file_name', boiData.eidFileName ?? ''));
       }
     }
     if (boiData.passportFile != null) {
-      formData.files.add(MapEntry(
-        'passport',
-        await MultipartFile.fromFile(
-          boiData.passportFile!.path,
-          filename: boiData.passportFileName,
+      formData.files.add(
+        MapEntry(
+          'passport',
+          await MultipartFile.fromFile(
+            boiData.passportFile!.path,
+            filename: boiData.passportFileName,
+          ),
         ),
-      ));
+      );
     } else {
       if (boiData.passportServerFilePath?.isNotEmpty == true) {
-        formData.fields.add(MapEntry("passport_file_name", boiData.passportFileName ?? ''));
+        formData.fields.add(
+            MapEntry('passport_file_name', boiData.passportFileName ?? ''));
       }
     }
 
@@ -128,42 +134,51 @@ class VendorSignUpProvider with ChangeNotifier {
       formData.fields.addAll(asiData.toMapEntries());
       // Add files (if any)
       if (asiData.ownerEIDFile != null) {
-        formData.files.add(MapEntry(
-          'owner_eid_file',
-          await MultipartFile.fromFile(
-            asiData.ownerEIDFile!.path,
-            filename: asiData.ownerEIDFileName,
+        formData.files.add(
+          MapEntry(
+            'owner_eid_file',
+            await MultipartFile.fromFile(
+              asiData.ownerEIDFile!.path,
+              filename: asiData.ownerEIDFileName,
+            ),
           ),
-        ));
+        );
       } else {
         if (asiData.ownerEIDServerFilePath?.isNotEmpty == true) {
-          formData.fields.add(MapEntry("owner_eid_file_name", asiData.ownerEIDFileName ?? ''));
+          formData.fields.add(
+              MapEntry('owner_eid_file_name', asiData.ownerEIDFileName ?? ''));
         }
       }
       if (asiData.passportFile != null) {
-        formData.files.add(MapEntry(
-          'owner_passport',
-          await MultipartFile.fromFile(
-            asiData.passportFile!.path,
-            filename: asiData.passportFileName,
+        formData.files.add(
+          MapEntry(
+            'owner_passport',
+            await MultipartFile.fromFile(
+              asiData.passportFile!.path,
+              filename: asiData.passportFileName,
+            ),
           ),
-        ));
+        );
       } else {
         if (asiData.passportServerFilePath?.isNotEmpty == true) {
-          formData.fields.add(MapEntry("owner_passport_file_name", asiData.passportFileName ?? ''));
+          formData.fields.add(MapEntry(
+              'owner_passport_file_name', asiData.passportFileName ?? ''));
         }
       }
       if (asiData.poamoaFile != null) {
-        formData.files.add(MapEntry(
-          'signatory_poamoa_file',
-          await MultipartFile.fromFile(
-            asiData.poamoaFile!.path,
-            filename: asiData.poamoaFileName,
+        formData.files.add(
+          MapEntry(
+            'signatory_poamoa_file',
+            await MultipartFile.fromFile(
+              asiData.poamoaFile!.path,
+              filename: asiData.poamoaFileName,
+            ),
           ),
-        ));
+        );
       } else {
         if (asiData.poamoaServerPath?.isNotEmpty == true) {
-          formData.fields.add(MapEntry("signatory_poamoa_file_name", asiData.poamoaFileName ?? ''));
+          formData.fields.add(MapEntry(
+              'signatory_poamoa_file_name', asiData.poamoaFileName ?? ''));
         }
       }
     }
@@ -176,12 +191,11 @@ class VendorSignUpProvider with ChangeNotifier {
         url,
         data: formData,
         options: Options(
-          method: "POST",
+          method: 'POST',
           headers: headers,
           contentType: 'multipart/form-data',
         ),
       );
-
 
       if (response.statusCode == 200) {
         final dataModel = BusinessSignatoryResponse.fromJson(response.data);
@@ -199,8 +213,7 @@ class VendorSignUpProvider with ChangeNotifier {
       if (e is DioException) {
         final errorDetails = e.response?.data;
         CustomSnackbar.showError(context, _errorMessage(e.response));
-      } else {
-      }
+      } else {}
       _isLoading = false;
       notifyListeners();
       return null;
@@ -217,7 +230,7 @@ class VendorSignUpProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    final url = '${VendorApiEndpoints.meta}';
+    const url = VendorApiEndpoints.meta;
     final token = await SecurePreferencesUtil.getToken();
     final headers = {
       'Authorization': token ?? '',
@@ -229,65 +242,76 @@ class VendorSignUpProvider with ChangeNotifier {
     formData.fields.addAll(ciData.toMapEntries());
     // Add files (if any)
     if (ciData.companyLogoFile != null) {
-      formData.files.add(MapEntry(
-        'company_logo',
-        await MultipartFile.fromFile(
-          ciData.companyLogoFile!.path,
-          filename: ciData.companyLogoFileName,
+      formData.files.add(
+        MapEntry(
+          'company_logo',
+          await MultipartFile.fromFile(
+            ciData.companyLogoFile!.path,
+            filename: ciData.companyLogoFileName,
+          ),
         ),
-      ));
+      );
     } else {
       if (ciData.companyLogoFileServerPath?.isNotEmpty == true) {
-        formData.fields.add(MapEntry("company_logo_name", ciData.companyLogoFileName ?? ''));
+        formData.fields.add(
+            MapEntry('company_logo_name', ciData.companyLogoFileName ?? ''));
       }
     }
 
     if (ciData.utlFile != null) {
-      formData.files.add(MapEntry(
-        'tdl_file',
-        await MultipartFile.fromFile(
-          ciData.utlFile!.path,
-          filename: ciData.utlFileName,
+      formData.files.add(
+        MapEntry(
+          'tdl_file',
+          await MultipartFile.fromFile(
+            ciData.utlFile!.path,
+            filename: ciData.utlFileName,
+          ),
         ),
-      ));
+      );
     } else {
       if (ciData.utlFileServerPath?.isNotEmpty == true) {
-        formData.fields.add(MapEntry("tdl_file_name", ciData.utlFileName ?? ''));
+        formData.fields
+            .add(MapEntry('tdl_file_name', ciData.utlFileName ?? ''));
       }
     }
 
     if (ciData.nocPoaFile != null) {
-      formData.files.add(MapEntry(
-        'noc_file',
-        await MultipartFile.fromFile(
-          ciData.nocPoaFile!.path,
-          filename: ciData.nocPoaFileName,
+      formData.files.add(
+        MapEntry(
+          'noc_file',
+          await MultipartFile.fromFile(
+            ciData.nocPoaFile!.path,
+            filename: ciData.nocPoaFileName,
+          ),
         ),
-      ));
+      );
     } else {
       if (ciData.nocPoaFileServerPath?.isNotEmpty == true) {
-        formData.fields.add(MapEntry("noc_file_name", ciData.nocPoaFileName ?? ''));
+        formData.fields
+            .add(MapEntry('noc_file_name', ciData.nocPoaFileName ?? ''));
       }
     }
 
     if (ciData.vatFile != null) {
-      formData.files.add(MapEntry(
-        'vat_file',
-        await MultipartFile.fromFile(
-          ciData.vatFile!.path,
-          filename: ciData.vatFileName,
+      formData.files.add(
+        MapEntry(
+          'vat_file',
+          await MultipartFile.fromFile(
+            ciData.vatFile!.path,
+            filename: ciData.vatFileName,
+          ),
         ),
-      ));
+      );
     } else {
       if (ciData.vatFileServerPath?.isNotEmpty == true) {
-        formData.fields.add(MapEntry("vat_file_name", ciData.vatFileName ?? ''));
+        formData.fields
+            .add(MapEntry('vat_file_name', ciData.vatFileName ?? ''));
       }
     }
 
     try {
-
-      final response = await _apiResponseHandler.postDioMultipartRequest(url, headers, formData);
-
+      final response = await _apiResponseHandler.postDioMultipartRequest(
+          url, headers, formData);
 
       if (response.statusCode == 200) {
         final dataModel = CompanyInfoResponse.fromJson(response.data);
@@ -304,8 +328,7 @@ class VendorSignUpProvider with ChangeNotifier {
     } catch (e) {
       if (e is DioException) {
         CustomSnackbar.showError(context, _errorMessage(e.response));
-      } else {
-      }
+      } else {}
       _isLoading = false;
       notifyListeners();
       return null;
@@ -322,7 +345,7 @@ class VendorSignUpProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    final url = '${VendorApiEndpoints.meta}';
+    const url = VendorApiEndpoints.meta;
     final token = await SecurePreferencesUtil.getToken();
     final headers = {
       'Authorization': token ?? '',
@@ -334,22 +357,25 @@ class VendorSignUpProvider with ChangeNotifier {
     formData.fields.addAll(bdData.toMapEntries());
     // Add files (if any)
     if (bdData.bankLetterFile != null) {
-      formData.files.add(MapEntry(
-        'bank_letter_file',
-        await MultipartFile.fromFile(
-          bdData.bankLetterFile!.path,
-          filename: bdData.bankLetterFileName,
+      formData.files.add(
+        MapEntry(
+          'bank_letter_file',
+          await MultipartFile.fromFile(
+            bdData.bankLetterFile!.path,
+            filename: bdData.bankLetterFileName,
+          ),
         ),
-      ));
+      );
     } else {
       if (bdData.bankLetterFileServerPath?.isNotEmpty == true) {
-        formData.fields.add(MapEntry("bank_letter_file_name", bdData.bankLetterFileName ?? ''));
+        formData.fields.add(
+            MapEntry('bank_letter_file_name', bdData.bankLetterFileName ?? ''));
       }
     }
 
     try {
-      final response = await _apiResponseHandler.postDioMultipartRequest(url, headers, formData);
-
+      final response = await _apiResponseHandler.postDioMultipartRequest(
+          url, headers, formData);
 
       if (response.statusCode == 200) {
         final dataModel = BankDetailsResponse.fromJson(response.data);
@@ -366,8 +392,7 @@ class VendorSignUpProvider with ChangeNotifier {
     } catch (e) {
       if (e is DioException) {
         CustomSnackbar.showError(context, _errorMessage(e.response));
-      } else {
-      }
+      } else {}
       _isLoading = false;
       notifyListeners();
       return null;
@@ -384,7 +409,7 @@ class VendorSignUpProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    final url = '${VendorApiEndpoints.meta}';
+    const url = VendorApiEndpoints.meta;
     final token = await SecurePreferencesUtil.getToken();
     final headers = {
       'Authorization': token ?? '',
@@ -396,21 +421,25 @@ class VendorSignUpProvider with ChangeNotifier {
     formData.fields.addAll(caData.toMapEntries());
     // Add files (if any)
     if (caData.companyStampFile != null) {
-      formData.files.add(MapEntry(
-        'company_stamp_file',
-        await MultipartFile.fromFile(
-          caData.companyStampFile!.path,
-          filename: caData.companyStampFileName,
+      formData.files.add(
+        MapEntry(
+          'company_stamp_file',
+          await MultipartFile.fromFile(
+            caData.companyStampFile!.path,
+            filename: caData.companyStampFileName,
+          ),
         ),
-      ));
+      );
     } else {
       if (caData.companyStampFileServerPath?.isNotEmpty == true) {
-        formData.fields.add(MapEntry("company_stamp_file_name", caData.companyStampFileName ?? ''));
+        formData.fields.add(MapEntry(
+            'company_stamp_file_name', caData.companyStampFileName ?? ''));
       }
     }
 
     try {
-      final response = await _apiResponseHandler.postDioMultipartRequest(url, headers, formData);
+      final response = await _apiResponseHandler.postDioMultipartRequest(
+          url, headers, formData);
 
       if (response.statusCode == 200) {
         final dataModel = ContractAgreementResponse.fromJson(response.data);
@@ -428,8 +457,7 @@ class VendorSignUpProvider with ChangeNotifier {
     } catch (e) {
       if (e is DioException) {
         CustomSnackbar.showError(context, _errorMessage(e.response));
-      } else {
-      }
+      } else {}
       _isLoading = false;
       notifyListeners();
       return null;
@@ -446,7 +474,7 @@ class VendorSignUpProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    final url = '${VendorApiEndpoints.meta}';
+    const url = VendorApiEndpoints.meta;
     final token = await SecurePreferencesUtil.getToken();
     final headers = {
       'Authorization': token ?? '',
@@ -458,8 +486,8 @@ class VendorSignUpProvider with ChangeNotifier {
     formData.fields.addAll(pData.toMapEntries());
 
     try {
-
-      final response = await _apiResponseHandler.postDioMultipartRequest(url, headers, formData);
+      final response = await _apiResponseHandler.postDioMultipartRequest(
+          url, headers, formData);
 
       if (response.statusCode == 200) {
         final dataModel = CheckoutPaymentModel.fromJson(response.data);
@@ -476,8 +504,7 @@ class VendorSignUpProvider with ChangeNotifier {
     } catch (e) {
       if (e is DioException) {
         CustomSnackbar.showError(context, _errorMessage(e.response));
-      } else {
-      }
+      } else {}
       _isLoading = false;
       notifyListeners();
       return null;
@@ -493,14 +520,15 @@ class VendorSignUpProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    final url = '${VendorApiEndpoints.meta}';
+    const url = VendorApiEndpoints.meta;
     final token = await SecurePreferencesUtil.getToken();
     final headers = {
       'Authorization': token ?? '',
     };
 
     try {
-      final response = await _apiResponseHandler.getDioRequest(url, headers: headers);
+      final response =
+          await _apiResponseHandler.getDioRequest(url, headers: headers);
 
       if (response.statusCode == 200) {
         final dataModel = MetaDataResponse.fromJson(response.data);
@@ -518,8 +546,7 @@ class VendorSignUpProvider with ChangeNotifier {
       print('EXCEPTION :: ${e.toString()}');
       if (e is DioException) {
         CustomSnackbar.showError(context, _errorMessage(e.response));
-      } else {
-      }
+      } else {}
       _isLoading = false;
       notifyListeners();
       return null;
@@ -535,14 +562,13 @@ class VendorSignUpProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    final url = '${VendorApiEndpoints.previewAgreement}';
+    const url = VendorApiEndpoints.previewAgreement;
     final token = await SecurePreferencesUtil.getToken();
     final headers = {
       'Authorization': token ?? '',
     };
 
     try {
-
       final response = await _apiResponseHandler.getDioRequest(
         url,
         headers: headers,
@@ -563,8 +589,7 @@ class VendorSignUpProvider with ChangeNotifier {
     } catch (e) {
       if (e is DioException) {
         CustomSnackbar.showError(context, _errorMessage(e.response));
-      } else {
-      }
+      } else {}
       _isLoading = false;
       notifyListeners();
       return null;
@@ -580,15 +605,15 @@ class VendorSignUpProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    final url = '${VendorApiEndpoints.emailResend}';
+    const url = VendorApiEndpoints.emailResend;
     final token = await SecurePreferencesUtil.getToken();
     final headers = {
       'Authorization': token ?? '',
     };
 
     try {
-
-      final response = await _apiResponseHandler.getDioRequest(url, headers: headers);
+      final response =
+          await _apiResponseHandler.getDioRequest(url, headers: headers);
 
       if (response.statusCode == 200) {
         final dataModel = EmailResendResponse.fromJson(response.data);
@@ -606,8 +631,7 @@ class VendorSignUpProvider with ChangeNotifier {
     } catch (e) {
       if (e is DioException) {
         CustomSnackbar.showError(context, _errorMessage(e.response));
-      } else {
-      }
+      } else {}
       _isLoading = false;
       notifyListeners();
       return null;
@@ -623,12 +647,10 @@ class VendorSignUpProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    final url = '${VendorApiEndpoints.settings_subscription}';
+    const url = VendorApiEndpoints.settings_subscription;
 
     try {
-
       final response = await _apiResponseHandler.getDioRequest(url);
-
 
       if (response.statusCode == 200) {
         final dataModel = SubscriptionPackageResponse.fromJson(response.data);
@@ -645,8 +667,7 @@ class VendorSignUpProvider with ChangeNotifier {
     } catch (e) {
       if (e is DioException) {
         CustomSnackbar.showError(context, _errorMessage(e.response));
-      } else {
-      }
+      } else {}
       _isLoading = false;
       notifyListeners();
       return null;
@@ -663,7 +684,8 @@ class VendorSignUpProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    final url = '${VendorApiEndpoints.pay}?payment_type=subscription&amount=$amount';
+    final url =
+        '${VendorApiEndpoints.pay}?payment_type=subscription&amount=$amount';
 
     try {
       final response = await _apiResponseHandler.getDioRequest(url);
@@ -682,8 +704,7 @@ class VendorSignUpProvider with ChangeNotifier {
     } catch (e) {
       if (e is DioException) {
         CustomSnackbar.showError(context, _errorMessage(e.response));
-      } else {
-      }
+      } else {}
       _isLoading = false;
       notifyListeners();
       return null;
@@ -695,7 +716,7 @@ class VendorSignUpProvider with ChangeNotifier {
 
   Future<UserModel?> fetchUserData(BuildContext context) async {
     notifyListeners();
-    final url = ApiEndpoints.getCustomer;
+    const url = ApiEndpoints.getCustomer;
     final token = await SecurePreferencesUtil.getToken();
     final headers = {
       'Authorization': 'Bearer $token',
@@ -723,7 +744,7 @@ class VendorSignUpProvider with ChangeNotifier {
     }
   }
 
-  String _errorMessage(dynamic response) {
+  String _errorMessage(response) {
     var errors;
     var error;
     var message;
@@ -731,7 +752,7 @@ class VendorSignUpProvider with ChangeNotifier {
     if (response is Response) {
       if (response.data != null) {
         final errorData = response.data;
-        errors = errorData['errors'] == null ? errorData['data'] : errorData['errors'];
+        errors = errorData['errors'] ?? errorData['data'];
         error = errorData['error'];
         message = errorData['message'];
       }
@@ -752,7 +773,7 @@ class VendorSignUpProvider with ChangeNotifier {
       if (errors != null && errors is Map) {
         errors.forEach((key, value) {
           if (value is List) {
-            for (var msg in value) {
+            for (final msg in value) {
               allErrors += '$key: $msg\n'; // Append each error message
             }
           }

@@ -4,14 +4,14 @@ import 'package:event_app/provider/vendor/vendor_repository.dart';
 import 'package:event_app/vendor/components/services/alert_services.dart';
 import 'package:flutter/cupertino.dart';
 
+import '../../../core/services/shared_preferences_helper.dart';
 import '../../../data/vendor/data/response/ApiResponse.dart';
 import '../../../models/vendor_models/common_models/common_post_request_model.dart';
-import '../../../utils/storage/shared_preferences_helper.dart';
 
 class VendorUpdateShippingAddressViewModel with ChangeNotifier {
   String? _token;
 
-  setToken() async {
+  Future<void> setToken() async {
     _token = await SecurePreferencesUtil.getToken();
   }
 
@@ -34,26 +34,34 @@ class VendorUpdateShippingAddressViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> vendorUpdateShippingAddress({required dynamic shippingID, required dynamic form, required BuildContext context}) async {
+  Future<bool> vendorUpdateShippingAddress(
+      {required shippingID,
+      required form,
+      required BuildContext context}) async {
     try {
       setLoading(true);
       setApiResponse = ApiResponse.loading();
       await setToken();
 
-      Map<String, String> headers = <String, String>{
-        "Authorization": _token!,
+      final Map<String, String> headers = <String, String>{
+        'Authorization': _token!,
       };
 
-      dynamic body = jsonEncode(form);
+      final dynamic body = jsonEncode(form);
 
-      CommonPostRequestModel response = await _myRepo.vendorUpdateShippingAddress(headers: headers, shippingID: shippingID, body: body);
+      final CommonPostRequestModel response =
+          await _myRepo.vendorUpdateShippingAddress(
+              headers: headers, shippingID: shippingID, body: body);
       setApiResponse = ApiResponse.completed(response);
-      AlertServices.showSuccessSnackBar(message: apiResponse.data?.message?.toString() ?? '', context: context);
+      AlertServices.showSuccessSnackBar(
+          message: apiResponse.data?.message?.toString() ?? '',
+          context: context);
       setLoading(false);
       return true;
     } catch (error) {
       setApiResponse = ApiResponse.error(error.toString());
-      AlertServices.showErrorSnackBar(message: error.toString() ?? '', context: context);
+      AlertServices.showErrorSnackBar(
+          message: error.toString() ?? '', context: context);
       setLoading(false);
       return false;
     }

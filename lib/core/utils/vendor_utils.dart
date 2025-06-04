@@ -2,8 +2,9 @@ import 'package:flutter/services.dart';
 
 class DecimalInputFormatter extends TextInputFormatter {
   @override
-  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
-    String text = newValue.text;
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    final String text = newValue.text;
 
     // Ensure only one decimal point is allowed
     if (text.contains('.') && text.indexOf('.') != text.lastIndexOf('.')) {
@@ -21,7 +22,7 @@ class DecimalInputFormatter extends TextInputFormatter {
 
 String formatDecimal(String value) {
   if (value.isEmpty) {
-    return "0";
+    return '0';
   }
   if (value.endsWith('.')) {
     return value.substring(0, value.length - 1); // Remove dot

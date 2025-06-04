@@ -1,10 +1,6 @@
 import 'package:event_app/models/product_packages_models/product_filters_model.dart';
 
 class ProductModels {
-  bool? error;
-  Data? data;
-  String? message;
-
   ProductModels({this.error, this.data, this.message});
 
   ProductModels.fromJson(Map<String, dynamic> json) {
@@ -12,61 +8,63 @@ class ProductModels {
     data = json['data'] != null ? Data.fromJson(json['data']) : null;
     message = json['message'];
   }
+  bool? error;
+  Data? data;
+  String? message;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['error'] = this.error;
+    data['error'] = error;
     if (this.data != null) {
       data['data'] = this.data!.toJson();
     }
-    data['message'] = this.message;
+    data['message'] = message;
     return data;
   }
 }
 
 class Data {
-  List<dynamic>? parent;
-  PaginationPagination? pagination;
-  List<RecordProduct>? records;
-  ProductFiltersModel? filters;
-
   Data({this.parent, this.pagination, this.records, this.filters});
 
   Data.fromJson(Map<String, dynamic> json) {
     parent = json['parent'];
-    pagination = json['pagination'] != null ? PaginationPagination.fromJson(json['pagination']) : null;
+    pagination = json['pagination'] != null
+        ? PaginationPagination.fromJson(json['pagination'])
+        : null;
     if (json['records'] != null) {
       records = <RecordProduct>[];
       json['records'].forEach((v) {
         records!.add(RecordProduct.fromJson(v));
       });
     }
-    filters = json['filters'] != null ? ProductFiltersModel.fromJson(json['filters']) : null;
+    filters = json['filters'] != null
+        ? ProductFiltersModel.fromJson(json['filters'])
+        : null;
   }
+  List<dynamic>? parent;
+  PaginationPagination? pagination;
+  List<RecordProduct>? records;
+  ProductFiltersModel? filters;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['parent'] = this.parent;
-    if (this.pagination != null) {
-      data['pagination'] = this.pagination!.toJson();
+    data['parent'] = parent;
+    if (pagination != null) {
+      data['pagination'] = pagination!.toJson();
     }
-    if (this.records != null) {
-      data['records'] = this.records!.map((v) => v.toJson()).toList();
+    if (records != null) {
+      data['records'] = records!.map((v) => v.toJson()).toList();
     }
-    if (this.filters != null) {
-      data['filters'] = this.filters!.toJson();
+    if (filters != null) {
+      data['filters'] = filters!.toJson();
     }
     return data;
   }
 }
 
 class PaginationPagination {
-  int? total;
-  int? lastPage;
-  int? currentPage;
-  int? perPage;
-
-  PaginationPagination({this.total, this.lastPage, this.currentPage, this.perPage});
+  PaginationPagination(
+      {this.total, this.lastPage, this.currentPage, this.perPage});
 
   PaginationPagination.fromJson(Map<String, dynamic> json) {
     total = json['total'];
@@ -74,54 +72,41 @@ class PaginationPagination {
     currentPage = json['current_page'];
     perPage = json['per_page'];
   }
+  int? total;
+  int? lastPage;
+  int? currentPage;
+  int? perPage;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['total'] = this.total;
-    data['last_page'] = this.lastPage;
-    data['current_page'] = this.currentPage;
-    data['per_page'] = this.perPage;
+    data['total'] = total;
+    data['last_page'] = lastPage;
+    data['current_page'] = currentPage;
+    data['per_page'] = perPage;
     return data;
   }
 }
 
 class RecordProduct {
-  dynamic id;
-  String? name;
-  String? slug;
-  int? isFeatured;
-  String? productType;
-  String? slugPrefix;
-  String? image;
-  bool? outOfStock;
-  bool? cartEnabled;
-  bool? wishEnabled;
-  bool? compareEnabled;
-  bool? reviewEnabled;
-  Review? review;
-  Prices? prices;
-  Store? store;
-  Store? brand;
-  List<dynamic>? labels;
-
-  RecordProduct(
-      {this.id,
-      this.name,
-      this.slug,
-      this.isFeatured,
-      this.productType,
-      this.slugPrefix,
-      this.image,
-      this.outOfStock,
-      this.cartEnabled,
-      this.wishEnabled,
-      this.compareEnabled,
-      this.reviewEnabled,
-      this.review,
-      this.prices,
-      this.store,
-      this.brand,
-      this.labels});
+  RecordProduct({
+    this.id,
+    this.name,
+    this.slug,
+    this.isFeatured,
+    this.productType,
+    this.slugPrefix,
+    this.image,
+    this.outOfStock,
+    this.cartEnabled,
+    this.wishEnabled,
+    this.compareEnabled,
+    this.reviewEnabled,
+    this.review,
+    this.prices,
+    this.store,
+    this.brand,
+    this.labels,
+  });
 
   factory RecordProduct.fromJson(Map<String, dynamic> json) {
     String? productType;
@@ -154,64 +139,79 @@ class RecordProduct {
       labels: json['labels'],
     );
   }
+  dynamic id;
+  String? name;
+  String? slug;
+  int? isFeatured;
+  String? productType;
+  String? slugPrefix;
+  String? image;
+  bool? outOfStock;
+  bool? cartEnabled;
+  bool? wishEnabled;
+  bool? compareEnabled;
+  bool? reviewEnabled;
+  Review? review;
+  Prices? prices;
+  Store? store;
+  Store? brand;
+  List<dynamic>? labels;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = this.id;
-    data['name'] = this.name;
-    data['slug'] = this.slug;
-    data['is_featured'] = this.isFeatured;
-    data['product_type'] = this.productType;
-    data['slug_prefix'] = this.slugPrefix;
-    data['image'] = this.image;
-    data['out_of_stock'] = this.outOfStock;
-    data['cart_enabled'] = this.cartEnabled;
-    data['wish_enabled'] = this.wishEnabled;
-    data['compare_enabled'] = this.compareEnabled;
-    data['review_enabled'] = this.reviewEnabled;
-    if (this.review != null) {
-      data['review'] = this.review!.toJson();
+    data['id'] = id;
+    data['name'] = name;
+    data['slug'] = slug;
+    data['is_featured'] = isFeatured;
+    data['product_type'] = productType;
+    data['slug_prefix'] = slugPrefix;
+    data['image'] = image;
+    data['out_of_stock'] = outOfStock;
+    data['cart_enabled'] = cartEnabled;
+    data['wish_enabled'] = wishEnabled;
+    data['compare_enabled'] = compareEnabled;
+    data['review_enabled'] = reviewEnabled;
+    if (review != null) {
+      data['review'] = review!.toJson();
     }
-    if (this.prices != null) {
-      data['prices'] = this.prices!.toJson();
+    if (prices != null) {
+      data['prices'] = prices!.toJson();
     }
-    if (this.store != null) {
-      data['store'] = this.store!.toJson();
+    if (store != null) {
+      data['store'] = store!.toJson();
     }
-    if (this.brand != null) {
-      data['brand'] = this.brand!.toJson();
+    if (brand != null) {
+      data['brand'] = brand!.toJson();
     }
-    data['labels'] = this.labels;
+    data['labels'] = labels;
     return data;
   }
 }
 
 class Review {
-  dynamic rating;
-  int? reviewsCount;
-
   Review({this.rating, this.reviewsCount});
 
   Review.fromJson(Map<String, dynamic> json) {
     rating = json['rating'];
     reviewsCount = json['reviews_count'];
   }
+  dynamic rating;
+  int? reviewsCount;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['rating'] = this.rating;
-    data['reviews_count'] = this.reviewsCount;
+    data['rating'] = rating;
+    data['reviews_count'] = reviewsCount;
     return data;
   }
 }
 
 class Prices {
-  int? frontSalePrice;
-  int? price;
-  String? frontSalePriceWithTaxes;
-  String? priceWithTaxes;
-
-  Prices({this.frontSalePrice, this.price, this.frontSalePriceWithTaxes, this.priceWithTaxes});
+  Prices(
+      {this.frontSalePrice,
+      this.price,
+      this.frontSalePriceWithTaxes,
+      this.priceWithTaxes});
 
   Prices.fromJson(Map<String, dynamic> json) {
     frontSalePrice = json['front_sale_price'];
@@ -219,46 +219,48 @@ class Prices {
     frontSalePriceWithTaxes = json['front_sale_price_with_taxes'];
     priceWithTaxes = json['price_with_taxes'];
   }
+  int? frontSalePrice;
+  int? price;
+  String? frontSalePriceWithTaxes;
+  String? priceWithTaxes;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['front_sale_price'] = this.frontSalePrice;
-    data['price'] = this.price;
-    data['front_sale_price_with_taxes'] = this.frontSalePriceWithTaxes;
-    data['price_with_taxes'] = this.priceWithTaxes;
+    data['front_sale_price'] = frontSalePrice;
+    data['price'] = price;
+    data['front_sale_price_with_taxes'] = frontSalePriceWithTaxes;
+    data['price_with_taxes'] = priceWithTaxes;
     return data;
   }
 }
 
 class Store {
-  String? name;
-  String? slug;
-
   Store({this.name, this.slug});
 
   Store.fromJson(Map<String, dynamic> json) {
     name = json['name'];
     slug = json['slug'];
   }
+  String? name;
+  String? slug;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['name'] = this.name;
-    data['slug'] = this.slug;
+    data['name'] = name;
+    data['slug'] = slug;
     return data;
   }
 }
 
 class Filters {
-  List<Categories>? categories;
-  List<Brands>? brands;
-  List<Tags>? tags;
-  int? rand;
-  List<dynamic>? categoryRequest;
-  int? categoryId;
-  int? maxPrice;
-
-  Filters({this.categories, this.brands, this.tags, this.rand, this.categoryRequest, this.categoryId, this.maxPrice});
+  Filters(
+      {this.categories,
+      this.brands,
+      this.tags,
+      this.rand,
+      this.categoryRequest,
+      this.categoryId,
+      this.maxPrice});
 
   Filters.fromJson(Map<String, dynamic> json) {
     if (json['categories'] != null) {
@@ -284,35 +286,36 @@ class Filters {
     categoryId = json['category_id'];
     maxPrice = json['max_price'];
   }
+  List<Categories>? categories;
+  List<Brands>? brands;
+  List<Tags>? tags;
+  int? rand;
+  List<dynamic>? categoryRequest;
+  int? categoryId;
+  int? maxPrice;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    if (this.categories != null) {
-      data['categories'] = this.categories!.map((v) => v.toJson()).toList();
+    if (categories != null) {
+      data['categories'] = categories!.map((v) => v.toJson()).toList();
     }
-    if (this.brands != null) {
-      data['brands'] = this.brands!.map((v) => v.toJson()).toList();
+    if (brands != null) {
+      data['brands'] = brands!.map((v) => v.toJson()).toList();
     }
-    if (this.tags != null) {
-      data['tags'] = this.tags!.map((v) => v.toJson()).toList();
+    if (tags != null) {
+      data['tags'] = tags!.map((v) => v.toJson()).toList();
     }
-    data['rand'] = this.rand;
-    data['category_request'] = this.categoryRequest;
-    data['category_id'] = this.categoryId;
-    data['max_price'] = this.maxPrice;
+    data['rand'] = rand;
+    data['category_request'] = categoryRequest;
+    data['category_id'] = categoryId;
+    data['max_price'] = maxPrice;
     return data;
   }
 }
 
 class Categories {
-  int? id;
-  String? name;
-  String? image;
-  int? count;
-  bool? selected;
-  String? slug;
-
-  Categories({this.id, this.name, this.image, this.count, this.selected, this.slug});
+  Categories(
+      {this.id, this.name, this.image, this.count, this.selected, this.slug});
 
   Categories.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -322,20 +325,6 @@ class Categories {
     selected = json['selected'];
     slug = json['slug'];
   }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = this.id;
-    data['name'] = this.name;
-    data['image'] = this.image;
-    data['count'] = this.count;
-    data['selected'] = this.selected;
-    data['slug'] = this.slug;
-    return data;
-  }
-}
-
-class Brands {
   int? id;
   String? name;
   String? image;
@@ -343,7 +332,21 @@ class Brands {
   bool? selected;
   String? slug;
 
-  Brands({this.id, this.name, this.image, this.count, this.selected, this.slug});
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['name'] = name;
+    data['image'] = image;
+    data['count'] = count;
+    data['selected'] = selected;
+    data['slug'] = slug;
+    return data;
+  }
+}
+
+class Brands {
+  Brands(
+      {this.id, this.name, this.image, this.count, this.selected, this.slug});
 
   Brands.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -353,20 +356,6 @@ class Brands {
     selected = json['selected'];
     slug = json['slug'];
   }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = this.id;
-    data['name'] = this.name;
-    data['image'] = this.image;
-    data['count'] = this.count;
-    data['selected'] = this.selected;
-    data['slug'] = this.slug;
-    return data;
-  }
-}
-
-class Tags {
   int? id;
   String? name;
   String? image;
@@ -374,6 +363,19 @@ class Tags {
   bool? selected;
   String? slug;
 
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['name'] = name;
+    data['image'] = image;
+    data['count'] = count;
+    data['selected'] = selected;
+    data['slug'] = slug;
+    return data;
+  }
+}
+
+class Tags {
   Tags({this.id, this.name, this.image, this.count, this.selected, this.slug});
 
   Tags.fromJson(Map<String, dynamic> json) {
@@ -384,15 +386,21 @@ class Tags {
     selected = json['selected'];
     slug = json['slug'];
   }
+  int? id;
+  String? name;
+  String? image;
+  int? count;
+  bool? selected;
+  String? slug;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = this.id;
-    data['name'] = this.name;
-    data['image'] = this.image;
-    data['count'] = this.count;
-    data['selected'] = this.selected;
-    data['slug'] = this.slug;
+    data['id'] = id;
+    data['name'] = name;
+    data['image'] = image;
+    data['count'] = count;
+    data['selected'] = selected;
+    data['slug'] = slug;
     return data;
   }
 }

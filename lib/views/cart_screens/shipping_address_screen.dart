@@ -7,9 +7,8 @@ import '../../core/widgets/custom_items_views/custom_add_to_cart_button.dart';
 import '../home_screens_shortcode/shortcode_information_icons/gift_card/payments_methods.dart';
 
 class ShippingAddressScreen extends StatefulWidget {
-  final void Function(Map<String, String> paymentMethod) onNext;
-
   const ShippingAddressScreen({super.key, required this.onNext});
+  final void Function(Map<String, String> paymentMethod) onNext;
 
   @override
   State<ShippingAddressScreen> createState() => _ShippingAddressScreenState();
@@ -20,8 +19,8 @@ class _ShippingAddressScreenState extends State<ShippingAddressScreen> {
 
   @override
   Widget build(BuildContext context) {
-    dynamic screenWidth = MediaQuery.sizeOf(context).width;
-    dynamic screenHeight = MediaQuery.sizeOf(context).height;
+    final dynamic screenWidth = MediaQuery.sizeOf(context).width;
+    final dynamic screenHeight = MediaQuery.sizeOf(context).height;
     return Center(
       child: Column(
         children: <Widget>[
@@ -31,16 +30,21 @@ class _ShippingAddressScreenState extends State<ShippingAddressScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: EdgeInsets.only(top: screenHeight * 0.08, right: screenWidth * 0.02, left: screenHeight * 0.02),
+                    padding: EdgeInsets.only(
+                        top: screenHeight * 0.08,
+                        right: screenWidth * 0.02,
+                        left: screenHeight * 0.02),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("Choose a Payment Method", style: chooseStyle(context)),
-                        Text("You will not be charged until you review this order on the next page.", style: description(context)),
+                        Text('Choose a Payment Method',
+                            style: chooseStyle(context)),
+                        Text(
+                            'You will not be charged until you review this order on the next page.',
+                            style: description(context)),
                         SizedBox(height: screenHeight * 0.04),
                         PaymentMethods(
                           onSelectionChanged: (selectedMethod) {
-
                             paymentMethod = selectedMethod;
                           },
                         ),
@@ -61,7 +65,7 @@ class _ShippingAddressScreenState extends State<ShippingAddressScreen> {
                 widget.onNext(paymentMethod);
               },
               icon: CupertinoIcons.forward,
-              title: "Continue To Payment",
+              title: 'Continue To Payment',
             ),
           ),
         ],

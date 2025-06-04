@@ -1,8 +1,8 @@
 import 'dart:convert';
 
+import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/models/product_packages_models/product_filters_model.dart';
 import 'package:event_app/provider/api_response_handler.dart';
-import 'package:event_app/utils/apiendpoints/api_end_point.dart';
 import 'package:flutter/material.dart';
 
 import '../../models/dashboard/fresh_picks_models/eCom_tags_models.dart';
@@ -35,9 +35,7 @@ class EComTagProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
         _ecomTag = EcomTag.fromJson(jsonData['data']);
-      } else {
-      }
-    } catch (error) {
+      } else {}
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -74,13 +72,13 @@ class EComTagProvider with ChangeNotifier {
     notifyListeners();
 
     // Convert selectedFilters to query parameters
-    String filtersQuery = filters.entries
+    final String filtersQuery = filters.entries
         .where((entry) => entry.value.isNotEmpty) // Exclude empty lists
         .map((entry) {
       if (entry.key == 'Prices') {
         // Handle Price range specifically
-        int minPrice = entry.value[0];
-        int maxPrice = entry.value[1];
+        final int minPrice = entry.value[0];
+        final int maxPrice = entry.value[1];
         return 'min_price=$minPrice&max_price=$maxPrice';
       } else {
         // Handle all other filters
@@ -94,8 +92,11 @@ class EComTagProvider with ChangeNotifier {
       }
     }).join('&');
 
-    final baseUrl = '${ApiEndpoints.productsECom}$slug?per-page=$perPage&page=$page&sort-by=$sortBy';
-    final url = filtersQuery.isNotEmpty ? '$baseUrl&$filtersQuery&allcategories=1' : baseUrl;
+    final baseUrl =
+        '${ApiEndpoints.productsECom}$slug?per-page=$perPage&page=$page&sort-by=$sortBy';
+    final url = filtersQuery.isNotEmpty
+        ? '$baseUrl&$filtersQuery&allcategories=1'
+        : baseUrl;
 
     try {
       final response = await _apiResponseHandler.getRequest(
@@ -107,7 +108,8 @@ class EComTagProvider with ChangeNotifier {
         // final jsonResponse = NewProductsModels.fromJson(jsonData).data?.records ?? [];
 
         final Map<String, dynamic> jsonResponse = json.decode(response.body);
-        final EComProductsModels apiResponse = EComProductsModels.fromJson(jsonResponse);
+        final EComProductsModels apiResponse =
+            EComProductsModels.fromJson(jsonResponse);
 
         if (page == 1) {
           _products = apiResponse.data?.records ?? [];
@@ -117,10 +119,8 @@ class EComTagProvider with ChangeNotifier {
           _products.addAll(apiResponse.data?.records ?? []);
           _productFilters = apiResponse.data?.filters;
         }
-      } else {
-      }
-    } catch (error) {
-    }
+      } else {}
+    } catch (error) {}
     _isLoading = false;
     _isMoreLoading = false;
     notifyListeners();
@@ -148,7 +148,8 @@ class EComTagProvider with ChangeNotifier {
     notifyListeners();
 
     // final url = Uri.parse('https://api.staging.theevents.ae/api/v1/tag-packages/$slug?per-page=$perPage&page=$page&sort-by=$sortBy');
-    final url = '${ApiEndpoints.packagesECom}$slug?per-page=$perPage&page=$page&sort-by=$sortBy';
+    final url =
+        '${ApiEndpoints.packagesECom}$slug?per-page=$perPage&page=$page&sort-by=$sortBy';
 
     try {
       final response = await _apiResponseHandler.getRequest(
@@ -160,7 +161,8 @@ class EComTagProvider with ChangeNotifier {
         // final jsonResponse = NewProductsModels.fromJson(jsonData).data?.records ?? [];
 
         final Map<String, dynamic> jsonResponse = json.decode(response.body);
-        final EComProductsModels apiResponse = EComProductsModels.fromJson(jsonResponse);
+        final EComProductsModels apiResponse =
+            EComProductsModels.fromJson(jsonResponse);
 
         if (page == 1) {
           _packages = apiResponse.data?.records ?? [];
@@ -168,10 +170,8 @@ class EComTagProvider with ChangeNotifier {
         } else {
           _packages.addAll(apiResponse.data?.records ?? []);
         }
-      } else {
-      }
-    } catch (error) {
-    }
+      } else {}
+    } catch (error) {}
     _isPackagesLoading = false;
     notifyListeners();
   }

@@ -2,20 +2,17 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:event_app/provider/customer/Repository/customer_repository.dart';
-import 'package:event_app/provider/vendor/vendor_repository.dart';
-import 'package:event_app/vendor/components/services/alert_services.dart';
 import 'package:flutter/cupertino.dart';
 
+import '../../../core/services/shared_preferences_helper.dart';
+import '../../../core/utils/custom_toast.dart';
 import '../../../data/vendor/data/response/ApiResponse.dart';
 import '../../../models/account_models/customer_upload_profile_pic_model.dart';
-import '../../../models/vendor_models/common_models/common_post_request_model.dart';
-import '../../../core/utils/custom_toast.dart';
-import '../../../utils/storage/shared_preferences_helper.dart';
 
 class CustomerUploadProfilePicViewModel with ChangeNotifier {
   String? _token;
 
-  setToken() async {
+  Future<void> setToken() async {
     _token = await SecurePreferencesUtil.getToken();
   }
 
@@ -36,30 +33,32 @@ class CustomerUploadProfilePicViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> customerUploadProfilePicture({required File file, required BuildContext context}) async {
+  Future<bool> customerUploadProfilePicture(
+      {required File file, required BuildContext context}) async {
     try {
       setLoading(true);
       setApiResponse = ApiResponse.loading();
       await setToken();
 
-      Map<String, String> headers = <String, String>{
-        "Authorization": _token!,
+      final Map<String, String> headers = <String, String>{
+        'Authorization': _token!,
       };
 
-
-      FormData formData = FormData.fromMap({
-        'avatar_file': await MultipartFile.fromFile(file.path,filename: file.path.split('/').last),
+      final FormData formData = FormData.fromMap({
+        'avatar_file': await MultipartFile.fromFile(file.path,
+            filename: file.path.split('/').last),
       });
 
-
-      CustomerUploadProfilePicModel response = await _myRepo.customerUploadProfilePicture(headers: headers, formData: formData);
+      final CustomerUploadProfilePicModel response = await _myRepo
+          .customerUploadProfilePicture(headers: headers, formData: formData);
       setApiResponse = ApiResponse.completed(response);
-      CustomSnackbar.showSuccess(context, apiResponse.data?.message?.toString() ?? 'Success');
+      CustomSnackbar.showSuccess(
+          context, apiResponse.data?.message?.toString() ?? 'Success');
       setLoading(false);
       return true;
     } catch (error) {
       setApiResponse = ApiResponse.error(error.toString());
-      CustomSnackbar.showError(context, '${error.toString()}');
+      CustomSnackbar.showError(context, error.toString());
       setLoading(false);
       return false;
     }

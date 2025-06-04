@@ -1,9 +1,9 @@
+import 'package:event_app/core/services/shared_preferences_helper.dart';
 import 'package:event_app/provider/api_response_handler.dart';
-import 'package:event_app/utils/storage/shared_preferences_helper.dart';
 import 'package:flutter/cupertino.dart';
 
+import '../../core/network/api_endpoints/api_end_point.dart';
 import '../../models/checkout_models/checkout_data_models.dart';
-import '../../utils/apiendpoints/api_end_point.dart';
 
 class CheckoutScreenRepository {
   final ApiResponseHandler _apiResponseHandler = ApiResponseHandler();
@@ -13,7 +13,7 @@ class CheckoutScreenRepository {
   Future<CheckoutResponse> checkout(BuildContext context, String token) async {
     try {
       final tokenLogin = await SecurePreferencesUtil.getToken();
-      final url = ApiEndpoints.checkout;
+      const url = ApiEndpoints.checkout;
       final headers = {
         'Authorization': 'Bearer $tokenLogin',
       };

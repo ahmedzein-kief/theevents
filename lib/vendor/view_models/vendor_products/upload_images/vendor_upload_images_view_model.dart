@@ -5,13 +5,13 @@ import 'package:event_app/provider/vendor/vendor_repository.dart';
 import 'package:event_app/vendor/components/services/alert_services.dart';
 import 'package:flutter/cupertino.dart';
 
+import '../../../../core/services/shared_preferences_helper.dart';
 import '../../../../data/vendor/data/response/ApiResponse.dart';
-import '../../../../utils/storage/shared_preferences_helper.dart';
 
 class VendorUploadImagesViewModel with ChangeNotifier {
   String? _token;
 
-  setToken() async {
+  Future<void> setToken() async {
     _token = await SecurePreferencesUtil.getToken();
   }
 
@@ -34,30 +34,36 @@ class VendorUploadImagesViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<List<UploadImagesModel?>> uploadAllImages(BuildContext context, List<UploadImagesModel> images) async {
+  Future<List<UploadImagesModel?>> uploadAllImages(
+      BuildContext context, List<UploadImagesModel> images) async {
     try {
       setLoading(true);
       setApiResponse = ApiResponse.loading();
       await setToken();
 
-      Map<String, String> headers = {
-        "Authorization": _token!,
-        "Content-Type": "multipart/form-data",
+      final Map<String, String> headers = {
+        'Authorization': _token!,
+        'Content-Type': 'multipart/form-data',
       };
 
       // Create a list of upload tasks for each image
-      List<Future<UploadImagesModel?>> uploadTasks = images.map((image) async {
+      final List<Future<UploadImagesModel?>> uploadTasks =
+          images.map((image) async {
         final formData = FormData();
-        formData.files.add(MapEntry(
-          'file[0]',
-          await MultipartFile.fromFile(
-            image.file.path,
-            filename: image.fileName,
+        formData.files.add(
+          MapEntry(
+            'file[0]',
+            await MultipartFile.fromFile(
+              image.file.path,
+              filename: image.fileName,
+            ),
           ),
-        ));
+        );
 
-        return _myRepo.vendorUploadImages(headers: headers, formData: formData).then((response) {
-          print("upload data ==> ${response.data}");
+        return _myRepo
+            .vendorUploadImages(headers: headers, formData: formData)
+            .then((response) {
+          print('upload data ==> ${response.data}');
 
           image.serverFullUrl = response.data?.fullUrl ?? '';
           image.serverUrl = response.data?.url ?? '';
@@ -75,21 +81,23 @@ class VendorUploadImagesViewModel with ChangeNotifier {
       }).toList();
 
       // Execute all uploads concurrently
-      List<UploadImagesModel?> results = await Future.wait(uploadTasks);
+      final List<UploadImagesModel?> results = await Future.wait(uploadTasks);
 
       // Handle overall result
       if (results.any((e) => e?.file == null)) {
-        AlertServices.showErrorSnackBar(message: "Some images failed to upload", context: context);
+        AlertServices.showErrorSnackBar(
+            message: 'Some images failed to upload', context: context);
       } else {
         AlertServices.showSuccessSnackBar(
-          message: "All images uploaded successfully",
+          message: 'All images uploaded successfully',
           context: context,
         );
       }
       return results;
     } catch (error) {
       setApiResponse = ApiResponse.error(error.toString());
-      AlertServices.showErrorSnackBar(message: error.toString(), context: context);
+      AlertServices.showErrorSnackBar(
+          message: error.toString(), context: context);
       return [];
     } finally {
       setLoading(false);

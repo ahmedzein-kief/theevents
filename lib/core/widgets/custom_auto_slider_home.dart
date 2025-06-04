@@ -3,17 +3,17 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 
 class AutoScrollingSlider extends StatefulWidget {
-  final List<Widget> children;
-  final Duration scrollDuration;
-  final Duration scrollInterval;
-  final double itemWidth;
-
-  AutoScrollingSlider({
+  const AutoScrollingSlider({
+    super.key,
     required this.children,
     this.scrollDuration = const Duration(seconds: 1),
     this.scrollInterval = const Duration(seconds: 3),
     required this.itemWidth,
   });
+  final List<Widget> children;
+  final Duration scrollDuration;
+  final Duration scrollInterval;
+  final double itemWidth;
 
   @override
   _AutoScrollingSliderState createState() => _AutoScrollingSliderState();
@@ -64,19 +64,18 @@ class _AutoScrollingSliderState extends State<AutoScrollingSlider> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: AlwaysScrollableScrollPhysics(),
-      controller: _scrollController,
-      reverse: false,
-      scrollDirection: Axis.horizontal,
-      itemCount: widget.children.length * 900,
-      // itemCount: widget.children.length ,
-      itemBuilder: (context, index) {
-        return widget.children[index % widget.children.length]; // Circular indexing
-        // return widget.children[index];
-      },
-    );
-  }
+  Widget build(BuildContext context) => ListView.builder(
+        shrinkWrap: true,
+        physics: const AlwaysScrollableScrollPhysics(),
+        controller: _scrollController,
+        reverse: false,
+        scrollDirection: Axis.horizontal,
+        itemCount: widget.children.length * 900,
+        // itemCount: widget.children.length ,
+        itemBuilder: (context, index) {
+          return widget
+              .children[index % widget.children.length]; // Circular indexing
+          // return widget.children[index];
+        },
+      );
 }

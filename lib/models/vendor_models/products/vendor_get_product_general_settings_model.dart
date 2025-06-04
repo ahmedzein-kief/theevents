@@ -1,21 +1,25 @@
 import 'dart:convert';
 
-VendorGetProductGeneralSettingsModel vendorGetProductGeneralSettingsModelFromJson(String str) => VendorGetProductGeneralSettingsModel.fromJson(json.decode(str));
+VendorGetProductGeneralSettingsModel
+    vendorGetProductGeneralSettingsModelFromJson(String str) =>
+        VendorGetProductGeneralSettingsModel.fromJson(json.decode(str));
 
-String vendorGetProductGeneralSettingsModelToJson(VendorGetProductGeneralSettingsModel data) => json.encode(data.toJson());
+String vendorGetProductGeneralSettingsModelToJson(
+        VendorGetProductGeneralSettingsModel data) =>
+    json.encode(data.toJson());
 
 class VendorGetProductGeneralSettingsModel {
   VendorGetProductGeneralSettingsModel({
     bool? error,
     Data? data,
-    dynamic message,
+    message,
   }) {
     _error = error;
     _data = data;
     _message = message;
   }
 
-  VendorGetProductGeneralSettingsModel.fromJson(dynamic json) {
+  VendorGetProductGeneralSettingsModel.fromJson(json) {
     _error = json['error'];
     _data = json['data'] != null ? Data.fromJson(json['data']) : null;
     _message = json['message'];
@@ -82,7 +86,7 @@ class Data {
     _digitalAllowedMimeTypes = digitalAllowedMimeTypes;
   }
 
-  Data.fromJson(dynamic json) {
+  Data.fromJson(json) {
     if (json['stockStatuses'] != null) {
       _stockStatuses = [];
       json['stockStatuses'].forEach((v) {
@@ -113,7 +117,8 @@ class Data {
         _productLabels?.add(ProductLabels.fromJson(v));
       });
     }
-    _productTypes = json['productTypes'] != null ? json['productTypes'].cast<String>() : [];
+    _productTypes =
+        json['productTypes'] != null ? json['productTypes'].cast<String>() : [];
     _defaultDiscountPercent = json['defaultDiscountPercent'];
     _sku = json['sku'];
     _isTaxEnabled = json['isTaxEnabled'];
@@ -130,7 +135,9 @@ class Data {
         _globalOptions?.add(GlobalOptions.fromJson(v));
       });
     }
-    _globalOptionsEnum = json['globalOptionsEnum'] != null ? GlobalOptionsEnum.fromJson(json['globalOptionsEnum']) : null;
+    _globalOptionsEnum = json['globalOptionsEnum'] != null
+        ? GlobalOptionsEnum.fromJson(json['globalOptionsEnum'])
+        : null;
     if (json['productCategories'] != null) {
       _productCategories = [];
       json['productCategories'].forEach((v) {
@@ -144,7 +151,7 @@ class Data {
       });
     }
 
-    _digitalAllowedMimeTypes = json["digital_products_allowed_mime_types"];
+    _digitalAllowedMimeTypes = json['digital_products_allowed_mime_types'];
   }
 
   List<StockStatuses>? _stockStatuses;
@@ -208,7 +215,8 @@ class Data {
       map['faqs'] = _faqs?.map((v) => v.toJson()).toList();
     }
     if (_productCollections != null) {
-      map['productCollections'] = _productCollections?.map((v) => v.toJson()).toList();
+      map['productCollections'] =
+          _productCollections?.map((v) => v.toJson()).toList();
     }
     if (_productLabels != null) {
       map['productLabels'] = _productLabels?.map((v) => v.toJson()).toList();
@@ -228,18 +236,22 @@ class Data {
       map['globalOptionsEnum'] = _globalOptionsEnum?.toJson();
     }
     if (_productCategories != null) {
-      map['productCategories'] = _productCategories?.map((v) => v.toJson()).toList();
+      map['productCategories'] =
+          _productCategories?.map((v) => v.toJson()).toList();
     }
     if (_productAttributeSets != null) {
-      map['productAttributeSets'] = _productAttributeSets?.map((v) => v.toJson()).toList();
+      map['productAttributeSets'] =
+          _productAttributeSets?.map((v) => v.toJson()).toList();
     }
     return map;
   }
 }
 
-ProductAttributeSets productAttributeSetsFromJson(String str) => ProductAttributeSets.fromJson(json.decode(str));
+ProductAttributeSets productAttributeSetsFromJson(String str) =>
+    ProductAttributeSets.fromJson(json.decode(str));
 
-String productAttributeSetsToJson(ProductAttributeSets data) => json.encode(data.toJson());
+String productAttributeSetsToJson(ProductAttributeSets data) =>
+    json.encode(data.toJson());
 
 class ProductAttributeSets {
   ProductAttributeSets({
@@ -272,7 +284,7 @@ class ProductAttributeSets {
     _attributes = attributes;
   }
 
-  ProductAttributeSets.fromJson(dynamic json) {
+  ProductAttributeSets.fromJson(json) {
     _id = json['id'];
     _title = json['title'];
     _slug = json['slug'];
@@ -356,7 +368,8 @@ class ProductAttributeSets {
   }
 }
 
-Attributes attributesFromJson(String str) => Attributes.fromJson(json.decode(str));
+Attributes attributesFromJson(String str) =>
+    Attributes.fromJson(json.decode(str));
 
 String attributesToJson(Attributes data) => json.encode(data.toJson());
 
@@ -373,7 +386,7 @@ class Attributes {
     _attributeSetId = attributeSetId;
   }
 
-  Attributes.fromJson(dynamic json) {
+  Attributes.fromJson(json) {
     _id = json['id'];
     _slug = json['slug'];
     _title = json['title'];
@@ -416,7 +429,7 @@ class Status {
     _label = label;
   }
 
-  Status.fromJson(dynamic json) {
+  Status.fromJson(json) {
     _value = json['value'];
     _label = json['label'];
   }
@@ -436,9 +449,11 @@ class Status {
   }
 }
 
-ProductCategories productCategoriesFromJson(String str) => ProductCategories.fromJson(json.decode(str));
+ProductCategories productCategoriesFromJson(String str) =>
+    ProductCategories.fromJson(json.decode(str));
 
-String productCategoriesToJson(ProductCategories data) => json.encode(data.toJson());
+String productCategoriesToJson(ProductCategories data) =>
+    json.encode(data.toJson());
 
 class ProductCategories {
   ProductCategories({
@@ -457,7 +472,7 @@ class ProductCategories {
     _activeChildren = activeChildren;
   }
 
-  ProductCategories.fromJson(dynamic json) {
+  ProductCategories.fromJson(json) {
     _id = json['id'];
     _name = json['name'];
     _status = json['status'] != null ? Status.fromJson(json['status']) : null;
@@ -506,9 +521,11 @@ class ProductCategories {
   }
 }
 
-GlobalOptionsEnum globalOptionsEnumFromJson(String str) => GlobalOptionsEnum.fromJson(json.decode(str));
+GlobalOptionsEnum globalOptionsEnumFromJson(String str) =>
+    GlobalOptionsEnum.fromJson(json.decode(str));
 
-String globalOptionsEnumToJson(GlobalOptionsEnum data) => json.encode(data.toJson());
+String globalOptionsEnumToJson(GlobalOptionsEnum data) =>
+    json.encode(data.toJson());
 
 class GlobalOptionsEnum {
   GlobalOptionsEnum({
@@ -521,7 +538,7 @@ class GlobalOptionsEnum {
     _select = select;
   }
 
-  GlobalOptionsEnum.fromJson(dynamic json) {
+  GlobalOptionsEnum.fromJson(json) {
     _na = json['N/A'];
     _text = json['Text'] != null ? TextData.fromJson(json['Text']) : null;
     _select = json['Select'] != null ? Select.fromJson(json['Select']) : null;
@@ -559,26 +576,34 @@ class Select {
     String? botbleEcommerceOptionOptionTypeLocation,
     String? botbleEcommerceOptionOptionTypeDatePicker,
   }) {
-    _botbleEcommerceOptionOptionTypeLocation = botbleEcommerceOptionOptionTypeLocation;
-    _botbleEcommerceOptionOptionTypeDatePicker = botbleEcommerceOptionOptionTypeDatePicker;
+    _botbleEcommerceOptionOptionTypeLocation =
+        botbleEcommerceOptionOptionTypeLocation;
+    _botbleEcommerceOptionOptionTypeDatePicker =
+        botbleEcommerceOptionOptionTypeDatePicker;
   }
 
-  Select.fromJson(dynamic json) {
-    _botbleEcommerceOptionOptionTypeLocation = json['Botble\Ecommerce\Option\OptionType\Location'];
-    _botbleEcommerceOptionOptionTypeDatePicker = json['Botble\Ecommerce\Option\OptionType\DatePicker'];
+  Select.fromJson(json) {
+    _botbleEcommerceOptionOptionTypeLocation =
+        json['BotbleEcommerceOptionOptionTypeLocation'];
+    _botbleEcommerceOptionOptionTypeDatePicker =
+        json['BotbleEcommerceOptionOptionTypeDatePicker'];
   }
 
   String? _botbleEcommerceOptionOptionTypeLocation;
   String? _botbleEcommerceOptionOptionTypeDatePicker;
 
-  String? get botbleEcommerceOptionOptionTypeLocation => _botbleEcommerceOptionOptionTypeLocation;
+  String? get botbleEcommerceOptionOptionTypeLocation =>
+      _botbleEcommerceOptionOptionTypeLocation;
 
-  String? get botbleEcommerceOptionOptionTypeDatePicker => _botbleEcommerceOptionOptionTypeDatePicker;
+  String? get botbleEcommerceOptionOptionTypeDatePicker =>
+      _botbleEcommerceOptionOptionTypeDatePicker;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
-    map['Botble\Ecommerce\Option\OptionType\Location'] = _botbleEcommerceOptionOptionTypeLocation;
-    map['Botble\Ecommerce\Option\OptionType\DatePicker'] = _botbleEcommerceOptionOptionTypeDatePicker;
+    map['BotbleEcommerceOptionOptionTypeLocation'] =
+        _botbleEcommerceOptionOptionTypeLocation;
+    map['BotbleEcommerceOptionOptionTypeDatePicker'] =
+        _botbleEcommerceOptionOptionTypeDatePicker;
     return map;
   }
 }
@@ -594,8 +619,8 @@ class TextData {
     _botbleEcommerceEnumsTextarea = botbleEcommerceEnumsTextarea;
   }
 
-  TextData.fromJson(dynamic json) {
-    _botbleEcommerceEnumsTextarea = json['Botble\Ecommerce\Enums\Textarea'];
+  TextData.fromJson(json) {
+    _botbleEcommerceEnumsTextarea = json['BotbleEcommerceEnumsTextarea'];
   }
 
   String? _botbleEcommerceEnumsTextarea;
@@ -604,12 +629,13 @@ class TextData {
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
-    map['Botble\Ecommerce\Enums\Textarea'] = _botbleEcommerceEnumsTextarea;
+    map['BotbleEcommerceEnumsTextarea'] = _botbleEcommerceEnumsTextarea;
     return map;
   }
 }
 
-GlobalOptions globalOptionsFromJson(String str) => GlobalOptions.fromJson(json.decode(str));
+GlobalOptions globalOptionsFromJson(String str) =>
+    GlobalOptions.fromJson(json.decode(str));
 
 String globalOptionsToJson(GlobalOptions data) => json.encode(data.toJson());
 
@@ -622,7 +648,7 @@ class GlobalOptions {
     _value = value;
   }
 
-  GlobalOptions.fromJson(dynamic json) {
+  GlobalOptions.fromJson(json) {
     _id = json['id'];
     _value = json['value'];
   }
@@ -655,7 +681,7 @@ class Taxes {
     _value = value;
   }
 
-  Taxes.fromJson(dynamic json) {
+  Taxes.fromJson(json) {
     _id = json['id'];
     _value = json['value'];
   }
@@ -675,7 +701,8 @@ class Taxes {
   }
 }
 
-ProductLabels productLabelsFromJson(String str) => ProductLabels.fromJson(json.decode(str));
+ProductLabels productLabelsFromJson(String str) =>
+    ProductLabels.fromJson(json.decode(str));
 
 String productLabelsToJson(ProductLabels data) => json.encode(data.toJson());
 
@@ -688,7 +715,7 @@ class ProductLabels {
     _value = value;
   }
 
-  ProductLabels.fromJson(dynamic json) {
+  ProductLabels.fromJson(json) {
     _id = json['id'];
     _value = json['value'];
   }
@@ -708,9 +735,11 @@ class ProductLabels {
   }
 }
 
-ProductCollections productCollectionsFromJson(String str) => ProductCollections.fromJson(json.decode(str));
+ProductCollections productCollectionsFromJson(String str) =>
+    ProductCollections.fromJson(json.decode(str));
 
-String productCollectionsToJson(ProductCollections data) => json.encode(data.toJson());
+String productCollectionsToJson(ProductCollections data) =>
+    json.encode(data.toJson());
 
 class ProductCollections {
   ProductCollections({
@@ -721,7 +750,7 @@ class ProductCollections {
     _value = value;
   }
 
-  ProductCollections.fromJson(dynamic json) {
+  ProductCollections.fromJson(json) {
     _id = json['id'];
     _value = json['value'];
   }
@@ -754,7 +783,7 @@ class Faqs {
     _value = value;
   }
 
-  Faqs.fromJson(dynamic json) {
+  Faqs.fromJson(json) {
     _id = json['id'];
     _value = json['value'];
   }
@@ -787,7 +816,7 @@ class Brands {
     _value = value;
   }
 
-  Brands.fromJson(dynamic json) {
+  Brands.fromJson(json) {
     _id = json['id'];
     _value = json['value'];
   }
@@ -807,7 +836,8 @@ class Brands {
   }
 }
 
-StockStatuses stockStatusesFromJson(String str) => StockStatuses.fromJson(json.decode(str));
+StockStatuses stockStatusesFromJson(String str) =>
+    StockStatuses.fromJson(json.decode(str));
 
 String stockStatusesToJson(StockStatuses data) => json.encode(data.toJson());
 
@@ -822,7 +852,7 @@ class StockStatuses {
     _class = myClass;
   }
 
-  StockStatuses.fromJson(dynamic json) {
+  StockStatuses.fromJson(json) {
     _label = json['label'];
     _value = json['value'];
     _class = json['class'];

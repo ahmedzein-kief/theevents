@@ -10,20 +10,20 @@ abstract class DioBaseApiServices {
   Future<dynamic> dioPostApiService({
     required String url,
     required Map<String, String> headers,
-    required dynamic body,
+    required body,
   });
 
   Future<dynamic> dioPutApiService({
     required String url,
     required Map<String, String> headers,
-    required dynamic body,
+    required body,
   });
 
   // known as update in http
   Future<dynamic> dioPatchApiService({
     required String url,
     required Map<String, String> headers,
-    required dynamic body,
+    required body,
   });
 
   Future<dynamic> dioDeleteApiService({

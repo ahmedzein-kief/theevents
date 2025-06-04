@@ -7,15 +7,8 @@ import '../../styles/custom_text_styles.dart';
 import 'custom_home_text_row.dart';
 
 class CustomUserByTypeBox extends StatelessWidget {
-  final Future<void> Function(BuildContext context) fetchData;
-  final bool isLoading;
-  final List<Records> items;
-  final String title;
-  final String seeAllText;
-  final void Function() onSeeAllTap;
-  final void Function(Records item) onTap;
-
   const CustomUserByTypeBox({
+    super.key,
     required this.fetchData,
     required this.isLoading,
     required this.items,
@@ -24,18 +17,26 @@ class CustomUserByTypeBox extends StatelessWidget {
     required this.onTap,
     required this.onSeeAllTap,
   });
+  final Future<void> Function(BuildContext context) fetchData;
+  final bool isLoading;
+  final List<Records> items;
+  final String title;
+  final String seeAllText;
+  final void Function() onSeeAllTap;
+  final void Function(Records item) onTap;
 
   @override
   Widget build(BuildContext context) {
-    var screenHeight = MediaQuery.of(context).size.height;
-    var screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
     return Column(
       children: [
         Padding(
           padding: const EdgeInsets.only(top: 3),
           child: Padding(
             padding: const EdgeInsets.only(top: 8),
-            child: CustomTextRow(title: title, seeAll: seeAllText, onTap: onSeeAllTap),
+            child: CustomTextRow(
+                title: title, seeAll: seeAllText, onTap: onSeeAllTap),
           ),
         ),
         Padding(
@@ -80,40 +81,51 @@ class CustomUserByTypeBox extends StatelessWidget {
                             height: screenHeight * 0.12,
                             width: screenWidth * 0.23,
                             child: ClipRRect(
-                              borderRadius: const BorderRadius.only(topRight: Radius.circular(5), topLeft: Radius.circular(5)),
+                              borderRadius: const BorderRadius.only(
+                                  topRight: Radius.circular(5),
+                                  topLeft: Radius.circular(5)),
                               child: CachedNetworkImage(
-                                imageUrl: item.avatar ?? 'assets/Background.png',
+                                imageUrl:
+                                    item.avatar ?? 'assets/Background.png',
                                 fit: BoxFit.cover,
                                 height: screenHeight * 0.12,
                                 width: screenWidth * 0.23,
-                                placeholder: (BuildContext context, String url) {
-                                  return Container(
-                                    height: MediaQuery.sizeOf(context).height * 0.28,
-                                    width: double.infinity,
-                                    color: Colors.blueGrey[300], // Background color
-                                    child: Stack(
-                                      alignment: Alignment.center,
-                                      children: [
-                                        Image.asset(
-                                          'assets/placeholder.png', // Replace with your actual image path
-                                          fit: BoxFit.cover, // Adjust fit if needed
-                                          height: MediaQuery.sizeOf(context).height * 0.28,
-                                          width: double.infinity,
-                                        ),
-                                        const CupertinoActivityIndicator(
-                                          radius: 16, // Adjust size of the loader
-                                          animating: true,
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                },
+                                placeholder:
+                                    (BuildContext context, String url) =>
+                                        Container(
+                                  height:
+                                      MediaQuery.sizeOf(context).height * 0.28,
+                                  width: double.infinity,
+                                  color:
+                                      Colors.blueGrey[300], // Background color
+                                  child: Stack(
+                                    alignment: Alignment.center,
+                                    children: [
+                                      Image.asset(
+                                        'assets/placeholder.png', // Replace with your actual image path
+                                        fit: BoxFit
+                                            .cover, // Adjust fit if needed
+                                        height:
+                                            MediaQuery.sizeOf(context).height *
+                                                0.28,
+                                        width: double.infinity,
+                                      ),
+                                      const CupertinoActivityIndicator(
+                                        radius: 16, // Adjust size of the loader
+                                        animating: true,
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ),
                             ),
                           ),
                           Padding(
                             padding: const EdgeInsets.only(top: 5),
-                            child: Text(item.name ?? '', textAlign: TextAlign.center, overflow: TextOverflow.ellipsis, style: homeItemsStyle(context)),
+                            child: Text(item.name ?? '',
+                                textAlign: TextAlign.center,
+                                overflow: TextOverflow.ellipsis,
+                                style: homeItemsStyle(context)),
                           ),
                         ],
                       ),

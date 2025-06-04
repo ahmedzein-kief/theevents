@@ -1,7 +1,7 @@
 import 'dart:convert';
 
+import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/provider/api_response_handler.dart';
-import 'package:event_app/utils/apiendpoints/api_end_point.dart';
 import 'package:flutter/material.dart';
 
 import '../../data/repository/featured_category_repository.dart';
@@ -23,12 +23,13 @@ class FeaturedCategoriesProvider with ChangeNotifier {
 
   String? get errorMessage => _errorMessage;
 
-  Future<void> fetchGiftsByOccasion(BuildContext context, {required dynamic data}) async {
+  Future<void> fetchGiftsByOccasion(BuildContext context,
+      {required data}) async {
     _loading = true;
     _errorMessage = null;
     notifyListeners();
 
-    String shortcode = data['shortcode'].replaceAll('shortcode-', '');
+    final String shortcode = data['shortcode'].replaceAll('shortcode-', '');
 
     final String url = '${ApiEndpoints.baseUrl}$shortcode';
 
@@ -84,7 +85,10 @@ class FeaturedCategoriesProvider with ChangeNotifier {
 
   List<Category> get products => categories;
 
-  Future<void> fetchCategories(BuildContext context, {String sortBy = 'default_sorting', int page = 1, int perPage = 12}) async {
+  Future<void> fetchCategories(BuildContext context,
+      {String sortBy = 'default_sorting',
+      int page = 1,
+      int perPage = 12}) async {
     if (page == 1) {
       isLoading = true;
       notifyListeners();
@@ -95,7 +99,8 @@ class FeaturedCategoriesProvider with ChangeNotifier {
     // isLoading = true;
     // notifyListeners();
 
-    final url = '${ApiEndpoints.categoryViewAllItems}?per_page=$perPage&page=$page&sort-by=$sortBy';
+    final url =
+        '${ApiEndpoints.categoryViewAllItems}?per_page=$perPage&page=$page&sort-by=$sortBy';
 
     final response = await _apiResponseHandler.getRequest(
       url,
@@ -104,7 +109,8 @@ class FeaturedCategoriesProvider with ChangeNotifier {
 
     if (response.statusCode == 200) {
       final jsonResponse = json.decode(response.body);
-      final CategoryResponse categoryResponse = CategoryResponse.fromJson(jsonResponse);
+      final CategoryResponse categoryResponse =
+          CategoryResponse.fromJson(jsonResponse);
 
       if (page == 1) {
         categories = categoryResponse.data.records;

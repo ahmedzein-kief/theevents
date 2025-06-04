@@ -1,6 +1,6 @@
+import 'package:event_app/core/services/shared_preferences_helper.dart';
 import 'package:event_app/data/vendor/data/response/ApiResponse.dart';
 import 'package:event_app/provider/vendor/vendor_repository.dart';
-import 'package:event_app/utils/storage/shared_preferences_helper.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../../../models/vendor_models/revenues/revenue_data_response.dart';
@@ -14,7 +14,7 @@ class VendorRevenuesViewModel with ChangeNotifier {
 
   List<RevenueRecord> get list => _list;
 
-  setToken() async {
+  Future<void> setToken() async {
     _token = await SecurePreferencesUtil.getToken();
   }
 
@@ -38,12 +38,12 @@ class VendorRevenuesViewModel with ChangeNotifier {
   }
 
   /// get orders method
-  vendorRevenues({String? search}) async {
+  Future<void> vendorRevenues({String? search}) async {
     await setToken();
     try {
-      Map<String, String> headers = <String, String>{
+      final Map<String, String> headers = <String, String>{
         // 'Content-Type': 'application/json',
-        "Authorization": _token!,
+        'Authorization': _token!,
       };
 
       final Map<String, String> queryParams = {
@@ -55,7 +55,8 @@ class VendorRevenuesViewModel with ChangeNotifier {
       // If successful, increment the current page and append data
       if (_currentPage <= _lastPage) {
         setApiResponse = ApiResponse.loading();
-        final RevenueDataResponse response = await _myRepo.vendorRevenues(headers: headers, queryParams: queryParams);
+        final RevenueDataResponse response = await _myRepo.vendorRevenues(
+            headers: headers, queryParams: queryParams);
         setLastPage(response);
         resetList(response);
         setApiResponse = ApiResponse.completed(response);
@@ -71,8 +72,8 @@ class VendorRevenuesViewModel with ChangeNotifier {
   }
 
   void resetList(RevenueDataResponse response) {
-    _list.addAll(response.data!.records!);
-    _lastPage = response.data!.pagination!.lastPage!;
+    _list.addAll(response.data!.records);
+    _lastPage = response.data!.pagination!.lastPage;
     _currentPage++;
     notifyListeners();
   }
@@ -84,7 +85,7 @@ class VendorRevenuesViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  void removeElementFromList({required dynamic id}) {
+  void removeElementFromList({required id}) {
     _list.removeWhere((element) => element.id == id);
     notifyListeners();
   }

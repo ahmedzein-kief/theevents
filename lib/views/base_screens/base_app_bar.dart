@@ -4,31 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../provider/cart_item_provider/cart_item_provider.dart';
+import '../../core/services/shared_preferences_helper.dart';
 import '../../core/widgets/custom_app_views/app_bar.dart';
 import '../../core/widgets/custom_slider_route.dart';
-import '../../utils/storage/shared_preferences_helper.dart';
+import '../../provider/cart_item_provider/cart_item_provider.dart';
 import '../cart_screens/cart_items_screen.dart';
 import '../wish_list_screens/like_items_screen.dart';
 
 class BaseAppBar extends StatefulWidget {
-  final Widget? body;
-  final String? leftIconPath;
-  final String? firstRightIconPath;
-  final String? secondRightIconPath;
-  final String? thirdRightIconPath;
-  final Widget? leftWidget;
-  final VoidCallback? onFirstRightIconPressed;
-  final VoidCallback? onSecondRightIconPressed;
-  final VoidCallback? onThirdRightIconPressed;
-  VoidCallback? onBackPressed;
-  final Color? color;
-  final String? leftText;
-  final String? textBack;
-  final Widget? customBackIcon;
-  final String? title;
-
   BaseAppBar({
+    super.key,
     this.body,
     this.leftIconPath,
     this.leftWidget,
@@ -45,6 +30,21 @@ class BaseAppBar extends StatefulWidget {
     this.textBack,
     this.title,
   });
+  final Widget? body;
+  final String? leftIconPath;
+  final String? firstRightIconPath;
+  final String? secondRightIconPath;
+  final String? thirdRightIconPath;
+  final Widget? leftWidget;
+  final VoidCallback? onFirstRightIconPressed;
+  final VoidCallback? onSecondRightIconPressed;
+  final VoidCallback? onThirdRightIconPressed;
+  VoidCallback? onBackPressed;
+  final Color? color;
+  final String? leftText;
+  final String? textBack;
+  final Widget? customBackIcon;
+  final String? title;
 
   @override
   State<BaseAppBar> createState() => _BaseScreenState();
@@ -72,7 +72,8 @@ class _BaseScreenState extends State<BaseAppBar> {
   Future<void> _fetchWishListCount() async {
     final token = await SecurePreferencesUtil.getToken();
     final cartProvider = Provider.of<WishlistProvider>(context, listen: false);
-    await cartProvider.fetchWishlist(token ?? '', context); // Ensure the provider fetches cart data
+    await cartProvider.fetchWishlist(
+        token ?? '', context); // Ensure the provider fetches cart data
   }
 
   @override
@@ -117,14 +118,14 @@ class _BaseScreenState extends State<BaseAppBar> {
         /// -----------  CART ITEMS COUNT =================================
         cartItemCount: cartItemCount,
         wishlistItemCount: wishlistItemCount,
-        title: widget.title ?? "",
+        title: widget.title ?? '',
       ),
       body: widget.body,
       backgroundColor: widget.color,
     );
   }
 
-  bool _isNavigating = false;
+  final bool _isNavigating = false;
 
   ///  navigate to notification screen
   void _navigateToNotifications() {
@@ -132,7 +133,7 @@ class _BaseScreenState extends State<BaseAppBar> {
     // _isNavigating = true; // Set the flag to true
     Navigator.pushAndRemoveUntil(
       context,
-      SlidePageRoute(page: OrderPageScreen()),
+      SlidePageRoute(page: const OrderPageScreen()),
       (Route<dynamic> route) => route.isFirst,
     ).then((_) {
       // _isNavigating = false; // Reset the flag after navigation completes
@@ -142,7 +143,7 @@ class _BaseScreenState extends State<BaseAppBar> {
   void _navigateToWishList() {
     Navigator.pushAndRemoveUntil(
       context,
-      SlidePageRoute(page: WishListScreen()),
+      SlidePageRoute(page: const WishListScreen()),
       (Route<dynamic> route) => route.isFirst, // Keep only the first screen
     );
   }
@@ -150,7 +151,7 @@ class _BaseScreenState extends State<BaseAppBar> {
   void _navigateToCart() {
     Navigator.pushAndRemoveUntil(
       context,
-      SlidePageRoute(page: CartItemsScreen()),
+      SlidePageRoute(page: const CartItemsScreen()),
       (Route<dynamic> route) => route.isFirst, // Keep only the first screen
     );
   }

@@ -7,19 +7,19 @@ import '../../../core/widgets/custom_slider_route.dart';
 import '../../cart_screens/order_cancel_screen.dart';
 
 class OrderConfirmationScreen extends StatefulWidget {
+  const OrderConfirmationScreen({super.key, required this.onPrevious});
   final VoidCallback onPrevious;
 
-  const OrderConfirmationScreen({super.key, required this.onPrevious});
-
   @override
-  State<OrderConfirmationScreen> createState() => _OrderConfirmationScreenState();
+  State<OrderConfirmationScreen> createState() =>
+      _OrderConfirmationScreenState();
 }
 
 class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.sizeOf(context).width;
-    double screenHeight = MediaQuery.sizeOf(context).height;
+    final double screenWidth = MediaQuery.sizeOf(context).width;
+    final double screenHeight = MediaQuery.sizeOf(context).height;
     return Center(
       child: Column(
         children: [
@@ -38,26 +38,32 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
                           // Icon(Icons.card_giftcard),
                           Text('Order Placed!', style: cartTextStyle(context)),
                           Padding(
-                            padding: EdgeInsets.only(top: 10),
+                            padding: const EdgeInsets.only(top: 10),
                             child: Column(
                               children: [
-                                Text('Order No:100000', style: orderPlaceText(context)),
-                                Text('Order date:25 July 2024', style: orderPlaceText(context)),
-                                Text('Estimated delivery date:25 July 2024', style: orderExpectDateText(context)),
+                                Text('Order No:100000',
+                                    style: orderPlaceText(context)),
+                                Text('Order date:25 July 2024',
+                                    style: orderPlaceText(context)),
+                                Text('Estimated delivery date:25 July 2024',
+                                    style: orderExpectDateText(context)),
                               ],
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
+                            padding: const EdgeInsets.only(
+                                left: 20, right: 20, top: 20),
                             child: Material(
                               shadowColor: Colors.black,
                               elevation: 15,
                               color: Colors.white,
                               child: Padding(
-                                padding: const EdgeInsets.only(top: 20, left: 10, right: 10),
+                                padding: const EdgeInsets.only(
+                                    top: 20, left: 10, right: 10),
                                 child: Column(
                                   mainAxisSize: MainAxisSize.min,
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text('2 Items', style: itemsText(context)),
@@ -94,8 +100,8 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
 }
 
 Widget _buildItemList(BuildContext context) {
-  double screenHeight = MediaQuery.sizeOf(context).height;
-  double screenWidth = MediaQuery.sizeOf(context).width;
+  final double screenHeight = MediaQuery.sizeOf(context).height;
+  final double screenWidth = MediaQuery.sizeOf(context).width;
   return Container(
     margin: EdgeInsets.only(bottom: screenHeight * 0.02),
     decoration: BoxDecoration(
@@ -151,8 +157,9 @@ Widget _buildItemList(BuildContext context) {
                               // Default text style
                               children: <TextSpan>[
                                 TextSpan(
-                                    text: 'White', // Additional text span
-                                    style: itemsColorText(context)),
+                                  text: 'White', // Additional text span
+                                  style: itemsColorText(context),
+                                ),
                               ],
                             ),
                           ),
@@ -167,11 +174,13 @@ Widget _buildItemList(BuildContext context) {
                           Text('actualPrice', style: itemsTitleText(context)),
                           Padding(
                             padding: const EdgeInsets.only(left: 5),
-                            child: Text('standardPrice', style: wishItemSalePrice(context)),
+                            child: Text('standardPrice',
+                                style: wishItemSalePrice(context)),
                           ),
                           Padding(
                             padding: const EdgeInsets.only(left: 5),
-                            child: Text('50%offPrice', style: wishItemSaleOff()),
+                            child:
+                                Text('50%offPrice', style: wishItemSaleOff()),
                           ),
                         ],
                       ),
@@ -187,8 +196,9 @@ Widget _buildItemList(BuildContext context) {
                               // Default text style
                               children: <TextSpan>[
                                 TextSpan(
-                                    text: 'White', // Additional text span
-                                    style: itemsColorText(context)),
+                                  text: 'White', // Additional text span
+                                  style: itemsColorText(context),
+                                ),
                               ],
                             ),
                           ),
@@ -206,8 +216,9 @@ Widget _buildItemList(BuildContext context) {
                               // Default text style
                               children: <TextSpan>[
                                 TextSpan(
-                                    text: 'White', // Additional text span
-                                    style: itemsColorText(context)),
+                                  text: 'White', // Additional text span
+                                  style: itemsColorText(context),
+                                ),
                               ],
                             ),
                           ),
@@ -225,8 +236,9 @@ Widget _buildItemList(BuildContext context) {
                               // Default text style
                               children: <TextSpan>[
                                 TextSpan(
-                                    text: 'UK42', // Additional text span
-                                    style: itemsColorText(context)),
+                                  text: 'UK42', // Additional text span
+                                  style: itemsColorText(context),
+                                ),
                               ],
                             ),
                           ),
@@ -244,8 +256,9 @@ Widget _buildItemList(BuildContext context) {
                               // Default text style
                               children: <TextSpan>[
                                 TextSpan(
-                                    text: '2', // Additional text span
-                                    style: itemsColorText(context)),
+                                  text: '2', // Additional text span
+                                  style: itemsColorText(context),
+                                ),
                               ],
                             ),
                           ),
@@ -266,8 +279,8 @@ Widget _buildItemList(BuildContext context) {
 ///  AMOUNT SECTION  - - - - - - - - - - - - - - - - - - - -  - - - - - - - - - - - -
 
 Widget _amountSection(BuildContext context) {
-  double screenHeight = MediaQuery.sizeOf(context).height;
-  double screenWidth = MediaQuery.sizeOf(context).width;
+  final double screenHeight = MediaQuery.sizeOf(context).height;
+  final double screenWidth = MediaQuery.sizeOf(context).width;
   return Padding(
     padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 10),
     child: Column(
@@ -339,7 +352,9 @@ Widget _amountSection(BuildContext context) {
           ),
         ),
         Text('DELIVERY METHOD', style: deliveryMethodsStyle(context)),
-        Padding(padding: const EdgeInsets.only(top: 8, bottom: 8), child: Text('Standard Delivery', style: standardStyle(context))),
+        Padding(
+            padding: const EdgeInsets.only(top: 8, bottom: 8),
+            child: Text('Standard Delivery', style: standardStyle(context))),
         Text('Delivery Address', style: addressStyle(context)),
 
         Padding(
@@ -378,7 +393,7 @@ Widget _amountSection(BuildContext context) {
                 height: screenHeight * 0.05,
                 width: screenWidth * 0.15,
               ),
-              Text('MASTERCARD', style: standardStyle(context))
+              Text('MASTERCARD', style: standardStyle(context)),
             ],
           ),
         ),
@@ -411,8 +426,11 @@ Widget _amountSection(BuildContext context) {
             children: [
               Text('CANCELING THE ORDER', style: addressStyle(context)),
               Padding(
-                  padding: const EdgeInsets.only(top: 12, bottom: 8),
-                  child: Text('We are not able to cancel the order but you need to then no way? ', style: standardStyle(context))),
+                padding: const EdgeInsets.only(top: 12, bottom: 8),
+                child: Text(
+                    'We are not able to cancel the order but you need to then no way? ',
+                    style: standardStyle(context)),
+              ),
               Padding(
                 padding: const EdgeInsets.only(top: 1, bottom: 10),
                 child: Row(
@@ -430,14 +448,19 @@ Widget _amountSection(BuildContext context) {
                             'Standard Delivery',
                             style: standardTextStyle(context),
                           ),
-                          Text('Cancel within one hour', style: standardStyle(context)),
+                          Text('Cancel within one hour',
+                              style: standardStyle(context)),
                         ],
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
-              Padding(padding: const EdgeInsets.only(top: 8), child: Text('We are not able to cancel the order but you need to then no way?', style: standardStyle(context))),
+              Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Text(
+                      'We are not able to cancel the order but you need to then no way?',
+                      style: standardStyle(context))),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -446,17 +469,19 @@ Widget _amountSection(BuildContext context) {
                     alignment: Alignment.centerLeft,
                     child: GestureDetector(
                       onTap: () {
-                        Navigator.push(context, SlidePageRoute(page: OrderCancelScreen()));
+                        Navigator.push(context,
+                            SlidePageRoute(page: const OrderCancelScreen()));
 
                         // Navigator.push(context, MaterialPageRoute(builder: (context) => OrderCancelScreen()));
                       },
                       child: Container(
                         margin: const EdgeInsets.only(top: 15),
                         padding: EdgeInsets.all(screenWidth * 0.02),
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           color: Colors.redAccent,
                         ),
-                        child: Text('RETURN ORDER', style: returnStyle(context)),
+                        child:
+                            Text('RETURN ORDER', style: returnStyle(context)),
                       ),
                     ),
                   ),
@@ -466,7 +491,12 @@ Widget _amountSection(BuildContext context) {
                       margin: const EdgeInsets.only(top: 15, bottom: 5),
                       padding: EdgeInsets.all(screenWidth * 0.02),
                       decoration: BoxDecoration(
-                        border: Border.all(color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.6), width: 0.5),
+                        border: Border.all(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onPrimary
+                                .withOpacity(0.6),
+                            width: 0.5),
                       ),
                       child: Text('VIEW ORDER', style: addressStyle(context)),
                     ),

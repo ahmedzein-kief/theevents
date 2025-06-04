@@ -5,27 +5,28 @@ import 'package:event_app/vendor/common_dropdowns.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
+import '../../core/helper/validators/validator.dart';
 import '../../provider/payment_address/country_picks_provider.dart';
-import '../../utils/validator/validator.dart';
 import '../../views/country_picker/country_pick_screen.dart';
 import '../components/vendor_custom_text_fields.dart';
 import '../components/vendor_text_style.dart';
 
 class BusinessOwnerInformationScreen extends StatefulWidget {
-  final BusinessOwnerInfoPostData boiModel;
-  final Function(BusinessOwnerInfoPostData) onBOIModelUpdate;
-
   const BusinessOwnerInformationScreen({
     super.key,
     required this.boiModel,
     required this.onBOIModelUpdate,
   });
+  final BusinessOwnerInfoPostData boiModel;
+  final Function(BusinessOwnerInfoPostData) onBOIModelUpdate;
 
   @override
-  State<BusinessOwnerInformationScreen> createState() => _BusinessOwnerInformationScreenState();
+  State<BusinessOwnerInformationScreen> createState() =>
+      _BusinessOwnerInformationScreenState();
 }
 
-class _BusinessOwnerInformationScreenState extends State<BusinessOwnerInformationScreen> {
+class _BusinessOwnerInformationScreenState
+    extends State<BusinessOwnerInformationScreen> {
   final _nameFocusNode = FocusNode();
   final _phNumberFocusNode = FocusNode();
   final _countryFocusNode = FocusNode();
@@ -45,7 +46,7 @@ class _BusinessOwnerInformationScreenState extends State<BusinessOwnerInformatio
   final _passportController = TextEditingController();
 
   CountryModels? countryModel;
-  String countryCode = "";
+  String countryCode = '';
 
   Future<void> fetchCountryData() async {
     try {
@@ -54,7 +55,8 @@ class _BusinessOwnerInformationScreenState extends State<BusinessOwnerInformatio
         setState(() {
           _nameController.text = widget.boiModel.companyDisplayName ?? '';
           _phNumberController.text = widget.boiModel.phoneNumber ?? '';
-          _countryController.text = findCountryNameUsingCode(widget.boiModel.country ?? '');
+          _countryController.text =
+              findCountryNameUsingCode(widget.boiModel.country ?? '');
           _regionController.text = widget.boiModel.region ?? '';
           _regionController.text = widget.boiModel.region ?? '';
           _emiratesIdController.text = widget.boiModel.eidNumber ?? '';
@@ -63,19 +65,24 @@ class _BusinessOwnerInformationScreenState extends State<BusinessOwnerInformatio
           _passportController.text = widget.boiModel.passportFileName ?? '';
         });
       }
-    } catch (error) {
-    }
-    return null;
+    } catch (error) {}
+    return;
   }
 
   String findCountryNameUsingCode(String code) {
     if (code.length > 3) {
-      countryCode = countryModel?.data?.list?.firstWhere((countryData) => countryData.label == code).value ?? '';
+      countryCode = countryModel?.data?.list
+              ?.firstWhere((countryData) => countryData.label == code)
+              .value ??
+          '';
 
       return code;
     } else {
       countryCode = code;
-      return countryModel?.data?.list?.firstWhere((countryData) => countryData.value == code).label ?? '';
+      return countryModel?.data?.list
+              ?.firstWhere((countryData) => countryData.value == code)
+              .label ??
+          '';
     }
   }
 
@@ -112,8 +119,8 @@ class _BusinessOwnerInformationScreenState extends State<BusinessOwnerInformatio
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.sizeOf(context).width;
-    double screenHeight = MediaQuery.sizeOf(context).height;
+    final double screenWidth = MediaQuery.sizeOf(context).width;
+    final double screenHeight = MediaQuery.sizeOf(context).height;
     return Column(
       children: [
         Padding(
@@ -130,7 +137,7 @@ class _BusinessOwnerInformationScreenState extends State<BusinessOwnerInformatio
                   color: Colors.black.withOpacity(0.2), // Shadow color
                   spreadRadius: 2, // How much the shadow spreads
                   blurRadius: 5, // How blurry the shadow is
-                  offset: Offset(0, 2), // Shadow offset (X, Y)
+                  offset: const Offset(0, 2), // Shadow offset (X, Y)
                 ),
               ],
             ),
@@ -139,19 +146,20 @@ class _BusinessOwnerInformationScreenState extends State<BusinessOwnerInformatio
               color: Colors.white,
               elevation: 15,
               child: Padding(
-                padding: const EdgeInsets.only(top: 20, left: 10, right: 10, bottom: 30),
+                padding: const EdgeInsets.only(
+                    top: 20, left: 10, right: 10, bottom: 30),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                      "Business Owner Information",
+                      'Business Owner Information',
                       style: loginHeading(),
                     ),
                     VendorCustomTextFields(
                       labelText: 'Full Name',
                       hintText: 'Enter Full Name',
-                      textStar: " *",
+                      textStar: ' *',
                       controller: _nameController,
                       keyboardType: TextInputType.name,
                       focusNode: _nameFocusNode,
@@ -163,12 +171,12 @@ class _BusinessOwnerInformationScreenState extends State<BusinessOwnerInformatio
                       },
                     ),
                     VendorCustomTextFields(
-                      labelText: "Phone Number",
-                      textStar: "*",
-                      hintText: "Enter your number",
+                      labelText: 'Phone Number',
+                      textStar: '*',
+                      hintText: 'Enter your number',
                       controller: _phNumberController,
                       prefixIcon: Icons.keyboard_arrow_down_outlined,
-                      prefixText: "+971",
+                      prefixText: '+971',
                       isPrefixFilled: true,
                       focusNode: _phNumberFocusNode,
                       nextFocusNode: _countryFocusNode,
@@ -181,7 +189,7 @@ class _BusinessOwnerInformationScreenState extends State<BusinessOwnerInformatio
                     VendorCustomTextFields(
                       labelText: 'Country',
                       hintText: 'Please select country',
-                      textStar: " *",
+                      textStar: ' *',
                       controller: _countryController,
                       isEditable: false,
                       keyboardType: TextInputType.name,
@@ -191,8 +199,14 @@ class _BusinessOwnerInformationScreenState extends State<BusinessOwnerInformatio
                       suffixIcon: Icons.keyboard_arrow_down_outlined,
                       validator: Validator.country,
                       onIconPressed: () {
-                        if (countryModel != null && countryModel?.data != null) {
-                          List<CountryList> filteredList = countryModel?.data?.list?.where((value) => value.value?.toLowerCase() == "ae").toList() ?? [];
+                        if (countryModel != null &&
+                            countryModel?.data != null) {
+                          final List<CountryList> filteredList = countryModel
+                                  ?.data?.list
+                                  ?.where((value) =>
+                                      value.value?.toLowerCase() == 'ae')
+                                  .toList() ??
+                              [];
                           showDialog(
                             context: context,
                             builder: (context) => CountryPickerDialog(
@@ -201,7 +215,8 @@ class _BusinessOwnerInformationScreenState extends State<BusinessOwnerInformatio
                               onCountrySelected: (selectedCountry) {
                                 setState(() {
                                   countryCode = selectedCountry.value ?? '';
-                                  _countryController.text = selectedCountry.label ?? '';
+                                  _countryController.text =
+                                      selectedCountry.label ?? '';
                                   widget.boiModel.country = countryCode;
                                   widget.onBOIModelUpdate(widget.boiModel);
                                 });
@@ -214,7 +229,7 @@ class _BusinessOwnerInformationScreenState extends State<BusinessOwnerInformatio
                     VendorCustomTextFields(
                       labelText: 'Region',
                       hintText: 'Please select Region',
-                      textStar: " *",
+                      textStar: ' *',
                       controller: _regionController,
                       isEditable: false,
                       keyboardType: TextInputType.name,
@@ -224,7 +239,8 @@ class _BusinessOwnerInformationScreenState extends State<BusinessOwnerInformatio
                       suffixIcon: Icons.keyboard_arrow_down_outlined,
                       validator: Validator.region,
                       onIconPressed: () async {
-                        final region = await showRegionDropdown(context, _regionController.text);
+                        final region = await showRegionDropdown(
+                            context, _regionController.text);
                         if (region != null) {
                           _regionController.text = region;
                           widget.boiModel.region = region;
@@ -235,7 +251,7 @@ class _BusinessOwnerInformationScreenState extends State<BusinessOwnerInformatio
                     VendorCustomTextFields(
                       labelText: 'Emirates ID Number',
                       hintText: 'Enter ID Number',
-                      textStar: " *",
+                      textStar: ' *',
                       controller: _emiratesIdController,
                       keyboardType: TextInputType.number,
                       focusNode: _emiratesIdFocusNode,
@@ -249,7 +265,7 @@ class _BusinessOwnerInformationScreenState extends State<BusinessOwnerInformatio
                     VendorCustomTextFields(
                       labelText: 'Emirates ID Number Expiry Date',
                       hintText: 'dd-MM-yyyy',
-                      textStar: " *",
+                      textStar: ' *',
                       controller: _emiratesExpireDateController,
                       keyboardType: TextInputType.name,
                       focusNode: _emiratesExpireDateFocusNode,
@@ -259,9 +275,10 @@ class _BusinessOwnerInformationScreenState extends State<BusinessOwnerInformatio
                       suffixIconColor: Colors.grey,
                       validator: Validator.emiratesIdNumberDate,
                       onIconPressed: () async {
-                        var result = await showDatePickerDialog(context, "dd-MM-yyyy");
+                        final result =
+                            await showDatePickerDialog(context, 'dd-MM-yyyy');
                         if (result != null) {
-                          final date = result.toString().split(" ")[0];
+                          final date = result.toString().split(' ')[0];
                           _emiratesExpireDateController.text = date;
                           widget.boiModel.eidExpiry = date;
                           widget.onBOIModelUpdate(widget.boiModel);
@@ -271,7 +288,7 @@ class _BusinessOwnerInformationScreenState extends State<BusinessOwnerInformatio
                     VendorCustomTextFields(
                       labelText: 'Upload EID (pdf)',
                       hintText: 'No file Chosen',
-                      textStar: " *",
+                      textStar: ' *',
                       controller: _eidPdfController,
                       keyboardType: TextInputType.name,
                       focusNode: _eidPdfFocusNode,
@@ -280,57 +297,63 @@ class _BusinessOwnerInformationScreenState extends State<BusinessOwnerInformatio
                       isEditable: false,
                       prefixIconColor: Colors.black,
                       prefixIcon: Icons.upload_outlined,
-                      borderSideColor: BorderSide(color: Colors.grey, width: 0.5),
+                      borderSideColor:
+                          const BorderSide(color: Colors.grey, width: 0.5),
                       prefixContainerColor: Colors.grey.shade300,
                       validator: Validator.fieldRequired,
                       onIconPressed: () async {
-                        FilePickerResult? result = await FilePicker.platform.pickFiles(
+                        final FilePickerResult? result =
+                            await FilePicker.platform.pickFiles(
                           type: FileType.custom,
                           allowedExtensions: ['pdf'],
                         );
                         if (result != null) {
-                          File file = File(result.files.single.path!);
+                          final File file = File(result.files.single.path!);
                           _eidPdfController.text = result.files.single.name;
                           widget.boiModel.eidFile = file;
-                          widget.boiModel.eidFileName = result.files.single.name;
+                          widget.boiModel.eidFileName =
+                              result.files.single.name;
                           widget.onBOIModelUpdate(widget.boiModel);
                         } else {
                           widget.boiModel.eidFile = null;
-                          widget.boiModel.eidFileName = "";
+                          widget.boiModel.eidFileName = '';
                           widget.onBOIModelUpdate(widget.boiModel);
-                          _eidPdfController.text = "";
+                          _eidPdfController.text = '';
                         }
                       },
                     ),
                     VendorCustomTextFields(
                       labelText: 'Upload Passport (pdf)',
                       hintText: 'No file Chosen',
-                      textStar: " *",
+                      textStar: ' *',
                       controller: _passportController,
                       keyboardType: TextInputType.name,
                       focusNode: _passportFocusNode,
                       isPrefixFilled: true,
                       isEditable: false,
-                      borderSideColor: BorderSide(color: Colors.grey, width: 0.5),
+                      borderSideColor:
+                          const BorderSide(color: Colors.grey, width: 0.5),
                       prefixIcon: Icons.upload_outlined,
                       prefixContainerColor: Colors.grey.shade300,
                       prefixIconColor: Colors.black,
                       validator: Validator.fieldRequired,
                       onIconPressed: () async {
-                        FilePickerResult? result = await FilePicker.platform.pickFiles(
+                        final FilePickerResult? result =
+                            await FilePicker.platform.pickFiles(
                           type: FileType.custom,
                           allowedExtensions: ['pdf'],
                         );
                         if (result != null) {
-                          File file = File(result.files.single.path!);
+                          final File file = File(result.files.single.path!);
                           _passportController.text = result.files.single.name;
                           widget.boiModel.passportFile = file;
-                          widget.boiModel.passportFileName = result.files.single.name;
+                          widget.boiModel.passportFileName =
+                              result.files.single.name;
                           widget.onBOIModelUpdate(widget.boiModel);
                         } else {
-                          _passportController.text = "";
+                          _passportController.text = '';
                           widget.boiModel.passportFile = null;
-                          widget.boiModel.passportFileName = "";
+                          widget.boiModel.passportFileName = '';
                           widget.onBOIModelUpdate(widget.boiModel);
                         }
                       },

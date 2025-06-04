@@ -1,8 +1,4 @@
 class FeaturedCategoriesModels {
-  bool? error;
-  List<Data>? data;
-  Null message;
-
   FeaturedCategoriesModels({this.error, this.data, this.message});
 
   FeaturedCategoriesModels.fromJson(Map<String, dynamic> json) {
@@ -10,29 +6,27 @@ class FeaturedCategoriesModels {
     if (json['data'] != null) {
       data = <Data>[];
       json['data'].forEach((v) {
-        data!.add(new Data.fromJson(v));
+        data!.add(Data.fromJson(v));
       });
     }
     message = json['message'];
   }
+  bool? error;
+  List<Data>? data;
+  Null message;
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['error'] = this.error;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['error'] = error;
     if (this.data != null) {
       data['data'] = this.data!.map((v) => v.toJson()).toList();
     }
-    data['message'] = this.message;
+    data['message'] = message;
     return data;
   }
 }
 
 class Data {
-  String? name;
-  String? slug;
-  String? image;
-  int? items;
-
   Data({this.name, this.slug, this.image, this.items});
 
   Data.fromJson(Map<String, dynamic> json) {
@@ -41,13 +35,17 @@ class Data {
     image = json['image'];
     items = json['items'];
   }
+  String? name;
+  String? slug;
+  String? image;
+  int? items;
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['name'] = this.name;
-    data['slug'] = this.slug;
-    data['image'] = this.image;
-    data['items'] = this.items;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['name'] = name;
+    data['slug'] = slug;
+    data['image'] = image;
+    data['items'] = items;
     return data;
   }
 }

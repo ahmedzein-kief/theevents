@@ -26,46 +26,44 @@ class CompanyInfoPostData {
   String? vatFileServerPath;
 
   // Convert object to Map<String, dynamic>
-  Map<String, dynamic> toMap(bool isOwner) {
-    return {
-      "meta_type": "company-information",
-      "company_name": companyName,
-      "company_type": companyType,
-      "company_email": companyEmail,
-      "company_phone_code": "971",
-      "company_phone_number": companyPhoneNumber,
-      "trading_license_number": tradingLicenseNumber,
-      "company_address": companyAddress,
-      "address_type": addressType,
-      "mobile_number": mobileNumber,
-      "region": companyRegion,
-      "company_country": companyCountry,
-      "trading_license_expiry": tradingLicenseExpiryDate,
-    };
-  }
+  Map<String, dynamic> toMap(bool isOwner) => {
+        'meta_type': 'company-information',
+        'company_name': companyName,
+        'company_type': companyType,
+        'company_email': companyEmail,
+        'company_phone_code': '971',
+        'company_phone_number': companyPhoneNumber,
+        'trading_license_number': tradingLicenseNumber,
+        'company_address': companyAddress,
+        'address_type': addressType,
+        'mobile_number': mobileNumber,
+        'region': companyRegion,
+        'company_country': companyCountry,
+        'trading_license_expiry': tradingLicenseExpiryDate,
+      };
 
   // Convert object to List<MapEntry<String, String>>
-  List<MapEntry<String, String>> toMapEntries() {
-    return {
-      "meta_type": "company-information",
-      "company_name": companyName,
-      "company_type": companyType?.toLowerCase(),
-      "company_email": companyEmail,
-      "company_phone_code": "971",
-      "company_phone_number": companyPhoneNumber,
-      "trading_license_number": tradingLicenseNumber,
-      "company_address": companyAddress,
-      "address_type": addressType?.toLowerCase(),
-      "mobile_number": mobileNumber,
-      "company_region": companyRegion,
-      "company_country": companyCountry,
-      "trading_license_expiry": tradingLicenseExpiryDate,
-    }.entries.map((entry) => MapEntry(entry.key, entry.value.toString())).toList();
-  }
+  List<MapEntry<String, String>> toMapEntries() => {
+        'meta_type': 'company-information',
+        'company_name': companyName,
+        'company_type': companyType?.toLowerCase(),
+        'company_email': companyEmail,
+        'company_phone_code': '971',
+        'company_phone_number': companyPhoneNumber,
+        'trading_license_number': tradingLicenseNumber,
+        'company_address': companyAddress,
+        'address_type': addressType?.toLowerCase(),
+        'mobile_number': mobileNumber,
+        'company_region': companyRegion,
+        'company_country': companyCountry,
+        'trading_license_expiry': tradingLicenseExpiryDate,
+      }
+          .entries
+          .map((entry) => MapEntry(entry.key, entry.value.toString()))
+          .toList();
 
   @override
-  String toString() {
-    return '''
+  String toString() => '''
 Company Information:
   Company Name: $companyName
   Company Type: $companyType
@@ -87,5 +85,4 @@ Company Information:
   VAT File: ${vatFile?.path}
   VAT File Name: $vatFileName
   ''';
-  }
 }

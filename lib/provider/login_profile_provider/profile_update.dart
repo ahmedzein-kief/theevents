@@ -1,11 +1,11 @@
 import 'dart:convert';
 
-import 'package:event_app/provider/api_response_handler.dart';
+import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/core/utils/custom_toast.dart';
-import 'package:event_app/utils/apiendpoints/api_end_point.dart';
+import 'package:event_app/provider/api_response_handler.dart';
 import 'package:flutter/cupertino.dart';
 
-import '../../utils/apiStatus/api_status.dart';
+import '../../core/network/api_status/api_status.dart';
 
 class ProfileUpdateProvider with ChangeNotifier {
   final ApiResponseHandler _apiResponseHandler = ApiResponseHandler();
@@ -19,9 +19,10 @@ class ProfileUpdateProvider with ChangeNotifier {
     notifyListeners(); // Notify the UI about the status change
   }
 
-  Future<void> editProfileDetails(String token, ProfileUpdateResponse request, BuildContext context) async {
-    final urlChangePassword = ApiEndpoints.editAccount;
-    final url = urlChangePassword;
+  Future<void> editProfileDetails(
+      String token, ProfileUpdateResponse request, BuildContext context) async {
+    const urlChangePassword = ApiEndpoints.editAccount;
+    const url = urlChangePassword;
     final headers = {
       'Authorization': 'Bearer $token',
       'Accept': 'application/json',
@@ -30,7 +31,8 @@ class ProfileUpdateProvider with ChangeNotifier {
     setStatus(ApiStatus.loading); // Set status to loading before the API call
 
     try {
-      final response = await _apiResponseHandler.postRequest(url, headers: headers, body: request.toJson());
+      final response = await _apiResponseHandler.postRequest(url,
+          headers: headers, body: request.toJson());
 
       final responseData = json.decode(response.body);
       if (response.statusCode == 200) {
@@ -46,8 +48,8 @@ class ProfileUpdateProvider with ChangeNotifier {
   }
 
   Future<bool> deleteAccount(String token, BuildContext context) async {
-    final urlChangePassword = ApiEndpoints.customerDelete;
-    final url = urlChangePassword;
+    const urlChangePassword = ApiEndpoints.customerDelete;
+    const url = urlChangePassword;
     final headers = {
       'Authorization': 'Bearer $token',
       'Accept': 'application/json',
@@ -79,17 +81,17 @@ class ProfileUpdateProvider with ChangeNotifier {
 }
 
 class ProfileUpdateResponse {
+  ProfileUpdateResponse(
+      {required this.fullName,
+      required this.fullEmail,
+      required this.phoneNumber});
   String fullName;
   String fullEmail;
   String phoneNumber;
 
-  ProfileUpdateResponse({required this.fullName, required this.fullEmail, required this.phoneNumber});
-
-  Map<String, String> toJson() {
-    return {
-      'name': fullName,
-      'email': fullEmail,
-      'phone': phoneNumber,
-    };
-  }
+  Map<String, String> toJson() => {
+        'name': fullName,
+        'email': fullEmail,
+        'phone': phoneNumber,
+      };
 }

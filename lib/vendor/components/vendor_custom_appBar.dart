@@ -1,20 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class VendorCustomAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final String? leftIconPath;
-  final String? firstRightIconPath;
-  final String? secondRightIconPath;
-  final String? thirdRightIconPath;
-  final Widget? leftWidget;
-  final VoidCallback? onLeftIconPressed;
-  final VoidCallback? onBackIconPressed;
-  final Color? backgroundColor;
-  final double appBarHeight;
-  final String? leftText;
-  final Widget? customBackIcon;
-
+class VendorCustomAppBar extends StatelessWidget
+    implements PreferredSizeWidget {
   const VendorCustomAppBar({
+    super.key,
     this.customBackIcon,
     this.leftIconPath,
     this.firstRightIconPath,
@@ -27,17 +17,31 @@ class VendorCustomAppBar extends StatelessWidget implements PreferredSizeWidget 
     this.appBarHeight = kToolbarHeight,
     this.leftText,
   });
+  final String? leftIconPath;
+  final String? firstRightIconPath;
+  final String? secondRightIconPath;
+  final String? thirdRightIconPath;
+  final Widget? leftWidget;
+  final VoidCallback? onLeftIconPressed;
+  final VoidCallback? onBackIconPressed;
+  final Color? backgroundColor;
+  final double appBarHeight;
+  final String? leftText;
+  final Widget? customBackIcon;
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.sizeOf(context).width;
-    double screenHeight = MediaQuery.sizeOf(context).height;
+    final double screenWidth = MediaQuery.sizeOf(context).width;
+    final double screenHeight = MediaQuery.sizeOf(context).height;
     return SafeArea(
       child: Container(
         color: backgroundColor,
         child: AppBar(
           automaticallyImplyLeading: false,
-          backgroundColor: backgroundColor ?? Theme.of(context).colorScheme.primary, // Set the background color for AppBar
+          backgroundColor: backgroundColor ??
+              Theme.of(context)
+                  .colorScheme
+                  .primary, // Set the background color for AppBar
           flexibleSpace: Container(
             color: backgroundColor ?? Theme.of(context).colorScheme.primary,
             child: Center(
@@ -46,22 +50,26 @@ class VendorCustomAppBar extends StatelessWidget implements PreferredSizeWidget 
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   GestureDetector(
-                    onTap: onBackIconPressed ?? onLeftIconPressed, // Handle left icon or back button
+                    onTap: onBackIconPressed ??
+                        onLeftIconPressed, // Handle left icon or back button
                     child: Padding(
                       padding: EdgeInsets.only(top: screenWidth * 0.02),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          if (customBackIcon != null) customBackIcon!, // Custom back icon
+                          if (customBackIcon != null)
+                            customBackIcon!, // Custom back icon
                           if (leftIconPath != null)
                             SvgPicture.asset(
                               leftIconPath!,
                               fit: BoxFit.cover,
                             ),
-                          SizedBox(width: screenWidth * 0.02, height: screenHeight * 0.02),
+                          SizedBox(
+                              width: screenWidth * 0.02,
+                              height: screenHeight * 0.02),
                           if (leftWidget != null) leftWidget!,
-                          if (leftText != null) Text(leftText!)
+                          if (leftText != null) Text(leftText!),
                         ],
                       ),
                     ),

@@ -5,20 +5,19 @@ import '../../styles/app_colors.dart';
 import '../../styles/custom_text_styles.dart';
 
 class AppCustomButton extends StatelessWidget {
-  final String title;
-  final VoidCallback onPressed;
-  final IconData? icon;
-  final bool isLoading;
-  final bool isChecked;
-
-  AppCustomButton({
-    Key? key,
+  const AppCustomButton({
+    super.key,
     required this.title,
     required this.onPressed,
     this.isLoading = false,
     this.isChecked = true,
     this.icon,
-  }) : super(key: key);
+  });
+  final String title;
+  final VoidCallback onPressed;
+  final IconData? icon;
+  final bool isLoading;
+  final bool isChecked;
 
   @override
   Widget build(BuildContext context) {

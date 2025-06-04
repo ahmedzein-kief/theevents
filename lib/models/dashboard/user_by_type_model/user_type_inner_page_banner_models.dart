@@ -1,39 +1,17 @@
 class UserModel {
+  UserModel({required this.error, required this.data, this.message});
+
+  factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
+        error: json['error'],
+        data: UserData.fromJson(json['data']),
+        message: json['message'],
+      );
   final bool error;
   final UserData data;
   final String? message;
-
-  UserModel({required this.error, required this.data, this.message});
-
-  factory UserModel.fromJson(Map<String, dynamic> json) {
-    return UserModel(
-      error: json['error'],
-      data: UserData.fromJson(json['data']),
-      message: json['message'],
-    );
-  }
 }
 
 class UserData {
-  final int id;
-  final String name;
-  final String email;
-  final String avatar;
-  final String avatarThumb;
-  final String coverImage;
-  final int storeId;
-  final String storeName;
-  final String storeSlug;
-  final String storeLogo;
-  final String storeLogoThumb;
-  final String storeCoverImage;
-  final String? storeTitle;
-  final String? storeDescription;
-  final int items;
-  final String type;
-  final String listingType;
-  final SeoMeta seoMeta;
-
   UserData({
     required this.id,
     required this.name,
@@ -55,36 +33,47 @@ class UserData {
     required this.seoMeta,
   });
 
-  factory UserData.fromJson(Map<String, dynamic> json) {
-    return UserData(
-      id: json['id'],
-      name: json['name'],
-      email: json['email'],
-      avatar: json['avatar'],
-      avatarThumb: json['avatar_thumb'],
-      coverImage: json['cover_image'],
-      storeId: json['store_id'],
-      storeName: json['store_name'],
-      storeSlug: json['store_slug'],
-      storeLogo: json['store_logo'],
-      storeLogoThumb: json['store_logo_thumb'],
-      storeCoverImage: json['store_cover_image'],
-      storeTitle: json['store_title'],
-      storeDescription: json['store_description'],
-      items: json['items'],
-      type: json['type'],
-      listingType: json['listing_type'],
-      seoMeta: SeoMeta.fromJson(json['seo_meta']),
-    );
-  }
+  factory UserData.fromJson(Map<String, dynamic> json) => UserData(
+        id: json['id'],
+        name: json['name'],
+        email: json['email'],
+        avatar: json['avatar'],
+        avatarThumb: json['avatar_thumb'],
+        coverImage: json['cover_image'],
+        storeId: json['store_id'],
+        storeName: json['store_name'],
+        storeSlug: json['store_slug'],
+        storeLogo: json['store_logo'],
+        storeLogoThumb: json['store_logo_thumb'],
+        storeCoverImage: json['store_cover_image'],
+        storeTitle: json['store_title'],
+        storeDescription: json['store_description'],
+        items: json['items'],
+        type: json['type'],
+        listingType: json['listing_type'],
+        seoMeta: SeoMeta.fromJson(json['seo_meta']),
+      );
+  final int id;
+  final String name;
+  final String email;
+  final String avatar;
+  final String avatarThumb;
+  final String coverImage;
+  final int storeId;
+  final String storeName;
+  final String storeSlug;
+  final String storeLogo;
+  final String storeLogoThumb;
+  final String storeCoverImage;
+  final String? storeTitle;
+  final String? storeDescription;
+  final int items;
+  final String type;
+  final String listingType;
+  final SeoMeta seoMeta;
 }
 
 class SeoMeta {
-  final String title;
-  final String? description;
-  final String image;
-  final String robots;
-
   SeoMeta({
     required this.title,
     this.description,
@@ -92,12 +81,14 @@ class SeoMeta {
     required this.robots,
   });
 
-  factory SeoMeta.fromJson(Map<String, dynamic> json) {
-    return SeoMeta(
-      title: json['title'],
-      description: json['description'],
-      image: json['image'],
-      robots: json['robots'],
-    );
-  }
+  factory SeoMeta.fromJson(Map<String, dynamic> json) => SeoMeta(
+        title: json['title'],
+        description: json['description'],
+        image: json['image'],
+        robots: json['robots'],
+      );
+  final String title;
+  final String? description;
+  final String image;
+  final String robots;
 }

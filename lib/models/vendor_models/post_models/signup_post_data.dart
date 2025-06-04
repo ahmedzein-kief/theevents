@@ -1,13 +1,4 @@
 class VendorSignUpPostData {
-  String? name;
-  String? email;
-  String? gender;
-  String? password;
-  String? confirmPassword;
-  String? companyName;
-  String? companySlug;
-  String? companyMobileNumber;
-
   VendorSignUpPostData({
     this.name,
     this.email,
@@ -18,19 +9,27 @@ class VendorSignUpPostData {
     this.companySlug,
     this.companyMobileNumber,
   });
+  String? name;
+  String? email;
+  String? gender;
+  String? password;
+  String? confirmPassword;
+  String? companyName;
+  String? companySlug;
+  String? companyMobileNumber;
 
   // Convert object to Map<String, dynamic>
   Map<String, dynamic> toMap() {
     return {
-      "name": name,
-      "email": email,
-      "password": password,
-      "password_confirmation": confirmPassword,
-      "gender": gender,
-      "shop_name": companyName,
-      "shop_url": companySlug,
-      "shop_phone": companyMobileNumber,
-      "is_vendor": 1,
+      'name': name,
+      'email': email,
+      'password': password,
+      'password_confirmation': confirmPassword,
+      'gender': gender,
+      'shop_name': companyName,
+      'shop_url': companySlug,
+      'shop_phone': companyMobileNumber,
+      'is_vendor': 1,
     };
 
     /*{"name":"Amanpal",

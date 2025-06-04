@@ -1,23 +1,27 @@
 import 'dart:convert';
 
-VendorGetProductTagsModel vendorGetProductTagsModelFromJson(String str) => VendorGetProductTagsModel.fromJson(json.decode(str));
+VendorGetProductTagsModel vendorGetProductTagsModelFromJson(String str) =>
+    VendorGetProductTagsModel.fromJson(json.decode(str));
 
-String vendorGetProductTagsModelToJson(VendorGetProductTagsModel vendorProductTags) => json.encode(vendorProductTags.toJson());
+String vendorGetProductTagsModelToJson(
+        VendorGetProductTagsModel vendorProductTags) =>
+    json.encode(vendorProductTags.toJson());
 
 class VendorGetProductTagsModel {
   VendorGetProductTagsModel({
     bool? error,
     List<String>? vendorProductTags,
-    dynamic message,
+    message,
   }) {
     _error = error;
     _vendorProductTags = vendorProductTags;
     _message = message;
   }
 
-  VendorGetProductTagsModel.fromJson(dynamic json) {
+  VendorGetProductTagsModel.fromJson(json) {
     _error = json['error'];
-    _vendorProductTags = json['data'] != null ? json['data'].cast<String>() : [];
+    _vendorProductTags =
+        json['data'] != null ? json['data'].cast<String>() : [];
     _message = json['message'];
   }
 

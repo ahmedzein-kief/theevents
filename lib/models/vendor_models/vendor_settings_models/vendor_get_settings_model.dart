@@ -4,22 +4,24 @@ import 'dart:convert';
 /// data : {"payment_method_options":{"bank_transfer":"Bank Transfer","paypal":"PayPal"},"store":{"name":"Abhay Kumar","slug":"wwwshopurlcom","email":"abhay.kumar@gmail.com","phone":"98980446928","address":"vpo lahar","country":"IN","state":"Himachal Pradesh","city":"Hamirpur","title":"Master Company","description":"Description for master company.","content":"<p><strong>Test Content.</strong></p><p><i><u>Hi Abhay</u></i></p><p><span style=\"color:hsl(30,75%,60%);\">How are you?</span></p>","company":"Ampersand","logo":"https://api.staging.theevents.ae/storage/stores/asfsfsfsasfsf/1024-1024-image-3.jpg","cover_image":null},"payment_method":"bank_transfer","bank_info":{"name":"State Bank Of India","code":"111111111","full_name":"111111111","number":"111111111","paypal_id":"hkjhakjhsf","upi_id":"upi@ok","description":"description for payout Info."},"tax_info":{"business_name":"Master Business Kom","tax_id":"123456786543","address":"Vpo lahar"}}
 /// message : null
 
-VendorGetSettingsModel vendorGetSettingsModelFromJson(String str) => VendorGetSettingsModel.fromJson(json.decode(str));
+VendorGetSettingsModel vendorGetSettingsModelFromJson(String str) =>
+    VendorGetSettingsModel.fromJson(json.decode(str));
 
-String vendorGetSettingsModelToJson(VendorGetSettingsModel data) => json.encode(data.toJson());
+String vendorGetSettingsModelToJson(VendorGetSettingsModel data) =>
+    json.encode(data.toJson());
 
 class VendorGetSettingsModel {
   VendorGetSettingsModel({
     bool? error,
     Data? data,
-    dynamic message,
+    message,
   }) {
     _error = error;
     _data = data;
     _message = message;
   }
 
-  VendorGetSettingsModel.fromJson(dynamic json) {
+  VendorGetSettingsModel.fromJson(json) {
     _error = json['error'];
     _data = json['data'] != null ? Data.fromJson(json['data']) : null;
     _message = json['message'];
@@ -32,7 +34,7 @@ class VendorGetSettingsModel {
   VendorGetSettingsModel copyWith({
     bool? error,
     Data? data,
-    dynamic message,
+    message,
   }) =>
       VendorGetSettingsModel(
         error: error ?? _error,
@@ -82,12 +84,16 @@ class Data {
     _taxInfo = taxInfo;
   }
 
-  Data.fromJson(dynamic json) {
-    _paymentMethodOptions = json['payment_method_options'] != null ? PaymentMethodOptions.fromJson(json['payment_method_options']) : null;
+  Data.fromJson(json) {
+    _paymentMethodOptions = json['payment_method_options'] != null
+        ? PaymentMethodOptions.fromJson(json['payment_method_options'])
+        : null;
     _store = json['store'] != null ? Store.fromJson(json['store']) : null;
     _paymentMethod = json['payment_method'];
-    _bankInfo = json['bank_info'] != null ? BankInfo.fromJson(json['bank_info']) : null;
-    _taxInfo = json['tax_info'] != null ? TaxInfo.fromJson(json['tax_info']) : null;
+    _bankInfo =
+        json['bank_info'] != null ? BankInfo.fromJson(json['bank_info']) : null;
+    _taxInfo =
+        json['tax_info'] != null ? TaxInfo.fromJson(json['tax_info']) : null;
   }
 
   PaymentMethodOptions? _paymentMethodOptions;
@@ -159,7 +165,7 @@ class TaxInfo {
     _address = address;
   }
 
-  TaxInfo.fromJson(dynamic json) {
+  TaxInfo.fromJson(json) {
     _businessName = json['business_name'];
     _taxId = json['tax_id'];
     _address = json['address'];
@@ -226,7 +232,7 @@ class BankInfo {
     _description = description;
   }
 
-  BankInfo.fromJson(dynamic json) {
+  BankInfo.fromJson(json) {
     _name = json['name'];
     _code = json['code'];
     _fullName = json['full_name'];
@@ -324,7 +330,7 @@ class Store {
     String? content,
     String? company,
     String? logo,
-    dynamic coverImage,
+    coverImage,
   }) {
     _name = name;
     _slug = slug;
@@ -342,7 +348,7 @@ class Store {
     _coverImage = coverImage;
   }
 
-  Store.fromJson(dynamic json) {
+  Store.fromJson(json) {
     _name = json['name'];
     _slug = json['slug'];
     _email = json['email'];
@@ -388,7 +394,7 @@ class Store {
     String? content,
     String? company,
     String? logo,
-    dynamic coverImage,
+    coverImage,
   }) =>
       Store(
         name: name ?? _name,
@@ -458,9 +464,11 @@ class Store {
 /// bank_transfer : "Bank Transfer"
 /// paypal : "PayPal"
 
-PaymentMethodOptions paymentMethodOptionsFromJson(String str) => PaymentMethodOptions.fromJson(json.decode(str));
+PaymentMethodOptions paymentMethodOptionsFromJson(String str) =>
+    PaymentMethodOptions.fromJson(json.decode(str));
 
-String paymentMethodOptionsToJson(PaymentMethodOptions data) => json.encode(data.toJson());
+String paymentMethodOptionsToJson(PaymentMethodOptions data) =>
+    json.encode(data.toJson());
 
 class PaymentMethodOptions {
   PaymentMethodOptions({
@@ -471,7 +479,7 @@ class PaymentMethodOptions {
     _paypal = paypal;
   }
 
-  PaymentMethodOptions.fromJson(dynamic json) {
+  PaymentMethodOptions.fromJson(json) {
     _bankTransfer = json['bank_transfer'];
     _paypal = json['paypal'];
   }

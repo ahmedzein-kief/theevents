@@ -7,9 +7,8 @@ import '../../../core/styles/custom_text_styles.dart';
 import '../shorcode_featured_brands/featured_brands_items_screen.dart';
 
 class EComTagsBrandsScreen extends StatefulWidget {
-  final dynamic id;
-
   const EComTagsBrandsScreen({super.key, required this.id});
+  final dynamic id;
 
   @override
   State<EComTagsBrandsScreen> createState() => _EComTagsBrandsScreenState();
@@ -60,7 +59,9 @@ class _EComTagsBrandsScreenState extends State<EComTagsBrandsScreen> {
 
   void _onScroll() {
     if (_isFetchingMore) return;
-    if (_scrollController.offset >= _scrollController.position.maxScrollExtent && _scrollController.position.outOfRange) {
+    if (_scrollController.offset >=
+            _scrollController.position.maxScrollExtent &&
+        _scrollController.position.outOfRange) {
       if (mounted) {
         setState(() {
           _currentPage++;
@@ -89,16 +90,26 @@ class _EComTagsBrandsScreenState extends State<EComTagsBrandsScreen> {
       child: Consumer<EComBrandsProvider>(
         builder: (context, provider, child) {
           if (provider.isMoreLoadingBrands) {
-            return const Center(child: CircularProgressIndicator(color: Colors.black, strokeWidth: 0.5));
+            return const Center(
+                child: CircularProgressIndicator(
+                    color: Colors.black, strokeWidth: 0.5));
           }
           return provider.records.isEmpty
               ? Padding(
-                  padding: EdgeInsets.only(left: screenWidth * 0.02, right: screenWidth * 0.02, top: screenHeight * 0.02),
+                  padding: EdgeInsets.only(
+                      left: screenWidth * 0.02,
+                      right: screenWidth * 0.02,
+                      top: screenHeight * 0.02),
                   child: Container(
-                      width: double.infinity,
-                      decoration: const BoxDecoration(color: AppColors.lightCoral),
-                      height: 50,
-                      child: const Align(alignment: Alignment.center, child: Text('No records found!'))))
+                    width: double.infinity,
+                    decoration:
+                        const BoxDecoration(color: AppColors.lightCoral),
+                    height: 50,
+                    child: const Align(
+                        alignment: Alignment.center,
+                        child: Text('No records found!')),
+                  ),
+                )
               : SingleChildScrollView(
                   controller: _scrollController,
                   child: Column(
@@ -115,26 +126,51 @@ class _EComTagsBrandsScreenState extends State<EComTagsBrandsScreen> {
                             }
                           },
                           items: [
-                            DropdownMenuItem(value: 'default_sorting', child: Text('Default Sorting', style: sortingStyle(context))),
-                            DropdownMenuItem(value: 'date_asc', child: Text('Oldest', style: sortingStyle(context))),
-                            DropdownMenuItem(value: 'date_desc', child: Text('Newest', style: sortingStyle(context))),
-                            DropdownMenuItem(value: 'name_asc', child: Text('Name: A-Z', style: sortingStyle(context))),
-                            DropdownMenuItem(value: 'name_desc', child: Text('Name: Z-A', style: sortingStyle(context))),
+                            DropdownMenuItem(
+                                value: 'default_sorting',
+                                child: Text('Default Sorting',
+                                    style: sortingStyle(context))),
+                            DropdownMenuItem(
+                                value: 'date_asc',
+                                child: Text('Oldest',
+                                    style: sortingStyle(context))),
+                            DropdownMenuItem(
+                                value: 'date_desc',
+                                child: Text('Newest',
+                                    style: sortingStyle(context))),
+                            DropdownMenuItem(
+                                value: 'name_asc',
+                                child: Text('Name: A-Z',
+                                    style: sortingStyle(context))),
+                            DropdownMenuItem(
+                                value: 'name_desc',
+                                child: Text('Name: Z-A',
+                                    style: sortingStyle(context))),
                           ],
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsets.only(left: screenWidth * 0.02, right: screenWidth * 0.02, top: screenHeight * 0.02),
+                        padding: EdgeInsets.only(
+                            left: screenWidth * 0.02,
+                            right: screenWidth * 0.02,
+                            top: screenHeight * 0.02),
                         child: GridView.builder(
                           key: ValueKey(_currentPage),
                           // Add this line
-                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3, childAspectRatio: 0.7, mainAxisSpacing: 10, crossAxisSpacing: 10),
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 3,
+                                  childAspectRatio: 0.7,
+                                  mainAxisSpacing: 10,
+                                  crossAxisSpacing: 10),
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
-                          itemCount: provider.records.length + (_isFetchingMore ? 1 : 0),
+                          itemCount: provider.records.length +
+                              (_isFetchingMore ? 1 : 0),
                           itemBuilder: (context, index) {
                             final record = provider.records[index];
-                            if (_isFetchingMore && index == provider.records.length) {
+                            if (_isFetchingMore &&
+                                index == provider.records.length) {
                               return const Align(
                                 alignment: Alignment.center,
                                 child: Column(
@@ -157,7 +193,8 @@ class _EComTagsBrandsScreenState extends State<EComTagsBrandsScreen> {
                               children: [
                                 Container(
                                   decoration: BoxDecoration(
-                                    color: Theme.of(context).colorScheme.primary,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
                                     borderRadius: BorderRadius.circular(5),
                                     border: Border.all(
                                       color: Colors.green,
@@ -175,23 +212,28 @@ class _EComTagsBrandsScreenState extends State<EComTagsBrandsScreen> {
                                   child: GestureDetector(
                                     onTap: () {
                                       Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (builder) => FeaturedBrandsItemsScreen(
-                                                    slug: record.slug,
-                                                  )));
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (builder) =>
+                                              FeaturedBrandsItemsScreen(
+                                            slug: record.slug,
+                                          ),
+                                        ),
+                                      );
                                     },
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
                                         Image.network(
                                           record.image,
                                           height: 120,
                                           fit: BoxFit.fitWidth,
-                                          errorBuilder: (context, build, child) {
-                                            return const SizedBox.shrink();
-                                          },
+                                          errorBuilder:
+                                              (context, build, child) =>
+                                                  const SizedBox.shrink(),
                                         ),
                                         Text(
                                           maxLines: 2,
@@ -217,7 +259,8 @@ class _EComTagsBrandsScreenState extends State<EComTagsBrandsScreen> {
 
   @override
   void dispose() {
-    _scrollController.removeListener(_onScroll); // Remove the listener in dispose
+    _scrollController
+        .removeListener(_onScroll); // Remove the listener in dispose
     _scrollController.dispose();
     super.dispose();
   }

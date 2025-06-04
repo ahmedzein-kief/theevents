@@ -1,12 +1,13 @@
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SecurePreferencesUtil {
   static SharedPreferences? _preferences;
   static const FlutterSecureStorage _secureStorage = FlutterSecureStorage(
     aOptions: AndroidOptions(
       encryptedSharedPreferences: true,
-      keyCipherAlgorithm: KeyCipherAlgorithm.RSA_ECB_OAEPwithSHA_256andMGF1Padding,
+      keyCipherAlgorithm:
+          KeyCipherAlgorithm.RSA_ECB_OAEPwithSHA_256andMGF1Padding,
       storageCipherAlgorithm: StorageCipherAlgorithm.AES_GCM_NoPadding,
     ),
     iOptions: IOSOptions(
@@ -49,9 +50,8 @@ class SecurePreferencesUtil {
   }
 
   /// Get user name from secure storage
-  static Future<String?> getUserName() async {
-    return await _secureStorage.read(key: _userNameKey);
-  }
+  static Future<String?> getUserName() async =>
+      _secureStorage.read(key: _userNameKey);
 
   /// Save user email securely
   static Future<void> saveUserMail(String userMail) async {
@@ -59,9 +59,8 @@ class SecurePreferencesUtil {
   }
 
   /// Get user email from secure storage
-  static Future<String?> getUserMail() async {
-    return await _secureStorage.read(key: _userMailKey);
-  }
+  static Future<String?> getUserMail() async =>
+      _secureStorage.read(key: _userMailKey);
 
   /// Save authentication token securely
   static Future<void> saveToken(String token) async {
@@ -69,9 +68,8 @@ class SecurePreferencesUtil {
   }
 
   /// Get authentication token from secure storage
-  static Future<String?> getToken() async {
-    return await _secureStorage.read(key: _tokenKey);
-  }
+  static Future<String?> getToken() async =>
+      _secureStorage.read(key: _tokenKey);
 
   /// Remove authentication token
   static Future<void> removeToken() async {
@@ -115,9 +113,7 @@ class SecurePreferencesUtil {
   }
 
   /// Get boolean value
-  static bool getBool(String key) {
-    return _preferences?.getBool(key) ?? false;
-  }
+  static bool getBool(String key) => _preferences?.getBool(key) ?? false;
 
   /// Set string value (for non-sensitive data only)
   static Future<void> setString(String key, String value) async {
@@ -125,9 +121,7 @@ class SecurePreferencesUtil {
   }
 
   /// Get string value (for non-sensitive data only)
-  static String? getString(String key) {
-    return _preferences?.getString(key);
-  }
+  static String? getString(String key) => _preferences?.getString(key);
 
   /// Remove key from regular preferences
   static Future<void> remove(String key) async {
@@ -138,7 +132,7 @@ class SecurePreferencesUtil {
   static Future<void> setVendorData({
     bool approved = false,
     bool verified = false,
-    int vendor = 0
+    int vendor = 0,
   }) async {
     await setBool(isApproved, approved);
     await setBool(isVerified, verified);
@@ -147,9 +141,7 @@ class SecurePreferencesUtil {
 
   /// Check if user is logged in
   static Future<bool> isLoggedIn() async {
-    if (_preferences == null) {
-      _preferences = await SharedPreferences.getInstance();
-    }
+    _preferences ??= await SharedPreferences.getInstance();
     return _preferences?.getBool(isLoggedInKey) ?? false;
   }
 
@@ -198,13 +190,130 @@ class SecurePreferencesUtil {
   // ===============================
 
   /// Check if secure storage contains a key
-  static Future<bool> containsKeyInSecureStorage(String key) async {
-    return await _secureStorage.containsKey(key: key);
-  }
+  static Future<bool> containsKeyInSecureStorage(String key) async =>
+      _secureStorage.containsKey(key: key);
 
   /// Get all keys from secure storage
-  static Future<Map<String, String>> getAllFromSecureStorage() async {
-    return await _secureStorage.readAll();
-  }
+  static Future<Map<String, String>> getAllFromSecureStorage() async =>
+      _secureStorage.readAll();
 }
 
+
+
+// import 'package:shared_preferences/shared_preferences.dart';
+//
+// class SharedPreferencesUtil {
+//   static SharedPreferences? _preferences;
+//
+//   static const String isLoggedInKey = 'isLoggedIn';
+//   static const String _tokenKey = 'auth_token';
+//   static const String isApproved = 'is_approved';
+//   static const String isVerified = 'is_verified';
+//   static const String isVendor = 'is_vendor';
+//   static const String isFirstTimeKey = 'isFirstTime';
+//   static const String serverStep = 'serverStep';
+//
+//   static String get tokenKey => _tokenKey;
+//
+//   static String get loggedInKey => isLoggedInKey;
+//
+//   static String get verified => isVerified;
+//
+//   static String get approved => isApproved;
+//
+//   static String get vendor => isVendor;
+//
+//   static Future<void> saveUserName(String name) async {
+//     final prefs = await SharedPreferences.getInstance();
+//     await prefs.setString('userName', name);
+//   }
+//
+//   static Future<String?> getUserName() async {
+//     final prefs = await SharedPreferences.getInstance();
+//     return prefs.getString('userName');
+//   }
+//
+//   // Add other keys as needed
+//
+//   static Future<void> saveUserMail(String userMail) async {
+//     final prefs = await SharedPreferences.getInstance();
+//     await prefs.setString('userMail', userMail);
+//   }
+//
+//   static Future<void> saveServerStep(int step) async {
+//     final prefs = await SharedPreferences.getInstance();
+//     await prefs.setInt(serverStep, step);
+//   }
+//
+//   /// save user mail
+//
+//   static Future<String?> getUserMail() async {
+//     final prefs = await SharedPreferences.getInstance();
+//     return prefs.getString('userMail');
+//   }
+//
+//   static Future<int?> getServerStep() async {
+//     final prefs = await SharedPreferences.getInstance();
+//     return prefs.getInt(serverStep);
+//   }
+//
+//   static Future<void> init() async {
+//     _preferences = await SharedPreferences.getInstance();
+//   }
+//
+//   static Future<void> setBool(String key, bool value) async {
+//     await _preferences?.setBool(key, value);
+//   }
+//
+//   static Future<void> setInt(String key, int value) async {
+//     await _preferences?.setInt(key, value);
+//   }
+//
+//   static bool getBool(String key) {
+//     return _preferences?.getBool(key) ?? false;
+//   }
+//
+//   static Future<void> setString(String key, String value) async {
+//     await _preferences?.setString(key, value);
+//   }
+//
+//   static String? getString(String key) {
+//     return _preferences?.getString(key);
+//   }
+//
+//   static Future<void> remove(String key) async {
+//     await _preferences?.remove(key);
+//   }
+//
+//   ///     -------------------------- SAVE THE TOKEN  --------------------------------
+//
+//   static Future<void> saveToken(String token) async {
+//     await setString(_tokenKey, token);
+//   }
+//
+//   static Future<String?> getToken() async {
+//     return getString(_tokenKey);
+//   }
+//
+//   static Future<void> removeToken() async {
+//     await remove(_tokenKey);
+//   }
+//
+//   static Future<void> clearSharedPreferences() async {
+//     final SharedPreferences prefs = await SharedPreferences.getInstance();
+//     await prefs.clear();
+//   }
+//
+//   static Future<void> setVendorData({bool approved = false, bool verified = false, int vendor = 0}) async {
+//     await setBool(isApproved, approved);
+//     await setBool(isVerified, verified);
+//     await setInt(isVendor, vendor);
+//   }
+//
+//   /// ---------------------------------   SAVE LOGIN KEY --------------------------------
+//
+//   static Future<bool> isLoggedIn() async {
+//     _preferences = await SharedPreferences.getInstance();
+//     return await _preferences?.getBool(isLoggedInKey) ?? false;
+//   }
+// }

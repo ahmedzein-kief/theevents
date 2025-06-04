@@ -2,11 +2,11 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
-import 'package:event_app/provider/api_response_handler.dart';
+import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
+import 'package:event_app/core/network/api_endpoints/vendor_api_end_point.dart';
+import 'package:event_app/core/services/shared_preferences_helper.dart';
 import 'package:event_app/core/utils/custom_toast.dart';
-import 'package:event_app/utils/apiendpoints/api_end_point.dart';
-import 'package:event_app/utils/apiendpoints/vendor_api_end_point.dart';
-import 'package:event_app/utils/storage/shared_preferences_helper.dart';
+import 'package:event_app/provider/api_response_handler.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -23,7 +23,7 @@ class UserProvider with ChangeNotifier {
 
   bool get isLoading => _isLoading;
 
-  setUser(UserModel? userModel) {
+  void setUser(UserModel? userModel) {
     _user = userModel;
     notifyListeners();
   }
@@ -37,7 +37,7 @@ class UserProvider with ChangeNotifier {
       notifyListeners();
       return;
     }
-    final url = ApiEndpoints.getCustomer;
+    const url = ApiEndpoints.getCustomer;
     final headers = {
       'Authorization': 'Bearer $token',
     };
@@ -62,7 +62,7 @@ class UserProvider with ChangeNotifier {
     } catch (error) {
       _isLoading = false;
       notifyListeners();
-      throw error;
+      rethrow;
     }
   }
 
@@ -72,7 +72,7 @@ class UserProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    final url = '${VendorApiEndpoints.downloadAgreement}';
+    const url = VendorApiEndpoints.downloadAgreement;
     final token = await SecurePreferencesUtil.getToken();
     final headers = {
       'Authorization': token ?? '',
@@ -109,7 +109,7 @@ class UserProvider with ChangeNotifier {
     }
   }
 
-  String _errorMessage(dynamic response) {
+  String _errorMessage(response) {
     var errors;
     var error;
     var message;
@@ -117,7 +117,7 @@ class UserProvider with ChangeNotifier {
     if (response is Response) {
       if (response.data != null) {
         final errorData = response.data;
-        errors = errorData['errors'] == null ? errorData['data'] : errorData['errors'];
+        errors = errorData['errors'] ?? errorData['data'];
         error = errorData['error'];
         message = errorData['message'];
       }
@@ -138,7 +138,7 @@ class UserProvider with ChangeNotifier {
       if (errors != null && errors is Map) {
         errors.forEach((key, value) {
           if (value is List) {
-            for (var msg in value) {
+            for (final msg in value) {
               allErrors += '$key: $msg\n'; // Append each error message
             }
           }
@@ -162,7 +162,6 @@ class UserProvider with ChangeNotifier {
 
       return 'An unknown error occurred.'; // Fallback message if no errors are found
 
-      return 'Unknown error occurred';
     } catch (e) {
       return 'Unknown error occurred with status code: ${response.statusCode}';
     }

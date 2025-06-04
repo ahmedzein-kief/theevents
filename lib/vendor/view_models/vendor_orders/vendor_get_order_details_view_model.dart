@@ -1,14 +1,14 @@
 import 'package:event_app/provider/vendor/vendor_repository.dart';
 import 'package:flutter/cupertino.dart';
 
+import '../../../core/services/shared_preferences_helper.dart';
 import '../../../data/vendor/data/response/ApiResponse.dart';
 import '../../../models/vendor_models/vendor_order_models/vendor_get_order_details_model.dart';
-import '../../../utils/storage/shared_preferences_helper.dart';
 
 class VendorGetOrderDetailsViewModel with ChangeNotifier {
   String? _token;
 
-  setToken() async {
+  Future<void> setToken() async {
     _token = await SecurePreferencesUtil.getToken();
   }
 
@@ -31,17 +31,18 @@ class VendorGetOrderDetailsViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> vendorGetOrderDetails({required dynamic orderId}) async {
+  Future<bool> vendorGetOrderDetails({required orderId}) async {
     try {
       setLoading(true);
       setApiResponse = ApiResponse.loading();
       await setToken();
 
-      Map<String, String> headers = <String, String>{
-        "Authorization": _token!,
+      final Map<String, String> headers = <String, String>{
+        'Authorization': _token!,
       };
 
-      VendorGetOrderDetailsModel response = await _myRepo.vendorGetOrderDetails(headers: headers, orderId: orderId.toString());
+      final VendorGetOrderDetailsModel response = await _myRepo
+          .vendorGetOrderDetails(headers: headers, orderId: orderId.toString());
 
       setApiResponse = ApiResponse.completed(response);
       setLoading(false);

@@ -4,24 +4,28 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../provider/shortcode_featured_categories_provider/featured_categories_provider.dart';
-import '../../../core/styles/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
+import '../../../core/styles/app_colors.dart';
 import '../../../core/styles/custom_text_styles.dart';
 import '../../../core/widgets/custom_app_views/search_bar.dart';
 import '../../../core/widgets/custom_home_views/custom_grid_items.dart';
+import '../../../provider/shortcode_featured_categories_provider/featured_categories_provider.dart';
 import '../../filters/items_sorting.dart';
 import 'featured_categories_viewall_inner.dart';
 
 class FeaturedCategoriesItemsScreen extends StatefulWidget {
+  const FeaturedCategoriesItemsScreen(
+      {super.key,
+      required this.data,
+      this.showText = true,
+      this.showIcon = true});
   final dynamic data;
   final bool showText;
   final bool showIcon;
 
-  const FeaturedCategoriesItemsScreen({super.key, required this.data, this.showText = true, this.showIcon = true});
-
   @override
-  State<FeaturedCategoriesItemsScreen> createState() => _HomeAllGiftItemsState();
+  State<FeaturedCategoriesItemsScreen> createState() =>
+      _HomeAllGiftItemsState();
 }
 
 class _HomeAllGiftItemsState extends State<FeaturedCategoriesItemsScreen> {
@@ -33,7 +37,6 @@ class _HomeAllGiftItemsState extends State<FeaturedCategoriesItemsScreen> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((callback) async {
-
       await fetchBannerTopData();
       await fetchCategories();
       _scrollController.addListener(_onScroll);
@@ -42,7 +45,8 @@ class _HomeAllGiftItemsState extends State<FeaturedCategoriesItemsScreen> {
   }
 
   Future<void> fetchBannerTopData() async {
-    Provider.of<FeaturedCategoriesProvider>(context, listen: false).fetchPageData(context);
+    Provider.of<FeaturedCategoriesProvider>(context, listen: false)
+        .fetchPageData(context);
   }
 
   Future<void> fetchCategories() async {
@@ -50,7 +54,8 @@ class _HomeAllGiftItemsState extends State<FeaturedCategoriesItemsScreen> {
       setState(() {
         _isFetchingMore = true;
       });
-      await Provider.of<FeaturedCategoriesProvider>(context, listen: false).fetchCategories(
+      await Provider.of<FeaturedCategoriesProvider>(context, listen: false)
+          .fetchCategories(
         perPage: 12,
         context,
         page: _currentPage,
@@ -68,7 +73,9 @@ class _HomeAllGiftItemsState extends State<FeaturedCategoriesItemsScreen> {
 
   void _onScroll() {
     if (_isFetchingMore) return;
-    if (_scrollController.offset >= _scrollController.position.maxScrollExtent && !_scrollController.position.outOfRange) {
+    if (_scrollController.offset >=
+            _scrollController.position.maxScrollExtent &&
+        !_scrollController.position.outOfRange) {
       _currentPage++;
       _isFetchingMore = true;
       fetchCategories();
@@ -79,7 +86,9 @@ class _HomeAllGiftItemsState extends State<FeaturedCategoriesItemsScreen> {
     setState(() {
       _selectedSortBy = newValue;
       _currentPage = 1;
-      Provider.of<FeaturedCategoriesProvider>(context, listen: false).products.clear(); // Clear existing products
+      Provider.of<FeaturedCategoriesProvider>(context, listen: false)
+          .products
+          .clear(); // Clear existing products
     });
     fetchCategories();
   }
@@ -94,11 +103,13 @@ class _HomeAllGiftItemsState extends State<FeaturedCategoriesItemsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    double screenHeight = MediaQuery.sizeOf(context).height;
-    double screenWidth = MediaQuery.sizeOf(context).width;
+    final double screenHeight = MediaQuery.sizeOf(context).height;
+    final double screenWidth = MediaQuery.sizeOf(context).width;
     return BaseAppBar(
       textBack: widget.showText ? AppStrings.back : null,
-      customBackIcon: widget.showIcon ? const Icon(Icons.arrow_back_ios_sharp, size: 16) : null,
+      customBackIcon: widget.showIcon
+          ? const Icon(Icons.arrow_back_ios_sharp, size: 16)
+          : null,
       firstRightIconPath: AppStrings.firstRightIconPath,
       secondRightIconPath: AppStrings.secondRightIconPath,
       thirdRightIconPath: AppStrings.thirdRightIconPath,
@@ -116,65 +127,72 @@ class _HomeAllGiftItemsState extends State<FeaturedCategoriesItemsScreen> {
                 );
               } else if (provider.errorMessage != null) {
                 return Center(
-                    child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.refresh, size: 40, color: AppColors.peachyPink),
-                      onPressed: () async {
-                        await fetchBannerTopData();
-                        // await fetchGiftOccasionData();
-                        await fetchCategories();
-                      },
-                    ),
-                    Text(provider.errorMessage!),
-                  ],
-                ));
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.refresh,
+                            size: 40, color: AppColors.peachyPink),
+                        onPressed: () async {
+                          await fetchBannerTopData();
+                          // await fetchGiftOccasionData();
+                          await fetchCategories();
+                        },
+                      ),
+                      Text(provider.errorMessage!),
+                    ],
+                  ),
+                );
               } else {
-
                 return RefreshIndicator(
                   color: Theme.of(context).colorScheme.onPrimary,
                   onRefresh: () async {
                     _refreshHomePage();
                   },
-                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.start, children: [
-                    CustomSearchBar(hintText: "Search Gifts"),
-                    Expanded(
-                      child: SingleChildScrollView(
-                        controller: _scrollController,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.only(left: screenWidth * 0.02, right: screenWidth * 0.02, top: screenHeight * 0.02),
-                              child: SizedBox(
-                                height: 100,
-                                width: double.infinity,
-                                child: CachedNetworkImage(
-                                    imageUrl: provider.pageData?.coverImage ?? '',
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      const CustomSearchBar(hintText: 'Search Gifts'),
+                      Expanded(
+                        child: SingleChildScrollView(
+                          controller: _scrollController,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.only(
+                                    left: screenWidth * 0.02,
+                                    right: screenWidth * 0.02,
+                                    top: screenHeight * 0.02),
+                                child: SizedBox(
+                                  height: 100,
+                                  width: double.infinity,
+                                  child: CachedNetworkImage(
+                                    imageUrl:
+                                        provider.pageData?.coverImage ?? '',
                                     height: 10,
                                     fit: BoxFit.cover,
                                     width: double.infinity,
-                                    errorWidget: (context,_,error){
-                                      return Container(
-                                        height: 100,
-                                        width: double.infinity,
-                                        decoration: const BoxDecoration(
-                                          gradient: LinearGradient(
-                                            colors: [Colors.grey, Colors.black],
-                                          ),
+                                    errorWidget: (context, _, error) =>
+                                        Container(
+                                      height: 100,
+                                      width: double.infinity,
+                                      decoration: const BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: [Colors.grey, Colors.black],
                                         ),
-                                        child: const CupertinoActivityIndicator(
-                                          color: Colors.black,
-                                          radius: 10,
-                                          animating: true,
-                                        ),
-                                      );
-                                    },
-                                    errorListener: (object){
+                                      ),
+                                      child: const CupertinoActivityIndicator(
+                                        color: Colors.black,
+                                        radius: 10,
+                                        animating: true,
+                                      ),
+                                    ),
+                                    errorListener: (object) {
                                       Container(
                                         height: 100,
                                         width: double.infinity,
@@ -190,101 +208,130 @@ class _HomeAllGiftItemsState extends State<FeaturedCategoriesItemsScreen> {
                                         ),
                                       );
                                     },
-                                    placeholder: (BuildContext context, String url) {
-                                      return Container(
-                                        height: 100,
-                                        width: double.infinity,
-                                        decoration: const BoxDecoration(
-                                          gradient: LinearGradient(
-                                            colors: [Colors.grey, Colors.black],
-                                          ),
+                                    placeholder:
+                                        (BuildContext context, String url) =>
+                                            Container(
+                                      height: 100,
+                                      width: double.infinity,
+                                      decoration: const BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: [Colors.grey, Colors.black],
                                         ),
-                                        child: const CupertinoActivityIndicator(
-                                          color: Colors.black,
-                                          radius: 10,
-                                          animating: true,
-                                        ),
-                                      );
-                                    }),
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(top: screenHeight * 0.02, left: screenWidth * 0.04, right: screenWidth * 0.04),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    widget.data != null && widget.data['attributes'] != null ? widget.data['attributes']['title'] ?? 'Gifts by occasion' : 'Gifts by occasion',
-                                    style: boldHomeTextStyle(),
-                                  ),
-                                  Row(
-                                    children: [
-                                      ItemsSortingDropDown(
-                                        selectedSortBy: _selectedSortBy,
-                                        onSortChanged: (newValue) {
-                                          _onSortChanged(newValue);
-                                        },
                                       ),
-                                    ],
+                                      child: const CupertinoActivityIndicator(
+                                        color: Colors.black,
+                                        radius: 10,
+                                        animating: true,
+                                      ),
+                                    ),
                                   ),
-
-                                  // const Icon(Icons.sort)
-                                ],
-                              ),
-                            ),
-                            Container(
-                              child: Padding(
-                                padding: EdgeInsets.only(top: screenHeight * 0.02, left: screenWidth * 0.04, bottom: screenHeight * 0.02, right: screenWidth * 0.04),
-                                child: GridView.builder(
-                                  gridDelegate:
-                                      const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3, crossAxisSpacing: 8.0, mainAxisSpacing: 8.0, childAspectRatio: 0.95),
-                                  shrinkWrap: true,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  scrollDirection: Axis.vertical,
-                                  itemCount: provider.categories.length + (_isFetchingMore ? 1 : 0),
-                                  itemBuilder: (context, index) {
-                                    if (_isFetchingMore && index == provider.products.length) {
-                                      return const Align(
-                                        alignment: Alignment.center,
-                                        child: Column(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          crossAxisAlignment: CrossAxisAlignment.center,
-                                          children: [
-                                            Center(
-                                              child: CircularProgressIndicator(
-                                                color: Colors.black,
-                                                strokeWidth: 0.5,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      );
-                                    }
-
-                                    final category = provider.categories[index];
-
-                                    return GridItemsHomeSeeAll(
-                                      imageUrl: category.image ?? '',
-                                      name: category.name ?? '',
-                                      textStyle: homeItemsStyle(context),
-                                      onTap: () {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) => FeaturedCategoriesViewAllInner(
-                                                      data: category,
-                                                    )));
-                                      },
-                                    );
-                                  },
                                 ),
                               ),
-                            ),
-                          ],
+                              Padding(
+                                padding: EdgeInsets.only(
+                                    top: screenHeight * 0.02,
+                                    left: screenWidth * 0.04,
+                                    right: screenWidth * 0.04),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      widget.data != null &&
+                                              widget.data['attributes'] != null
+                                          ? widget.data['attributes']
+                                                  ['title'] ??
+                                              'Gifts by occasion'
+                                          : 'Gifts by occasion',
+                                      style: boldHomeTextStyle(),
+                                    ),
+                                    Row(
+                                      children: [
+                                        ItemsSortingDropDown(
+                                          selectedSortBy: _selectedSortBy,
+                                          onSortChanged: (newValue) {
+                                            _onSortChanged(newValue);
+                                          },
+                                        ),
+                                      ],
+                                    ),
+
+                                    // const Icon(Icons.sort)
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                child: Padding(
+                                  padding: EdgeInsets.only(
+                                      top: screenHeight * 0.02,
+                                      left: screenWidth * 0.04,
+                                      bottom: screenHeight * 0.02,
+                                      right: screenWidth * 0.04),
+                                  child: GridView.builder(
+                                    gridDelegate:
+                                        const SliverGridDelegateWithFixedCrossAxisCount(
+                                            crossAxisCount: 3,
+                                            crossAxisSpacing: 8.0,
+                                            mainAxisSpacing: 8.0,
+                                            childAspectRatio: 0.95),
+                                    shrinkWrap: true,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    scrollDirection: Axis.vertical,
+                                    itemCount: provider.categories.length +
+                                        (_isFetchingMore ? 1 : 0),
+                                    itemBuilder: (context, index) {
+                                      if (_isFetchingMore &&
+                                          index == provider.products.length) {
+                                        return const Align(
+                                          alignment: Alignment.center,
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              Center(
+                                                child:
+                                                    CircularProgressIndicator(
+                                                  color: Colors.black,
+                                                  strokeWidth: 0.5,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      }
+
+                                      final category =
+                                          provider.categories[index];
+
+                                      return GridItemsHomeSeeAll(
+                                        imageUrl: category.image ?? '',
+                                        name: category.name ?? '',
+                                        textStyle: homeItemsStyle(context),
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  FeaturedCategoriesViewAllInner(
+                                                data: category,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  ]),
+                    ],
+                  ),
                 );
               }
             },

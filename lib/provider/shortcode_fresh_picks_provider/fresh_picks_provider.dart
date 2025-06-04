@@ -1,19 +1,17 @@
 import 'dart:convert';
-import 'dart:developer';
 
+import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/models/product_packages_models/product_filters_model.dart';
 import 'package:event_app/provider/api_response_handler.dart';
-import 'package:event_app/utils/apiendpoints/api_end_point.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
-import 'package:logger/logger.dart';
 
+import '../../core/services/shared_preferences_helper.dart';
+import '../../core/utils/custom_toast.dart';
 import '../../models/dashboard/fresh_picks_models/fresh_picks_model.dart';
 import '../../models/dashboard/fresh_picks_models/freshpicks_ecom_tags_model.dart';
 import '../../models/dashboard/fresh_picks_models/freshpicks_top_banner_model.dart';
 import '../../models/wishlist_models/wish_list_response_models.dart';
-import '../../core/utils/custom_toast.dart';
-import '../../utils/storage/shared_preferences_helper.dart';
 
 class FreshPicksProvider extends ChangeNotifier {
   //    ================================================= Fresh Picks Home Page  Provider =================================================================
@@ -34,7 +32,8 @@ class FreshPicksProvider extends ChangeNotifier {
 
   bool get isMoreLoading => _isMoreLoading;
 
-  Future<void> fetchData(BuildContext context, {int perPage = 12, int page = 1, int random = 1}) async {
+  Future<void> fetchData(BuildContext context,
+      {int perPage = 12, int page = 1, int random = 1}) async {
     _isLoading = true;
     notifyListeners();
 
@@ -47,7 +46,6 @@ class FreshPicksProvider extends ChangeNotifier {
         url,
         context: context,
       );
-
 
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(response.body);
@@ -94,7 +92,10 @@ class FreshPicksProvider extends ChangeNotifier {
 
 //    =================================================================  E-com Tags Items List of Fresh Picks  =+================================================================
 
-  Future<void> fetchEcomTags({String sortBy = 'default_sorting', int page = 1, int perPage = 20}) async {
+  Future<void> fetchEcomTags(
+      {String sortBy = 'default_sorting',
+      int page = 1,
+      int perPage = 20}) async {
     if (page == 1) {
       _isLoading = true;
     } else {
@@ -103,7 +104,8 @@ class FreshPicksProvider extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    final url = '${ApiEndpoints.eComTagsAll}?per_page=$perPage&page=$page&sort-by=$sortBy';
+    final url =
+        '${ApiEndpoints.eComTagsAll}?per_page=$perPage&page=$page&sort-by=$sortBy';
     try {
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
@@ -158,7 +160,8 @@ class FreshPicksProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<WishlistResponseModels?> addRemoveWishList(BuildContext context, int itemId) async {
+  Future<WishlistResponseModels?> addRemoveWishList(
+      BuildContext context, int itemId) async {
     _isLoading = true;
     notifyListeners();
     final token = await SecurePreferencesUtil.getToken();

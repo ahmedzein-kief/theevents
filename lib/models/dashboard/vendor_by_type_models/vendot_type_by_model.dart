@@ -1,31 +1,27 @@
 // 1234567890-
 
 class VendorTypeBy {
-  final bool error;
-  final VendorTypeData? data;
-  final String? message;
-
   VendorTypeBy({
     required this.error,
     this.data,
     this.message,
   });
 
-  factory VendorTypeBy.fromJson(Map<String, dynamic> json) {
-    return VendorTypeBy(
-      error: json['error'] ?? false,
-      data: json['data'] != null ? VendorTypeData.fromJson(json['data']) : null,
-      message: json['message'],
-    );
-  }
+  factory VendorTypeBy.fromJson(Map<String, dynamic> json) => VendorTypeBy(
+        error: json['error'] ?? false,
+        data:
+            json['data'] != null ? VendorTypeData.fromJson(json['data']) : null,
+        message: json['message'],
+      );
+  final bool error;
+  final VendorTypeData? data;
+  final String? message;
 
-  Map<String, dynamic> toJson() {
-    return {
-      'error': error,
-      'data': data?.toJson(),
-      'message': message,
-    };
-  }
+  Map<String, dynamic> toJson() => {
+        'error': error,
+        'data': data?.toJson(),
+        'message': message,
+      };
 }
 
 // class VendorTypeData {
@@ -81,15 +77,7 @@ class VendorTypeBy {
 // }
 
 class VendorTypeData {
-  final int? id; // Nullable
-  final String? name; // Nullable
-  final String? title; // Nullable
-  final String? description; // Nullable
-  final String? slug; // Nullable
-  final String? image; // Nullable
-  final String? thumbnail; // Nullable
-  final String? coverImage; // Nullable
-  final SeoMetaManual? seoMetaManual; // Nullable
+  // Nullable
 
   VendorTypeData({
     this.id,
@@ -103,41 +91,43 @@ class VendorTypeData {
     this.seoMetaManual,
   });
 
-  factory VendorTypeData.fromJson(Map<String, dynamic> json) {
-    return VendorTypeData(
-      id: json['id'] as int?,
-      name: json['name'] as String?,
-      title: json['title'] as String?,
-      description: json['description'] as String?,
-      slug: json['slug'] as String?,
-      image: json['image'] as String?,
-      thumbnail: json['thumb'] as String?,
-      coverImage: json['cover_image'] as String?,
-      seoMetaManual: json['seo_meta_manual'] != null ? SeoMetaManual.fromJson(json['seo_meta_manual']) : null,
-    );
-  }
+  factory VendorTypeData.fromJson(Map<String, dynamic> json) => VendorTypeData(
+        id: json['id'] as int?,
+        name: json['name'] as String?,
+        title: json['title'] as String?,
+        description: json['description'] as String?,
+        slug: json['slug'] as String?,
+        image: json['image'] as String?,
+        thumbnail: json['thumb'] as String?,
+        coverImage: json['cover_image'] as String?,
+        seoMetaManual: json['seo_meta_manual'] != null
+            ? SeoMetaManual.fromJson(json['seo_meta_manual'])
+            : null,
+      );
+  final int? id; // Nullable
+  final String? name; // Nullable
+  final String? title; // Nullable
+  final String? description; // Nullable
+  final String? slug; // Nullable
+  final String? image; // Nullable
+  final String? thumbnail; // Nullable
+  final String? coverImage; // Nullable
+  final SeoMetaManual? seoMetaManual;
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'title': title,
-      'description': description,
-      'slug': slug,
-      'image': image,
-      'thumb': thumbnail,
-      'cover_image': coverImage,
-      'seo_meta_manual': seoMetaManual?.toJson(),
-    };
-  }
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'title': title,
+        'description': description,
+        'slug': slug,
+        'image': image,
+        'thumb': thumbnail,
+        'cover_image': coverImage,
+        'seo_meta_manual': seoMetaManual?.toJson(),
+      };
 }
 
 class SeoMetaManual {
-  final String title;
-  final String description;
-  final String image;
-  final String robots;
-
   SeoMetaManual({
     required this.title,
     required this.description,
@@ -145,45 +135,40 @@ class SeoMetaManual {
     required this.robots,
   });
 
-  factory SeoMetaManual.fromJson(Map<String, dynamic> json) {
-    return SeoMetaManual(
-      title: json['title'] ?? '',
-      description: json['description'] ?? '',
-      image: json['image'] ?? '',
-      robots: json['robots'] ?? '',
-    );
-  }
+  factory SeoMetaManual.fromJson(Map<String, dynamic> json) => SeoMetaManual(
+        title: json['title'] ?? '',
+        description: json['description'] ?? '',
+        image: json['image'] ?? '',
+        robots: json['robots'] ?? '',
+      );
+  final String title;
+  final String description;
+  final String image;
+  final String robots;
 
-  Map<String, dynamic> toJson() {
-    return {
-      'title': title,
-      'description': description,
-      'image': image,
-      'robots': robots,
-    };
-  }
+  Map<String, dynamic> toJson() => {
+        'title': title,
+        'description': description,
+        'image': image,
+        'robots': robots,
+      };
 }
 
 class Records {
-  final int id;
-  final String name;
-
   Records({
     required this.id,
     required this.name,
   });
 
-  factory Records.fromJson(Map<String, dynamic> json) {
-    return Records(
-      id: json['id'],
-      name: json['name'] ?? '',
-    );
-  }
+  factory Records.fromJson(Map<String, dynamic> json) => Records(
+        id: json['id'],
+        name: json['name'] ?? '',
+      );
+  final int id;
+  final String name;
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-    };
-  }
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+      };
 }

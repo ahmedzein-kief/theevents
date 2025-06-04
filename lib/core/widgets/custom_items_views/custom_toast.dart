@@ -6,19 +6,18 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../styles/app_colors.dart';
 
 class CustomToast {
-  FToast fToast = new FToast();
-
   CustomToast(BuildContext context) {
     fToast = FToast();
     fToast.init(context);
   }
+  FToast fToast = FToast();
 
   void showToast({
     required String textHint,
     required VoidCallback onDismiss,
     required BuildContext context,
   }) {
-    Widget toast = Container(
+    final Widget toast = Container(
       padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(0),
@@ -35,13 +34,14 @@ class CustomToast {
                 child: Align(
                   alignment: Alignment.centerRight,
                   child: Text(
-                      textAlign: TextAlign.start,
-                      textHint,
-                      style: GoogleFonts.inter(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w300,
-                        color: Theme.of(context).colorScheme.onPrimary,
-                      )),
+                    textAlign: TextAlign.start,
+                    textHint,
+                    style: GoogleFonts.inter(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w300,
+                      color: Theme.of(context).colorScheme.onPrimary,
+                    ),
+                  ),
                 ),
               ),
               // SizedBox(width: 35),
@@ -52,9 +52,9 @@ class CustomToast {
                   CupertinoIcons.clear_thick,
                   color: Theme.of(context).colorScheme.onPrimary,
                 ),
-              )
+              ),
             ],
-          )
+          ),
         ],
       ),
     );

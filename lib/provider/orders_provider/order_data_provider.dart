@@ -1,14 +1,14 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/models/orders/order_detail_model.dart';
 import 'package:event_app/models/orders/order_history_model.dart';
 import 'package:event_app/models/vendor_models/products/create_product/common_data_response.dart';
-import 'package:event_app/utils/apiendpoints/api_end_point.dart';
 import 'package:flutter/material.dart';
 
+import '../../core/services/shared_preferences_helper.dart';
 import '../../core/utils/custom_toast.dart';
-import '../../utils/storage/shared_preferences_helper.dart';
 import '../api_response_handler.dart';
 
 class OrderDataProvider with ChangeNotifier {
@@ -23,7 +23,8 @@ class OrderDataProvider with ChangeNotifier {
 
   OrderHistoryModel? get orderHistoryModel => _orderHistoryModel;
 
-  OrderHistoryModel? get completedOrderHistoryModel => _completedOrderHistoryModel;
+  OrderHistoryModel? get completedOrderHistoryModel =>
+      _completedOrderHistoryModel;
 
   OrderDetailModel? _orderDetailModel;
 
@@ -41,9 +42,10 @@ class OrderDataProvider with ChangeNotifier {
   ) async {
     _isLoading = true;
     final token = await SecurePreferencesUtil.getToken();
-    var url = "";
+    var url = '';
     if (isPending) {
-      url = '${ApiEndpoints.customerOrders}?per-page=10&page=1&only-pending=true';
+      url =
+          '${ApiEndpoints.customerOrders}?per-page=10&page=1&only-pending=true';
     } else {
       url = '${ApiEndpoints.customerOrders}?per-page=10&page=1';
     }
@@ -148,10 +150,12 @@ class OrderDataProvider with ChangeNotifier {
     }
   }
 
-  Future<CommonDataResponse?> uploadProof(BuildContext context, String filePath, String fileName, String orderId) async {
+  Future<CommonDataResponse?> uploadProof(BuildContext context, String filePath,
+      String fileName, String orderId) async {
     _isLoading = true;
     final token = await SecurePreferencesUtil.getToken();
-    final url = '${ApiEndpoints.customerOrders}/$orderId/${ApiEndpoints.uploadProof}';
+    final url =
+        '${ApiEndpoints.customerOrders}/$orderId/${ApiEndpoints.uploadProof}';
 
     final headers = {'Authorization': 'Bearer $token'};
 
@@ -159,13 +163,15 @@ class OrderDataProvider with ChangeNotifier {
 
     final formData = FormData();
 
-    formData.files.add(MapEntry(
-      'file',
-      await MultipartFile.fromFile(
-        filePath,
-        filename: fileName,
+    formData.files.add(
+      MapEntry(
+        'file',
+        await MultipartFile.fromFile(
+          filePath,
+          filename: fileName,
+        ),
       ),
-    ));
+    );
 
     try {
       final response = await _apiResponseHandler.postDioMultipartRequest(
@@ -195,7 +201,8 @@ class OrderDataProvider with ChangeNotifier {
   Future<String?> downloadProof(BuildContext context, String orderId) async {
     _isLoading = true;
     final token = await SecurePreferencesUtil.getToken();
-    final url = '${ApiEndpoints.customerOrders}/$orderId/${ApiEndpoints.downloadProof}';
+    final url =
+        '${ApiEndpoints.customerOrders}/$orderId/${ApiEndpoints.downloadProof}';
 
     final headers = {'Authorization': 'Bearer $token'};
 

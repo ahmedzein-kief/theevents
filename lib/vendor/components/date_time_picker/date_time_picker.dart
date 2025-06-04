@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
 
-void showCupertinoDateTimePicker({required BuildContext context, CupertinoDatePickerMode? mode, required Function(DateTime) onDateTimeChanged}) {
+void showCupertinoDateTimePicker(
+    {required BuildContext context,
+    CupertinoDatePickerMode? mode,
+    required Function(DateTime) onDateTimeChanged}) {
   showCupertinoModalPopup<void>(
     context: context,
     builder: (BuildContext context) => Container(
@@ -17,12 +20,13 @@ void showCupertinoDateTimePicker({required BuildContext context, CupertinoDatePi
       child: SafeArea(
         top: false,
         child: CupertinoDatePicker(
-            use24hFormat: true,
-            showDayOfWeek: false,
-            mode: mode ?? CupertinoDatePickerMode.dateAndTime,
-            minimumDate: DateTime.now(),
-            dateOrder: DatePickerDateOrder.ymd,
-            onDateTimeChanged: onDateTimeChanged),
+          use24hFormat: true,
+          showDayOfWeek: false,
+          mode: mode ?? CupertinoDatePickerMode.dateAndTime,
+          minimumDate: DateTime.now(),
+          dateOrder: DatePickerDateOrder.ymd,
+          onDateTimeChanged: onDateTimeChanged,
+        ),
       ),
     ),
   );

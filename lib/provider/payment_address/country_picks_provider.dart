@@ -1,13 +1,11 @@
 import 'dart:convert';
 
+import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/provider/api_response_handler.dart';
-import 'package:event_app/utils/apiendpoints/api_end_point.dart';
 import 'package:flutter/material.dart';
 
 class CountryModels {
-  bool? error;
-  Data? data;
-  String? message; // Change Null? to String?
+  // Change Null? to String?
 
   CountryModels({this.error, this.data, this.message});
 
@@ -16,22 +14,22 @@ class CountryModels {
     data = json['data'] != null ? Data.fromJson(json['data']) : null;
     message = json['message']; // Assume message is of type String
   }
+  bool? error;
+  Data? data;
+  String? message;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {};
-    data['error'] = this.error;
+    data['error'] = error;
     if (this.data != null) {
       data['data'] = this.data!.toJson();
     }
-    data['message'] = this.message;
+    data['message'] = message;
     return data;
   }
 }
 
 class Data {
-  List<CountryList>? list;
-  bool? isMulti;
-
   Data({this.list, this.isMulti});
 
   Data.fromJson(Map<String, dynamic> json) {
@@ -43,22 +41,20 @@ class Data {
     }
     isMulti = json['is_multi'];
   }
+  List<CountryList>? list;
+  bool? isMulti;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {};
-    if (this.list != null) {
-      data['list'] = this.list!.map((v) => v.toJson()).toList();
+    if (list != null) {
+      data['list'] = list!.map((v) => v.toJson()).toList();
     }
-    data['is_multi'] = this.isMulti;
+    data['is_multi'] = isMulti;
     return data;
   }
 }
 
 class CountryList {
-  String? label;
-  String? value;
-  String? title;
-
   CountryList({this.label, this.value, this.title});
 
   CountryList.fromJson(Map<String, dynamic> json) {
@@ -66,22 +62,25 @@ class CountryList {
     value = json['value'];
     title = json['title'];
   }
+  String? label;
+  String? value;
+  String? title;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {};
-    data['label'] = this.label;
-    data['value'] = this.value;
-    data['title'] = this.title;
+    data['label'] = label;
+    data['value'] = value;
+    data['title'] = title;
     return data;
   }
 }
 
 Future<CountryModels?> fetchCountries(BuildContext context) async {
-  final ApiResponseHandler _apiResponseHandler = ApiResponseHandler();
+  final ApiResponseHandler apiResponseHandler = ApiResponseHandler();
 
-  final url = ApiEndpoints.countryList;
+  const url = ApiEndpoints.countryList;
 
-  final response = await _apiResponseHandler.getRequest(
+  final response = await apiResponseHandler.getRequest(
     url,
     context: context,
   );

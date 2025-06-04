@@ -7,9 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../core/styles/app_colors.dart';
 import '../../core/constants/app_strings.dart';
-import '../../utils/storage/shared_preferences_helper.dart';
+import '../../core/services/shared_preferences_helper.dart';
+import '../../core/styles/app_colors.dart';
 import '../vendor_on_boarding_form/bank_detail_screen.dart';
 import '../vendor_on_boarding_form/business_and_authorization_screen.dart';
 import '../vendor_on_boarding_form/company_information_screen.dart';
@@ -18,6 +18,8 @@ import '../vendor_on_boarding_form/login_info_screen.dart';
 import '../vendor_on_boarding_form/payment_subscription_screen.dart';
 
 class VendorStepperScreen extends StatefulWidget {
+  const VendorStepperScreen({super.key});
+
   @override
   _StepperScreenState createState() => _StepperScreenState();
 }
@@ -35,12 +37,14 @@ class _StepperScreenState extends State<VendorStepperScreen> {
 
   Future<MetaDataResponse?> getAllMetaData() async {
     final provider = Provider.of<VendorSignUpProvider>(context, listen: false);
-    return await provider.getAllMetaData(context);
+    return provider.getAllMetaData(context);
   }
 
-  void checkLoginData() async {
+  Future<void> checkLoginData() async {
     final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString(SecurePreferencesUtil.tokenKey);
+    // final token = prefs.getString(SecurePreferencesUtil.tokenKey);
+    final token = await SecurePreferencesUtil.getToken();
+
     if (token == null || token.isEmpty) return;
 
     if (!isVerified && !isApproved) {
@@ -55,8 +59,9 @@ class _StepperScreenState extends State<VendorStepperScreen> {
       final metaResponse = await getAllMetaData();
       setState(() {
         if (metaResponse != null) {
-          SecurePreferencesUtil.saveServerStep(int.parse(metaResponse.data["step"] ?? '1'));
-          activeStep = int.parse(metaResponse.data["step"] ?? '1');
+          SecurePreferencesUtil.saveServerStep(
+              int.parse(metaResponse.data['step'] ?? '1'));
+          activeStep = int.parse(metaResponse.data['step'] ?? '1');
         } else {
           activeStep = 1;
         }
@@ -66,8 +71,8 @@ class _StepperScreenState extends State<VendorStepperScreen> {
 
   @override
   Widget build(BuildContext context) {
-    dynamic screenWidth = MediaQuery.sizeOf(context).width;
-    dynamic screenHeight = MediaQuery.sizeOf(context).height;
+    final dynamic screenWidth = MediaQuery.sizeOf(context).width;
+    final dynamic screenHeight = MediaQuery.sizeOf(context).height;
 
     return Scaffold(
       appBar: AppBar(
@@ -77,7 +82,7 @@ class _StepperScreenState extends State<VendorStepperScreen> {
         ),
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             // Handle back button press here
 
@@ -96,7 +101,7 @@ class _StepperScreenState extends State<VendorStepperScreen> {
           },
         ),
         automaticallyImplyLeading: true,
-        flexibleSpace: VendorCustomAppBar(),
+        flexibleSpace: const VendorCustomAppBar(),
       ),
       body: SafeArea(
         child: Column(
@@ -108,14 +113,19 @@ class _StepperScreenState extends State<VendorStepperScreen> {
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: List.generate(6, (index) {
-                    return Padding(
+                  children: List.generate(
+                    6,
+                    (index) => Padding(
                       padding: const EdgeInsets.only(left: 10, right: 10),
                       child: GestureDetector(
                         onTap: () async {
-                          int serverStep = await SecurePreferencesUtil.getServerStep() ?? 0;
-                          print('Tapped on step index ==> ${index} || activeStep==> $activeStep || serverStep==> $serverStep');
-                          if (index > 0 && index != activeStep && index <= serverStep) {
+                          final int serverStep =
+                              await SecurePreferencesUtil.getServerStep() ?? 0;
+                          print(
+                              'Tapped on step index ==> $index || activeStep==> $activeStep || serverStep==> $serverStep');
+                          if (index > 0 &&
+                              index != activeStep &&
+                              index <= serverStep) {
                             setState(() {
                               activeStep = index;
                             });
@@ -126,7 +136,8 @@ class _StepperScreenState extends State<VendorStepperScreen> {
                           height: 25,
                           decoration: BoxDecoration(
                             color: (index == 0)
-                                ? AppColors.peachyPink // Keep the first step red
+                                ? AppColors
+                                    .peachyPink // Keep the first step red
                                 : (index <= activeStep)
                                     ? AppColors.peachyPink // Active step colors
                                     : Colors.black,
@@ -143,19 +154,25 @@ class _StepperScreenState extends State<VendorStepperScreen> {
                           ),
                         ),
                       ),
-                    );
-                  }),
+                    ),
+                  ),
                 ),
               ),
             ),
             SizedBox(height: screenHeight * 0.015),
             Padding(
-              padding: EdgeInsets.only(left: screenWidth * 0.03, right: screenWidth * 0.03, bottom: screenHeight * 0.015),
+              padding: EdgeInsets.only(
+                  left: screenWidth * 0.03,
+                  right: screenWidth * 0.03,
+                  bottom: screenHeight * 0.015),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisSize: MainAxisSize.max,
-                children: [Text(AppStrings.vendorHeading, style: vendorDescription(), textAlign: TextAlign.center)],
+                children: [
+                  Text(AppStrings.vendorHeading,
+                      style: vendorDescription(), textAlign: TextAlign.center)
+                ],
               ),
             ),
             Expanded(child: getStepWidget()),
@@ -211,7 +228,7 @@ class _StepperScreenState extends State<VendorStepperScreen> {
           },
         );
       case 5:
-        return PaymentSubscriptionScreen();
+        return const PaymentSubscriptionScreen();
       default:
         SecurePreferencesUtil.saveServerStep(0);
         return VendorLoginInfoScreen(

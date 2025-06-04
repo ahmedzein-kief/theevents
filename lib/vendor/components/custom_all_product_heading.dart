@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 
 class CustomAllProductHeading extends StatelessWidget {
-  final String text1;
-  final String text2;
-  final String text3;
-  final String text4;
-
   const CustomAllProductHeading({
-    Key? key,
+    super.key,
     required this.text1,
     required this.text2,
     required this.text3,
     required this.text4,
-  }) : super(key: key);
+  });
+  final String text1;
+  final String text2;
+  final String text3;
+  final String text4;
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +22,10 @@ class CustomAllProductHeading extends StatelessWidget {
       child: Column(
         children: [
           Padding(
-            padding: EdgeInsets.only(top: screenHeight * 0.01, left: screenWidth * 0.03, right: screenHeight * 0.02),
+            padding: EdgeInsets.only(
+                top: screenHeight * 0.01,
+                left: screenWidth * 0.03,
+                right: screenHeight * 0.02),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisSize: MainAxisSize.max,
@@ -31,25 +33,29 @@ class CustomAllProductHeading extends StatelessWidget {
               children: [
                 Text(
                   text1,
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 Text(
                   text2,
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 Text(
                   text3,
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 Text(
                   text4,
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
           ),
-          SizedBox(height: 12),
-          Container(color: Colors.grey.shade200, height: 2, width: screenWidth)
+          const SizedBox(height: 12),
+          Container(color: Colors.grey.shade200, height: 2, width: screenWidth),
         ],
       ),
     );

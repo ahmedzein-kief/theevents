@@ -1,8 +1,8 @@
+import 'package:event_app/core/services/shared_preferences_helper.dart';
 import 'package:event_app/data/vendor/data/response/ApiResponse.dart';
 import 'package:event_app/models/vendor_models/products/VendorGetProductsModel.dart';
 import 'package:event_app/models/vendor_models/products/create_product/common_data_response.dart';
 import 'package:event_app/provider/vendor/vendor_repository.dart';
-import 'package:event_app/utils/storage/shared_preferences_helper.dart';
 import 'package:flutter/cupertino.dart';
 
 class VendorGetProductsViewModel with ChangeNotifier {
@@ -14,7 +14,7 @@ class VendorGetProductsViewModel with ChangeNotifier {
 
   List<GetProductRecords> get list => _list;
 
-  setToken() async {
+  Future<void> setToken() async {
     _token = await SecurePreferencesUtil.getToken();
   }
 
@@ -38,12 +38,12 @@ class VendorGetProductsViewModel with ChangeNotifier {
   }
 
   /// get products method
-  vendorGetProducts({String? search}) async {
+  Future<void> vendorGetProducts({String? search}) async {
     await setToken();
     try {
-      Map<String, String> headers = <String, String>{
+      final Map<String, String> headers = <String, String>{
         // 'Content-Type': 'application/json',
-        "Authorization": _token!,
+        'Authorization': _token!,
       };
 
       final Map<String, String> queryParams = {
@@ -55,7 +55,8 @@ class VendorGetProductsViewModel with ChangeNotifier {
       // If successful, increment the current page and append data
       if (_currentPage <= _lastPage) {
         setApiResponse = ApiResponse.loading();
-        final VendorGetProductsModel response = await _myRepo.vendorGetProducts(headers: headers, queryParams: queryParams);
+        final VendorGetProductsModel response = await _myRepo.vendorGetProducts(
+            headers: headers, queryParams: queryParams);
         setLastPage(response);
         resetList(response);
         setApiResponse = ApiResponse.completed(response);
@@ -78,13 +79,14 @@ class VendorGetProductsViewModel with ChangeNotifier {
   Future<CommonDataResponse?> deleteVariation(String productVariationId) async {
     await setToken();
     try {
-      Map<String, String> headers = <String, String>{
-        "Authorization": _token!,
+      final Map<String, String> headers = <String, String>{
+        'Authorization': _token!,
       };
 
       // If successful, increment the current page and append data
       setCommonApiResponse = ApiResponse.loading();
-      final CommonDataResponse response = await _myRepo.vendorDeleteProductVariation(
+      final CommonDataResponse response =
+          await _myRepo.vendorDeleteProductVariation(
         productVariationId: productVariationId,
         headers: headers,
       );
@@ -116,7 +118,7 @@ class VendorGetProductsViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  void removeElementFromList({required dynamic id}) {
+  void removeElementFromList({required id}) {
     _list.removeWhere((element) => element.id == id);
     notifyListeners();
   }

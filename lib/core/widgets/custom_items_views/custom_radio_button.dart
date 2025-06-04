@@ -84,31 +84,35 @@ import 'package:flutter/material.dart';
 // }
 
 class CustomRadioListTile extends StatelessWidget {
-  final String titleText;
-  final dynamic value;
-  final dynamic groupValue;
-  final ValueChanged<dynamic> onChanged;
-  final String? imageUrl; // Image URL
+  // Image URL
 
-  CustomRadioListTile({
+  const CustomRadioListTile({
+    super.key,
     required this.titleText,
     required this.value,
     required this.groupValue,
     required this.onChanged,
     this.imageUrl,
   });
+  final String titleText;
+  final dynamic value;
+  final dynamic groupValue;
+  final ValueChanged<dynamic> onChanged;
+  final String? imageUrl;
 
   @override
   Widget build(BuildContext context) {
-    dynamic screenWidth = MediaQuery.of(context).size.width;
-    dynamic screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
     return Row(
       children: [
         Expanded(
           child: RadioListTile(
             title: Text(
               titleText,
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300), // You can replace with your style (VendorAuth)
+              style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight
+                      .w300), // You can replace with your style (VendorAuth)
             ),
             activeColor: Colors.black,
             value: value,

@@ -1,5 +1,5 @@
+import 'package:event_app/core/styles/app_sizes.dart';
 import 'package:event_app/models/vendor_models/dashboard/dashboard_data_response.dart';
-import 'package:event_app/utils/mixins_and_constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -7,12 +7,11 @@ import '../../../core/styles/app_colors.dart';
 import '../../Components/vendor_text_style.dart';
 
 class DashboardInfoSection extends StatefulWidget {
-  final Data? data;
-
   const DashboardInfoSection({
     super.key,
     required this.data,
   });
+  final Data? data;
 
   @override
   _DashboardInfoSectionState createState() => _DashboardInfoSectionState();
@@ -30,16 +29,18 @@ class _DashboardInfoSectionState extends State<DashboardInfoSection> {
     data = [
       {
         'title': 'Earnings',
-        'amount': 'AED ${widget.data?.balance?.toString() ?? '0'}', // Use the stateful earnings here
+        'amount':
+            'AED ${widget.data?.balance?.toString() ?? '0'}', // Use the stateful earnings here
         'onTap': () => print('Earnings'),
         'icon': SvgPicture.asset(
-            colorFilter: ColorFilter.mode(
-              AppColors.peachyPink,
-              BlendMode.srcIn,
-            ),
-            width: 28,
-            height: 28,
-            "assets/vendor_assets/dashboard/earning.svg"),
+          colorFilter: const ColorFilter.mode(
+            AppColors.peachyPink,
+            BlendMode.srcIn,
+          ),
+          width: 28,
+          height: 28,
+          'assets/vendor_assets/dashboard/earning.svg',
+        ),
         'containerColor': VendorColors.vendorDashboard,
       },
       {
@@ -47,13 +48,14 @@ class _DashboardInfoSectionState extends State<DashboardInfoSection> {
         'amount': 'AED ${widget.data?.revenue.amount?.toString() ?? '0'}',
         'onTap': () => print('Revenue'),
         'icon': SvgPicture.asset(
-            colorFilter: ColorFilter.mode(
-              AppColors.peachyPink,
-              BlendMode.srcIn,
-            ),
-            width: 28,
-            height: 28,
-            "assets/vendor_assets/dashboard/revenue.svg"),
+          colorFilter: const ColorFilter.mode(
+            AppColors.peachyPink,
+            BlendMode.srcIn,
+          ),
+          width: 28,
+          height: 28,
+          'assets/vendor_assets/dashboard/revenue.svg',
+        ),
         'containerColor': VendorColors.vendorDashboard,
       },
       {
@@ -61,13 +63,14 @@ class _DashboardInfoSectionState extends State<DashboardInfoSection> {
         'amount': widget.data?.totalOrders?.toString() ?? '0',
         'onTap': () => print('Orders'),
         'icon': SvgPicture.asset(
-            colorFilter: ColorFilter.mode(
-              AppColors.peachyPink,
-              BlendMode.srcIn,
-            ),
-            width: 28,
-            height: 28,
-            "assets/vendor_assets/dashboard/orders.svg"),
+          colorFilter: const ColorFilter.mode(
+            AppColors.peachyPink,
+            BlendMode.srcIn,
+          ),
+          width: 28,
+          height: 28,
+          'assets/vendor_assets/dashboard/orders.svg',
+        ),
         'containerColor': VendorColors.peachColor,
       },
       {
@@ -75,13 +78,14 @@ class _DashboardInfoSectionState extends State<DashboardInfoSection> {
         'amount': widget.data?.returnOrders.toString() ?? '0',
         'onTap': () => print('Return Orders'),
         'icon': SvgPicture.asset(
-            colorFilter: ColorFilter.mode(
-              AppColors.peachyPink,
-              BlendMode.srcIn,
-            ),
-            width: 28,
-            height: 28,
-            "assets/vendor_assets/dashboard/return_order.svg"),
+          colorFilter: const ColorFilter.mode(
+            AppColors.peachyPink,
+            BlendMode.srcIn,
+          ),
+          width: 28,
+          height: 28,
+          'assets/vendor_assets/dashboard/return_order.svg',
+        ),
         'containerColor': VendorColors.peachColor,
       },
       {
@@ -89,13 +93,14 @@ class _DashboardInfoSectionState extends State<DashboardInfoSection> {
         'amount': widget.data?.liveProducts.toString() ?? '0',
         'onTap': () => print('Live Products'),
         'icon': SvgPicture.asset(
-            colorFilter: ColorFilter.mode(
-              AppColors.peachyPink,
-              BlendMode.srcIn,
-            ),
-            width: 28,
-            height: 28,
-            "assets/vendor_assets/dashboard/products.svg"),
+          colorFilter: const ColorFilter.mode(
+            AppColors.peachyPink,
+            BlendMode.srcIn,
+          ),
+          width: 28,
+          height: 28,
+          'assets/vendor_assets/dashboard/products.svg',
+        ),
         'containerColor': VendorColors.pastelGreenColor,
       },
       {
@@ -103,13 +108,14 @@ class _DashboardInfoSectionState extends State<DashboardInfoSection> {
         'amount': widget.data?.pendingProducts.toString() ?? '0',
         'onTap': () => print('Pending Products'),
         'icon': SvgPicture.asset(
-            colorFilter: ColorFilter.mode(
-              AppColors.peachyPink,
-              BlendMode.srcIn,
-            ),
-            width: 28,
-            height: 28,
-            "assets/vendor_assets/dashboard/pending_products.svg"),
+          colorFilter: const ColorFilter.mode(
+            AppColors.peachyPink,
+            BlendMode.srcIn,
+          ),
+          width: 28,
+          height: 28,
+          'assets/vendor_assets/dashboard/pending_products.svg',
+        ),
         'containerColor': VendorColors.pastelGreenColor,
       },
       {
@@ -117,13 +123,14 @@ class _DashboardInfoSectionState extends State<DashboardInfoSection> {
         'amount': widget.data?.livePackages.toString() ?? '0',
         'onTap': () => print('Live Packages'),
         'icon': SvgPicture.asset(
-            colorFilter: ColorFilter.mode(
-              AppColors.peachyPink,
-              BlendMode.srcIn,
-            ),
-            width: 28,
-            height: 28,
-            "assets/vendor_assets/dashboard/packages.svg"),
+          colorFilter: const ColorFilter.mode(
+            AppColors.peachyPink,
+            BlendMode.srcIn,
+          ),
+          width: 28,
+          height: 28,
+          'assets/vendor_assets/dashboard/packages.svg',
+        ),
         'containerColor': VendorColors.pastelPinkColor,
       },
       {
@@ -131,13 +138,14 @@ class _DashboardInfoSectionState extends State<DashboardInfoSection> {
         'amount': widget.data?.pendingPackages.toString() ?? '0',
         'onTap': () => print('Pending Packages'),
         'icon': SvgPicture.asset(
-            colorFilter: ColorFilter.mode(
-              AppColors.peachyPink,
-              BlendMode.srcIn,
-            ),
-            width: 28,
-            height: 28,
-            "assets/vendor_assets/dashboard/pending_packages.svg"),
+          colorFilter: const ColorFilter.mode(
+            AppColors.peachyPink,
+            BlendMode.srcIn,
+          ),
+          width: 28,
+          height: 28,
+          'assets/vendor_assets/dashboard/pending_packages.svg',
+        ),
         'containerColor': VendorColors.pastelPinkColor,
       },
     ];
@@ -185,7 +193,7 @@ class _DashboardInfoSectionState extends State<DashboardInfoSection> {
                     ),
                 ],
               ),
-            ]
+            ],
           ],
         ),
       ),
@@ -194,12 +202,6 @@ class _DashboardInfoSectionState extends State<DashboardInfoSection> {
 }
 
 class DashboardInfoCard extends StatelessWidget {
-  final String title;
-  final String amount;
-  final VoidCallback onTap;
-  final Widget icon;
-  final Color containerColor;
-
   const DashboardInfoCard({
     super.key,
     required this.title,
@@ -208,59 +210,63 @@ class DashboardInfoCard extends StatelessWidget {
     required this.icon,
     required this.containerColor,
   });
+  final String title;
+  final String amount;
+  final VoidCallback onTap;
+  final Widget icon;
+  final Color containerColor;
 
   @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: kExtraSmallPadding, horizontal: kTinyPadding),
-        decoration: BoxDecoration(
-          color: containerColor,
-          borderRadius: BorderRadius.circular(kTinyCardRadius),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.5),
-              blurRadius: 2,
-              spreadRadius: 0,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            icon,
-            kExtraSmallSpace,
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title.toString(),
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w400,
-                      color: AppColors.charcoalGray,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  Text(
-                    amount.toString(),
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.charcoalGray,
-                    ),
-                  ),
-                ],
+  Widget build(BuildContext context) => GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: EdgeInsets.symmetric(
+              vertical: kExtraSmallPadding, horizontal: kTinyPadding),
+          decoration: BoxDecoration(
+            color: containerColor,
+            borderRadius: BorderRadius.circular(kTinyCardRadius),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                blurRadius: 2,
+                spreadRadius: 0,
+                offset: const Offset(0, 4),
               ),
-            ),
-          ],
+            ],
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              icon,
+              kExtraSmallSpace,
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title.toString(),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w400,
+                        color: AppColors.charcoalGray,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Text(
+                      amount.toString(),
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.charcoalGray,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
-    );
-  }
+      );
 }

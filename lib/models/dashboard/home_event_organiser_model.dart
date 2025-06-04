@@ -1,61 +1,56 @@
 class HomeEventOrganiserModel {
-  bool? error;
-  Data? data;
-  Null message;
-
   HomeEventOrganiserModel({this.error, this.data, this.message});
 
   HomeEventOrganiserModel.fromJson(Map<String, dynamic> json) {
     error = json['error'];
-    data = json['data'] != null ? new Data.fromJson(json['data']) : null;
+    data = json['data'] != null ? Data.fromJson(json['data']) : null;
     message = json['message'];
   }
+  bool? error;
+  Data? data;
+  Null message;
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['error'] = this.error;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['error'] = error;
     if (this.data != null) {
       data['data'] = this.data!.toJson();
     }
-    data['message'] = this.message;
+    data['message'] = message;
     return data;
   }
 }
 
 class Data {
-  Pagination? pagination;
-  List<Records>? records;
-
   Data({this.pagination, this.records});
 
   Data.fromJson(Map<String, dynamic> json) {
-    pagination = json['pagination'] != null ? new Pagination.fromJson(json['pagination']) : null;
+    pagination = json['pagination'] != null
+        ? Pagination.fromJson(json['pagination'])
+        : null;
     if (json['records'] != null) {
       records = <Records>[];
       json['records'].forEach((v) {
-        records!.add(new Records.fromJson(v));
+        records!.add(Records.fromJson(v));
       });
     }
   }
+  Pagination? pagination;
+  List<Records>? records;
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.pagination != null) {
-      data['pagination'] = this.pagination!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if (pagination != null) {
+      data['pagination'] = pagination!.toJson();
     }
-    if (this.records != null) {
-      data['records'] = this.records!.map((v) => v.toJson()).toList();
+    if (records != null) {
+      data['records'] = records!.map((v) => v.toJson()).toList();
     }
     return data;
   }
 }
 
 class Pagination {
-  int? total;
-  int? lastPage;
-  int? currentPage;
-  int? perPage;
-
   Pagination({this.total, this.lastPage, this.currentPage, this.perPage});
 
   Pagination.fromJson(Map<String, dynamic> json) {
@@ -64,31 +59,34 @@ class Pagination {
     currentPage = json['current_page'];
     perPage = json['per_page'];
   }
+  int? total;
+  int? lastPage;
+  int? currentPage;
+  int? perPage;
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['total'] = this.total;
-    data['last_page'] = this.lastPage;
-    data['current_page'] = this.currentPage;
-    data['per_page'] = this.perPage;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['total'] = total;
+    data['last_page'] = lastPage;
+    data['current_page'] = currentPage;
+    data['per_page'] = perPage;
     return data;
   }
 }
 
 class Records {
-  int? id;
-  String? name;
-  String? email;
-  String? avatar;
-  String? avatarThumb;
-  String? storeName;
-  String? storeSlug;
-  String? storeLogo;
-  String? storeLogoThumb;
-  String? coverImage;
-  int? items;
-
-  Records({this.id, this.name, this.email, this.avatar, this.avatarThumb, this.storeName, this.storeSlug, this.storeLogo, this.storeLogoThumb, this.coverImage, this.items});
+  Records(
+      {this.id,
+      this.name,
+      this.email,
+      this.avatar,
+      this.avatarThumb,
+      this.storeName,
+      this.storeSlug,
+      this.storeLogo,
+      this.storeLogoThumb,
+      this.coverImage,
+      this.items});
 
   Records.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -103,20 +101,31 @@ class Records {
     coverImage = json['cover_image'];
     items = json['items'];
   }
+  int? id;
+  String? name;
+  String? email;
+  String? avatar;
+  String? avatarThumb;
+  String? storeName;
+  String? storeSlug;
+  String? storeLogo;
+  String? storeLogoThumb;
+  String? coverImage;
+  int? items;
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['name'] = this.name;
-    data['email'] = this.email;
-    data['avatar'] = this.avatar;
-    data['avatar_thumb'] = this.avatarThumb;
-    data['store_name'] = this.storeName;
-    data['store_slug'] = this.storeSlug;
-    data['store_logo'] = this.storeLogo;
-    data['store_logo_thumb'] = this.storeLogoThumb;
-    data['cover_image'] = this.coverImage;
-    data['items'] = this.items;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['name'] = name;
+    data['email'] = email;
+    data['avatar'] = avatar;
+    data['avatar_thumb'] = avatarThumb;
+    data['store_name'] = storeName;
+    data['store_slug'] = storeSlug;
+    data['store_logo'] = storeLogo;
+    data['store_logo_thumb'] = storeLogoThumb;
+    data['cover_image'] = coverImage;
+    data['items'] = items;
     return data;
   }
 }

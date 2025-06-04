@@ -1,73 +1,69 @@
 import 'dart:convert';
 
+import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
+import 'package:event_app/core/services/shared_preferences_helper.dart';
 import 'package:event_app/provider/api_response_handler.dart';
-import 'package:event_app/utils/apiendpoints/api_end_point.dart';
-import 'package:event_app/utils/storage/shared_preferences_helper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../../core/network/api_status/api_status.dart';
 import '../../core/utils/custom_toast.dart';
-import '../../utils/apiStatus/api_status.dart';
 
 class CustomerAddressModels {
-  bool? error;
-  Data? data;
-  Null message;
-
   CustomerAddressModels({this.error, this.data, this.message});
 
   CustomerAddressModels.fromJson(Map<String, dynamic> json) {
     error = json['error'];
-    data = json['data'] != null ? new Data.fromJson(json['data']) : null;
+    data = json['data'] != null ? Data.fromJson(json['data']) : null;
     message = json['message'];
   }
+  bool? error;
+  Data? data;
+  Null message;
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['error'] = this.error;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['error'] = error;
     if (this.data != null) {
       data['data'] = this.data!.toJson();
     }
-    data['message'] = this.message;
+    data['message'] = message;
     return data;
   }
 }
 
 class Data {
-  AddressPagination? pagination;
-  List<CustomerRecords>? records;
-
   Data({this.pagination, this.records});
 
   Data.fromJson(Map<String, dynamic> json) {
-    pagination = json['pagination'] != null ? new AddressPagination.fromJson(json['pagination']) : null;
+    pagination = json['pagination'] != null
+        ? AddressPagination.fromJson(json['pagination'])
+        : null;
     if (json['records'] != null) {
       records = <CustomerRecords>[];
       json['records'].forEach((v) {
-        records!.add(new CustomerRecords.fromJson(v));
+        records!.add(CustomerRecords.fromJson(v));
       });
     }
   }
+  AddressPagination? pagination;
+  List<CustomerRecords>? records;
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.pagination != null) {
-      data['pagination'] = this.pagination!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if (pagination != null) {
+      data['pagination'] = pagination!.toJson();
     }
-    if (this.records != null) {
-      data['records'] = this.records!.map((v) => v.toJson()).toList();
+    if (records != null) {
+      data['records'] = records!.map((v) => v.toJson()).toList();
     }
     return data;
   }
 }
 
 class AddressPagination {
-  int? total;
-  int? lastPage;
-  int? currentPage;
-  int? perPage;
-
-  AddressPagination({this.total, this.lastPage, this.currentPage, this.perPage});
+  AddressPagination(
+      {this.total, this.lastPage, this.currentPage, this.perPage});
 
   AddressPagination.fromJson(Map<String, dynamic> json) {
     total = json['total'];
@@ -75,31 +71,34 @@ class AddressPagination {
     currentPage = json['current_page'];
     perPage = json['per_page'];
   }
+  int? total;
+  int? lastPage;
+  int? currentPage;
+  int? perPage;
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['total'] = this.total;
-    data['last_page'] = this.lastPage;
-    data['current_page'] = this.currentPage;
-    data['per_page'] = this.perPage;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['total'] = total;
+    data['last_page'] = lastPage;
+    data['current_page'] = currentPage;
+    data['per_page'] = perPage;
     return data;
   }
 }
 
 class CustomerRecords {
-  int? id;
-  String? name;
-  int? isDefault;
-  String? fullAddress;
-  String? email;
-  String? zip_code;
-  String? phone;
-  String? country;
-  String? city;
-  String? address;
-  String? state;
-
-  CustomerRecords({this.id, this.name, this.isDefault, this.fullAddress, this.phone, this.email, this.country, this.city, this.address, this.zip_code, this.state});
+  CustomerRecords(
+      {this.id,
+      this.name,
+      this.isDefault,
+      this.fullAddress,
+      this.phone,
+      this.email,
+      this.country,
+      this.city,
+      this.address,
+      this.zip_code,
+      this.state});
 
   CustomerRecords.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -114,18 +113,29 @@ class CustomerRecords {
     state = json['state'];
     zip_code = json['zip_code'];
   }
+  int? id;
+  String? name;
+  int? isDefault;
+  String? fullAddress;
+  String? email;
+  String? zip_code;
+  String? phone;
+  String? country;
+  String? city;
+  String? address;
+  String? state;
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['name'] = this.name;
-    data['email'] = this.email;
-    data['is_default'] = this.isDefault;
-    data['full_address'] = this.fullAddress;
-    data['phone'] = this.phone;
-    data['country'] = this.country;
-    data['country'] = this.city;
-    data['country'] = this.address;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['name'] = name;
+    data['email'] = email;
+    data['is_default'] = isDefault;
+    data['full_address'] = fullAddress;
+    data['phone'] = phone;
+    data['country'] = country;
+    data['country'] = city;
+    data['country'] = address;
     return data;
   }
 }
@@ -147,7 +157,7 @@ class CustomerAddressProvider with ChangeNotifier {
   bool _isLoadingAddresses = false;
 
   bool get isLoadingAddresses => _isLoadingAddresses;
-  bool _isLoading = false;
+  final bool _isLoading = false;
   String? _errorMessage;
 
   AddressPagination? get addressPagination => _addressPagination;
@@ -158,7 +168,9 @@ class CustomerAddressProvider with ChangeNotifier {
 
   String? get errorMessage => _errorMessage;
 
-  Future<CustomerAddressModels?> fetchCustomerAddresses(String token, BuildContext context, {int perPage = 12, page = 1}) async {
+  Future<CustomerAddressModels?> fetchCustomerAddresses(
+      String token, BuildContext context,
+      {int perPage = 12, page = 1}) async {
     setStatus(ApiStatus.loading);
     if (page == 1) {
       _addresses.clear();
@@ -168,7 +180,8 @@ class CustomerAddressProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      final url = '${ApiEndpoints.customerAddressList}?per-page=$perPage&page=$page';
+      final url =
+          '${ApiEndpoints.customerAddressList}?per-page=$perPage&page=$page';
       final headers = {
         'Authorization': 'Bearer $token',
       };
@@ -181,7 +194,8 @@ class CustomerAddressProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         setStatus(ApiStatus.completed);
-        CustomerAddressModels customerAddressModels = CustomerAddressModels.fromJson(json.decode(response.body));
+        final CustomerAddressModels customerAddressModels =
+            CustomerAddressModels.fromJson(json.decode(response.body));
 
         if (page == 1) {
           _addresses = customerAddressModels.data?.records ?? [];
@@ -228,23 +242,24 @@ class CustomerAddressProvider with ChangeNotifier {
       final url = '${ApiEndpoints.customerAddressDelete}$addressId';
       final headers = {'Authorization': token ?? ''};
 
-      final response = await _apiResponseHandler.deleteRequest(url, headers: headers);
+      final response =
+          await _apiResponseHandler.deleteRequest(url, headers: headers);
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         if (data['error'] == false) {
-          CustomSnackbar.showSuccess(context, "Address Delete successfully!");
+          CustomSnackbar.showSuccess(context, 'Address Delete successfully!');
 
           addresses.removeWhere((address) => address.id == addressId);
         } else {
           errorMessageDelete = data['message'] ?? 'Failed to delete address';
-          CustomSnackbar.showError(context, "Failed to delete address!");
+          CustomSnackbar.showError(context, 'Failed to delete address!');
         }
       } else {
-        errorMessageDelete = "Failed to delete address";
+        errorMessageDelete = 'Failed to delete address';
       }
     } catch (error) {
-      errorMessageDelete = "An error occurred: $error";
+      errorMessageDelete = 'An error occurred: $error';
     } finally {
       _isLoadingDelete = false;
       notifyListeners();

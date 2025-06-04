@@ -2,18 +2,10 @@ import 'package:event_app/core/styles/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../models/product_packages_models/product_details_models.dart';
 import '../../core/styles/custom_text_styles.dart';
+import '../../models/product_packages_models/product_details_models.dart';
 
 class ProductInformationScreen extends StatefulWidget {
-  final String? selectedImageUrl;
-  final double screenWidth;
-  final Function(String?) onImageUpdate;
-  final ItemRecord record;
-  final List<Images> images;
-  final String offPercentage;
-  final String productPrice;
-
   const ProductInformationScreen({
     super.key,
     this.selectedImageUrl,
@@ -24,78 +16,96 @@ class ProductInformationScreen extends StatefulWidget {
     required this.offPercentage,
     required this.productPrice,
   });
+  final String? selectedImageUrl;
+  final double screenWidth;
+  final Function(String?) onImageUpdate;
+  final ItemRecord record;
+  final List<Images> images;
+  final String offPercentage;
+  final String productPrice;
 
   @override
-  State<ProductInformationScreen> createState() => _ProductInformationScreenState();
+  State<ProductInformationScreen> createState() =>
+      _ProductInformationScreenState();
 }
 
 class _ProductInformationScreenState extends State<ProductInformationScreen> {
   @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(top: widget.screenWidth * 0.06, left: widget.screenWidth * 0.06, right: widget.screenWidth * 0.06),
-      child: Column(mainAxisSize: MainAxisSize.max, mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [
-        //Title:
-        Wrap(
-          children: [
-            Text(
-              widget.record.name,
-              softWrap: true,
-              style: productValueItemsStyle(context),
-            ),
-            if (widget.record.outOfStock)
-              Text(
-                ' (Out of stock)',
-                softWrap: true,
-                style: GoogleFonts.inter(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.myRed,
-                ),
-              ),
-          ],
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 20),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "AED ${widget.productPrice}",
-                softWrap: true,
-                style: productValueItemsStyle(context),
-              ),
-              Text(
-                " ${(widget.record.prices?.frontSalePrice ?? 0) < (widget.record.prices?.price ?? 0) ? widget.record.prices!.priceWithTaxes : ''}",
-                softWrap: true,
-                style: productPriceStyle(context),
-              ),
-              Padding(
-                padding: EdgeInsets.only(right: 20),
-                child: Text(
-                  widget.offPercentage.isNotEmpty ? '${widget.offPercentage}%off' : '',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(color: Colors.orange, fontSize: 10),
-                ),
-              ),
-            ],
-          ),
-        ),
-        Text('including VAT', style: loginOrStyle(context)),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
+  Widget build(BuildContext context) => Padding(
+        padding: EdgeInsets.only(
+            top: widget.screenWidth * 0.06,
+            left: widget.screenWidth * 0.06,
+            right: widget.screenWidth * 0.06),
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
           children: [
-            Expanded(
-              child: Text('interest-free installment available.', style: productDescription(context)),
-            )
-            // ,Icon(Icons.ac_unit)
-          ],
-        ),
-        /*Padding(
+            //Title:
+            Wrap(
+              children: [
+                Text(
+                  widget.record.name,
+                  softWrap: true,
+                  style: productValueItemsStyle(context),
+                ),
+                if (widget.record.outOfStock)
+                  Text(
+                    ' (Out of stock)',
+                    softWrap: true,
+                    style: GoogleFonts.inter(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.myRed,
+                    ),
+                  ),
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 20),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'AED ${widget.productPrice}',
+                    softWrap: true,
+                    style: productValueItemsStyle(context),
+                  ),
+                  Text(
+                    " ${(widget.record.prices?.frontSalePrice ?? 0) < (widget.record.prices?.price ?? 0) ? widget.record.prices!.priceWithTaxes : ''}",
+                    softWrap: true,
+                    style: productPriceStyle(context),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 20),
+                    child: Text(
+                      widget.offPercentage.isNotEmpty
+                          ? '${widget.offPercentage}%off'
+                          : '',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style:
+                          const TextStyle(color: Colors.orange, fontSize: 10),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Text('including VAT', style: loginOrStyle(context)),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Expanded(
+                  child: Text('interest-free installment available.',
+                      style: productDescription(context)),
+                ),
+                // ,Icon(Icons.ac_unit)
+              ],
+            ),
+            /*Padding(
             padding: const EdgeInsets.only(top: 20),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -160,7 +170,7 @@ class _ProductInformationScreenState extends State<ProductInformationScreen> {
               ],
             ),
           )*/
-      ]),
-    );
-  }
+          ],
+        ),
+      );
 }

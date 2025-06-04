@@ -4,22 +4,24 @@ import 'dart:convert';
 /// data : {"pagination":{"total":2,"last_page":1,"current_page":1,"per_page":10},"records":[{"id":15,"title":"Test Coupon 2","code":"MBYCD5K33VHP","full_start_date":"2025-01-26T20:00:00.000000Z","start_date":"2025-01-27","start_time":"00:00","full_end_date":null,"end_date":null,"end_time":null,"quantity":null,"total_used":0,"value":100,"type":"coupon","can_use_with_promotion":false,"discount_on":null,"product_quantity":null,"type_option":"shipping","target":"all-orders","min_order_price":null,"display_at_checkout":true,"description":null,"updated_at":"2025-01-27 16:19:55","created_at":"2025-01-27 16:19:55","is_expired":false},{"id":14,"title":"Hi Abhay","code":"RDGP7V9HGOLU","full_start_date":"2025-01-26T20:00:00.000000Z","start_date":"2025-01-27","start_time":"00:00","full_end_date":null,"end_date":null,"end_time":null,"quantity":100,"total_used":0,"value":10,"type":"coupon","can_use_with_promotion":false,"discount_on":null,"product_quantity":null,"type_option":"amount","target":"all-orders","min_order_price":null,"display_at_checkout":true,"description":null,"updated_at":"2025-01-27 16:19:31","created_at":"2025-01-27 16:19:31","is_expired":false}]}
 /// message : null
 
-VendorGetCouponsModel vendorGetCouponsModelFromJson(String str) => VendorGetCouponsModel.fromJson(json.decode(str));
+VendorGetCouponsModel vendorGetCouponsModelFromJson(String str) =>
+    VendorGetCouponsModel.fromJson(json.decode(str));
 
-String vendorGetCouponsModelToJson(VendorGetCouponsModel data) => json.encode(data.toJson());
+String vendorGetCouponsModelToJson(VendorGetCouponsModel data) =>
+    json.encode(data.toJson());
 
 class VendorGetCouponsModel {
   VendorGetCouponsModel({
     bool? error,
     Data? data,
-    dynamic message,
+    message,
   }) {
     _error = error;
     _data = data;
     _message = message;
   }
 
-  VendorGetCouponsModel.fromJson(dynamic json) {
+  VendorGetCouponsModel.fromJson(json) {
     _error = json['error'];
     _data = json['data'] != null ? Data.fromJson(json['data']) : null;
     _message = json['message'];
@@ -32,7 +34,7 @@ class VendorGetCouponsModel {
   VendorGetCouponsModel copyWith({
     bool? error,
     Data? data,
-    dynamic message,
+    message,
   }) =>
       VendorGetCouponsModel(
         error: error ?? _error,
@@ -73,8 +75,10 @@ class Data {
     _records = records;
   }
 
-  Data.fromJson(dynamic json) {
-    _pagination = json['pagination'] != null ? Pagination.fromJson(json['pagination']) : null;
+  Data.fromJson(json) {
+    _pagination = json['pagination'] != null
+        ? Pagination.fromJson(json['pagination'])
+        : null;
     if (json['records'] != null) {
       _records = [];
       json['records'].forEach((v) {
@@ -136,33 +140,34 @@ class Data {
 /// created_at : "2025-01-27 16:19:55"
 /// is_expired : false
 
-CouponRecords recordsFromJson(String str) => CouponRecords.fromJson(json.decode(str));
+CouponRecords recordsFromJson(String str) =>
+    CouponRecords.fromJson(json.decode(str));
 
 String recordsToJson(CouponRecords data) => json.encode(data.toJson());
 
 class CouponRecords {
   CouponRecords({
-    dynamic? id,
+    id,
     String? title,
     String? code,
     String? fullStartDate,
     String? startDate,
     String? startTime,
-    dynamic fullEndDate,
-    dynamic endDate,
-    dynamic endTime,
-    dynamic quantity,
-    dynamic? totalUsed,
-    dynamic? value,
+    fullEndDate,
+    endDate,
+    endTime,
+    quantity,
+    totalUsed,
+    value,
     String? type,
     bool? canUseWithPromotion,
-    dynamic discountOn,
-    dynamic productQuantity,
+    discountOn,
+    productQuantity,
     String? typeOption,
     String? target,
-    dynamic minOrderPrice,
+    minOrderPrice,
     bool? displayAtCheckout,
-    dynamic description,
+    description,
     String? updatedAt,
     String? createdAt,
     bool? isExpired,
@@ -194,7 +199,7 @@ class CouponRecords {
     _isDeleting = false;
   }
 
-  CouponRecords.fromJson(dynamic json) {
+  CouponRecords.fromJson(json) {
     _id = json['id'];
     _title = json['title'];
     _code = json['code'];
@@ -222,7 +227,7 @@ class CouponRecords {
     _isDeleting = false;
   }
 
-  dynamic? _id;
+  dynamic _id;
   String? _title;
   String? _code;
   String? _fullStartDate;
@@ -232,8 +237,8 @@ class CouponRecords {
   dynamic _endDate;
   dynamic _endTime;
   dynamic _quantity;
-  dynamic? _totalUsed;
-  dynamic? _value;
+  dynamic _totalUsed;
+  dynamic _value;
   String? _type;
   bool? _canUseWithPromotion;
   dynamic _discountOn;
@@ -248,32 +253,32 @@ class CouponRecords {
   bool? _isExpired;
   bool _isDeleting = false;
 
-  setIsDeleting(bool deleting) {
+  void setIsDeleting(bool deleting) {
     _isDeleting = deleting;
   }
 
   CouponRecords copyWith({
-    dynamic? id,
+    id,
     String? title,
     String? code,
     String? fullStartDate,
     String? startDate,
     String? startTime,
-    dynamic fullEndDate,
-    dynamic endDate,
-    dynamic endTime,
-    dynamic quantity,
-    dynamic? totalUsed,
-    dynamic? value,
+    fullEndDate,
+    endDate,
+    endTime,
+    quantity,
+    totalUsed,
+    value,
     String? type,
     bool? canUseWithPromotion,
-    dynamic discountOn,
-    dynamic productQuantity,
+    discountOn,
+    productQuantity,
     String? typeOption,
     String? target,
-    dynamic minOrderPrice,
+    minOrderPrice,
     bool? displayAtCheckout,
-    dynamic description,
+    description,
     String? updatedAt,
     String? createdAt,
     bool? isExpired,
@@ -305,7 +310,7 @@ class CouponRecords {
         isExpired: isExpired ?? _isExpired,
       );
 
-  dynamic? get id => _id;
+  dynamic get id => _id;
 
   String? get title => _title;
 
@@ -325,9 +330,9 @@ class CouponRecords {
 
   dynamic get quantity => _quantity;
 
-  dynamic? get totalUsed => _totalUsed;
+  dynamic get totalUsed => _totalUsed;
 
-  dynamic? get value => _value;
+  dynamic get value => _value;
 
   String? get type => _type;
 
@@ -390,16 +395,17 @@ class CouponRecords {
 /// current_page : 1
 /// per_page : 10
 
-Pagination paginationFromJson(String str) => Pagination.fromJson(json.decode(str));
+Pagination paginationFromJson(String str) =>
+    Pagination.fromJson(json.decode(str));
 
 String paginationToJson(Pagination data) => json.encode(data.toJson());
 
 class Pagination {
   Pagination({
-    dynamic? total,
-    dynamic? lastPage,
-    dynamic? currentPage,
-    dynamic? perPage,
+    total,
+    lastPage,
+    currentPage,
+    perPage,
   }) {
     _total = total;
     _lastPage = lastPage;
@@ -407,23 +413,23 @@ class Pagination {
     _perPage = perPage;
   }
 
-  Pagination.fromJson(dynamic json) {
+  Pagination.fromJson(json) {
     _total = json['total'];
     _lastPage = json['last_page'];
     _currentPage = json['current_page'];
     _perPage = json['per_page'];
   }
 
-  dynamic? _total;
-  dynamic? _lastPage;
-  dynamic? _currentPage;
-  dynamic? _perPage;
+  dynamic _total;
+  dynamic _lastPage;
+  dynamic _currentPage;
+  dynamic _perPage;
 
   Pagination copyWith({
-    dynamic? total,
-    dynamic? lastPage,
-    dynamic? currentPage,
-    dynamic? perPage,
+    total,
+    lastPage,
+    currentPage,
+    perPage,
   }) =>
       Pagination(
         total: total ?? _total,
@@ -432,13 +438,13 @@ class Pagination {
         perPage: perPage ?? _perPage,
       );
 
-  dynamic? get total => _total;
+  dynamic get total => _total;
 
-  dynamic? get lastPage => _lastPage;
+  dynamic get lastPage => _lastPage;
 
-  dynamic? get currentPage => _currentPage;
+  dynamic get currentPage => _currentPage;
 
-  dynamic? get perPage => _perPage;
+  dynamic get perPage => _perPage;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};

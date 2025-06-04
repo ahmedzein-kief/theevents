@@ -6,17 +6,17 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class SearchDropdown extends StatefulWidget {
-  final SearchDropdownModel searchDropdownModel;
-  final String hint;
-  final Function(SearchProductRecord) onSelected;
-  final Function(SearchDropdownModel) onSearchChanged;
-
-  SearchDropdown({
+  const SearchDropdown({
+    super.key,
     required this.searchDropdownModel,
     required this.hint,
     required this.onSelected,
     required this.onSearchChanged,
   });
+  final SearchDropdownModel searchDropdownModel;
+  final String hint;
+  final Function(SearchProductRecord) onSelected;
+  final Function(SearchDropdownModel) onSearchChanged;
 
   @override
   _SearchDropdownState createState() => _SearchDropdownState();
@@ -41,7 +41,9 @@ class _SearchDropdownState extends State<SearchDropdown> {
     } else {
       _filteredOptions = widget.searchDropdownModel.records
           .where(
-            (option) => option.name?.toLowerCase().contains(query.toLowerCase()) ?? false,
+            (option) =>
+                option.name?.toLowerCase().contains(query.toLowerCase()) ??
+                false,
           )
           .toList();
     }
@@ -54,69 +56,72 @@ class _SearchDropdownState extends State<SearchDropdown> {
           required: false,
           hintText: widget.hint,
           controller: _searchController,
-          prefix: Icon(Icons.search),
+          prefix: const Icon(Icons.search),
           onChanged: _onSearchChanged,
         ),
-        SizedBox(height: 8),
-        _showDropdown
-            ? Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey.shade300),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                constraints: BoxConstraints(
-                  maxHeight: MediaQuery.of(context).size.height * 0.3, // Limits height to 30% of the screen
-                ),
-                child: _filteredOptions.isEmpty
-                    ? Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Center(child: Text("No results found")),
-                      )
-                    : ListView.separated(
-                        shrinkWrap: true,
-                        itemCount: _filteredOptions.length,
-                        separatorBuilder: (context, index) => Divider(height: 1, color: Colors.grey.shade300), // Separator
-                        itemBuilder: (context, index) {
-                          final option = _filteredOptions[index];
-                          return ListTile(
-                            leading: CachedNetworkImage(
-                              imageUrl: option.image ?? '',
-                              fit: BoxFit.cover,
-                              width: 32,
-                              height: 32,
-                              placeholder: (BuildContext context, String url) {
-                                return Container(
-                                  height: MediaQuery.sizeOf(context).height * 0.28,
+        const SizedBox(height: 8),
+        if (_showDropdown)
+          Container(
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey.shade300),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height *
+                  0.3, // Limits height to 30% of the screen
+            ),
+            child: _filteredOptions.isEmpty
+                ? const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Center(child: Text('No results found')),
+                  )
+                : ListView.separated(
+                    shrinkWrap: true,
+                    itemCount: _filteredOptions.length,
+                    separatorBuilder: (context, index) => Divider(
+                        height: 1, color: Colors.grey.shade300), // Separator
+                    itemBuilder: (context, index) {
+                      final option = _filteredOptions[index];
+                      return ListTile(
+                        leading: CachedNetworkImage(
+                          imageUrl: option.image ?? '',
+                          fit: BoxFit.cover,
+                          width: 32,
+                          height: 32,
+                          placeholder: (BuildContext context, String url) =>
+                              Container(
+                            height: MediaQuery.sizeOf(context).height * 0.28,
+                            width: double.infinity,
+                            color: Colors.blueGrey[300],
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                Image.asset(
+                                  'assets/placeholder.png',
+                                  fit: BoxFit.cover,
+                                  height:
+                                      MediaQuery.sizeOf(context).height * 0.28,
                                   width: double.infinity,
-                                  color: Colors.blueGrey[300],
-                                  child: Stack(
-                                    alignment: Alignment.center,
-                                    children: [
-                                      Image.asset(
-                                        'assets/placeholder.png',
-                                        fit: BoxFit.cover,
-                                        height: MediaQuery.sizeOf(context).height * 0.28,
-                                        width: double.infinity,
-                                      ),
-                                      const CupertinoActivityIndicator(
-                                        radius: 16,
-                                        animating: true,
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
+                                ),
+                                const CupertinoActivityIndicator(
+                                  radius: 16,
+                                  animating: true,
+                                ),
+                              ],
                             ),
-                            title: Text(option.name ?? ''),
-                            onTap: () {
-                              widget.onSelected(option);
-                              _searchController.clear();
-                            },
-                          );
+                          ),
+                        ),
+                        title: Text(option.name ?? ''),
+                        onTap: () {
+                          widget.onSelected(option);
+                          _searchController.clear();
                         },
-                      ),
-              )
-            : SizedBox(),
+                      );
+                    },
+                  ),
+          )
+        else
+          const SizedBox(),
       ],
     );
   }

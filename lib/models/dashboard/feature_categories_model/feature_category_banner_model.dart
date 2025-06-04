@@ -1,14 +1,7 @@
 /// +++++++++++++++++++++   FEATURED CATEGORY BANNER MODELS  ----------------------------------
+library;
 
 class PageData {
-  final String? view;
-  final String? name;
-  final String? slug;
-  final String? image;
-  final String? coverImage;
-  final SeoMeta? seoMeta;
-  final String? content;
-
   PageData({
     this.view,
     this.name,
@@ -28,18 +21,22 @@ class PageData {
       slug: data?['slug'] as String?,
       image: data?['image'] as String?,
       coverImage: data?['cover_image'] as String?,
-      seoMeta: data?['seo_meta'] != null ? SeoMeta.fromJson(data!['seo_meta']) : null,
+      seoMeta: data?['seo_meta'] != null
+          ? SeoMeta.fromJson(data!['seo_meta'])
+          : null,
       content: data?['content'] as String?,
     );
   }
+  final String? view;
+  final String? name;
+  final String? slug;
+  final String? image;
+  final String? coverImage;
+  final SeoMeta? seoMeta;
+  final String? content;
 }
 
 class SeoMeta {
-  final String? title;
-  final String? description;
-  final String? image;
-  final String? robots;
-
   SeoMeta({
     this.title,
     this.description,
@@ -47,12 +44,14 @@ class SeoMeta {
     this.robots,
   });
 
-  factory SeoMeta.fromJson(Map<String, dynamic> json) {
-    return SeoMeta(
-      title: json['title'] as String?,
-      description: json['description'] as String?,
-      image: json['image'] as String?,
-      robots: json['robots'] as String?,
-    );
-  }
+  factory SeoMeta.fromJson(Map<String, dynamic> json) => SeoMeta(
+        title: json['title'] as String?,
+        description: json['description'] as String?,
+        image: json['image'] as String?,
+        robots: json['robots'] as String?,
+      );
+  final String? title;
+  final String? description;
+  final String? image;
+  final String? robots;
 }

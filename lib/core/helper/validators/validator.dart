@@ -1,5 +1,5 @@
 import 'package:event_app/core/constants/vendor_app_strings.dart';
-import 'package:event_app/utils/apiendpoints/vendor_api_end_point.dart';
+import 'package:event_app/core/network/api_endpoints/vendor_api_end_point.dart';
 
 class Validator {
   /// ======= EMAIL VALIDATION =================================================
@@ -30,10 +30,13 @@ class Validator {
   }
 
   static String? isValidUrl(String value) {
-    if (value.isEmpty) return "This is a required field"; // Ensure it's not empty
+    if (value.isEmpty)
+      return "This is a required field"; // Ensure it's not empty
 
     final Uri? uri = Uri.tryParse(value);
-    final bool isValid = uri != null && uri.hasScheme && (uri.scheme == 'http' || uri.scheme == 'https');
+    final bool isValid = uri != null &&
+        uri.hasScheme &&
+        (uri.scheme == 'http' || uri.scheme == 'https');
 
     return isValid ? null : "Please enter a valid link";
   }
@@ -221,7 +224,7 @@ class Validator {
       return "Trading number is required";
     }
 
-    if (value.length <10 || value.length > 15) {
+    if (value.length < 10 || value.length > 15) {
       return "Trading License number must be between 10 and 15 characters long.";
     }
     return null;
@@ -377,7 +380,8 @@ class Validator {
     }
 
     // PayPal email regex validation
-    final RegExp paypalEmailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+    final RegExp paypalEmailRegex =
+        RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
 
     if (!paypalEmailRegex.hasMatch(value)) {
       return "Enter a valid PayPal email ID.";
@@ -452,7 +456,10 @@ class Validator {
 
   static String? validateStartAndEndDate(String? startDate, String? endDate) {
     // Skip validation if either date is empty
-    if (startDate == null || startDate.isEmpty || endDate == null || endDate.isEmpty) {
+    if (startDate == null ||
+        startDate.isEmpty ||
+        endDate == null ||
+        endDate.isEmpty) {
       return null;
     }
 
@@ -478,7 +485,6 @@ class Validator {
     double? number = double.tryParse(value);
     return number != null ? number.toStringAsFixed(2) : value;
   }
-
 
   static String? addressValidator(String? value) {
     if (value == null || value.trim().isEmpty) {
@@ -511,7 +517,4 @@ class Validator {
     }
     return null; // Valid city name
   }
-
-
-
 }

@@ -7,22 +7,21 @@ import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../provider/shortcode_home_page_provider.dart';
-import '../utils/storage/shared_preferences_helper.dart';
-import '../views/base_screens/home_screen.dart';
-import '../views/base_screens/profile_screen.dart';
-import '../views/home_screens_shortcode/shorcode_featured_brands/featured_brands_view_all.dart';
-import '../views/home_screens_shortcode/shortcode_featured_categories/featured_categories_items_screen.dart';
+import '../../provider/shortcode_home_page_provider.dart';
+import '../../views/base_screens/home_screen.dart';
+import '../../views/base_screens/profile_screen.dart';
+import '../../views/home_screens_shortcode/shorcode_featured_brands/featured_brands_view_all.dart';
+import '../../views/home_screens_shortcode/shortcode_featured_categories/featured_categories_items_screen.dart';
+import '../services/shared_preferences_helper.dart';
 
 class BaseHomeScreen extends StatefulWidget {
-  final dynamic data;
-  final int? typeId;
-
   const BaseHomeScreen({
     super.key,
     this.data,
     this.typeId,
   });
+  final dynamic data;
+  final int? typeId;
 
   @override
   State<BaseHomeScreen> createState() => _HomeScreenState();
@@ -37,9 +36,14 @@ class _HomeScreenState extends State<BaseHomeScreen> {
 
   Future<void> _loadLoginState() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final isTempLoggedIn =
+        (await SecurePreferencesUtil.getToken() ?? '').isNotEmpty;
+
     setState(() {
       _isLoggedIn = prefs.getBool(SecurePreferencesUtil.loggedInKey) ?? false;
-      _isTempLoggedIn = (prefs.getString(SecurePreferencesUtil.tokenKey) ?? '').isNotEmpty;
+      // _isTempLoggedIn =
+      //     (prefs.getString(SecurePreferencesUtil.tokenKey) ?? '').isNotEmpty;
+      _isTempLoggedIn = isTempLoggedIn;
     });
   }
 
@@ -60,8 +64,10 @@ class _HomeScreenState extends State<BaseHomeScreen> {
       _currentIndex = index;
       if (index == 0) {
         final typeId = widget.typeId ?? 2;
-        Provider.of<VendorByTypeProvider>(context, listen: false).fetchVendorTypeById(typeId, context);
-        Provider.of<VendorByTypeProvider>(context, listen: false).fetchVendors(typeId: typeId, context);
+        Provider.of<VendorByTypeProvider>(context, listen: false)
+            .fetchVendorTypeById(typeId, context);
+        Provider.of<VendorByTypeProvider>(context, listen: false)
+            .fetchVendors(typeId: typeId, context);
       }
     });
   }
@@ -79,19 +85,22 @@ class _HomeScreenState extends State<BaseHomeScreen> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final homePageProvider = Provider.of<HomePageProvider>(context, listen: false);
+      final homePageProvider =
+          Provider.of<HomePageProvider>(context, listen: false);
       await homePageProvider.fetchHomePageData();
       // Trigger initial vendor fetch if needed
       //  function is used to fetch the data of typeId second
       final typeId = widget.typeId ?? 2;
-      Provider.of<VendorByTypeProvider>(context, listen: false).fetchVendorTypeById(typeId, context);
-      Provider.of<VendorByTypeProvider>(context, listen: false).fetchVendors(typeId: typeId, context);
+      Provider.of<VendorByTypeProvider>(context, listen: false)
+          .fetchVendorTypeById(typeId, context);
+      Provider.of<VendorByTypeProvider>(context, listen: false)
+          .fetchVendors(typeId: typeId, context);
     });
     super.initState();
   }
 
-  Widget _getUserByCelebrities(String shortcode, dynamic data, int? typeId) {
-    int validTypeId = typeId ?? 2;
+  Widget _getUserByCelebrities(String shortcode, data, int? typeId) {
+    final int validTypeId = typeId ?? 2;
     switch (shortcode) {
       case 'shortcode-users-by-type':
         return UserByTypeItemsScreen(
@@ -137,81 +146,90 @@ class _HomeScreenState extends State<BaseHomeScreen> {
               showText: false,
               data: homePageProvider.featuredCategoryTitle != null
                   ? {
-                      'attributes': {'title': homePageProvider.featuredCategoryTitle}
+                      'attributes': {
+                        'title': homePageProvider.featuredCategoryTitle
+                      },
                     }
                   : {},
             ),
-            _isLoggedIn || _isTempLoggedIn ? const UserProfileLoginScreen() : const ProfileScreen(),
+            if (_isLoggedIn || _isTempLoggedIn)
+              const UserProfileLoginScreen()
+            else
+              const ProfileScreen(),
           ],
         ),
         bottomNavigationBar: Container(
-            decoration: const BoxDecoration(
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black26,
-                  blurRadius: 10,
-                ),
-              ],
-            ),
-            child: Stack(
-              children: [
-                // Your BottomNavigationBar
-                BottomNavigationBar(
-                  currentIndex: _currentIndex,
-                  onTap: _onTabTapped,
-                  selectedLabelStyle: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700),
-                  unselectedLabelStyle: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700),
-                  selectedItemColor: Colors.red,
-                  unselectedItemColor: Colors.purpleAccent,
-                  type: BottomNavigationBarType.fixed,
-                  backgroundColor: Colors.white,
-                  enableFeedback: true,
-                  showSelectedLabels: true,
-                  items: [
-                    BottomNavigationBarItem(
-                      icon: Tooltip(
-                        message: 'Celebrities',
-                        child: SvgPicture.asset(
-                          _currentIndex == 0 ? celebrityFill : celebrityOutLine,
-                        ),
+          decoration: const BoxDecoration(
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black26,
+                blurRadius: 10,
+              ),
+            ],
+          ),
+          child: Stack(
+            children: [
+              // Your BottomNavigationBar
+              BottomNavigationBar(
+                currentIndex: _currentIndex,
+                onTap: _onTabTapped,
+                selectedLabelStyle:
+                    const TextStyle(fontSize: 10, fontWeight: FontWeight.w700),
+                unselectedLabelStyle:
+                    const TextStyle(fontSize: 10, fontWeight: FontWeight.w700),
+                selectedItemColor: Colors.red,
+                unselectedItemColor: Colors.purpleAccent,
+                type: BottomNavigationBarType.fixed,
+                backgroundColor: Colors.white,
+                enableFeedback: true,
+                showSelectedLabels: true,
+                items: [
+                  BottomNavigationBarItem(
+                    icon: Tooltip(
+                      message: 'Celebrities',
+                      child: SvgPicture.asset(
+                        _currentIndex == 0 ? celebrityFill : celebrityOutLine,
                       ),
-                      label: "",
                     ),
-                    BottomNavigationBarItem(
-                      icon: Tooltip(
-                        message: 'Brands',
-                        child: SvgPicture.asset(
-                          _currentIndex == 1 ? brandFill : brandOutLine,
-                        ),
+                    label: '',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Tooltip(
+                      message: 'Brands',
+                      child: SvgPicture.asset(
+                        _currentIndex == 1 ? brandFill : brandOutLine,
                       ),
-                      label: "",
                     ),
-                    BottomNavigationBarItem(
-                      icon: Tooltip(message: 'EVENTS', child: SvgPicture.asset(assetName)),
-                      label: '',
-                    ),
-                    BottomNavigationBarItem(
-                      icon: Tooltip(
-                        message: 'Categories',
-                        child: SvgPicture.asset(
-                          _currentIndex == 3 ? categoryFill : categoryOutline,
-                        ),
+                    label: '',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Tooltip(
+                        message: 'EVENTS', child: SvgPicture.asset(assetName)),
+                    label: '',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Tooltip(
+                      message: 'Categories',
+                      child: SvgPicture.asset(
+                        _currentIndex == 3 ? categoryFill : categoryOutline,
                       ),
-                      label: "",
                     ),
-                    BottomNavigationBarItem(
-                      icon: Tooltip(
-                        message: 'Account',
-                        child: SvgPicture.asset(
-                          _currentIndex == 4 ? userFill : userOutline,
-                        ),
+                    label: '',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Tooltip(
+                      message: 'Account',
+                      child: SvgPicture.asset(
+                        _currentIndex == 4 ? userFill : userOutline,
                       ),
-                      label: "",
                     ),
-                  ],
-                ),
-              ],
-            )),
+                    label: '',
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

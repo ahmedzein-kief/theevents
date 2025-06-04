@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-UploadImagesDataResponse uploadImagesDataResponseFromJson(String str) => UploadImagesDataResponse.fromJson(json.decode(str));
-
+UploadImagesDataResponse uploadImagesDataResponseFromJson(String str) =>
+    UploadImagesDataResponse.fromJson(json.decode(str));
 
 class UploadImagesDataResponse {
   UploadImagesDataResponse({
@@ -10,12 +10,15 @@ class UploadImagesDataResponse {
     required this.message,
   });
 
+  factory UploadImagesDataResponse.fromJson(Map<dynamic, dynamic> json) =>
+      UploadImagesDataResponse(
+          data: json['data'] != null ? Data.fromJson(json['data']) : null,
+          error: json['error'],
+          message: json['message']);
+
   Data? data;
   bool error;
   String? message;
-
-  factory UploadImagesDataResponse.fromJson(Map<dynamic, dynamic> json) =>
-      UploadImagesDataResponse(data: json["data"] != null ? Data.fromJson(json["data"]) : null, error: json["error"], message: json["message"]);
 }
 
 class Data {
@@ -38,6 +41,25 @@ class Data {
     required this.folderId,
   });
 
+  factory Data.fromJson(Map<dynamic, dynamic> json) => Data(
+        fullUrl: json['full_url'],
+        thumb: json['thumb'],
+        icon: json['icon'],
+        alt: json['alt'],
+        createdAt: DateTime.parse(json['created_at']),
+        type: json['type'],
+        url: json['url'],
+        basename: json['basename'],
+        size: json['size'],
+        updatedAt: DateTime.parse(json['updated_at']),
+        mimeType: json['mime_type'],
+        previewUrl: json['preview_url'],
+        name: json['name'],
+        options: List<dynamic>.from(json['options'].map((x) => x)),
+        id: json['id'],
+        folderId: json['folder_id'],
+      );
+
   String fullUrl;
   String thumb;
   String icon;
@@ -54,24 +76,4 @@ class Data {
   List<dynamic> options;
   int id;
   int folderId;
-
-  factory Data.fromJson(Map<dynamic, dynamic> json) => Data(
-        fullUrl: json["full_url"],
-        thumb: json["thumb"],
-        icon: json["icon"],
-        alt: json["alt"],
-        createdAt: DateTime.parse(json["created_at"]),
-        type: json["type"],
-        url: json["url"],
-        basename: json["basename"],
-        size: json["size"],
-        updatedAt: DateTime.parse(json["updated_at"]),
-        mimeType: json["mime_type"],
-        previewUrl: json["preview_url"],
-        name: json["name"],
-        options: List<dynamic>.from(json["options"].map((x) => x)),
-        id: json["id"],
-        folderId: json["folder_id"],
-      );
-
 }

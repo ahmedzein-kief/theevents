@@ -4,22 +4,24 @@ import 'dart:convert';
 /// data : {"pagination":{"total":5,"last_page":1,"current_page":1,"per_page":10},"records":[{"id":1919,"code":"#10001919","tax_amount":"0.00","tax_amount_format":"AED0.00","amount":"329.00","amount_format":"AED329.00","shipping_amount":"39.00","shipping_amount_format":"AED39.00","status":{"value":"completed","label":"Completed"},"payment_status":{"value":"completed","label":"Completed"},"payment_method":{"value":"telr","label":"Telr"},"customer_name":null,"created_at":"2025-01-16 13:34:30"},{"id":1673,"code":"#10001673","tax_amount":"13.25","tax_amount_format":"AED13.25","amount":"317.25","amount_format":"AED317.25","shipping_amount":"39.00","shipping_amount_format":"AED39.00","status":{"value":"completed","label":"Completed"},"payment_status":{"value":null,"label":""},"payment_method":{"value":null,"label":""},"customer_name":"Mohammed Lamdy","created_at":"2024-12-07 13:30:21"},{"id":1299,"code":"#10001299","tax_amount":"14.50","tax_amount_format":"AED14.50","amount":"343.50","amount_format":"AED343.50","shipping_amount":"39.00","shipping_amount_format":"AED39.00","status":{"value":"pending","label":"Pending"},"payment_status":{"value":null,"label":""},"payment_method":{"value":null,"label":""},"customer_name":"Dikshit sharma","created_at":"2024-11-24 16:05:27"},{"id":1298,"code":"#10001298","tax_amount":"23.90","tax_amount_format":"AED23.90","amount":"540.90","amount_format":"AED540.90","shipping_amount":"39.00","shipping_amount_format":"AED39.00","status":{"value":"pending","label":"Pending"},"payment_status":{"value":null,"label":""},"payment_method":{"value":null,"label":""},"customer_name":"Dikshit sharma","created_at":"2024-11-24 16:00:47"},{"id":1296,"code":"#10001296","tax_amount":"30.25","tax_amount_format":"AED30.25","amount":"674.25","amount_format":"AED674.25","shipping_amount":"39.00","shipping_amount_format":"AED39.00","status":{"value":"pending","label":"Pending"},"payment_status":{"value":null,"label":""},"payment_method":{"value":null,"label":""},"customer_name":"Dikshit sharma","created_at":"2024-11-24 15:52:05"}]}
 /// message : null
 
-VendorGetOrdersModel vendorGetOrdersModelFromJson(String str) => VendorGetOrdersModel.fromJson(json.decode(str));
+VendorGetOrdersModel vendorGetOrdersModelFromJson(String str) =>
+    VendorGetOrdersModel.fromJson(json.decode(str));
 
-String vendorGetOrdersModelToJson(VendorGetOrdersModel data) => json.encode(data.toJson());
+String vendorGetOrdersModelToJson(VendorGetOrdersModel data) =>
+    json.encode(data.toJson());
 
 class VendorGetOrdersModel {
   VendorGetOrdersModel({
     bool? error,
     Data? data,
-    dynamic message,
+    message,
   }) {
     _error = error;
     _data = data;
     _message = message;
   }
 
-  VendorGetOrdersModel.fromJson(dynamic json) {
+  VendorGetOrdersModel.fromJson(json) {
     _error = json['error'];
     _data = json['data'] != null ? Data.fromJson(json['data']) : null;
     _message = json['message'];
@@ -32,7 +34,7 @@ class VendorGetOrdersModel {
   VendorGetOrdersModel copyWith({
     bool? error,
     Data? data,
-    dynamic message,
+    message,
   }) =>
       VendorGetOrdersModel(
         error: error ?? _error,
@@ -73,8 +75,10 @@ class Data {
     _records = records;
   }
 
-  Data.fromJson(dynamic json) {
-    _pagination = json['pagination'] != null ? Pagination.fromJson(json['pagination']) : null;
+  Data.fromJson(json) {
+    _pagination = json['pagination'] != null
+        ? Pagination.fromJson(json['pagination'])
+        : null;
     if (json['records'] != null) {
       _records = [];
       json['records'].forEach((v) {
@@ -125,13 +129,14 @@ class Data {
 /// customer_name : null
 /// created_at : "2025-01-16 13:34:30"
 
-OrderRecords recordsFromJson(String str) => OrderRecords.fromJson(json.decode(str));
+OrderRecords recordsFromJson(String str) =>
+    OrderRecords.fromJson(json.decode(str));
 
 String recordsToJson(OrderRecords data) => json.encode(data.toJson());
 
 class OrderRecords {
   OrderRecords({
-    dynamic? id,
+    id,
     String? code,
     String? taxAmount,
     String? taxAmountFormat,
@@ -142,7 +147,7 @@ class OrderRecords {
     Status? status,
     PaymentStatus? paymentStatus,
     PaymentMethod? paymentMethod,
-    dynamic customerName,
+    customerName,
     String? createdAt,
   }) {
     _id = id;
@@ -161,7 +166,7 @@ class OrderRecords {
     _isDeleting = false;
   }
 
-  OrderRecords.fromJson(dynamic json) {
+  OrderRecords.fromJson(json) {
     _id = json['id'];
     _code = json['code'];
     _taxAmount = json['tax_amount'];
@@ -171,14 +176,18 @@ class OrderRecords {
     _shippingAmount = json['shipping_amount'];
     _shippingAmountFormat = json['shipping_amount_format'];
     _status = json['status'] != null ? Status.fromJson(json['status']) : null;
-    _paymentStatus = json['payment_status'] != null ? PaymentStatus.fromJson(json['payment_status']) : null;
-    _paymentMethod = json['payment_method'] != null ? PaymentMethod.fromJson(json['payment_method']) : null;
+    _paymentStatus = json['payment_status'] != null
+        ? PaymentStatus.fromJson(json['payment_status'])
+        : null;
+    _paymentMethod = json['payment_method'] != null
+        ? PaymentMethod.fromJson(json['payment_method'])
+        : null;
     _customerName = json['customer_name'];
     _createdAt = json['created_at'];
     _isDeleting = false;
   }
 
-  dynamic? _id;
+  dynamic _id;
   String? _code;
   String? _taxAmount;
   String? _taxAmountFormat;
@@ -194,7 +203,7 @@ class OrderRecords {
   bool _isDeleting = false;
 
   OrderRecords copyWith({
-    dynamic? id,
+    id,
     String? code,
     String? taxAmount,
     String? taxAmountFormat,
@@ -205,7 +214,7 @@ class OrderRecords {
     Status? status,
     PaymentStatus? paymentStatus,
     PaymentMethod? paymentMethod,
-    dynamic customerName,
+    customerName,
     String? createdAt,
   }) =>
       OrderRecords(
@@ -224,7 +233,7 @@ class OrderRecords {
         createdAt: createdAt ?? _createdAt,
       );
 
-  dynamic? get id => _id;
+  dynamic get id => _id;
 
   String? get code => _code;
 
@@ -284,7 +293,8 @@ class OrderRecords {
 /// value : "telr"
 /// label : "Telr"
 
-PaymentMethod paymentMethodFromJson(String str) => PaymentMethod.fromJson(json.decode(str));
+PaymentMethod paymentMethodFromJson(String str) =>
+    PaymentMethod.fromJson(json.decode(str));
 
 String paymentMethodToJson(PaymentMethod data) => json.encode(data.toJson());
 
@@ -297,7 +307,7 @@ class PaymentMethod {
     _label = label;
   }
 
-  PaymentMethod.fromJson(dynamic json) {
+  PaymentMethod.fromJson(json) {
     _value = json['value'];
     _label = json['label'];
   }
@@ -329,7 +339,8 @@ class PaymentMethod {
 /// value : "completed"
 /// label : "Completed"
 
-PaymentStatus paymentStatusFromJson(String str) => PaymentStatus.fromJson(json.decode(str));
+PaymentStatus paymentStatusFromJson(String str) =>
+    PaymentStatus.fromJson(json.decode(str));
 
 String paymentStatusToJson(PaymentStatus data) => json.encode(data.toJson());
 
@@ -342,7 +353,7 @@ class PaymentStatus {
     _label = label;
   }
 
-  PaymentStatus.fromJson(dynamic json) {
+  PaymentStatus.fromJson(json) {
     _value = json['value'];
     _label = json['label'];
   }
@@ -387,7 +398,7 @@ class Status {
     _label = label;
   }
 
-  Status.fromJson(dynamic json) {
+  Status.fromJson(json) {
     _value = json['value'];
     _label = json['label'];
   }
@@ -421,16 +432,17 @@ class Status {
 /// current_page : 1
 /// per_page : 10
 
-Pagination paginationFromJson(String str) => Pagination.fromJson(json.decode(str));
+Pagination paginationFromJson(String str) =>
+    Pagination.fromJson(json.decode(str));
 
 String paginationToJson(Pagination data) => json.encode(data.toJson());
 
 class Pagination {
   Pagination({
-    dynamic? total,
-    dynamic? lastPage,
-    dynamic? currentPage,
-    dynamic? perPage,
+    total,
+    lastPage,
+    currentPage,
+    perPage,
   }) {
     _total = total;
     _lastPage = lastPage;
@@ -438,23 +450,23 @@ class Pagination {
     _perPage = perPage;
   }
 
-  Pagination.fromJson(dynamic json) {
+  Pagination.fromJson(json) {
     _total = json['total'];
     _lastPage = json['last_page'];
     _currentPage = json['current_page'];
     _perPage = json['per_page'];
   }
 
-  dynamic? _total;
-  dynamic? _lastPage;
-  dynamic? _currentPage;
-  dynamic? _perPage;
+  dynamic _total;
+  dynamic _lastPage;
+  dynamic _currentPage;
+  dynamic _perPage;
 
   Pagination copyWith({
-    dynamic? total,
-    dynamic? lastPage,
-    dynamic? currentPage,
-    dynamic? perPage,
+    total,
+    lastPage,
+    currentPage,
+    perPage,
   }) =>
       Pagination(
         total: total ?? _total,
@@ -463,13 +475,13 @@ class Pagination {
         perPage: perPage ?? _perPage,
       );
 
-  dynamic? get total => _total;
+  dynamic get total => _total;
 
-  dynamic? get lastPage => _lastPage;
+  dynamic get lastPage => _lastPage;
 
-  dynamic? get currentPage => _currentPage;
+  dynamic get currentPage => _currentPage;
 
-  dynamic? get perPage => _perPage;
+  dynamic get perPage => _perPage;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};

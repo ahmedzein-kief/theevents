@@ -1,13 +1,25 @@
 import 'dart:convert';
 
+import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
+import 'package:event_app/core/services/shared_preferences_helper.dart';
 import 'package:event_app/provider/api_response_handler.dart';
-import 'package:event_app/utils/apiendpoints/api_end_point.dart';
-import 'package:event_app/utils/storage/shared_preferences_helper.dart';
 import 'package:flutter/cupertino.dart';
 
-import '../../utils/apiStatus/api_status.dart';
+import '../../core/network/api_status/api_status.dart';
 
 class AddressModel {
+  AddressModel({
+    this.id = '',
+    required this.name,
+    required this.email,
+    required this.phone,
+    required this.address,
+    required this.country,
+    required this.city,
+    this.state = '',
+    this.zipCode = '',
+    this.isDefault = true,
+  });
   final String id;
   final String name;
   final String email;
@@ -19,62 +31,43 @@ class AddressModel {
   final String zipCode;
   final bool isDefault;
 
-  AddressModel({
-    this.id = "",
-    required this.name,
-    required this.email,
-    required this.phone,
-    required this.address,
-    required this.country,
-    required this.city,
-    this.state = '',
-    this.zipCode = '',
-    this.isDefault = true,
-  });
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'email': email,
+        'phone': phone,
+        'address': address,
+        'country': country,
+        'city': city,
+        'state': state,
+        'zip_code': zipCode,
+        'is_default': isDefault ? 1 : 0,
+      };
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'email': email,
-      'phone': phone,
-      'address': address,
-      'country': country,
-      'city': city,
-      'state': state,
-      'zip_code': zipCode,
-      'is_default': isDefault ? 1 : 0,
-    };
-  }
+  Map<String, dynamic> toJsonString() => {
+        'id': id,
+        'name': name,
+        'email': email,
+        'phone': phone,
+        'address': address,
+        'country': country,
+        'city': city,
+        'state': state,
+        'zip_code': zipCode,
+        'is_default': isDefault ? '1' : '0',
+      };
 
-  Map<String, dynamic> toJsonString() {
-    return {
-      'id': id,
-      'name': name,
-      'email': email,
-      'phone': phone,
-      'address': address,
-      'country': country,
-      'city': city,
-      'state': state,
-      'zip_code': zipCode,
-      'is_default': isDefault ? "1" : "0",
-    };
-  }
-
-  Map<String, dynamic> vendorOrderDetailsUpdateShippingAddressToJson() {
-    return {
-      'order_id': id,
-      'name': name,
-      'email': email,
-      'phone': phone,
-      'address': address,
-      'country': country,
-      'city': city,
-      'state': state,
-      'zip_code': zipCode,
-    };
-  }
+  Map<String, dynamic> vendorOrderDetailsUpdateShippingAddressToJson() => {
+        'order_id': id,
+        'name': name,
+        'email': email,
+        'phone': phone,
+        'address': address,
+        'country': country,
+        'city': city,
+        'state': state,
+        'zip_code': zipCode,
+      };
 }
 
 class AddressProvider with ChangeNotifier {
@@ -98,8 +91,8 @@ class AddressProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
     final token = await SecurePreferencesUtil.getToken();
-    final urlCreateAddress = ApiEndpoints.createCustomerAddress;
-    final url = urlCreateAddress;
+    const urlCreateAddress = ApiEndpoints.createCustomerAddress;
+    const url = urlCreateAddress;
     final headers = {
       // 'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
@@ -107,12 +100,13 @@ class AddressProvider with ChangeNotifier {
 
     try {
       // Encode the address object to JSON string format
-      final response = await _apiResponseHandler.postRequest(url, headers: headers, body: address.toJsonString());
+      final response = await _apiResponseHandler.postRequest(url,
+          headers: headers, body: address.toJsonString());
 
       if (response.statusCode == 200) {
         setStatus(ApiStatus.completed);
-        var responseData = json.decode(response.body);
-        var createData = CreateAddressResponse.fromJson(responseData);
+        final responseData = json.decode(response.body);
+        final createData = CreateAddressResponse.fromJson(responseData);
         _isLoading = false;
         notifyListeners();
         return (createData.data as Map<String, dynamic>)['id'];
@@ -131,10 +125,6 @@ class AddressProvider with ChangeNotifier {
 }
 
 class CreateAddressResponse {
-  final bool error;
-  final dynamic data;
-  final String message;
-
   CreateAddressResponse({
     required this.error,
     this.data,
@@ -142,20 +132,20 @@ class CreateAddressResponse {
   });
 
   // Factory constructor to create a CartUpdateResponse from JSON
-  factory CreateAddressResponse.fromJson(Map<String, dynamic> json) {
-    return CreateAddressResponse(
-      error: json['error'] as bool,
-      data: json['data'], // Handle null or any type of data here
-      message: json['message'] as String,
-    );
-  }
+  factory CreateAddressResponse.fromJson(Map<String, dynamic> json) =>
+      CreateAddressResponse(
+        error: json['error'] as bool,
+        data: json['data'], // Handle null or any type of data here
+        message: json['message'] as String,
+      );
+  final bool error;
+  final dynamic data;
+  final String message;
 
   // Method to convert CartUpdateResponse to JSON (optional)
-  Map<String, dynamic> toJson() {
-    return {
-      'error': error,
-      'data': data,
-      'message': message,
-    };
-  }
+  Map<String, dynamic> toJson() => {
+        'error': error,
+        'data': data,
+        'message': message,
+      };
 }

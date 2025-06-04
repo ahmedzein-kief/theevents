@@ -1,10 +1,11 @@
 class CustomerUploadProfilePicModel {
   CustomerUploadProfilePicModel({
-      this.error, 
-      this.data, 
-      this.message,});
+    this.error,
+    this.data,
+    this.message,
+  });
 
-  CustomerUploadProfilePicModel.fromJson(dynamic json) {
+  CustomerUploadProfilePicModel.fromJson(json) {
     error = json['error'];
     data = json['data'] != null ? Data.fromJson(json['data']) : null;
     message = json['message'];
@@ -12,17 +13,15 @@ class CustomerUploadProfilePicModel {
   bool? error;
   Data? data;
   String? message;
-
-
-
 }
 
 class Data {
-  Data({this.url,});
+  Data({
+    this.url,
+  });
 
-  Data.fromJson(dynamic json) {
+  Data.fromJson(json) {
     url = json['url'];
   }
   String? url;
-
 }

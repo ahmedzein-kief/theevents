@@ -1,7 +1,7 @@
+import 'package:event_app/core/services/shared_preferences_helper.dart';
 import 'package:event_app/data/vendor/data/response/ApiResponse.dart';
 import 'package:event_app/models/vendor_models/products/VendorGetProductsModel.dart';
 import 'package:event_app/provider/vendor/vendor_repository.dart';
-import 'package:event_app/utils/storage/shared_preferences_helper.dart';
 import 'package:flutter/cupertino.dart';
 
 class VendorGetPackagesViewModel with ChangeNotifier {
@@ -13,7 +13,7 @@ class VendorGetPackagesViewModel with ChangeNotifier {
 
   List<GetProductRecords> get list => _list;
 
-  setToken() async {
+  Future<void> setToken() async {
     _token = await SecurePreferencesUtil.getToken();
   }
 
@@ -37,25 +37,25 @@ class VendorGetPackagesViewModel with ChangeNotifier {
   }
 
   /// get products method
-  vendorGetPackages({String? search}) async {
+  Future<void> vendorGetPackages({String? search}) async {
     await setToken();
     try {
-      Map<String, String> headers = <String, String>{
+      final Map<String, String> headers = <String, String>{
         // 'Content-Type': 'application/json',
-        "Authorization": _token!,
+        'Authorization': _token!,
       };
 
       final Map<String, String> queryParams = {
         'per-page': '20',
         'page': _currentPage.toString(),
         if (search != null && search.isNotEmpty) 'search': search,
-
       };
 
       // If successful, increment the current page and append data
       if (_currentPage <= _lastPage) {
         setApiResponse = ApiResponse.loading();
-        final VendorGetProductsModel response = await _myRepo.vendorGetPackages(headers: headers, queryParams: queryParams);
+        final VendorGetProductsModel response = await _myRepo.vendorGetPackages(
+            headers: headers, queryParams: queryParams);
         setLastPage(response);
         resetList(response);
         setApiResponse = ApiResponse.completed(response);
@@ -84,7 +84,7 @@ class VendorGetPackagesViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  void removeElementFromList({required dynamic id}) {
+  void removeElementFromList({required id}) {
     _list.removeWhere((element) => element.id == id);
     notifyListeners();
   }

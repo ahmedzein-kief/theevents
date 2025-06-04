@@ -1,10 +1,10 @@
 import 'dart:convert';
 
+import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
+import 'package:event_app/core/services/shared_preferences_helper.dart';
 import 'package:event_app/models/dashboard/information_icons_models/gift_card_models/checkout_payment_model.dart';
 import 'package:event_app/models/dashboard/information_icons_models/gift_card_models/gift_card_models.dart';
 import 'package:event_app/provider/api_response_handler.dart';
-import 'package:event_app/utils/apiendpoints/api_end_point.dart';
-import 'package:event_app/utils/storage/shared_preferences_helper.dart';
 import 'package:flutter/cupertino.dart';
 
 class GiftCardInnerProvider with ChangeNotifier {
@@ -83,14 +83,13 @@ class CreateGiftCardProvider with ChangeNotifier {
       paymentMethod['sub_option_key'] ?? "": paymentMethod['sub_option_value'] ?? "",*/
 
     final updateURL =
-        '$url?payment_method=${paymentMethod['payment_method']}&${paymentMethod['sub_option_key']}=${paymentMethod['sub_option_value']}&value=${selectedPrice}&recipient_email=${email}&recipient_name=$name&additional_notes=${notes}';
-
+        '$url?payment_method=${paymentMethod['payment_method']}&${paymentMethod['sub_option_key']}=${paymentMethod['sub_option_value']}&value=$selectedPrice&recipient_email=$email&recipient_name=$name&additional_notes=$notes';
 
     try {
-      final response = await _apiResponseHandler.postRequest(updateURL, headers: headers);
+      final response =
+          await _apiResponseHandler.postRequest(updateURL, headers: headers);
 
       if (response.statusCode == 200) {
-
         _error = null;
         return CheckoutPaymentModel.fromJson(json.decode(response.body));
       } else {

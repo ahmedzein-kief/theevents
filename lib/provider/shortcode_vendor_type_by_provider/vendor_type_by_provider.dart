@@ -1,8 +1,8 @@
 import 'dart:convert';
 
+import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/models/dashboard/user_by_type_model/view_all_items_models.dart';
 import 'package:event_app/provider/api_response_handler.dart';
-import 'package:event_app/utils/apiendpoints/api_end_point.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../../models/dashboard/vendor_by_type_models/vendot_type_by_model.dart';
@@ -35,7 +35,7 @@ class VendorByTypeProvider extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = json.decode(response.body);
-        VendorTypeBy vendorType = VendorTypeBy.fromJson(responseData);
+        final VendorTypeBy vendorType = VendorTypeBy.fromJson(responseData);
 
         vendorTypeData = vendorType.data;
         errorMessage = '';
@@ -46,7 +46,7 @@ class VendorByTypeProvider extends ChangeNotifier {
     } catch (error) {
       errorMessage = error.toString();
 
-      throw error;
+      rethrow;
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -62,7 +62,11 @@ class VendorByTypeProvider extends ChangeNotifier {
 
   List<Vendor> get vendors => _vendors;
 
-  Future<void> fetchVendors(BuildContext context, {required int typeId, String sortBy = 'default_sorting', int page = 1, int perPage = 12}) async {
+  Future<void> fetchVendors(BuildContext context,
+      {required int typeId,
+      String sortBy = 'default_sorting',
+      int page = 1,
+      int perPage = 12}) async {
     if (page == 1) {
       userLoader = true;
       notifyListeners();
@@ -72,7 +76,8 @@ class VendorByTypeProvider extends ChangeNotifier {
     }
 
     try {
-      final url = '${ApiEndpoints.userByTypeStores}?limit=$perPage&page=$page&type_id=$typeId&sort-by=$sortBy';
+      final url =
+          '${ApiEndpoints.userByTypeStores}?limit=$perPage&page=$page&type_id=$typeId&sort-by=$sortBy';
 
       final response = await _apiResponseHandler.getRequest(
         url,

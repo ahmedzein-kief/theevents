@@ -1,8 +1,8 @@
 import 'dart:async';
 
+import 'package:event_app/core/helper/mixins/media_query_mixin.dart';
+import 'package:event_app/core/styles/app_sizes.dart';
 import 'package:event_app/data/vendor/data/response/apis_status.dart';
-import 'package:event_app/utils/mixins_and_constants/constants.dart';
-import 'package:event_app/utils/mixins_and_constants/media_query_mixin.dart';
 import 'package:event_app/vendor/components/common_widgets/vendor_action_cell.dart';
 import 'package:event_app/vendor/components/common_widgets/vendor_data_list_builder.dart';
 import 'package:event_app/vendor/components/dialogs/delete_item_alert_dialog.dart';
@@ -14,8 +14,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../models/vendor_models/vendor_order_models/vendor_get_orders_model.dart';
 import '../../../core/styles/app_colors.dart';
+import '../../../models/vendor_models/vendor_order_models/vendor_get_orders_model.dart';
 import '../../Components/utils/utils.dart';
 import '../../components/data_tables/custom_data_tables.dart';
 import '../../components/vendor_tool_bar_widgets/vendor_tool_bar_widgets.dart';
@@ -28,11 +28,12 @@ class VendorOrdersView extends StatefulWidget {
   State<VendorOrdersView> createState() => _VendorOrdersViewState();
 }
 
-class _VendorOrdersViewState extends State<VendorOrdersView> with MediaQueryMixin {
+class _VendorOrdersViewState extends State<VendorOrdersView>
+    with MediaQueryMixin {
   /// To show modal progress hud
   bool _isProcessing = false;
 
-  setProcessing(bool value) {
+  void setProcessing(bool value) {
     setState(() {
       _isProcessing = value;
     });
@@ -44,24 +45,25 @@ class _VendorOrdersViewState extends State<VendorOrdersView> with MediaQueryMixi
   // scroll controller
   final ScrollController _scrollController = ScrollController();
 
-
   Future _onRefresh() async {
     try {
-      final provider = Provider.of<VendorGetOrdersViewModel>(context,listen: false);
+      final provider =
+          Provider.of<VendorGetOrdersViewModel>(context, listen: false);
 
       /// Clear list before fetching new data
       provider.clearList();
-      setState(() {});  // ✅ Force UI update immediately after clearing
+      setState(() {}); // ✅ Force UI update immediately after clearing
       await provider.vendorGetOrders(search: _searchController.text);
       setState(() {});
-    } catch (e) {
-    }
+    } catch (e) {}
   }
 
-  void _loadMoreData() async {
+  Future<void> _loadMoreData() async {
     // Load more data here
-    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent) {
-      final provider = Provider.of<VendorGetOrdersViewModel>(context, listen: false);
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent) {
+      final provider =
+          Provider.of<VendorGetOrdersViewModel>(context, listen: false);
       if (provider.apiResponse.status != ApiStatus.LOADING) {
         await provider.vendorGetOrders(search: _searchController.text);
       }
@@ -90,55 +92,59 @@ class _VendorOrdersViewState extends State<VendorOrdersView> with MediaQueryMixi
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.bgColor,
-      body: Utils.modelProgressHud(processing: _isProcessing, child: Utils.pageRefreshIndicator(onRefresh: _onRefresh, child: _buildUi(context))),
-    );
-  }
+  Widget build(BuildContext context) => Scaffold(
+        backgroundColor: AppColors.bgColor,
+        body: Utils.modelProgressHud(
+            processing: _isProcessing,
+            child: Utils.pageRefreshIndicator(
+                onRefresh: _onRefresh, child: _buildUi(context))),
+      );
 
-  Widget _buildUi(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: kSmallPadding),
-      child: Column(
-        children: [
-          kFormFieldSpace,
-          /// Toolbar
-          _toolBar(),
-          kSmallSpace,
-          Expanded(
-            child: Consumer<VendorGetOrdersViewModel>(
-              builder: (context, provider, _) {
-                /// current api status
-                final ApiStatus? apiStatus = provider.apiResponse.status;
-                if (apiStatus == ApiStatus.LOADING && provider.list.isEmpty) {
-                  return Utils.pageLoadingIndicator(context: context);
-                }
-                if (apiStatus == ApiStatus.ERROR) {
-                  return ListView(physics: AlwaysScrollableScrollPhysics(), children: [Utils.somethingWentWrong()]);
-                }
-                return Column(
-                  children: [
-                    VendorDataListBuilder(
-                      scrollController: _scrollController,
-                      listLength: provider.list.length,
-                      loadingMoreData: provider.apiResponse.status == ApiStatus.LOADING,
-                      contentBuilder: (context) => _buildRecordsList(provider: provider),
-                    ),
-                  ],
-                );
-              },
+  Widget _buildUi(BuildContext context) => Padding(
+        padding: EdgeInsets.symmetric(horizontal: kSmallPadding),
+        child: Column(
+          children: [
+            kFormFieldSpace,
+
+            /// Toolbar
+            _toolBar(),
+            kSmallSpace,
+            Expanded(
+              child: Consumer<VendorGetOrdersViewModel>(
+                builder: (context, provider, _) {
+                  /// current api status
+                  final ApiStatus? apiStatus = provider.apiResponse.status;
+                  if (apiStatus == ApiStatus.LOADING && provider.list.isEmpty) {
+                    return Utils.pageLoadingIndicator(context: context);
+                  }
+                  if (apiStatus == ApiStatus.ERROR) {
+                    return ListView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        children: [Utils.somethingWentWrong()]);
+                  }
+                  return Column(
+                    children: [
+                      VendorDataListBuilder(
+                        scrollController: _scrollController,
+                        listLength: provider.list.length,
+                        loadingMoreData:
+                            provider.apiResponse.status == ApiStatus.LOADING,
+                        contentBuilder: (context) =>
+                            _buildRecordsList(provider: provider),
+                      ),
+                    ],
+                  );
+                },
+              ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
+          ],
+        ),
+      );
 
-  Widget _buildRecordsList({required VendorGetOrdersViewModel provider}) {
-    return ListView.builder(
+  Widget _buildRecordsList({required VendorGetOrdersViewModel provider}) =>
+      ListView.builder(
         shrinkWrap: true,
-        physics: NeverScrollableScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
         itemCount: provider.list.length,
         itemBuilder: (context, index) {
           final record = provider.list[index];
@@ -149,132 +155,154 @@ class _VendorOrdersViewState extends State<VendorOrdersView> with MediaQueryMixi
                 // imageAddress: record.image.toString(),
                 status: record.status?.label?.toString() ?? '--',
                 statusTextStyle: TextStyle(
-                  color: AppColors.getOrderStatusColor(record.status?.value?.toString()),
+                  color: AppColors.getOrderStatusColor(
+                      record.status?.value?.toString()),
                 ),
                 title: record.customerName?.toString() ?? '--',
                 leading: Text(
                   record.id?.toString() ?? '--',
                   style: dataRowTextStyle(),
                 ),
-                subtitle: "${record.amountFormat?.toString() ?? '--'}",
+                subtitle: record.amountFormat?.toString() ?? '--',
                 actionCell: VendorActionCell(
-                    mainAxisSize: MainAxisSize.min,
-                    isDeleting: record.isDeleting,
-                    showEdit: true,
-                    onEdit: () => _onEditRecord(rowData: record),
-                    showDelete: true,
-                    onDelete: () => _onDeleteRecord(rowData: record)),
+                  mainAxisSize: MainAxisSize.min,
+                  isDeleting: record.isDeleting,
+                  showEdit: true,
+                  onEdit: () => _onEditRecord(rowData: record),
+                  showDelete: true,
+                  onDelete: () => _onDeleteRecord(rowData: record),
+                ),
               ),
               kSmallSpace,
             ],
           );
-        });
-  }
-
+        },
+      );
 
   /// Tool Bar
-  Widget _toolBar() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            Expanded(
-              child: VendorToolbarWidgets.vendorSearchWidget(
-                  onSearchTap: () async{
-                    if(_searchController.text.isNotEmpty){
+  Widget _toolBar() => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Expanded(
+                child: VendorToolbarWidgets.vendorSearchWidget(
+                  onSearchTap: () async {
+                    if (_searchController.text.isNotEmpty) {
                       await _onRefresh();
                     }
                   },
                   textEditingController: _searchController,
                   onChanged: (value) =>
-                    debouncedSearch<VendorGetOrdersViewModel>(
-                        context: context,
-                        value: value,
-                        providerGetter: (context)=>context.read<VendorGetOrdersViewModel>(),
-                        refreshFunction: _onRefresh,
-                    )
+                      debouncedSearch<VendorGetOrdersViewModel>(
+                    context: context,
+                    value: value,
+                    providerGetter: (context) =>
+                        context.read<VendorGetOrdersViewModel>(),
+                    refreshFunction: _onRefresh,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      );
+
+  void _onRowTap(
+      {required BuildContext context, required OrderRecords rowData}) {
+    /// showing through bottom sheet
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => BottomSheet(
+        // dragHandleColor: AppColors.lightCoral,
+        onClosing: () {},
+        builder: (context) => Container(
+          decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(kCardRadius)),
+          child: SafeArea(
+            child: Padding(
+              padding: EdgeInsets.all(kSmallPadding),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    buildRow('ID', rowData.id?.toString()),
+                    buildRow('Customer', rowData.customerName?.toString()),
+                    buildRow('Amount', rowData.amountFormat.toString()),
+                    buildRow('Tax Amount', rowData.taxAmountFormat.toString()),
+                    buildRow('Shipping Amount',
+                        rowData.shippingAmountFormat.toString()),
+                    buildRow(
+                        'Payment Method',
+                        (rowData.paymentMethod?.value == null)
+                            ? '--'
+                            : rowData.paymentMethod?.label?.toString()),
+                    buildStatusRow(
+                      label: 'Payment Status',
+                      buttonText: (rowData.paymentStatus?.value == null)
+                          ? '--'
+                          : rowData.paymentStatus!.label!,
+                      color: AppColors.getPaymentStatusColor(
+                          rowData.paymentStatus?.value),
+                      textColor: (rowData.paymentStatus?.value == null)
+                          ? AppColors.stoneGray
+                          : Colors.white,
+                    ),
+                    const Divider(
+                      thickness: 0.1,
+                    ),
+                    buildRow('Created At', rowData.createdAt.toString() ?? ''),
+                    buildStatusRow(
+                        label: 'Status',
+                        buttonText: rowData.status?.label?.toString() ?? '',
+                        color: AppColors.getOrderStatusColor(
+                            rowData.status?.value)),
+                  ],
+                ),
               ),
             ),
-
-          ],
+          ),
         ),
-      ],
+      ),
     );
   }
 
-  _onRowTap({required BuildContext context, required OrderRecords rowData}) {
-    /// showing through bottom sheet
-    showModalBottomSheet(
-        context: context,
-        builder: (context) {
-          return BottomSheet(
-              // dragHandleColor: AppColors.lightCoral,
-              onClosing: () {},
-              builder: (context) {
-                return Container(
-                  decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(kCardRadius)),
-                  child: SafeArea(
-                    child: Padding(
-                      padding: EdgeInsets.all(kSmallPadding),
-                      child: SingleChildScrollView(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            buildRow("ID", rowData.id?.toString()),
-                            buildRow("Customer", rowData.customerName?.toString()),
-                            buildRow("Amount", rowData.amountFormat.toString()),
-                            buildRow("Tax Amount", rowData.taxAmountFormat.toString()),
-                            buildRow("Shipping Amount", rowData.shippingAmountFormat.toString()),
-                            buildRow("Payment Method", (rowData.paymentMethod?.value == null) ? '--' : rowData.paymentMethod?.label?.toString()),
-                            buildStatusRow(
-                                label: "Payment Status",
-                                buttonText: (rowData.paymentStatus?.value == null) ? '--' : rowData.paymentStatus!.label!,
-                                color: AppColors.getPaymentStatusColor(rowData.paymentStatus?.value),
-                                textColor: (rowData.paymentStatus?.value == null) ? AppColors.stoneGray : Colors.white),
-                            Divider(
-                              thickness: 0.1,
-                            ),
-                            buildRow("Created At", rowData.createdAt.toString() ?? ''),
-                            buildStatusRow(label: "Status", buttonText: rowData.status?.label?.toString() ?? '', color: AppColors.getOrderStatusColor(rowData.status?.value)),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              });
-        });
-  }
-
-  _onDeleteRecord({required OrderRecords rowData}) async {
+  Future<void> _onDeleteRecord({required OrderRecords rowData}) async {
     deleteItemAlertDialog(
-        context: context,
-        onDelete: () async {
-          _setDeletionProcessing(rowData: rowData, processing: true);
-          Navigator.of(context).pop();
-          final VendorGetOrdersViewModel provider = context.read<VendorGetOrdersViewModel>();
-          final VendorDeleteOrderViewModel deleteOrderProvider = context.read<VendorDeleteOrderViewModel>();
+      context: context,
+      onDelete: () async {
+        _setDeletionProcessing(rowData: rowData, processing: true);
+        Navigator.of(context).pop();
+        final VendorGetOrdersViewModel provider =
+            context.read<VendorGetOrdersViewModel>();
+        final VendorDeleteOrderViewModel deleteOrderProvider =
+            context.read<VendorDeleteOrderViewModel>();
 
-          final bool result = await deleteOrderProvider.vendorDeleteOrder(orderID: rowData.id.toString(), context: context);
+        final bool result = await deleteOrderProvider.vendorDeleteOrder(
+            orderID: rowData.id.toString(), context: context);
 
-          /// Fetch the viewmodel for deleting the record
-          if (result) {
-            provider.removeElementFromList(id: rowData.id);
-            setState(() {});
-          }
-          _setDeletionProcessing(rowData: rowData, processing: false);
-        });
+        /// Fetch the viewmodel for deleting the record
+        if (result) {
+          provider.removeElementFromList(id: rowData.id);
+          setState(() {});
+        }
+        _setDeletionProcessing(rowData: rowData, processing: false);
+      },
+    );
   }
 
-  _onEditRecord({required OrderRecords rowData}) async {
-      /// Move to Edit Order View
-      Navigator.of(context).push(CupertinoPageRoute(builder: (context) => VendorEditOrderView(orderID: rowData.id.toString())));
+  Future<void> _onEditRecord({required OrderRecords rowData}) async {
+    /// Move to Edit Order View
+    Navigator.of(context).push(CupertinoPageRoute(
+        builder: (context) =>
+            VendorEditOrderView(orderID: rowData.id.toString())));
   }
 
   /// maintain the deletion indicator visibility by calling setState.
-  _setDeletionProcessing({required OrderRecords rowData, required bool processing}) {
+  void _setDeletionProcessing(
+      {required OrderRecords rowData, required bool processing}) {
     setState(() {
       rowData.isDeleting = processing;
       // setProcessing(processing); /// To show model progress hud. toggle this if don't want to show progress hud.

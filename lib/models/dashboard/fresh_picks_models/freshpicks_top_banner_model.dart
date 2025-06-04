@@ -1,7 +1,5 @@
 class TagsModel {
-  bool? error;
-  Data? data;
-  String? message; // Use String? instead of Null
+  // Use String? instead of Null
 
   TagsModel({this.error, this.data, this.message});
 
@@ -10,27 +8,22 @@ class TagsModel {
     data = json['data'] != null ? Data.fromJson(json['data']) : null;
     message = json['message'];
   }
+  bool? error;
+  Data? data;
+  String? message;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {};
-    data['error'] = this.error;
+    data['error'] = error;
     if (this.data != null) {
       data['data'] = this.data!.toJson();
     }
-    data['message'] = this.message;
+    data['message'] = message;
     return data;
   }
 }
 
 class Data {
-  String? view;
-  String? name;
-  String? slug;
-  String? image;
-  String? coverImage;
-  SeoMeta? seoMeta;
-  String? content;
-
   Data({
     this.view,
     this.name,
@@ -47,31 +40,34 @@ class Data {
     slug = json['slug'];
     image = json['image'];
     coverImage = json['cover_image'];
-    seoMeta = json['seo_meta'] != null ? SeoMeta.fromJson(json['seo_meta']) : null;
+    seoMeta =
+        json['seo_meta'] != null ? SeoMeta.fromJson(json['seo_meta']) : null;
     content = json['content'];
   }
+  String? view;
+  String? name;
+  String? slug;
+  String? image;
+  String? coverImage;
+  SeoMeta? seoMeta;
+  String? content;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {};
-    data['view'] = this.view;
-    data['name'] = this.name;
-    data['slug'] = this.slug;
-    data['image'] = this.image;
-    data['cover_image'] = this.coverImage;
-    if (this.seoMeta != null) {
-      data['seo_meta'] = this.seoMeta!.toJson();
+    data['view'] = view;
+    data['name'] = name;
+    data['slug'] = slug;
+    data['image'] = image;
+    data['cover_image'] = coverImage;
+    if (seoMeta != null) {
+      data['seo_meta'] = seoMeta!.toJson();
     }
-    data['content'] = this.content;
+    data['content'] = content;
     return data;
   }
 }
 
 class SeoMeta {
-  String? title;
-  String? description;
-  String? image; // Use String? instead of Null
-  String? robots;
-
   SeoMeta({
     this.title,
     this.description,
@@ -85,13 +81,17 @@ class SeoMeta {
     image = json['image'];
     robots = json['robots'];
   }
+  String? title;
+  String? description;
+  String? image; // Use String? instead of Null
+  String? robots;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {};
-    data['title'] = this.title;
-    data['description'] = this.description;
-    data['image'] = this.image;
-    data['robots'] = this.robots;
+    data['title'] = title;
+    data['description'] = description;
+    data['image'] = image;
+    data['robots'] = robots;
     return data;
   }
 }

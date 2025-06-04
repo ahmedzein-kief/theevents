@@ -5,19 +5,23 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../provider/shortcode_vendor_type_by_provider/vendor_type_by_provider.dart';
 import '../../../core/styles/custom_text_styles.dart';
 import '../../../core/widgets/custom_app_views/search_bar.dart';
 import '../../../core/widgets/user_by_type_view/custom_user_type_container.dart';
+import '../../../provider/shortcode_vendor_type_by_provider/vendor_type_by_provider.dart';
 import '../../filters/items_sorting.dart';
 
 class UserByTypeItemsScreen extends StatefulWidget {
+  const UserByTypeItemsScreen(
+      {super.key,
+      required this.title,
+      required this.typeId,
+      this.showText = true,
+      this.showIcon = true});
   final bool showText;
   final bool showIcon;
   final String title;
   final int typeId;
-
-  const UserByTypeItemsScreen({super.key, required this.title, required this.typeId, this.showText = true, this.showIcon = true});
 
   @override
   State<UserByTypeItemsScreen> createState() => _UserByTypeItemsScreenState();
@@ -50,14 +54,14 @@ class _UserByTypeItemsScreenState extends State<UserByTypeItemsScreen> {
         _isFetchingMore = true;
       });
 
-      await Provider.of<VendorByTypeProvider>(context, listen: false).fetchVendors(
+      await Provider.of<VendorByTypeProvider>(context, listen: false)
+          .fetchVendors(
         typeId: widget.typeId,
         context,
         sortBy: _selectedSortBy,
         perPage: 12,
         page: _currentPage,
       );
-    } catch (e) {
     } finally {
       setState(() {
         _isFetchingMore = false;
@@ -67,7 +71,9 @@ class _UserByTypeItemsScreenState extends State<UserByTypeItemsScreen> {
 
   void _onScroll() {
     if (_isFetchingMore) return;
-    if (_scrollController.offset >= _scrollController.position.maxScrollExtent && !_scrollController.position.outOfRange) {
+    if (_scrollController.offset >=
+            _scrollController.position.maxScrollExtent &&
+        !_scrollController.position.outOfRange) {
       _currentPage++;
       _isFetchingMore = true; // Prevent duplicate fetches
       fetchVendors();
@@ -79,7 +85,9 @@ class _UserByTypeItemsScreenState extends State<UserByTypeItemsScreen> {
       _selectedSortBy = newValue;
       _currentPage = 1;
       // REMOVE THIS LINE THEN LIST OF ITEMS ALL WILL BE PREFETCH
-      Provider.of<VendorByTypeProvider>(context, listen: false).vendors.clear(); // Clear existing products
+      Provider.of<VendorByTypeProvider>(context, listen: false)
+          .vendors
+          .clear(); // Clear existing products
       _isFetchingMore = false;
     });
     fetchVendors();
@@ -95,12 +103,14 @@ class _UserByTypeItemsScreenState extends State<UserByTypeItemsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    double screenHeight = MediaQuery.sizeOf(context).height;
-    double screenWidth = MediaQuery.sizeOf(context).width;
+    final double screenHeight = MediaQuery.sizeOf(context).height;
+    final double screenWidth = MediaQuery.sizeOf(context).width;
 
     return BaseAppBar(
       textBack: widget.showText ? AppStrings.back : null,
-      customBackIcon: widget.showIcon ? const Icon(Icons.arrow_back_ios_sharp, size: 16) : null,
+      customBackIcon: widget.showIcon
+          ? const Icon(Icons.arrow_back_ios_sharp, size: 16)
+          : null,
       firstRightIconPath: AppStrings.firstRightIconPath,
       secondRightIconPath: AppStrings.secondRightIconPath,
       thirdRightIconPath: AppStrings.thirdRightIconPath,
@@ -114,14 +124,16 @@ class _UserByTypeItemsScreenState extends State<UserByTypeItemsScreen> {
             child: Consumer<VendorByTypeProvider>(
               builder: (context, provider, child) {
                 if (provider.isLoading && _currentPage == 1) {
-                  return const Center(child: CircularProgressIndicator(color: Colors.black, strokeWidth: 0.5));
+                  return const Center(
+                      child: CircularProgressIndicator(
+                          color: Colors.black, strokeWidth: 0.5));
                 }
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     CustomSearchBar(
-                      hintText: "Search ${widget.title}",
+                      hintText: 'Search ${widget.title}',
                     ),
                     Expanded(
                       child: SingleChildScrollView(
@@ -141,26 +153,39 @@ class _UserByTypeItemsScreenState extends State<UserByTypeItemsScreen> {
                                   borderRadius: BorderRadius.circular(5),
                                   child: Image.network(
                                     fit: BoxFit.fill,
-                                    provider.vendorTypeData?.coverImage ?? "",
-                                    errorBuilder: (context, provider, error) {
-                                      return const SizedBox.shrink();
-                                    },
-                                    loadingBuilder: (context, child, loadingProcessor) {
-                                      if (loadingProcessor == null) return child;
+                                    provider.vendorTypeData?.coverImage ?? '',
+                                    errorBuilder: (context, provider, error) =>
+                                        const SizedBox.shrink(),
+                                    loadingBuilder:
+                                        (context, child, loadingProcessor) {
+                                      if (loadingProcessor == null)
+                                        return child;
                                       return Container(
-                                          height: 100,
-                                          width: double.infinity,
-                                          decoration: const BoxDecoration(gradient: LinearGradient(colors: [Colors.grey, Colors.black])),
-                                          child: const CupertinoActivityIndicator(color: Colors.black, radius: 10, animating: true));
+                                        height: 100,
+                                        width: double.infinity,
+                                        decoration: const BoxDecoration(
+                                            gradient: LinearGradient(colors: [
+                                          Colors.grey,
+                                          Colors.black
+                                        ])),
+                                        child: const CupertinoActivityIndicator(
+                                            color: Colors.black,
+                                            radius: 10,
+                                            animating: true),
+                                      );
                                     },
                                   ),
                                 ),
                               ),
                             ),
                             Padding(
-                              padding: EdgeInsets.only(top: screenHeight * 0.02, left: screenWidth * 0.04, right: screenWidth * 0.04),
+                              padding: EdgeInsets.only(
+                                  top: screenHeight * 0.02,
+                                  left: screenWidth * 0.04,
+                                  right: screenWidth * 0.04),
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 mainAxisSize: MainAxisSize.max,
                                 children: [
                                   Text(
@@ -183,50 +208,66 @@ class _UserByTypeItemsScreenState extends State<UserByTypeItemsScreen> {
                             Container(
                               // color: AppColors.infoBackGround,
                               child: Padding(
-                                padding: EdgeInsets.only(left: screenWidth * 0.02, right: screenWidth * 0.02, bottom: screenHeight * 0.02, top: screenHeight * 0.01),
+                                padding: EdgeInsets.only(
+                                    left: screenWidth * 0.02,
+                                    right: screenWidth * 0.02,
+                                    bottom: screenHeight * 0.02,
+                                    top: screenHeight * 0.01),
                                 child: GridView.builder(
-                                    shrinkWrap: true,
-                                    scrollDirection: Axis.vertical,
-                                    physics: const NeverScrollableScrollPhysics(),
-                                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: 3,
-                                      crossAxisSpacing: 8,
-                                      mainAxisSpacing: 20,
-                                      mainAxisExtent: screenHeight * 0.16,
-                                    ),
-                                    itemCount: provider.vendors.length + (_isFetchingMore ? 1 : 0),
-                                    itemBuilder: (context, index) {
-                                      if (_isFetchingMore && index == provider.vendors.length) {
-                                        return const Column(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          crossAxisAlignment: CrossAxisAlignment.center,
-                                          children: [
-                                            Center(
-                                              child: CircularProgressIndicator(
-                                                color: Colors.black,
-                                                strokeWidth: 0.5,
-                                              ),
+                                  shrinkWrap: true,
+                                  scrollDirection: Axis.vertical,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  gridDelegate:
+                                      SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 3,
+                                    crossAxisSpacing: 8,
+                                    mainAxisSpacing: 20,
+                                    mainAxisExtent: screenHeight * 0.16,
+                                  ),
+                                  itemCount: provider.vendors.length +
+                                      (_isFetchingMore ? 1 : 0),
+                                  itemBuilder: (context, index) {
+                                    if (_isFetchingMore &&
+                                        index == provider.vendors.length) {
+                                      return const Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Center(
+                                            child: CircularProgressIndicator(
+                                              color: Colors.black,
+                                              strokeWidth: 0.5,
                                             ),
-                                          ],
-                                        );
-                                      }
-                                      final vendor = provider.vendors[index];
-                                      return UserByTypeSeeAll(
-                                        imageUrl: vendor.avatar ?? '',
-                                        name: vendor.name ?? '',
-                                        textStyle: homeItemsStyle(context),
-                                        onTap: () {
-                                          /// User Type Details
-                                          Navigator.push(context, MaterialPageRoute(builder: (context) => UserTypeInnerPageScreen(typeId: widget.typeId, id: vendor.id)));
-                                        },
+                                          ),
+                                        ],
                                       );
-                                    }),
+                                    }
+                                    final vendor = provider.vendors[index];
+                                    return UserByTypeSeeAll(
+                                      imageUrl: vendor.avatar ?? '',
+                                      name: vendor.name ?? '',
+                                      textStyle: homeItemsStyle(context),
+                                      onTap: () {
+                                        /// User Type Details
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    UserTypeInnerPageScreen(
+                                                        typeId: widget.typeId,
+                                                        id: vendor.id)));
+                                      },
+                                    );
+                                  },
+                                ),
                               ),
-                            )
+                            ),
                           ],
                         ),
                       ),
-                    )
+                    ),
                   ],
                 );
               },

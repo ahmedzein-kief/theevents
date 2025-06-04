@@ -5,21 +5,20 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../core/styles/app_colors.dart';
+import '../styles/app_colors.dart';
 
 class ImagePickerHelper {
   final ImagePicker _picker = ImagePicker();
 
-  Future<File?> pickImage(BuildContext context) async {
-    return showModalBottomSheet<File?>(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(0),
+  Future<File?> pickImage(BuildContext context) async =>
+      showModalBottomSheet<File?>(
+        context: context,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(0),
+          ),
         ),
-      ),
-      builder: (BuildContext context) {
-        return Column(
+        builder: (BuildContext context) => Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             // Cancel button at the top-right corner
@@ -40,10 +39,13 @@ class ImagePickerHelper {
                 Column(
                   children: [
                     IconButton(
-                      icon: Icon(CupertinoIcons.photo, size: 20, color: AppColors.peachyPink),
+                      icon: const Icon(CupertinoIcons.photo,
+                          size: 20, color: AppColors.peachyPink),
                       onPressed: () async {
-                        final XFile? image = await _picker.pickImage(source: ImageSource.gallery, imageQuality: 50);
-                        Navigator.of(context).pop(image != null ? File(image.path) : null);
+                        final XFile? image = await _picker.pickImage(
+                            source: ImageSource.gallery, imageQuality: 50);
+                        Navigator.of(context)
+                            .pop(image != null ? File(image.path) : null);
                       },
                     ),
                     const Text('Gallery'),
@@ -59,10 +61,13 @@ class ImagePickerHelper {
                 Column(
                   children: [
                     IconButton(
-                      icon: Icon(CupertinoIcons.camera, size: 20, color: AppColors.peachyPink),
+                      icon: const Icon(CupertinoIcons.camera,
+                          size: 20, color: AppColors.peachyPink),
                       onPressed: () async {
-                        final XFile? image = await _picker.pickImage(source: ImageSource.camera, imageQuality: 50);
-                        Navigator.of(context).pop(image != null ? File(image.path) : null);
+                        final XFile? image = await _picker.pickImage(
+                            source: ImageSource.camera, imageQuality: 50);
+                        Navigator.of(context)
+                            .pop(image != null ? File(image.path) : null);
                       },
                     ),
                     const Text('Camera'),
@@ -73,10 +78,8 @@ class ImagePickerHelper {
             const SizedBox(height: 20),
             // Optional padding at the bottom of the sheet
           ],
-        );
-      },
-    );
-  }
+        ),
+      );
 
   /// -----------------------------------  SAVE IMAGE ----------------------------------------------------
   Future<void> saveImageToPreferences(String path) async {

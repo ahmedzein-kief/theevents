@@ -1,8 +1,4 @@
 class HomeBannerModels {
-  bool? error;
-  Data? data;
-  String? message;
-
   HomeBannerModels({this.error, this.data, this.message});
 
   HomeBannerModels.fromJson(Map<String, dynamic> json) {
@@ -10,6 +6,9 @@ class HomeBannerModels {
     data = json['data'] != null ? Data.fromJson(json['data']) : null;
     message = json['message'];
   }
+  bool? error;
+  Data? data;
+  String? message;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
@@ -23,10 +22,6 @@ class HomeBannerModels {
 }
 
 class Data {
-  String? name;
-  String? description;
-  List<Slides>? slides;
-
   Data({this.name, this.description, this.slides});
 
   Data.fromJson(Map<String, dynamic> json) {
@@ -39,6 +34,9 @@ class Data {
       });
     }
   }
+  String? name;
+  String? description;
+  List<Slides>? slides;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
@@ -52,15 +50,6 @@ class Data {
 }
 
 class Slides {
-  int? id;
-  String? title;
-  dynamic image;
-  String? tabletImage;
-  String? mobileImage;
-  String? link;
-  String? description;
-  int? order;
-
   Slides({
     this.id,
     this.title,
@@ -82,6 +71,14 @@ class Slides {
     description = json['description'];
     order = json['order'];
   }
+  int? id;
+  String? title;
+  dynamic image;
+  String? tabletImage;
+  String? mobileImage;
+  String? link;
+  String? description;
+  int? order;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};

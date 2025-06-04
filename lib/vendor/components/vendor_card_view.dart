@@ -3,6 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class VendorCard extends StatelessWidget {
+  const VendorCard({
+    super.key,
+    required this.title,
+    required this.subtitle,
+    required this.actionTextHere,
+    required this.containerColor,
+    required this.createText,
+    this.actionText = 'here',
+    this.onTap,
+    this.iconData = Icons.check, // Default icon
+    this.iconColor = Colors.white, // Default icon color
+  });
   final String title;
   final String subtitle;
   final String actionText;
@@ -15,22 +27,9 @@ class VendorCard extends StatelessWidget {
   final IconData iconData;
   final Color iconColor;
 
-  const VendorCard({
-    Key? key,
-    required this.title,
-    required this.subtitle,
-    required this.actionTextHere,
-    required this.containerColor,
-    required this.createText,
-    this.actionText = 'here',
-    this.onTap,
-    this.iconData = Icons.check, // Default icon
-    this.iconColor = Colors.white, // Default icon color
-  }) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
+    final double screenWidth = MediaQuery.of(context).size.width;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -40,7 +39,7 @@ class VendorCard extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(15),
-            border: Border(
+            border: const Border(
               left: BorderSide(color: Colors.blue, width: 3),
             ),
             boxShadow: [
@@ -48,7 +47,7 @@ class VendorCard extends StatelessWidget {
                 color: Colors.grey.withOpacity(0.5),
                 spreadRadius: 5,
                 blurRadius: 7,
-                offset: Offset(0, 3), // changes position of shadow
+                offset: const Offset(0, 3), // changes position of shadow
               ),
             ],
           ),
@@ -67,29 +66,35 @@ class VendorCard extends StatelessWidget {
                       ),
                       child: Icon(iconData, size: 16, color: iconColor),
                     ),
-                    SizedBox(width: 5),
+                    const SizedBox(width: 5),
                     Expanded(
                       child: Text(
                         title,
                         maxLines: 2,
                         softWrap: true,
-                        style: GoogleFonts.inter(fontSize: 15, textStyle: const TextStyle(overflow: TextOverflow.ellipsis), color: Colors.green, fontWeight: FontWeight.w600),
+                        style: GoogleFonts.inter(
+                            fontSize: 15,
+                            textStyle: const TextStyle(
+                                overflow: TextOverflow.ellipsis),
+                            color: Colors.green,
+                            fontWeight: FontWeight.w600),
                       ),
                     ),
                   ],
                 ),
-                SizedBox.square(dimension: 15),
+                const SizedBox.square(dimension: 15),
                 Align(
                   alignment: Alignment.topLeft,
                   child: Text(
                     subtitle,
                     style: GoogleFonts.inter(
-                        fontSize: 10,
-                        textStyle: const TextStyle(
-                          overflow: TextOverflow.visible,
-                        ),
-                        color: Colors.green,
-                        fontWeight: FontWeight.w600),
+                      fontSize: 10,
+                      textStyle: const TextStyle(
+                        overflow: TextOverflow.visible,
+                      ),
+                      color: Colors.green,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
                 Container(
@@ -97,7 +102,7 @@ class VendorCard extends StatelessWidget {
                   height: 1,
                   width: screenWidth,
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Row(
                   children: [
                     Expanded(

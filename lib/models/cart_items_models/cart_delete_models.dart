@@ -1,10 +1,10 @@
 /// ---------   CART DELETE RESPONSE --------------------------------
+library;
+
 import '../../models/cart_items_models/cart_items_models.dart';
 
 class CartDeleteResponse {
-  final dynamic error; // Dynamic type
-  final dynamic data; // Dynamic type
-  final dynamic message; // Dynamic type
+  // Dynamic type
 
   CartDeleteResponse({
     this.error,
@@ -14,7 +14,10 @@ class CartDeleteResponse {
 
   // Safely check for nulls in the json
   factory CartDeleteResponse.fromJson(Map<String, dynamic> json) {
-    CartData? data = (json['data'] != null && json['data'] is Map<String, dynamic>) ? CartData.fromJson(json['data']) : null;
+    final CartData? data =
+        (json['data'] != null && json['data'] is Map<String, dynamic>)
+            ? CartData.fromJson(json['data'])
+            : null;
 
     return CartDeleteResponse(
       error: json['error'],
@@ -22,20 +25,22 @@ class CartDeleteResponse {
       message: json['message'],
     );
   }
+  final dynamic error; // Dynamic type
+  final dynamic data; // Dynamic type
+  final dynamic message;
 }
 
 class CartData {
-  final int? count; // Nullable
-  final String? totalPrice; // Nullable
-  final List<Product>? content; // Nullable
+  // Nullable
 
   CartData({this.count, this.totalPrice, this.content});
 
-  factory CartData.fromJson(Map<String, dynamic> json) {
-    return CartData(
-      count: json['count'],
-      totalPrice: json['total_price'],
-      content: [],
-    );
-  }
+  factory CartData.fromJson(Map<String, dynamic> json) => CartData(
+        count: json['count'],
+        totalPrice: json['total_price'],
+        content: [],
+      );
+  final int? count; // Nullable
+  final String? totalPrice; // Nullable
+  final List<Product>? content;
 }

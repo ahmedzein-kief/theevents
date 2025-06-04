@@ -1,22 +1,21 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider_plus/carousel_slider_plus.dart';
-import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/core/constants/app_strings.dart';
+import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/core/widgets/custom_home_views/custom_home_text_row.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/widgets/custom_auto_slider_home.dart';
 import '../../../provider/home_shortcode_provider/featured_brands_items_provider.dart';
 import '../../../provider/home_shortcode_provider/simple_slider_provider.dart';
-import '../../../core/widgets/custom_auto_slider_home.dart';
 import '../shortcode_fresh_picks/e_com_tags_screens.dart';
 import '../shortcode_fresh_picks/fresh_picks_detail_screen.dart';
 
 class SliderTwoTagsWithAdScreen extends StatefulWidget {
-  final dynamic data;
-
   const SliderTwoTagsWithAdScreen({super.key, required this.data});
+  final dynamic data;
 
   @override
   _SimpleSliderState createState() => _SimpleSliderState();
@@ -41,18 +40,18 @@ class _SimpleSliderState extends State<SliderTwoTagsWithAdScreen> {
     }
   }
 
-  List<int> extractSlotIds(String slotString) {
-    return slotString.split(',').map((e) => int.parse(e.trim())).toList();
-  }
+  List<int> extractSlotIds(String slotString) =>
+      slotString.split(',').map((e) => int.parse(e.trim())).toList();
 
   Future<void> fetchSliderData() async {
-    await Provider.of<BottomSliderProvider>(context, listen: false).fetchSliders(data: widget.data, context);
+    await Provider.of<BottomSliderProvider>(context, listen: false)
+        .fetchSliders(data: widget.data, context);
   }
 
   @override
   Widget build(BuildContext context) {
-    double screenHeight = MediaQuery.sizeOf(context).height;
-    double screenWidth = MediaQuery.sizeOf(context).width;
+    final double screenHeight = MediaQuery.sizeOf(context).height;
+    final double screenWidth = MediaQuery.sizeOf(context).width;
 
     final sliderProvider = Provider.of<BottomSliderProvider>(context);
     final homeBanner = sliderProvider.homeBanner;
@@ -66,7 +65,11 @@ class _SimpleSliderState extends State<SliderTwoTagsWithAdScreen> {
             title: widget.data['attributes']['title'],
             seeAll: AppStrings.viewAll,
             onTap: () {
-              Navigator.push(context, CupertinoPageRoute(builder: (context) => FreshPicksDetailScreen(data: widget.data['attributes']['title'])));
+              Navigator.push(
+                  context,
+                  CupertinoPageRoute(
+                      builder: (context) => FreshPicksDetailScreen(
+                          data: widget.data['attributes']['title'])));
             },
           ),
         ),
@@ -81,113 +84,108 @@ class _SimpleSliderState extends State<SliderTwoTagsWithAdScreen> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(8),
                   child: CarouselSlider(
-                      items: slides.map((slide) {
-                        if (slide.image != null) {
-                          return CachedNetworkImage(
-                            imageUrl: slide.image ?? '',
-                            alignment: Alignment.center,
-                            fit: BoxFit.fill,
-                            errorListener: (object){
-                              Image.asset(
-                                'assets/placeholder.png', // Replace with your actual image path
-                                fit: BoxFit.cover, // Adjust fit if needed
-                                height: MediaQuery.sizeOf(context).height * 0.28,
-                                width: double.infinity,
-                              );
-                            },
-
-                            errorWidget: (context,object,error){
-                              return   Image.asset(
-                                'assets/placeholder.png', // Replace with your actual image path
-                                fit: BoxFit.cover, // Adjust fit if needed
-                                height: MediaQuery.sizeOf(context).height * 0.28,
-                                width: double.infinity,
-                              );
-                            },
-                            placeholder: (BuildContext context, String url) {
-                              return Container(
-                                height: MediaQuery.sizeOf(context).height * 0.28,
-                                width: double.infinity,
-                                color: Colors.blueGrey[300], // Background color
-                                child: Stack(
-                                  alignment: Alignment.center,
-                                  children: [
-                                    Image.asset(
-                                      'assets/placeholder.png', // Replace with your actual image path
-                                      fit: BoxFit.cover, // Adjust fit if needed
-                                      height: MediaQuery.sizeOf(context).height * 0.28,
-                                      width: double.infinity,
-                                    ),
-                                    const CupertinoActivityIndicator(
-                                      radius: 16, // Adjust size of the loader
-                                      animating: true,
-                                    ),
-                                  ],
+                    items: slides.map((slide) {
+                      if (slide.image != null) {
+                        return CachedNetworkImage(
+                          imageUrl: slide.image ?? '',
+                          alignment: Alignment.center,
+                          fit: BoxFit.fill,
+                          errorListener: (object) {
+                            Image.asset(
+                              'assets/placeholder.png', // Replace with your actual image path
+                              fit: BoxFit.cover, // Adjust fit if needed
+                              height: MediaQuery.sizeOf(context).height * 0.28,
+                              width: double.infinity,
+                            );
+                          },
+                          errorWidget: (context, object, error) => Image.asset(
+                            'assets/placeholder.png', // Replace with your actual image path
+                            fit: BoxFit.cover, // Adjust fit if needed
+                            height: MediaQuery.sizeOf(context).height * 0.28,
+                            width: double.infinity,
+                          ),
+                          placeholder: (BuildContext context, String url) =>
+                              Container(
+                            height: MediaQuery.sizeOf(context).height * 0.28,
+                            width: double.infinity,
+                            color: Colors.blueGrey[300], // Background color
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                Image.asset(
+                                  'assets/placeholder.png', // Replace with your actual image path
+                                  fit: BoxFit.cover, // Adjust fit if needed
+                                  height:
+                                      MediaQuery.sizeOf(context).height * 0.28,
+                                  width: double.infinity,
                                 ),
-                              );
-                            },
-                          );
-                        } else {
-                          return CachedNetworkImage(
-                            imageUrl: "assets/containing.png",
-                            alignment: Alignment.center,
-                            fit: BoxFit.fill,
-                            width: screenWidth,
-                            errorListener: (object){
-
-                              Image.asset(
-                                'assets/placeholder.png', // Replace with your actual image path
-                                fit: BoxFit.cover, // Adjust fit if needed
-                                height: MediaQuery.sizeOf(context).height * 0.28,
-                                width: double.infinity,
-                              );
-                            },
-                            errorWidget: (context,object,error){
-
-                              return Image.asset(
-                                'assets/placeholder.png', // Replace with your actual image path
-                                fit: BoxFit.cover, // Adjust fit if needed
-                                height: MediaQuery.sizeOf(context).height * 0.28,
-                                width: double.infinity,
-                              );
-                            },
-                            placeholder: (BuildContext context, String url) {
-                              return Container(
-                                height: MediaQuery.sizeOf(context).height * 0.28,
-                                width: double.infinity,
-                                color: Colors.blueGrey[300], // Background color
-                                child: Stack(
-                                  alignment: Alignment.center,
-                                  children: [
-                                    Image.asset(
-                                      'assets/placeholder.png', // Replace with your actual image path
-                                      fit: BoxFit.cover, // Adjust fit if needed
-                                      height: MediaQuery.sizeOf(context).height * 0.28,
-                                      width: double.infinity,
-                                    ),
-                                    const CupertinoActivityIndicator(
-                                      radius: 16, // Adjust size of the loader
-                                      animating: true,
-                                    ),
-                                  ],
+                                const CupertinoActivityIndicator(
+                                  radius: 16, // Adjust size of the loader
+                                  animating: true,
                                 ),
-                              );
-                            },
-                          );
-                        }
-                      }).toList(),
-                      // carouselController: carouselController,
-                      options: CarouselOptions(
-                          scrollPhysics: const BouncingScrollPhysics(),
-                          autoPlay: true,
-                          // aspectRatio: 1.9,
-                          aspectRatio: screenWidth / (screenHeight / 6),
-                          viewportFraction: 1,
-                          onPageChanged: (index, reason) {
-                            setState(() {
-                              currentIndexCarousel = index;
-                            });
-                          })),
+                              ],
+                            ),
+                          ),
+                        );
+                      } else {
+                        return CachedNetworkImage(
+                          imageUrl: 'assets/containing.png',
+                          alignment: Alignment.center,
+                          fit: BoxFit.fill,
+                          width: screenWidth,
+                          errorListener: (object) {
+                            Image.asset(
+                              'assets/placeholder.png', // Replace with your actual image path
+                              fit: BoxFit.cover, // Adjust fit if needed
+                              height: MediaQuery.sizeOf(context).height * 0.28,
+                              width: double.infinity,
+                            );
+                          },
+                          errorWidget: (context, object, error) => Image.asset(
+                            'assets/placeholder.png', // Replace with your actual image path
+                            fit: BoxFit.cover, // Adjust fit if needed
+                            height: MediaQuery.sizeOf(context).height * 0.28,
+                            width: double.infinity,
+                          ),
+                          placeholder: (BuildContext context, String url) =>
+                              Container(
+                            height: MediaQuery.sizeOf(context).height * 0.28,
+                            width: double.infinity,
+                            color: Colors.blueGrey[300], // Background color
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                Image.asset(
+                                  'assets/placeholder.png', // Replace with your actual image path
+                                  fit: BoxFit.cover, // Adjust fit if needed
+                                  height:
+                                      MediaQuery.sizeOf(context).height * 0.28,
+                                  width: double.infinity,
+                                ),
+                                const CupertinoActivityIndicator(
+                                  radius: 16, // Adjust size of the loader
+                                  animating: true,
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }
+                    }).toList(),
+                    // carouselController: carouselController,
+                    options: CarouselOptions(
+                      scrollPhysics: const BouncingScrollPhysics(),
+                      autoPlay: true,
+                      // aspectRatio: 1.9,
+                      aspectRatio: screenWidth / (screenHeight / 6),
+                      viewportFraction: 1,
+                      onPageChanged: (index, reason) {
+                        setState(() {
+                          currentIndexCarousel = index;
+                        });
+                      },
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -198,35 +196,45 @@ class _SimpleSliderState extends State<SliderTwoTagsWithAdScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
-            children: slides.asMap().entries.map((entry) {
-              return Container(
-                width: currentIndexCarousel == entry.key ? 21 : 7,
-                height: 7,
-                margin: const EdgeInsets.symmetric(horizontal: 4),
-                decoration: BoxDecoration(boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.3), // Shadow color
-                    spreadRadius: 1, // Spread radius
-                    blurRadius: 2, // Blur radius
-                    offset: const Offset(0, 01), // Offset for shadow position
+            children: slides
+                .asMap()
+                .entries
+                .map(
+                  (entry) => Container(
+                    width: currentIndexCarousel == entry.key ? 21 : 7,
+                    height: 7,
+                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                    decoration: BoxDecoration(
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.3), // Shadow color
+                          spreadRadius: 1, // Spread radius
+                          blurRadius: 2, // Blur radius
+                          offset:
+                              const Offset(0, 01), // Offset for shadow position
+                        ),
+                      ],
+                      borderRadius: BorderRadius.circular(14),
+                      color: currentIndexCarousel == entry.key
+                          ? Colors.white.withOpacity(0.7)
+                          : Colors.white.withOpacity(0.7),
+                    ),
                   ),
-                ], borderRadius: BorderRadius.circular(14), color: currentIndexCarousel == entry.key ? Colors.white.withOpacity(0.7) : Colors.white.withOpacity(0.7)),
-              );
-            }).toList(),
+                )
+                .toList(),
           ),
         ),
         // _brandsItems(context)
         BrandsSlots(slotIds: slotIds1),
-        if (slotIds2 != null) BrandsSlots(slotIds: slotIds2!)
+        if (slotIds2 != null) BrandsSlots(slotIds: slotIds2!),
       ],
     );
   }
 }
 
 class BrandsSlots extends StatefulWidget {
+  const BrandsSlots({super.key, required this.slotIds});
   final List<int> slotIds;
-
-  BrandsSlots({required this.slotIds});
 
   @override
   State<BrandsSlots> createState() => _BrandsSliderState();
@@ -234,7 +242,8 @@ class BrandsSlots extends StatefulWidget {
 
 class _BrandsSliderState extends State<BrandsSlots> {
   Future<void> fetchBrandsSliderData() async {
-    await Provider.of<FeaturedBrandsItemsProvider>(context, listen: false).fetchHomeBrands(widget.slotIds, context);
+    await Provider.of<FeaturedBrandsItemsProvider>(context, listen: false)
+        .fetchHomeBrands(widget.slotIds, context);
   }
 
   @override
@@ -252,9 +261,12 @@ class _BrandsSliderState extends State<BrandsSlots> {
     return Consumer<FeaturedBrandsItemsProvider>(
       builder: (context, provider, child) {
         if (provider.isLoading) {
-          return const Center(child: CircularProgressIndicator(color: Colors.black, strokeWidth: 0.5));
+          return const Center(
+              child: CircularProgressIndicator(
+                  color: Colors.black, strokeWidth: 0.5));
         } else if (provider.hasError) {
-          return Center(child: Text('Error fetching data: ${provider.hasError}'));
+          return Center(
+              child: Text('Error fetching data: ${provider.hasError}'));
         } else if (provider.homeBrandsTypes != null) {
           return Column(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -274,19 +286,28 @@ class _BrandsSliderState extends State<BrandsSlots> {
                   ),
                   child: AutoScrollingSlider(
                     itemWidth: 114,
-                    children: provider.homeBrandsTypes!.data!.records!.asMap().entries.map((entry) {
-                      int index = entry.key;
-                      var record = entry.value;
+                    children: provider.homeBrandsTypes!.data!.records!
+                        .asMap()
+                        .entries
+                        .map((entry) {
+                      final int index = entry.key;
+                      final record = entry.value;
                       return GestureDetector(
                         onTap: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => EComTagsScreens(slug: record.slug)));
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      EComTagsScreens(slug: record.slug)));
                         },
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Container(
-                              padding: EdgeInsets.only(bottom: screenHeight * 0.01, top: screenHeight * 0.01),
+                              padding: EdgeInsets.only(
+                                  bottom: screenHeight * 0.01,
+                                  top: screenHeight * 0.01),
                               decoration: BoxDecoration(
                                 color: Theme.of(context).colorScheme.primary,
                               ),
@@ -299,45 +320,55 @@ class _BrandsSliderState extends State<BrandsSlots> {
                                     width: 110,
                                     height: 80,
                                     fit: BoxFit.contain,
-                                    errorListener: (object){
-
+                                    errorListener: (object) {
                                       Image.asset(
                                         'assets/placeholder.png', // Replace with your actual image path
-                                        fit: BoxFit.cover, // Adjust fit if needed
-                                        height: MediaQuery.sizeOf(context).height * 0.28,
+                                        fit: BoxFit
+                                            .cover, // Adjust fit if needed
+                                        height:
+                                            MediaQuery.sizeOf(context).height *
+                                                0.28,
                                         width: double.infinity,
                                       );
                                     },
-                                    errorWidget: (context,object,error){
-                                      return Image.asset(
-                                        'assets/placeholder.png', // Replace with your actual image path
-                                        fit: BoxFit.cover, // Adjust fit if needed
-                                        height: MediaQuery.sizeOf(context).height * 0.28,
-                                        width: double.infinity,
-                                      );
-                                    },
-                                    placeholder: (BuildContext context, String url) {
-                                      return Container(
-                                        height: MediaQuery.sizeOf(context).height * 0.28,
-                                        width: double.infinity,
-                                        color: Colors.blueGrey[300], // Background color
-                                        child: Stack(
-                                          alignment: Alignment.center,
-                                          children: [
-                                            Image.asset(
-                                              'assets/placeholder.png', // Replace with your actual image path
-                                              fit: BoxFit.cover, // Adjust fit if needed
-                                              height: MediaQuery.sizeOf(context).height * 0.28,
-                                              width: double.infinity,
-                                            ),
-                                            const CupertinoActivityIndicator(
-                                              radius: 16, // Adjust size of the loader
-                                              animating: true,
-                                            ),
-                                          ],
-                                        ),
-                                      );
-                                    },
+                                    errorWidget: (context, object, error) =>
+                                        Image.asset(
+                                      'assets/placeholder.png', // Replace with your actual image path
+                                      fit: BoxFit.cover, // Adjust fit if needed
+                                      height:
+                                          MediaQuery.sizeOf(context).height *
+                                              0.28,
+                                      width: double.infinity,
+                                    ),
+                                    placeholder:
+                                        (BuildContext context, String url) =>
+                                            Container(
+                                      height:
+                                          MediaQuery.sizeOf(context).height *
+                                              0.28,
+                                      width: double.infinity,
+                                      color: Colors
+                                          .blueGrey[300], // Background color
+                                      child: Stack(
+                                        alignment: Alignment.center,
+                                        children: [
+                                          Image.asset(
+                                            'assets/placeholder.png', // Replace with your actual image path
+                                            fit: BoxFit
+                                                .cover, // Adjust fit if needed
+                                            height: MediaQuery.sizeOf(context)
+                                                    .height *
+                                                0.28,
+                                            width: double.infinity,
+                                          ),
+                                          const CupertinoActivityIndicator(
+                                            radius:
+                                                16, // Adjust size of the loader
+                                            animating: true,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),

@@ -1,13 +1,17 @@
 import 'dart:convert';
 
-VendorUpdateShipmentStatusModel vendorUpdateShipmentStatusModelFromJson(String str) => VendorUpdateShipmentStatusModel.fromJson(json.decode(str));
+VendorUpdateShipmentStatusModel vendorUpdateShipmentStatusModelFromJson(
+        String str) =>
+    VendorUpdateShipmentStatusModel.fromJson(json.decode(str));
 
-String vendorUpdateShipmentStatusModelToJson(VendorUpdateShipmentStatusModel data) => json.encode(data.toJson());
+String vendorUpdateShipmentStatusModelToJson(
+        VendorUpdateShipmentStatusModel data) =>
+    json.encode(data.toJson());
 
 class VendorUpdateShipmentStatusModel {
   VendorUpdateShipmentStatusModel({
     bool? error,
-    dynamic data,
+    data,
     String? message,
   }) {
     _error = error;
@@ -15,7 +19,7 @@ class VendorUpdateShipmentStatusModel {
     _message = message;
   }
 
-  VendorUpdateShipmentStatusModel.fromJson(dynamic json) {
+  VendorUpdateShipmentStatusModel.fromJson(json) {
     _error = json['error'];
     _data = json['data'];
     _message = json['message'];

@@ -1,18 +1,15 @@
 import 'dart:convert';
-import 'dart:developer';
 
-import 'package:event_app/models/vendor_models/common_models/common_post_request_model.dart';
+import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/provider/api_response_handler.dart';
-import 'package:event_app/provider/customer/Repository/customer_repository.dart';
-import 'package:event_app/utils/apiendpoints/api_end_point.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
+import '../../core/services/shared_preferences_helper.dart';
+import '../../core/utils/custom_toast.dart';
 import '../../models/cartItems_models/cart_item_models.dart';
 import '../../models/cart_items_models/cart_items_models.dart';
-import '../../core/utils/custom_toast.dart';
-import '../../utils/storage/shared_preferences_helper.dart';
 import '../auth_provider/get_user_provider.dart';
 
 class CartProvider with ChangeNotifier {
@@ -22,7 +19,7 @@ class CartProvider with ChangeNotifier {
 
   bool get isLoading => _isLoading;
 
-  http.Response? _checkoutResponse = null;
+  http.Response? _checkoutResponse;
 
   AddToCartResponse? _addToCartResponse;
 
@@ -38,38 +35,38 @@ class CartProvider with ChangeNotifier {
         const {}, // Default to an empty map
     List<Map<String, dynamic>?> selectedAttributes =
         const [], // Default to an empty list
-  }) async
-  {
+  }) async {
     _isLoading = true;
     notifyListeners();
     final token = await SecurePreferencesUtil.getToken();
-    final url = '${ApiEndpoints.addToCart}';
+    const url = ApiEndpoints.addToCart;
 
     final headers = {
       'Authorization': 'Bearer $token',
       'Content-Type': 'application/json',
     };
 
-    Map<String, dynamic> postDataMap = {
-      "id": productID,
-      "qty": 1,
+    final Map<String, dynamic> postDataMap = {
+      'id': productID,
+      'qty': 1,
     };
     if (selectedExtraOptions.isNotEmpty) {
-      postDataMap["options"] = selectedExtraOptions;
+      postDataMap['options'] = selectedExtraOptions;
     }
 
     if (selectedAttributes.isNotEmpty) {
-      selectedAttributes.forEach(
-        (attributesValue) {
-          postDataMap[attributesValue?['attribute_key_name']] =
-              attributesValue?['attribute_id'];
-        },
-      );
+      for (final attributesValue in selectedAttributes) {
+        postDataMap[attributesValue?['attribute_key_name']] =
+            attributesValue?['attribute_id'];
+      }
     }
 
     try {
-      final response = await _apiResponseHandler.postRequest(url,
-          headers: headers, bodyString: jsonEncode(postDataMap));
+      final response = await _apiResponseHandler.postRequest(
+        url,
+        headers: headers,
+        bodyString: jsonEncode(postDataMap),
+      );
 
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
@@ -81,15 +78,21 @@ class CartProvider with ChangeNotifier {
 
         // Check if there's no error in the response
         if (!_addToCartResponse!.error) {
-          CustomSnackbar.showSuccess(context, _addToCartResponse?.message.replaceAll('&amp;', '&') ?? "Item added to cart successfully");
+          CustomSnackbar.showSuccess(
+              context,
+              _addToCartResponse?.message.replaceAll('&amp;', '&') ??
+                  'Item added to cart successfully');
         } else {
-          CustomSnackbar.showError(context, _addToCartResponse?.message ?? 'Failed to add item to cart');
+          CustomSnackbar.showError(context,
+              _addToCartResponse?.message ?? 'Failed to add item to cart');
         }
         _isLoading = false;
         notifyListeners();
       } else {
         CustomSnackbar.showError(
-            context, json.decode(response.body)['message']);
+          context,
+          json.decode(response.body)['message'],
+        );
         _isLoading = false;
         notifyListeners();
       }
@@ -108,15 +111,18 @@ class CartProvider with ChangeNotifier {
   bool _deletingCartItem = false;
   bool get deletingCartItem => _deletingCartItem;
   Future<void> deleteCartListItem(
-      String rowId, BuildContext context, String token) async
-  {
+    String rowId,
+    BuildContext context,
+    String token,
+  ) async {
     _deletingCartItem = true;
     notifyListeners();
 
     final url = '${ApiEndpoints.cartRemove}$rowId';
     final headers = {'Authorization': 'Bearer $token'};
 
-    final response = await _apiResponseHandler.postRequest(url, headers: headers);
+    final response =
+        await _apiResponseHandler.postRequest(url, headers: headers);
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -147,9 +153,8 @@ class CartProvider with ChangeNotifier {
     _cartLoading = true;
     notifyListeners();
     try {
-      final url = ApiEndpoints.cartItems;
-      final headers = {'Authorization': '$token'};
-
+      const url = ApiEndpoints.cartItems;
+      final headers = {'Authorization': token};
 
       final response = await _apiResponseHandler.getRequest(
         url,
@@ -174,16 +179,18 @@ class CartProvider with ChangeNotifier {
     }
   }
 
-
-  bool _checkoutLoading  = false;
+  bool _checkoutLoading = false;
   bool get checkoutLoading => _checkoutLoading;
 
   Future<http.Response?> fetchCheckoutData(
-      String token, BuildContext context, String checkoutToken) async {
+    String token,
+    BuildContext context,
+    String checkoutToken,
+  ) async {
     _checkoutLoading = true;
     notifyListeners();
     try {
-      final url = "${ApiEndpoints.checkout}$checkoutToken";
+      final url = '${ApiEndpoints.checkout}$checkoutToken';
       final headers = {'Authorization': 'Bearer $token'};
 
       final response = await _apiResponseHandler.getRequest(
@@ -210,13 +217,19 @@ class CartProvider with ChangeNotifier {
   ///  ----------------------------------------------------------------  UPDATE CART ITEMS ----------------------------------------------------------------
 
   Future<void> updateCart(
-      String token, BuildContext context, Map<String, String> items) async {
+    String token,
+    BuildContext context,
+    Map<String, String> items,
+  ) async {
     try {
-      final url = '${ApiEndpoints.updateCart}';
+      const url = ApiEndpoints.updateCart;
       final headers = {'Authorization': 'Bearer $token'};
 
-      final response = await _apiResponseHandler.postRequest(url,
-          headers: headers, body: items);
+      final response = await _apiResponseHandler.postRequest(
+        url,
+        headers: headers,
+        body: items,
+      );
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
@@ -229,10 +242,11 @@ class CartProvider with ChangeNotifier {
         /// Notify listeners here if you want to update any other dependent state
       } else {
         CustomSnackbar.showError(
-            context,
-            UpdateCartResponse.fromJson(jsonDecode(response.body))
-                .message
-                .toString());
+          context,
+          UpdateCartResponse.fromJson(jsonDecode(response.body))
+              .message
+              .toString(),
+        );
       }
     } catch (e) {
       notifyListeners();
@@ -244,29 +258,28 @@ class CartProvider with ChangeNotifier {
 ///  CART UPDATE MODEL CLASS
 
 class UpdateCartResponse {
+  UpdateCartResponse({
+    required this.error,
+    required this.data,
+    required this.message,
+  });
+
+  factory UpdateCartResponse.fromJson(Map<String, dynamic> json) =>
+      UpdateCartResponse(
+        error: json['error'],
+        data: json['data'],
+        message: json['message'],
+      );
   final bool error;
   final dynamic data; // You can specify the type if you have more detailed data
   final String message;
-
-  UpdateCartResponse(
-      {required this.error, required this.data, required this.message});
-
-  factory UpdateCartResponse.fromJson(Map<String, dynamic> json) {
-    return UpdateCartResponse(
-      error: json['error'],
-      data: json['data'],
-      message: json['message'],
-    );
-  }
 }
 
 /// To parse this JSON data, do  CART DELETE MODEL CLASS
 /// ---------   CART DELETE RESPONSE --------------------------------
 
 class CartDeleteResponse {
-  final dynamic error; // Dynamic type
-  final dynamic data; // Dynamic type
-  final dynamic message; // Dynamic type
+  // Dynamic type
 
   CartDeleteResponse({
     this.error,
@@ -276,7 +289,7 @@ class CartDeleteResponse {
 
   // Safely check for nulls in the json
   factory CartDeleteResponse.fromJson(Map<String, dynamic> json) {
-    CartData? data =
+    final CartData? data =
         (json['data'] != null && json['data'] is Map<String, dynamic>)
             ? CartData.fromJson(json['data'])
             : null;
@@ -287,20 +300,22 @@ class CartDeleteResponse {
       message: json['message'],
     );
   }
+  final dynamic error; // Dynamic type
+  final dynamic data; // Dynamic type
+  final dynamic message;
 }
 
 class CartData {
-  final int? count; // Nullable
-  final String? totalPrice; // Nullable
-  final List<Product>? content; // Nullable
+  // Nullable
 
   CartData({this.count, this.totalPrice, this.content});
 
-  factory CartData.fromJson(Map<String, dynamic> json) {
-    return CartData(
-      count: json['count'],
-      totalPrice: json['total_price'],
-      content: [],
-    );
-  }
+  factory CartData.fromJson(Map<String, dynamic> json) => CartData(
+        count: json['count'],
+        totalPrice: json['total_price'],
+        content: [],
+      );
+  final int? count; // Nullable
+  final String? totalPrice; // Nullable
+  final List<Product>? content;
 }

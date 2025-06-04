@@ -11,26 +11,28 @@ class VendorToolbarWidgets {
   ///
   /// The widget allows for dynamic functionality via the [onTap] parameter.
   static CustomTextFormField vendorSearchWidget({
-    required dynamic onSearchTap,
+    required onSearchTap,
     required TextEditingController textEditingController,
     required Function(String?) onChanged,
   }) =>
       CustomTextFormField(
-        labelText: "Search..",
+        labelText: 'Search..',
         showTitle: false,
         required: false,
-        hintText: "Search..",
-        hintStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: Colors.black),
+        hintText: 'Search..',
+        hintStyle: const TextStyle(
+            fontSize: 16, fontWeight: FontWeight.w400, color: Colors.black),
         borderColor: AppColors.stoneGray,
         borderRadius: 2,
         height: 35,
-        contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
         suffix: GestureDetector(
-            onTap: onSearchTap,
-            child: Icon(
-              Icons.search,
-              color: AppColors.charcoalPurple,
-            )),
+          onTap: onSearchTap,
+          child: const Icon(
+            Icons.search,
+            color: AppColors.charcoalPurple,
+          ),
+        ),
         filled: true,
         fillColor: AppColors.lavenderHaze,
         controller: textEditingController,
@@ -46,21 +48,22 @@ class VendorToolbarWidgets {
   }) =>
       wrapUnderElevation(
         child: CustomAppButton(
-            buttonText: "Reload",
-            borderColor: AppColors.stoneGray,
-            buttonColor: Colors.white,
-            prefixIcon: Icons.refresh_sharp,
-            textStyle: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w400,
-              color: Colors.black,
-            ),
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            borderRadius: 2,
-            height: 35,
-            prefixIconColor: Colors.black,
-            isLoading: isLoading,
-            onTap: onTap),
+          buttonText: 'Reload',
+          borderColor: AppColors.stoneGray,
+          buttonColor: Colors.white,
+          prefixIcon: Icons.refresh_sharp,
+          textStyle: const TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w400,
+            color: Colors.black,
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          borderRadius: 2,
+          height: 35,
+          prefixIconColor: Colors.black,
+          isLoading: isLoading,
+          onTap: onTap,
+        ),
       );
 
   /// vendor tool bar dropdown widget
@@ -74,9 +77,11 @@ class VendorToolbarWidgets {
           menuItemsList: menuItemsList,
           borderRadius: 0,
           hintText: hintText,
-          textStyle: TextStyle(color: Colors.black, fontWeight: FontWeight.w400, fontSize: 12),
+          textStyle: const TextStyle(
+              color: Colors.black, fontWeight: FontWeight.w400, fontSize: 12),
           borderColor: AppColors.stoneGray,
-          contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 7.2),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 10, vertical: 7.2),
           onChanged: (value) {
             onChanged(value);
 
@@ -92,27 +97,26 @@ class VendorToolbarWidgets {
   }) =>
       wrapUnderElevation(
         child: CustomAppButton(
-            buttonText: "Create",
-            buttonColor: AppColors.lightCoral,
-            prefixIcon: Icons.add,
-            suffixIcon: Icons.keyboard_arrow_down_rounded,
-            textStyle: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
-              color: Colors.white,
-            ),
-            borderRadius: 2,
-            height: 35,
-            padding: EdgeInsets.symmetric(horizontal: 10),
-            isLoading: isLoading,
-            onTap: onTap),
+          buttonText: 'Create',
+          buttonColor: AppColors.lightCoral,
+          prefixIcon: Icons.add,
+          suffixIcon: Icons.keyboard_arrow_down_rounded,
+          textStyle: const TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w500,
+            color: Colors.white,
+          ),
+          borderRadius: 2,
+          height: 35,
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          isLoading: isLoading,
+          onTap: onTap,
+        ),
       );
 
   /// Provide Elevation to widgets
-  static wrapUnderElevation({required dynamic child}) {
-    return Material(
-      elevation: 0.1,
-      child: child,
-    );
-  }
+  static Material wrapUnderElevation({required child}) => Material(
+        elevation: 0.1,
+        child: child,
+      );
 }

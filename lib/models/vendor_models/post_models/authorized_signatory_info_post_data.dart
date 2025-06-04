@@ -19,35 +19,33 @@ class AuthorizedSignatoryInfoPostData {
   String? poamoaServerPath;
 
   // Convert object to Map<String, dynamic>
-  Map<String, dynamic> toMap() {
-    return {
-      "owner_display_name": ownerDisplayName,
-      "owner_phone_number": ownerPhoneNumber,
-      "owner_phone_code": ownerPhoneCode,
-      "owner_country": ownerCountry,
-      "owner_region": ownerRegion,
-      "owner_eid_number": ownerEIDNumber,
-      "owner_eid_expiry": ownerEIDExpiry,
-    };
-  }
+  Map<String, dynamic> toMap() => {
+        'owner_display_name': ownerDisplayName,
+        'owner_phone_number': ownerPhoneNumber,
+        'owner_phone_code': ownerPhoneCode,
+        'owner_country': ownerCountry,
+        'owner_region': ownerRegion,
+        'owner_eid_number': ownerEIDNumber,
+        'owner_eid_expiry': ownerEIDExpiry,
+      };
 
   // Convert object to List<MapEntry<String, String>>
-  List<MapEntry<String, String>> toMapEntries() {
-    return {
-      "owner_display_name": ownerDisplayName ?? "",
-      "owner_phone_number": ownerPhoneNumber ?? "",
-      "owner_phone_code": "+971",
-      "owner_country": ownerCountry ?? "",
-      "owner_region": ownerRegion ?? "",
-      "owner_eid_number": ownerEIDNumber ?? "",
-      "owner_eid_expiry": ownerEIDExpiry ?? "",
-    }.entries.map((entry) => MapEntry(entry.key, entry.value.toString())).toList();
-  }
+  List<MapEntry<String, String>> toMapEntries() => {
+        'owner_display_name': ownerDisplayName ?? '',
+        'owner_phone_number': ownerPhoneNumber ?? '',
+        'owner_phone_code': '+971',
+        'owner_country': ownerCountry ?? '',
+        'owner_region': ownerRegion ?? '',
+        'owner_eid_number': ownerEIDNumber ?? '',
+        'owner_eid_expiry': ownerEIDExpiry ?? '',
+      }
+          .entries
+          .map((entry) => MapEntry(entry.key, entry.value.toString()))
+          .toList();
 
   // Override toString() method
   @override
-  String toString() {
-    return '''
+  String toString() => '''
 AuthorizedSignatoryInfoPostData(
   ownerDisplayName: $ownerDisplayName,
   ownerPhoneNumber: $ownerPhoneNumber,
@@ -64,5 +62,4 @@ AuthorizedSignatoryInfoPostData(
   poamoaName: $poamoaFileName,
 )
 ''';
-  }
 }

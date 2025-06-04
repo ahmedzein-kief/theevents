@@ -1,4 +1,3 @@
-
 class FileSizeConstants {
   static const String BYTE = 'B';
   static const String KILO_BYTE = 'KB';

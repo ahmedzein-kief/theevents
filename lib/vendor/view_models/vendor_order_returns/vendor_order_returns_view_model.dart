@@ -1,6 +1,6 @@
+import 'package:event_app/core/services/shared_preferences_helper.dart';
 import 'package:event_app/data/vendor/data/response/ApiResponse.dart';
 import 'package:event_app/provider/vendor/vendor_repository.dart';
-import 'package:event_app/utils/storage/shared_preferences_helper.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../../../models/vendor_models/vendor_order_models/vendor_get_orders_model.dart';
@@ -14,7 +14,7 @@ class VendorOrderReturnsViewModel with ChangeNotifier {
 
   List<OrderRecords> get list => _list;
 
-  setToken() async {
+  Future<void> setToken() async {
     _token = await SecurePreferencesUtil.getToken();
   }
 
@@ -38,12 +38,12 @@ class VendorOrderReturnsViewModel with ChangeNotifier {
   }
 
   /// get orders method
-  vendorOrderReturns({String? search}) async {
+  Future<void> vendorOrderReturns({String? search}) async {
     await setToken();
     try {
-      Map<String, String> headers = <String, String>{
+      final Map<String, String> headers = <String, String>{
         // 'Content-Type': 'application/json',
-        "Authorization": _token!,
+        'Authorization': _token!,
       };
 
       final Map<String, String> queryParams = {
@@ -55,7 +55,8 @@ class VendorOrderReturnsViewModel with ChangeNotifier {
       // If successful, increment the current page and append data
       if (_currentPage <= _lastPage) {
         setApiResponse = ApiResponse.loading();
-        final VendorGetOrdersModel response = await _myRepo.vendorOrderReturns(headers: headers, queryParams: queryParams);
+        final VendorGetOrdersModel response = await _myRepo.vendorOrderReturns(
+            headers: headers, queryParams: queryParams);
         setLastPage(response);
         resetList(response);
         setApiResponse = ApiResponse.completed(response);
@@ -84,7 +85,7 @@ class VendorOrderReturnsViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  void removeElementFromList({required dynamic id}) {
+  void removeElementFromList({required id}) {
     _list.removeWhere((element) => element.id == id);
     notifyListeners();
   }

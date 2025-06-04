@@ -1,6 +1,6 @@
-import 'package:event_app/models/vendor_models/products/holder_models/digital_links_model.dart';
+import 'package:event_app/core/helper/validators/validator.dart';
 import 'package:event_app/core/styles/app_colors.dart';
-import 'package:event_app/utils/validator/validator.dart';
+import 'package:event_app/models/vendor_models/products/holder_models/digital_links_model.dart';
 import 'package:event_app/vendor/Components/vendor_text_style.dart';
 import 'package:event_app/vendor/components/dropdowns/generic_dropdown.dart';
 import 'package:event_app/vendor/components/status_constants/file_size_constants.dart';
@@ -8,18 +8,23 @@ import 'package:event_app/vendor/components/text_fields/custom_text_form_field.d
 import 'package:flutter/material.dart';
 
 class DigitalLinksScreen extends StatefulWidget {
+  const DigitalLinksScreen({super.key, this.initialLinks});
   final List<DigitalLinksModel>? initialLinks;
-
-  DigitalLinksScreen({this.initialLinks});
 
   @override
   _DigitalLinksScreenState createState() => _DigitalLinksScreenState();
 }
 
 class _DigitalLinksScreenState extends State<DigitalLinksScreen> {
-  List<DigitalLinksModel> _selectedLinks = [];
+  final List<DigitalLinksModel> _selectedLinks = [];
 
-  final List<String> units = [FileSizeConstants.BYTE, FileSizeConstants.KILO_BYTE, FileSizeConstants.MEGA_BYTE, FileSizeConstants.GIGA_BYTE, FileSizeConstants.TERRA_BYTE];
+  final List<String> units = [
+    FileSizeConstants.BYTE,
+    FileSizeConstants.KILO_BYTE,
+    FileSizeConstants.MEGA_BYTE,
+    FileSizeConstants.GIGA_BYTE,
+    FileSizeConstants.TERRA_BYTE
+  ];
 
   @override
   void initState() {
@@ -27,9 +32,7 @@ class _DigitalLinksScreenState extends State<DigitalLinksScreen> {
     if (widget.initialLinks != null) {
       _selectedLinks.addAll(widget.initialLinks!);
     }
-    setState(() {
-
-    });
+    setState(() {});
   }
 
   void _returnBack() {
@@ -38,7 +41,11 @@ class _DigitalLinksScreenState extends State<DigitalLinksScreen> {
   }
 
   void removeInvalidLinks() {
-    _selectedLinks.removeWhere((link) => link.fileName.isEmpty || link.fileLink.isEmpty || link.size.isEmpty || link.unit.isEmpty);
+    _selectedLinks.removeWhere((link) =>
+        link.fileName.isEmpty ||
+        link.fileLink.isEmpty ||
+        link.size.isEmpty ||
+        link.unit.isEmpty);
   }
 
   void addLink() {
@@ -61,49 +68,47 @@ class _DigitalLinksScreenState extends State<DigitalLinksScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "Digital Links",
-          style: vendorName(context),
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(
+          title: Text(
+            'Digital Links',
+            style: vendorName(context),
+          ),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: _returnBack,
+          ),
         ),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: _returnBack,
-        ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: ListView.builder(
-          itemCount: _selectedLinks.length,
-          itemBuilder: (context, index) {
-            return Card(
-              margin: EdgeInsets.only(bottom: 16),
+        body: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: ListView.builder(
+            itemCount: _selectedLinks.length,
+            itemBuilder: (context, index) => Card(
+              margin: const EdgeInsets.only(bottom: 16),
               elevation: 3,
               child: Padding(
-                padding: EdgeInsets.all(16),
+                padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     CustomTextFormField(
-                      labelText: "",
+                      labelText: '',
                       showTitle: false,
                       required: false,
                       readOnly: _selectedLinks[index].isSaved,
-                      hintText: "File Name",
+                      hintText: 'File Name',
                       controller: _selectedLinks[index].fileNameController,
                       onChanged: (value) {
                         _selectedLinks[index].fileName = value;
                       },
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     CustomTextFormField(
-                      labelText: "",
+                      labelText: '',
                       showTitle: false,
                       required: false,
                       readOnly: _selectedLinks[index].isSaved,
-                      hintText: "External Link",
+                      hintText: 'External Link',
                       keyboardType: TextInputType.url,
                       controller: _selectedLinks[index].fileLinkController,
                       validator: Validator.isValidUrl,
@@ -111,17 +116,17 @@ class _DigitalLinksScreenState extends State<DigitalLinksScreen> {
                         _selectedLinks[index].fileLink = value;
                       },
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Row(
                       children: [
                         Flexible(
                           flex: 1,
                           child: CustomTextFormField(
-                            labelText: "",
+                            labelText: '',
                             showTitle: false,
                             required: false,
                             readOnly: _selectedLinks[index].isSaved,
-                            hintText: "Size",
+                            hintText: 'Size',
                             keyboardType: TextInputType.number,
                             controller: _selectedLinks[index].sizeController,
                             onChanged: (value) {
@@ -129,39 +134,42 @@ class _DigitalLinksScreenState extends State<DigitalLinksScreen> {
                             },
                           ),
                         ),
-                        SizedBox(width: 8),
+                        const SizedBox(width: 8),
                         Flexible(
                           flex: 1,
                           child: GenericDropdown<String>(
-                            textStyle: TextStyle(color: Colors.grey, fontSize: 15),
-                            value: _selectedLinks[index].unit.contains("-") ? "B" : _selectedLinks[index].unit,
+                            textStyle: const TextStyle(
+                                color: Colors.grey, fontSize: 15),
+                            value: _selectedLinks[index].unit.contains('-')
+                                ? 'B'
+                                : _selectedLinks[index].unit,
                             menuItemsList: units,
                             readOnly: _selectedLinks[index].isSaved,
                             displayItem: (String priceType) => priceType,
                             onChanged: (String? value) {
                               setState(() {
-                                _selectedLinks[index].unit = value ?? "B";
+                                _selectedLinks[index].unit = value ?? 'B';
                               });
                             },
                           ),
                         ),
                       ],
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Flexible(
                           flex: 1,
                           child: Text(
-                            _selectedLinks[index].isSaved ? "Saved" : "Unsaved",
-                            style: TextStyle(color: Colors.orange),
+                            _selectedLinks[index].isSaved ? 'Saved' : 'Unsaved',
+                            style: const TextStyle(color: Colors.orange),
                           ),
                         ),
                         Flexible(
                           flex: 1,
                           child: IconButton(
-                            icon: Icon(Icons.delete, color: Colors.red),
+                            icon: const Icon(Icons.delete, color: Colors.red),
                             onPressed: () => deleteLink(index),
                           ),
                         ),
@@ -170,18 +178,16 @@ class _DigitalLinksScreenState extends State<DigitalLinksScreen> {
                   ],
                 ),
               ),
-            );
-          },
+            ),
+          ),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: AppColors.lightCoral,
-        onPressed: () => addLink(),
-        child: Icon(
-          Icons.add,
-          color: Colors.white,
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: AppColors.lightCoral,
+          onPressed: () => addLink(),
+          child: const Icon(
+            Icons.add,
+            color: Colors.white,
+          ),
         ),
-      ),
-    );
-  }
+      );
 }

@@ -108,99 +108,103 @@ import 'package:event_app/core/styles/custom_text_styles.dart';
 import 'package:event_app/vendor/components/vendor_text_style.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
-class CustomAppBarVendor extends StatelessWidget implements PreferredSizeWidget {
-  final String? imageUrl;
-  final String? titleText;
-  final String? subtitleText;
-  final bool isShowBack;
-  final VoidCallback? onSubtitleTap;
-
-  CustomAppBarVendor({
+class CustomAppBarVendor extends StatelessWidget
+    implements PreferredSizeWidget {
+  const CustomAppBarVendor({
+    super.key,
     this.isShowBack = false,
     this.imageUrl,
     this.titleText,
     this.subtitleText,
     this.onSubtitleTap,
   });
-
+  final String? imageUrl;
+  final String? titleText;
+  final String? subtitleText;
+  final bool isShowBack;
+  final VoidCallback? onSubtitleTap;
 
   @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 12),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Profile Image
-          SizedBox(
-            width: 50,
-            height: 50,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(35),
-              child: CachedNetworkImage(
-                imageUrl: imageUrl ?? '',
-                fit: BoxFit.cover,
-                errorWidget: (context, url, error) => Image.asset(
-                  'assets/boy.png',
-                  width: 40,
-                  height: 50,
-                  fit: BoxFit.contain,
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Profile Image
+            SizedBox(
+              width: 50,
+              height: 50,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(35),
+                child: CachedNetworkImage(
+                  imageUrl: imageUrl ?? '',
+                  fit: BoxFit.cover,
+                  errorWidget: (context, url, error) => Image.asset(
+                    'assets/boy.png',
+                    width: 40,
+                    height: 50,
+                    fit: BoxFit.contain,
+                  ),
                 ),
               ),
             ),
-          ),
-          SizedBox(width: 10),
+            const SizedBox(width: 10),
 
-          // Title & Subtitle
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (titleText != null)
-                  Text(
-                    titleText!,
-                    style: vendorName(context).copyWith(color: AppColors.semiTransparentBlack),
-                  ),
-                SizedBox(height: 8,),
-                if (subtitleText != null)
-                  GestureDetector(
-                    onTap: onSubtitleTap,
-                    child: Row(
-                      children: [
-                        Icon(Icons.file_download_outlined, color: Theme.of(context).colorScheme.onPrimary),
-                        const SizedBox(width: 2),
-                        Text(subtitleText!, style: profileItems(context).copyWith(
-                          decoration: TextDecoration.underline,
-                        ),),
-                      ],
+            // Title & Subtitle
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (titleText != null)
+                    Text(
+                      titleText!,
+                      style: vendorName(context)
+                          .copyWith(color: AppColors.semiTransparentBlack),
                     ),
+                  const SizedBox(
+                    height: 8,
                   ),
-              ],
-            ),
-          ),
-
-          // Fixed Clear Button on Right
-          if (isShowBack)
-            GestureDetector(
-              onTap: () {
-                Navigator.pop(context);
-              },
-              child: Padding(
-                padding: const EdgeInsets.only(left: 4),
-                child: Icon(
-                  CupertinoIcons.clear_thick,
-                  size: 20,
-                  color: Theme.of(context).colorScheme.onPrimary,
-                ),
+                  if (subtitleText != null)
+                    GestureDetector(
+                      onTap: onSubtitleTap,
+                      child: Row(
+                        children: [
+                          Icon(Icons.file_download_outlined,
+                              color: Theme.of(context).colorScheme.onPrimary),
+                          const SizedBox(width: 2),
+                          Text(
+                            subtitleText!,
+                            style: profileItems(context).copyWith(
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                ],
               ),
             ),
-        ],
-      ),
-    );
-  }
+
+            // Fixed Clear Button on Right
+            if (isShowBack)
+              GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 4),
+                  child: Icon(
+                    CupertinoIcons.clear_thick,
+                    size: 20,
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  ),
+                ),
+              ),
+          ],
+        ),
+      );
 
   @override
-  Size get preferredSize => Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }

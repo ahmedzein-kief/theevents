@@ -1,6 +1,6 @@
+import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/models/orders/order_history_model.dart';
 import 'package:event_app/provider/orders_provider/order_data_provider.dart';
-import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/views/base_screens/base_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -15,7 +15,8 @@ class OrderPageScreen extends StatefulWidget {
   State<OrderPageScreen> createState() => _OrderPageScreenState();
 }
 
-class _OrderPageScreenState extends State<OrderPageScreen> with SingleTickerProviderStateMixin {
+class _OrderPageScreenState extends State<OrderPageScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
@@ -25,7 +26,8 @@ class _OrderPageScreenState extends State<OrderPageScreen> with SingleTickerProv
     _tabController = TabController(length: 2, vsync: this);
 
     _tabController.addListener(() {
-      if (_tabController.indexIsChanging || _tabController.index != _tabController.previousIndex) {
+      if (_tabController.indexIsChanging ||
+          _tabController.index != _tabController.previousIndex) {
         fetchOrders(context, isPending: _tabController.index == 0);
       }
     });
@@ -35,7 +37,8 @@ class _OrderPageScreenState extends State<OrderPageScreen> with SingleTickerProv
     });
   }
 
-  Future<void> fetchOrders(BuildContext? context, {required bool isPending}) async {
+  Future<void> fetchOrders(BuildContext? context,
+      {required bool isPending}) async {
     if (!mounted) return;
     final provider = Provider.of<OrderDataProvider>(context!, listen: false);
     // provider.clearOrders();
@@ -47,7 +50,7 @@ class _OrderPageScreenState extends State<OrderPageScreen> with SingleTickerProv
 
   @override
   Widget build(BuildContext context) {
-    double screenHeight = MediaQuery.sizeOf(context).height;
+    final double screenHeight = MediaQuery.sizeOf(context).height;
 
     return BaseAppBar(
       textBack: 'Back',
@@ -55,7 +58,7 @@ class _OrderPageScreenState extends State<OrderPageScreen> with SingleTickerProv
       // firstRightIconPath: AppStrings.firstRightIconPath,
       secondRightIconPath: AppStrings.secondRightIconPath,
       thirdRightIconPath: AppStrings.thirdRightIconPath,
-      title: "Orders",
+      title: 'Orders',
       body: Scaffold(
         backgroundColor: Colors.grey[100],
         appBar: PreferredSize(
@@ -72,10 +75,10 @@ class _OrderPageScreenState extends State<OrderPageScreen> with SingleTickerProv
               // Makes tabs take up the full width
               tabs: const [
                 Tab(
-                  text: "Pending",
+                  text: 'Pending',
                 ),
                 Tab(
-                  text: "Completed",
+                  text: 'Completed',
                 ),
               ],
               onTap: (index) {
@@ -95,47 +98,54 @@ class _OrderPageScreenState extends State<OrderPageScreen> with SingleTickerProv
     );
   }
 
-  Widget _buildOrderList(BuildContext context, {required bool isCompleted}) {
-    return Consumer<OrderDataProvider>(
-      builder: (context, provider, child) {
-        var records = isCompleted ? provider.completedOrderHistoryModel?.data.records : provider.orderHistoryModel?.data.records;
-        List<OrderProduct>? allProducts = records
-            ?.expand((record) => record.products.map((product) => OrderProduct(
-                  productSlugPrefix: product.productSlugPrefix,
-                  productSlug: product.productSlug,
-                  imageUrl: product.imageUrl,
-                  productName: product.productName,
-                  imageThumb: product.imageThumb,
-                  imageSmall: product.imageSmall,
-                  productType: product.productType,
-                  productOptions: product.productOptions,
-                  review: product.review,
-                  qty: product.qty,
-                  indexNum: product.indexNum,
-                  attributes: product.attributes,
-                  sku: product.sku,
-                  amountFormat: product.amountFormat,
-                  totalFormat: product.totalFormat,
-                  orderRecord: record,
-                )))
-            .toList();
-
-        if (provider.isLoading) {
-          return const Center(
-            child: CircularProgressIndicator(color: Colors.black),
-          );
-        }
-
-        return SafeArea(
-          child: allProducts == null || allProducts.isEmpty
-              ? const Center(child: Text("No orders found"))
-              : SingleChildScrollView(
-                  child: Column(
-                    children: allProducts.map((order) => OrderHistoryView(order: order)).toList(),
+  Widget _buildOrderList(BuildContext context, {required bool isCompleted}) =>
+      Consumer<OrderDataProvider>(
+        builder: (context, provider, child) {
+          final records = isCompleted
+              ? provider.completedOrderHistoryModel?.data.records
+              : provider.orderHistoryModel?.data.records;
+          final List<OrderProduct>? allProducts = records
+              ?.expand(
+                (record) => record.products.map(
+                  (product) => OrderProduct(
+                    productSlugPrefix: product.productSlugPrefix,
+                    productSlug: product.productSlug,
+                    imageUrl: product.imageUrl,
+                    productName: product.productName,
+                    imageThumb: product.imageThumb,
+                    imageSmall: product.imageSmall,
+                    productType: product.productType,
+                    productOptions: product.productOptions,
+                    review: product.review,
+                    qty: product.qty,
+                    indexNum: product.indexNum,
+                    attributes: product.attributes,
+                    sku: product.sku,
+                    amountFormat: product.amountFormat,
+                    totalFormat: product.totalFormat,
+                    orderRecord: record,
                   ),
                 ),
-        );
-      },
-    );
-  }
+              )
+              .toList();
+
+          if (provider.isLoading) {
+            return const Center(
+              child: CircularProgressIndicator(color: Colors.black),
+            );
+          }
+
+          return SafeArea(
+            child: allProducts == null || allProducts.isEmpty
+                ? const Center(child: Text('No orders found'))
+                : SingleChildScrollView(
+                    child: Column(
+                      children: allProducts
+                          .map((order) => OrderHistoryView(order: order))
+                          .toList(),
+                    ),
+                  ),
+          );
+        },
+      );
 }

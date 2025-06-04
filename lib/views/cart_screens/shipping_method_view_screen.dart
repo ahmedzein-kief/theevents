@@ -2,21 +2,22 @@ import 'package:event_app/core/styles/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../provider/checkout_provider/checkout_provider.dart';
 import '../../core/styles/custom_text_styles.dart';
+import '../../provider/checkout_provider/checkout_provider.dart';
 
 class ShippingMethodViewScreen extends StatefulWidget {
-  final void Function(Map<String, String> selectedShippingMethod) onSelectShippingMethod;
-  final Map<String, String> shippingMethod;
-
-  ShippingMethodViewScreen({
+  const ShippingMethodViewScreen({
     super.key,
     required this.onSelectShippingMethod,
     required this.shippingMethod,
   });
+  final void Function(Map<String, String> selectedShippingMethod)
+      onSelectShippingMethod;
+  final Map<String, String> shippingMethod;
 
   @override
-  _ShippingMethodViewScreenState createState() => _ShippingMethodViewScreenState();
+  _ShippingMethodViewScreenState createState() =>
+      _ShippingMethodViewScreenState();
 }
 
 class _ShippingMethodViewScreenState extends State<ShippingMethodViewScreen> {
@@ -24,13 +25,13 @@ class _ShippingMethodViewScreenState extends State<ShippingMethodViewScreen> {
 
   @override
   Widget build(BuildContext context) {
-    dynamic screenWidth = MediaQuery.sizeOf(context).width;
-    dynamic screenHeight = MediaQuery.sizeOf(context).height;
+    final dynamic screenWidth = MediaQuery.sizeOf(context).width;
+    final dynamic screenHeight = MediaQuery.sizeOf(context).height;
 
     return Consumer<CheckoutProvider>(
       builder: (BuildContext context, CheckoutProvider value, Widget? child) {
         if (value.checkoutData == null) {
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         }
         final checkoutData = value.checkoutData;
         final shippingDefault = checkoutData?.data?.shipping?.shippingDefault;
@@ -52,19 +53,22 @@ class _ShippingMethodViewScreenState extends State<ShippingMethodViewScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Shipping Method", style: chooseStyle(context)),
+              Text('Shipping Method', style: chooseStyle(context)),
               SizedBox(height: screenHeight * 0.01),
               Container(
                 decoration: BoxDecoration(
                   border: Border.all(
-                    color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.08),
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onPrimary
+                        .withOpacity(0.08),
                   ),
                   borderRadius: BorderRadius.circular(4),
                 ),
-                padding: EdgeInsets.all(10),
+                padding: const EdgeInsets.all(10),
                 child: ListView.builder(
                   shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
+                  physics: const NeverScrollableScrollPhysics(),
                   itemCount: shippingDefault?.length,
                   itemBuilder: (context, index) {
                     final key = shippingDefault?.keys.elementAt(index);
@@ -88,19 +92,21 @@ class _ShippingMethodViewScreenState extends State<ShippingMethodViewScreen> {
                           Row(
                             children: [
                               Text(
-                                "AED $shippingPrice",
+                                'AED $shippingPrice',
                                 style: shippingMethod(context),
                               ),
                               Radio<int>(
                                 value: index,
                                 groupValue: selectedShippingIndex,
-                                activeColor: AppColors.peachyPink, // Ensure visibility
+                                activeColor:
+                                    AppColors.peachyPink, // Ensure visibility
                                 onChanged: (int? value) {
-                                  var shippingMethodData = {
-                                    "method_id": "$key",
-                                    "method_amount": "$shippingPrice",
+                                  final shippingMethodData = {
+                                    'method_id': '$key',
+                                    'method_amount': '$shippingPrice',
                                   };
-                                  widget.onSelectShippingMethod(shippingMethodData);
+                                  widget.onSelectShippingMethod(
+                                      shippingMethodData);
                                   setState(() {
                                     selectedShippingIndex = value;
                                   });

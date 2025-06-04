@@ -1,30 +1,29 @@
 import '../../../vendor_models/products/VendorGetProductsModel.dart';
 
 class VendorGetProductVariationsModel {
-  bool? _error;
-  ProductVariationsData? _data;
-  String? _message;
-
-  VendorGetProductVariationsModel({bool? error, ProductVariationsData? data, String? message})
+  VendorGetProductVariationsModel(
+      {bool? error, ProductVariationsData? data, String? message})
       : _error = error,
         _data = data,
         _message = message;
 
-  factory VendorGetProductVariationsModel.fromJson(Map<String, dynamic> json) {
-    return VendorGetProductVariationsModel(
-      error: json['error'] as bool?,
-      data: json['data'] != null ? ProductVariationsData.fromJson(json['data']) : null,
-      message: json['message'] as String?,
-    );
-  }
+  factory VendorGetProductVariationsModel.fromJson(Map<String, dynamic> json) =>
+      VendorGetProductVariationsModel(
+        error: json['error'] as bool?,
+        data: json['data'] != null
+            ? ProductVariationsData.fromJson(json['data'])
+            : null,
+        message: json['message'] as String?,
+      );
+  bool? _error;
+  ProductVariationsData? _data;
+  String? _message;
 
-  Map<String, dynamic> toJson() {
-    return {
-      'error': _error,
-      'data': _data?.toJson(),
-      'message': _message,
-    };
-  }
+  Map<String, dynamic> toJson() => {
+        'error': _error,
+        'data': _data?.toJson(),
+        'message': _message,
+      };
 
   // Getters
   bool? get error => _error;
@@ -42,26 +41,27 @@ class VendorGetProductVariationsModel {
 }
 
 class ProductVariationsData {
-  Pagination? _pagination;
-  List<ProductVariationRecord>? _records;
-
-  ProductVariationsData({Pagination? pagination, List<ProductVariationRecord>? records})
+  ProductVariationsData(
+      {Pagination? pagination, List<ProductVariationRecord>? records})
       : _pagination = pagination,
         _records = records;
 
-  factory ProductVariationsData.fromJson(Map<String, dynamic> json) {
-    return ProductVariationsData(
-      pagination: json['pagination'] != null ? Pagination.fromJson(json['pagination']) : null,
-      records: (json['records'] as List?)?.map((record) => ProductVariationRecord.fromJson(record)).toList(),
-    );
-  }
+  factory ProductVariationsData.fromJson(Map<String, dynamic> json) =>
+      ProductVariationsData(
+        pagination: json['pagination'] != null
+            ? Pagination.fromJson(json['pagination'])
+            : null,
+        records: (json['records'] as List?)
+            ?.map((record) => ProductVariationRecord.fromJson(record))
+            .toList(),
+      );
+  Pagination? _pagination;
+  List<ProductVariationRecord>? _records;
 
-  Map<String, dynamic> toJson() {
-    return {
-      'pagination': _pagination?.toJson(),
-      'records': _records?.map((record) => record.toJson()).toList(),
-    };
-  }
+  Map<String, dynamic> toJson() => {
+        'pagination': _pagination?.toJson(),
+        'records': _records?.map((record) => record.toJson()).toList(),
+      };
 
   // Getters
   Pagination? get pagination => _pagination;
@@ -75,21 +75,6 @@ class ProductVariationsData {
 }
 
 class ProductVariationRecord {
-  String? _id;
-  int? _productId;
-  int? _originalProductId;
-  bool? _isDefault;
-  double? _price;
-  String? _priceFormat;
-  double? _salePrice;
-  String? _salePriceFormat;
-  String? _imagePath;
-  String? _quantity;
-  int? _fileExternalCount;
-  int? _fileInternalCount;
-  Map<String, String?>? _selectedAttributeSets;
-  bool? _isDeleting;
-
   ProductVariationRecord({
     String? id,
     int? productId,
@@ -120,39 +105,52 @@ class ProductVariationRecord {
         _selectedAttributeSets = selectedAttributeSets,
         _isDeleting = isDeleting;
 
-  factory ProductVariationRecord.fromJson(Map<String, dynamic> json) {
-    return ProductVariationRecord(
-      id: json['id'] as String?,
-      productId: json['product_id'] as int?,
-      originalProductId: json['original_product_id'] as int?,
-      isDefault: json['is_default'] as bool?,
-      price: (json['price'] as num?)?.toDouble(),
-      priceFormat: json['price_format'] as String?,
-      salePrice: (json['sale_price'] as num?)?.toDouble(),
-      salePriceFormat: json['sale_price_format'] as String?,
-      imagePath: json['image_path'] as String?,
-      quantity: json['quantity'].toString() as String?,
-      fileInternalCount: json['file_internal_count'] as int?,
-      fileExternalCount: json['file_external_count'] as int?,
-      selectedAttributeSets: (json['selected_attribute_sets'] as Map<String, dynamic>?)?.map((key, value) => MapEntry(key, value as String?)),
-    );
-  }
+  factory ProductVariationRecord.fromJson(Map<String, dynamic> json) =>
+      ProductVariationRecord(
+        id: json['id'] as String?,
+        productId: json['product_id'] as int?,
+        originalProductId: json['original_product_id'] as int?,
+        isDefault: json['is_default'] as bool?,
+        price: (json['price'] as num?)?.toDouble(),
+        priceFormat: json['price_format'] as String?,
+        salePrice: (json['sale_price'] as num?)?.toDouble(),
+        salePriceFormat: json['sale_price_format'] as String?,
+        imagePath: json['image_path'] as String?,
+        quantity: json['quantity'].toString() as String?,
+        fileInternalCount: json['file_internal_count'] as int?,
+        fileExternalCount: json['file_external_count'] as int?,
+        selectedAttributeSets:
+            (json['selected_attribute_sets'] as Map<String, dynamic>?)
+                ?.map((key, value) => MapEntry(key, value as String?)),
+      );
+  String? _id;
+  int? _productId;
+  int? _originalProductId;
+  bool? _isDefault;
+  double? _price;
+  String? _priceFormat;
+  double? _salePrice;
+  String? _salePriceFormat;
+  String? _imagePath;
+  String? _quantity;
+  int? _fileExternalCount;
+  int? _fileInternalCount;
+  Map<String, String?>? _selectedAttributeSets;
+  bool? _isDeleting;
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': _id,
-      'product_id': _productId,
-      'original_product_id': _originalProductId,
-      'is_default': _isDefault,
-      'price': _price,
-      'price_format': _priceFormat,
-      'sale_price': _salePrice,
-      'sale_price_format': _salePriceFormat,
-      'image_path': _imagePath,
-      'quantity': _quantity,
-      'selected_attribute_sets': _selectedAttributeSets,
-    };
-  }
+  Map<String, dynamic> toJson() => {
+        'id': _id,
+        'product_id': _productId,
+        'original_product_id': _originalProductId,
+        'is_default': _isDefault,
+        'price': _price,
+        'price_format': _priceFormat,
+        'sale_price': _salePrice,
+        'sale_price_format': _salePriceFormat,
+        'image_path': _imagePath,
+        'quantity': _quantity,
+        'selected_attribute_sets': _selectedAttributeSets,
+      };
 
   // Getters
   String? get id => _id;
@@ -204,7 +202,8 @@ class ProductVariationRecord {
 
   set quantity(String? value) => _quantity = value;
 
-  set selectedAttributeSets(Map<String, String?>? value) => _selectedAttributeSets = value;
+  set selectedAttributeSets(Map<String, String?>? value) =>
+      _selectedAttributeSets = value;
 
   set isDeleting(bool? value) => _isDeleting = value;
 }

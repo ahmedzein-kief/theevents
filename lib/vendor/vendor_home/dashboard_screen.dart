@@ -1,8 +1,8 @@
 import 'package:custom_date_range_picker/custom_date_range_picker.dart';
+import 'package:event_app/core/styles/app_colors.dart';
+import 'package:event_app/core/styles/app_sizes.dart';
 import 'package:event_app/data/vendor/data/response/apis_status.dart';
 import 'package:event_app/models/vendor_models/dashboard/dashboard_data_response.dart';
-import 'package:event_app/core/styles/app_colors.dart';
-import 'package:event_app/utils/mixins_and_constants/constants.dart';
 import 'package:event_app/vendor/components/data_tables/custom_data_tables.dart';
 import 'package:event_app/vendor/components/list_tiles/records_list_tile.dart';
 import 'package:event_app/vendor/components/utils/utils.dart';
@@ -14,12 +14,11 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class VendorDashBoardScreen extends StatefulWidget {
-  final void Function(int index) onIndexUpdate;
-
   const VendorDashBoardScreen({
     super.key,
     required this.onIndexUpdate,
   });
+  final void Function(int index) onIndexUpdate;
 
   @override
   State<VendorDashBoardScreen> createState() => _VendorDashBoardScreenState();
@@ -32,10 +31,10 @@ class _VendorDashBoardScreenState extends State<VendorDashBoardScreen> {
   DateTime? startDate = DateTime(DateTime.now().year, DateTime.now().month, 1);
   DateTime? endDate = DateTime.now();
   String formatEndDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
-  String formatStartDate = DateFormat('yyyy-MM-dd').format(DateTime(DateTime.now().year, DateTime.now().month, 1));
+  String formatStartDate = DateFormat('yyyy-MM-dd')
+      .format(DateTime(DateTime.now().year, DateTime.now().month, 1));
 
-
-  setProcessing(bool value) {
+  void setProcessing(bool value) {
     setState(() {
       _isProcessing = value;
     });
@@ -46,7 +45,8 @@ class _VendorDashBoardScreenState extends State<VendorDashBoardScreen> {
       setProcessing(true);
       WidgetsBinding.instance.addPostFrameCallback((callback) async {
         formatDates();
-        final provider = Provider.of<VendorDashboardViewModel>(context, listen: false);
+        final provider =
+            Provider.of<VendorDashboardViewModel>(context, listen: false);
         await provider.getDashboardData(formatStartDate, formatEndDate);
         setProcessing(false);
         setState(() {});
@@ -65,19 +65,17 @@ class _VendorDashBoardScreenState extends State<VendorDashBoardScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: VendorColors.vendorAppBackground,
-      key: _scaffoldKey,
-      body: Utils.modelProgressDashboardHud(
-        processing: _isProcessing,
-        child: Utils.pageRefreshIndicator(
-          onRefresh: _onRefresh,
-          child: _buildUi(context),
+  Widget build(BuildContext context) => Scaffold(
+        backgroundColor: VendorColors.vendorAppBackground,
+        key: _scaffoldKey,
+        body: Utils.modelProgressDashboardHud(
+          processing: _isProcessing,
+          child: Utils.pageRefreshIndicator(
+            onRefresh: _onRefresh,
+            child: _buildUi(context),
+          ),
         ),
-      ),
-    );
-  }
+      );
 
   void formatDates() {
     if (startDate != null) {
@@ -90,13 +88,13 @@ class _VendorDashBoardScreenState extends State<VendorDashBoardScreen> {
   }
 
   Widget _buildUi(BuildContext context) {
-    double screenWidth = MediaQuery.sizeOf(context).width;
-    double screenHeight = MediaQuery.sizeOf(context).height;
+    final double screenWidth = MediaQuery.sizeOf(context).width;
+    final double screenHeight = MediaQuery.sizeOf(context).height;
 
     formatDates();
 
     return ListView(
-      physics: AlwaysScrollableScrollPhysics(),
+      physics: const AlwaysScrollableScrollPhysics(),
       children: [
         Consumer<VendorDashboardViewModel>(
           builder: (context, provider, _) {
@@ -107,7 +105,7 @@ class _VendorDashBoardScreenState extends State<VendorDashBoardScreen> {
             if (apiStatus == ApiStatus.ERROR) {
               return ListView(
                 shrinkWrap: true,
-                physics: AlwaysScrollableScrollPhysics(),
+                physics: const AlwaysScrollableScrollPhysics(),
                 children: [Utils.somethingWentWrong()],
               );
             }
@@ -120,50 +118,53 @@ class _VendorDashBoardScreenState extends State<VendorDashBoardScreen> {
                   child: Align(
                     alignment: Alignment.centerRight,
                     child: Container(
-                        height: 40,
-                        padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.02),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(3),
-                          border: Border.all(color: AppColors.peachyPink),
+                      height: 40,
+                      padding:
+                          EdgeInsets.symmetric(horizontal: screenWidth * 0.02),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(3),
+                        border: Border.all(color: AppColors.peachyPink),
+                      ),
+                      child: GestureDetector(
+                        onTap: () {
+                          showCustomDateRangePicker(
+                            context,
+                            dismissible: true,
+                            minimumDate: DateTime(1900),
+                            // Allows any past date
+                            maximumDate: DateTime.now(),
+                            // Restricts selection up to today
+                            endDate: endDate,
+                            startDate: startDate,
+                            backgroundColor: Colors.white,
+                            primaryColor: AppColors.peachyPink,
+                            onApplyClick: (start, end) async {
+                              setState(() {
+                                endDate = end;
+                                startDate = start;
+                              });
+                              await _onRefresh();
+                            },
+                            onCancelClick: () {
+                              setState(() {});
+                            },
+                          );
+                        },
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.calendar_today_outlined,
+                              color: AppColors.peachyPink,
+                              size: 18,
+                            ),
+                            SizedBox(width: screenWidth * 0.02),
+                            Text('From $formatStartDate to $formatEndDate',
+                                style: vendorDate(context)),
+                          ],
                         ),
-                        child: GestureDetector(
-                          onTap: () {
-                            showCustomDateRangePicker(
-                              context,
-                              dismissible: true,
-                              minimumDate: DateTime(1900),
-                              // Allows any past date
-                              maximumDate: DateTime.now(),
-                              // Restricts selection up to today
-                              endDate: endDate,
-                              startDate: startDate,
-                              backgroundColor: Colors.white,
-                              primaryColor: AppColors.peachyPink,
-                              onApplyClick: (start, end) async {
-                                setState(() {
-                                  endDate = end;
-                                  startDate = start;
-                                });
-                                await _onRefresh();
-                              },
-                              onCancelClick: () {
-                                setState(() {});
-                              },
-                            );
-                          },
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.calendar_today_outlined,
-                                color: AppColors.peachyPink,
-                                size: 18,
-                              ),
-                              SizedBox(width: screenWidth * 0.02),
-                              Text("From ${formatStartDate} to ${formatEndDate}", style: vendorDate(context)),
-                            ],
-                          ),
-                        )),
+                      ),
+                    ),
                   ),
                 ),
                 SizedBox(height: screenHeight * 0.02),
@@ -185,75 +186,76 @@ class _VendorDashBoardScreenState extends State<VendorDashBoardScreen> {
     );
   }
 
-  Widget _buildOrdersAndProducts(DashboardDataResponse? dataResponse) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: kExtraSmallPadding),
-      child: Column(
-        children: [
-          if (dataResponse?.data.orders.isNotEmpty == true) ...[
-            _buildSection(
-                title: "Recent Orders",
-                actionText: "View All Orders",
+  Widget _buildOrdersAndProducts(DashboardDataResponse? dataResponse) =>
+      Padding(
+        padding: EdgeInsets.symmetric(horizontal: kExtraSmallPadding),
+        child: Column(
+          children: [
+            if (dataResponse?.data.orders.isNotEmpty == true) ...[
+              _buildSection(
+                title: 'Recent Orders',
+                actionText: 'View All Orders',
                 onTapViewAll: () {
                   /// navigate to all orders view at index 3 of Main scaffold
                   widget.onIndexUpdate(3);
-                }),
-            kMinorSpace,
-            ..._buildRecords(dataResponse!.data.orders),
-          ],
-          SizedBox(height: 20),
-          if (dataResponse?.data.products.isNotEmpty == true) ...[
-            _buildSection(
-                title: "Top Selling Products",
-                actionText: "View All Products",
+                },
+              ),
+              kMinorSpace,
+              ..._buildRecords(dataResponse!.data.orders),
+            ],
+            const SizedBox(height: 20),
+            if (dataResponse?.data.products.isNotEmpty == true) ...[
+              _buildSection(
+                title: 'Top Selling Products',
+                actionText: 'View All Products',
                 onTapViewAll: () {
                   /// navigate to all orders view at index 1 of Main scaffold
                   widget.onIndexUpdate(1);
-                }),
-            kMinorSpace,
-            ..._buildRecords(dataResponse!.data.products),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSection({required String title, required String actionText, dynamic onTapViewAll}) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          title,
-          style: vendorSell(context).copyWith(
-            color: Colors.black,
-            fontSize: 16,
-          ),
-        ),
-        Row(
-          children: [
-            GestureDetector(
-              onTap: onTapViewAll,
-              child: Text(
-                actionText,
-                style: views(context).copyWith(color: AppColors.peachyPink),
+                },
               ),
-            ),
-            Icon(
-              Icons.arrow_forward_ios,
-              color: AppColors.peachyPink,
-              size: 16,
-            ),
+              kMinorSpace,
+              ..._buildRecords(dataResponse!.data.products),
+            ],
           ],
         ),
-      ],
-    );
-  }
+      );
+
+  Widget _buildSection(
+          {required String title, required String actionText, onTapViewAll}) =>
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            title,
+            style: vendorSell(context).copyWith(
+              color: Colors.black,
+              fontSize: 16,
+            ),
+          ),
+          Row(
+            children: [
+              GestureDetector(
+                onTap: onTapViewAll,
+                child: Text(
+                  actionText,
+                  style: views(context).copyWith(color: AppColors.peachyPink),
+                ),
+              ),
+              const Icon(
+                Icons.arrow_forward_ios,
+                color: AppColors.peachyPink,
+                size: 16,
+              ),
+            ],
+          ),
+        ],
+      );
 
   List<Widget> _buildRecords(List<dynamic>? records) {
-    if (records == null || records.isEmpty) return [SizedBox.shrink()];
+    if (records == null || records.isEmpty) return [const SizedBox.shrink()];
     return records.take(5).map((record) {
-      RegExp regExp = RegExp(r'<span.*?>(.*?)<\/span>', dotAll: true);
-      var statusGroup = regExp.firstMatch(record?.status ?? '');
+      final RegExp regExp = RegExp(r'<span.*?>(.*?)<\/span>', dotAll: true);
+      final statusGroup = regExp.firstMatch(record?.status ?? '');
       final status = statusGroup?.group(1)?.trim();
       return Column(
         children: [
@@ -264,9 +266,11 @@ class _VendorDashBoardScreenState extends State<VendorDashBoardScreen> {
               style: dataRowTextStyle(),
             ),
             status: status,
-            statusTextStyle: TextStyle(color: AppColors.getOrderStatusColor(status)),
+            statusTextStyle:
+                TextStyle(color: AppColors.getOrderStatusColor(status)),
             title: record?.name?.toString() ?? '',
-            subtitle: record?.amount?.toString().replaceAll('AED', 'AED ') ?? '',
+            subtitle:
+                record?.amount?.toString().replaceAll('AED', 'AED ') ?? '',
           ),
           kSmallSpace,
         ],

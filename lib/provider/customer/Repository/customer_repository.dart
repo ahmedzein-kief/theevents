@@ -1,7 +1,7 @@
+import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/models/account_models/customer_upload_profile_pic_model.dart';
 import 'package:event_app/models/account_models/reviews/customer_get_product_reviews_model.dart';
 import 'package:event_app/models/vendor_models/common_models/common_post_request_model.dart';
-import 'package:event_app/utils/apiendpoints/api_end_point.dart';
 
 import '../../../data/vendor/data/network/dio/DioBaseApiServices.dart';
 import '../../../data/vendor/data/network/dio/DioNetworkApiServices.dart';
@@ -12,7 +12,7 @@ class CustomerRepository {
   /// customer upload profile picture
   Future<CustomerUploadProfilePicModel> customerUploadProfilePicture({
     required Map<String, String> headers,
-    required dynamic formData,
+    required formData,
   }) async {
     final response = await _dioBaseApiServices.dioMultipartApiService(
       url: ApiEndpoints.customerUploadProfilePic,
@@ -22,7 +22,6 @@ class CustomerRepository {
     );
     return CustomerUploadProfilePicModel.fromJson(response);
   }
-
 
   /// Vendor reviews list
   Future<CustomerGetProductReviewsModel> customerGetProductReviews({
@@ -39,11 +38,10 @@ class CustomerRepository {
     return CustomerGetProductReviewsModel.fromJson(response);
   }
 
-
   /// customer submit review
   Future<CommonPostRequestModel> customerSubmitReview({
     required Map<String, String> headers,
-    required dynamic form,
+    required form,
   }) async {
     final response = await _dioBaseApiServices.dioMultipartApiService(
       url: ApiEndpoints.customerSubmitReview,
@@ -55,11 +53,10 @@ class CustomerRepository {
     return CommonPostRequestModel.fromJson(response);
   }
 
-
   /// customer delete review
   Future<CommonPostRequestModel> customerDeleteReview({
     required Map<String, String> headers,
-    required dynamic reviewID,
+    required reviewID,
   }) async {
     // API call
     final response = await _dioBaseApiServices.dioGetApiService(
@@ -69,6 +66,4 @@ class CustomerRepository {
     // Map the response to the model
     return CommonPostRequestModel.fromJson(response);
   }
-
-
 }

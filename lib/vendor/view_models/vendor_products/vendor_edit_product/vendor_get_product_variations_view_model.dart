@@ -1,8 +1,8 @@
 import 'dart:convert';
 
+import 'package:event_app/core/services/shared_preferences_helper.dart';
 import 'package:event_app/data/vendor/data/response/ApiResponse.dart';
 import 'package:event_app/provider/vendor/vendor_repository.dart';
-import 'package:event_app/utils/storage/shared_preferences_helper.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../../../../models/vendor_models/products/edit_product/vendor_get_product_variations_model.dart';
@@ -16,7 +16,7 @@ class VendorGetProductVariationsViewModel with ChangeNotifier {
 
   List<ProductVariationRecord> get list => _list;
 
-  setToken() async {
+  Future<void> setToken() async {
     _token = await SecurePreferencesUtil.getToken();
   }
 
@@ -30,7 +30,8 @@ class VendorGetProductVariationsViewModel with ChangeNotifier {
   }
 
   final _myRepo = VendorRepository();
-  ApiResponse<VendorGetProductVariationsModel> _apiResponse = ApiResponse.none();
+  ApiResponse<VendorGetProductVariationsModel> _apiResponse =
+      ApiResponse.none();
 
   ApiResponse<VendorGetProductVariationsModel> get apiResponse => _apiResponse;
 
@@ -40,14 +41,14 @@ class VendorGetProductVariationsViewModel with ChangeNotifier {
   }
 
   /// get products method
-  vendorGetProductVariations({
+  Future<void> vendorGetProductVariations({
     required String productID,
     String? searchString,
   }) async {
     await setToken();
     try {
-      Map<String, String> headers = <String, String>{
-        "Authorization": _token!,
+      final Map<String, String> headers = <String, String>{
+        'Authorization': _token!,
       };
 
       final dynamic body = jsonEncode({
@@ -61,7 +62,9 @@ class VendorGetProductVariationsViewModel with ChangeNotifier {
       // If successful, increment the current page and append data
       if (_currentPage <= _lastPage) {
         setApiResponse = ApiResponse.loading();
-        final VendorGetProductVariationsModel response = await _myRepo.vendorGetProductVariations(headers: headers, body: body, productID: productID);
+        final VendorGetProductVariationsModel response =
+            await _myRepo.vendorGetProductVariations(
+                headers: headers, body: body, productID: productID);
         setLastPage(response);
         resetList(response);
         setApiResponse = ApiResponse.completed(response);
@@ -91,7 +94,7 @@ class VendorGetProductVariationsViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  void removeElementFromList({required dynamic id}) {
+  void removeElementFromList({required id}) {
     _list.removeWhere((element) => element.id == id);
     notifyListeners();
   }

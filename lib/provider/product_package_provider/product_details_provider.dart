@@ -1,10 +1,10 @@
 import 'dart:convert';
 
+import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
+import 'package:event_app/core/services/shared_preferences_helper.dart';
 import 'package:event_app/models/product_packages_models/customer_reviews_data_response.dart';
 import 'package:event_app/models/product_variation_model.dart';
 import 'package:event_app/provider/api_response_handler.dart';
-import 'package:event_app/utils/apiendpoints/api_end_point.dart';
-import 'package:event_app/utils/storage/shared_preferences_helper.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../../models/product_packages_models/product_details_models.dart';
@@ -59,10 +59,12 @@ class ProductItemsProvider with ChangeNotifier {
       final headers = {'Authorization': '$token'};
 
       print(url);
-      final response = await _apiResponseHandler.getRequest(url, context: context, headers: headers);
+      final response = await _apiResponseHandler.getRequest(url,
+          context: context, headers: headers);
 
       if (response.statusCode == 200) {
-        _apiResponse = ProductDetailsModels.fromJson(json.decode(response.body));
+        _apiResponse =
+            ProductDetailsModels.fromJson(json.decode(response.body));
         _itemRecord = _apiResponse?.data?.record;
         _images = Images.fromJson(json.decode(response.body));
         _errorMessage = '';
@@ -92,15 +94,18 @@ class ProductItemsProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      final url = '${ApiEndpoints.customerReviews}$productId?per-page=10&page=1';
+      final url =
+          '${ApiEndpoints.customerReviews}$productId?per-page=10&page=1';
       final token = await SecurePreferencesUtil.getToken();
       final headers = {'Authorization': '$token'};
 
       print(url);
-      final response = await _apiResponseHandler.getRequest(url, context: context, headers: headers);
+      final response = await _apiResponseHandler.getRequest(url,
+          context: context, headers: headers);
 
       if (response.statusCode == 200) {
-        _apiReviewsResponse = CustomerReviewsDataResponse.fromJson(json.decode(response.body));
+        _apiReviewsResponse =
+            CustomerReviewsDataResponse.fromJson(json.decode(response.body));
         _errorMessage = '';
         _isReviewLoading = false;
         notifyListeners();
@@ -132,19 +137,23 @@ class ProductItemsProvider with ChangeNotifier {
 
     try {
       // Extract attribute IDs
-      List<int> attributeIds = selectedAttributes.map((e) => e?['attribute_id'] as int).toList();
+      final List<int> attributeIds =
+          selectedAttributes.map((e) => e?['attribute_id'] as int).toList();
 
       // Build the query string manually
-      String queryString = attributeIds.map((id) => 'attributes[]=$id').join('&');
+      final String queryString =
+          attributeIds.map((id) => 'attributes[]=$id').join('&');
 
       final url = '${ApiEndpoints.productVariations}$productID?$queryString';
       final token = await SecurePreferencesUtil.getToken();
       final headers = {'Authorization': 'Bearer $token'};
 
-      final response = await _apiResponseHandler.getRequest(url, context: context, headers: headers);
+      final response = await _apiResponseHandler.getRequest(url,
+          context: context, headers: headers);
 
       if (response.statusCode == 200) {
-        ProductVariationModel responseData = ProductVariationModel.fromJson(json.decode(response.body));
+        final ProductVariationModel responseData =
+            ProductVariationModel.fromJson(json.decode(response.body));
 
         _OtherLoading = false;
         notifyListeners();

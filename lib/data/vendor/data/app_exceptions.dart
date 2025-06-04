@@ -1,13 +1,10 @@
 class AppExceptions implements Exception {
+  AppExceptions(this.message, this.prefix);
   final String message;
   final String prefix;
 
-  AppExceptions(this.message, this.prefix);
-
   @override
-  String toString() {
-    return '$prefix$message';
-  }
+  String toString() => '$prefix$message';
 }
 
 class FetchDataException extends AppExceptions {
@@ -45,7 +42,7 @@ class InvalidInputException extends AppExceptions {
 }
 
 class ValidationException extends AppExceptions {
-  ValidationException(String message) : super(message, "");
+  ValidationException(String message) : super(message, '');
 }
 
 class TooManyRequestsException extends AppExceptions {

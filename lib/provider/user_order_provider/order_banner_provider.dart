@@ -1,5 +1,5 @@
+import 'package:event_app/core/network/api_status/api_status.dart';
 import 'package:event_app/provider/api_response_handler.dart';
-import 'package:event_app/utils/apiStatus/api_status.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../../data/repository/featured_category_repository.dart';

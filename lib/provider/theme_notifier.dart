@@ -2,17 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ThemeNotifier with ChangeNotifier {
-  bool _isLightTheme = true; // Default theme
-  late SharedPreferences _prefs;
-  final String key = "theme";
-
-  bool get isLightTheme => _isLightTheme;
-
   ThemeNotifier() {
     _loadFromPrefs();
   }
+  bool _isLightTheme = true; // Default theme
+  late SharedPreferences _prefs;
+  final String key = 'theme';
 
-  toggleTheme() {
+  bool get isLightTheme => _isLightTheme;
+
+  void toggleTheme() {
     _isLightTheme = !_isLightTheme;
     _saveToPrefs();
     notifyListeners();

@@ -1,36 +1,23 @@
 import 'dart:convert';
 
+import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/provider/api_response_handler.dart';
-import 'package:event_app/utils/apiendpoints/api_end_point.dart';
 import 'package:flutter/cupertino.dart';
 
 class StoreModel {
+  StoreModel({required this.error, this.data, this.message});
+
+  factory StoreModel.fromJson(Map<String, dynamic> json) => StoreModel(
+        error: json['error'],
+        data: json['data'] != null ? Data.fromJson(json['data']) : null,
+        message: json['message'],
+      );
   final bool error;
   final Data? data;
   final String? message;
-
-  StoreModel({required this.error, this.data, this.message});
-
-  factory StoreModel.fromJson(Map<String, dynamic> json) {
-    return StoreModel(
-      error: json['error'],
-      data: json['data'] != null ? Data.fromJson(json['data']) : null,
-      message: json['message'],
-    );
-  }
 }
 
 class Data {
-  final int id;
-  final String name;
-  final String logo;
-  final String logoThumb;
-  final String coverImage;
-  final String title;
-  final String description;
-  final String slug;
-  final SeoMeta? seoMeta;
-
   Data({
     required this.id,
     required this.name,
@@ -43,27 +30,31 @@ class Data {
     this.seoMeta,
   });
 
-  factory Data.fromJson(Map<String, dynamic> json) {
-    return Data(
-      id: json['id'],
-      name: json['name'],
-      logo: json['logo'],
-      logoThumb: json['logo_thumb'],
-      coverImage: json['cover_image'],
-      title: json['title'],
-      description: json['description'],
-      slug: json['slug'],
-      seoMeta: json['seo_meta'] != null ? SeoMeta.fromJson(json['seo_meta']) : null,
-    );
-  }
+  factory Data.fromJson(Map<String, dynamic> json) => Data(
+        id: json['id'],
+        name: json['name'],
+        logo: json['logo'],
+        logoThumb: json['logo_thumb'],
+        coverImage: json['cover_image'],
+        title: json['title'],
+        description: json['description'],
+        slug: json['slug'],
+        seoMeta: json['seo_meta'] != null
+            ? SeoMeta.fromJson(json['seo_meta'])
+            : null,
+      );
+  final int id;
+  final String name;
+  final String logo;
+  final String logoThumb;
+  final String coverImage;
+  final String title;
+  final String description;
+  final String slug;
+  final SeoMeta? seoMeta;
 }
 
 class SeoMeta {
-  final String title;
-  final String description;
-  final String image;
-  final String robots;
-
   SeoMeta({
     required this.title,
     required this.description,
@@ -71,14 +62,16 @@ class SeoMeta {
     required this.robots,
   });
 
-  factory SeoMeta.fromJson(Map<String, dynamic> json) {
-    return SeoMeta(
-      title: json['title'],
-      description: json['description'],
-      image: json['image'],
-      robots: json['robots'],
-    );
-  }
+  factory SeoMeta.fromJson(Map<String, dynamic> json) => SeoMeta(
+        title: json['title'],
+        description: json['description'],
+        image: json['image'],
+        robots: json['robots'],
+      );
+  final String title;
+  final String description;
+  final String image;
+  final String robots;
 }
 
 class StoreProvider with ChangeNotifier {
@@ -92,8 +85,8 @@ class StoreProvider with ChangeNotifier {
     BuildContext context,
   ) async {
     // final url = 'https://api.staging.theevents.ae/api/v1/stores/$slug';
-    final urlApi = ApiEndpoints.brandStore;
-    final url = '${urlApi}$slug';
+    const urlApi = ApiEndpoints.brandStore;
+    final url = '$urlApi$slug';
     isLoading = true;
     notifyListeners();
 
@@ -109,7 +102,6 @@ class StoreProvider with ChangeNotifier {
       } else {
         throw Exception('Failed to load store');
       }
-    } catch (error) {
     } finally {
       isLoading = false;
       notifyListeners();

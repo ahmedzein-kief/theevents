@@ -1,8 +1,8 @@
 import 'dart:convert';
 
+import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/models/product_packages_models/product_filters_model.dart';
 import 'package:event_app/provider/api_response_handler.dart';
-import 'package:event_app/utils/apiendpoints/api_end_point.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../../models/dashboard/user_by_type_model/userbytype_packages_models.dart';
@@ -47,13 +47,13 @@ class ProductProvider with ChangeNotifier {
     notifyListeners();
 
     // Convert selectedFilters to query parameters
-    String filtersQuery = filters.entries
+    final String filtersQuery = filters.entries
         .where((entry) => entry.value.isNotEmpty) // Exclude empty lists
         .map((entry) {
       if (entry.key == 'Prices') {
         // Handle Price range specifically
-        int minPrice = entry.value[0];
-        int maxPrice = entry.value[1];
+        final int minPrice = entry.value[0];
+        final int maxPrice = entry.value[1];
         return 'min_price=$minPrice&max_price=$maxPrice';
       } else {
         // Handle all other filters
@@ -67,9 +67,11 @@ class ProductProvider with ChangeNotifier {
       }
     }).join('&');
 
-    final baseUrl = '${ApiEndpoints.userByTypeProducts}?per-page=$perPage&page=$page&sort-by=$sortBy&store_id=$storeId';
-    final url = filtersQuery.isNotEmpty ? '$baseUrl&$filtersQuery&allcategories=1' : baseUrl;
-
+    final baseUrl =
+        '${ApiEndpoints.userByTypeProducts}?per-page=$perPage&page=$page&sort-by=$sortBy&store_id=$storeId';
+    final url = filtersQuery.isNotEmpty
+        ? '$baseUrl&$filtersQuery&allcategories=1'
+        : baseUrl;
 
     try {
       final response = await _apiResponseHandler.getRequest(
@@ -107,7 +109,7 @@ class ProductProvider with ChangeNotifier {
   Pagination? _brandsPagination;
   TopBrandsProducts? _topBrandsProducts;
   bool _isLoadingPackages = false;
-  bool _isMoreLoadingProducts = false;
+  final bool _isMoreLoadingProducts = false;
 
   List<Records> get records => _records;
 
@@ -129,7 +131,8 @@ class ProductProvider with ChangeNotifier {
     }
     notifyListeners();
 
-    final url = '${ApiEndpoints.userByTypePackages}?per-page=$perPage&page=$page&sort-by=$sortBy&store_id=$storeId';
+    final url =
+        '${ApiEndpoints.userByTypePackages}?per-page=$perPage&page=$page&sort-by=$sortBy&store_id=$storeId';
 
     try {
       final response = await _apiResponseHandler.getRequest(
@@ -141,8 +144,8 @@ class ProductProvider with ChangeNotifier {
         final data = json.decode(response.body);
 
         final Map<String, dynamic> jsonResponse = json.decode(response.body);
-        final TopBrandsProducts apiResponse = TopBrandsProducts.fromJson(jsonResponse);
-
+        final TopBrandsProducts apiResponse =
+            TopBrandsProducts.fromJson(jsonResponse);
 
         if (page == 1) {
           _records = apiResponse.data?.records ?? [];

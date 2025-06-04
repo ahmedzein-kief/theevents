@@ -25,7 +25,7 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white, // Customize the app bar background color
-        leading: BackIcon(),
+        leading: const BackIcon(),
         leadingWidth: 100,
       ),
       body: SafeArea(
@@ -41,15 +41,17 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
                       height: 200,
                       width: double.infinity,
                       child: Padding(
-                        padding: EdgeInsets.only(left: screenWidth * 0.05, right: screenHeight * 0.02),
+                        padding: EdgeInsets.only(
+                            left: screenWidth * 0.05,
+                            right: screenHeight * 0.02),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Image.asset(
-                              "assets/Frame.png",
+                              'assets/Frame.png',
                               height: 180,
-                            )
+                            ),
                           ],
                         ),
                       ),
@@ -59,7 +61,10 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
                     _ourMission(),
                     _ourVision(),
                     Padding(
-                      padding: EdgeInsets.only(left: screenWidth * 0.05, right: screenWidth * 0.02, top: screenHeight * 0.02),
+                      padding: EdgeInsets.only(
+                          left: screenWidth * 0.05,
+                          right: screenWidth * 0.02,
+                          top: screenHeight * 0.02),
                       child: SizedBox(
                         height: 100,
                         width: screenWidth,
@@ -81,41 +86,77 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
                           color: AppColors.orange,
                         ),
                         child: Padding(
-                          padding: EdgeInsets.all(20),
+                          padding: const EdgeInsets.all(20),
                           child: Column(
                             children: [
                               Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Text('United Arab Emirates', style: valueItemsStyle(context)),
+                                  Text('United Arab Emirates',
+                                      style: valueItemsStyle(context)),
                                   Padding(
-                                    padding: EdgeInsets.only(top: screenHeight * 0.01, bottom: screenHeight * 0.01),
-                                    child: Container(height: 1, color: Colors.white, width: 100),
+                                    padding: EdgeInsets.only(
+                                        top: screenHeight * 0.01,
+                                        bottom: screenHeight * 0.01),
+                                    child: Container(
+                                        height: 1,
+                                        color: Colors.white,
+                                        width: 100),
                                   ),
-                                  Text('Saudi Arabia', style: valueItemsStyle(context)),
+                                  Text('Saudi Arabia',
+                                      style: valueItemsStyle(context)),
                                   Padding(
-                                    padding: EdgeInsets.only(top: screenHeight * 0.01, bottom: screenHeight * 0.01),
-                                    child: Container(height: 1, color: Colors.white, width: 100),
+                                    padding: EdgeInsets.only(
+                                        top: screenHeight * 0.01,
+                                        bottom: screenHeight * 0.01),
+                                    child: Container(
+                                        height: 1,
+                                        color: Colors.white,
+                                        width: 100),
                                   ),
-                                  Text(' Bahrain', style: valueItemsStyle(context)),
+                                  Text(' Bahrain',
+                                      style: valueItemsStyle(context)),
                                   Padding(
-                                    padding: EdgeInsets.only(top: screenHeight * 0.01, bottom: screenHeight * 0.01),
-                                    child: Container(height: 1, color: Colors.white, width: 100),
+                                    padding: EdgeInsets.only(
+                                        top: screenHeight * 0.01,
+                                        bottom: screenHeight * 0.01),
+                                    child: Container(
+                                        height: 1,
+                                        color: Colors.white,
+                                        width: 100),
                                   ),
-                                  Text(' Kuwait', style: valueItemsStyle(context)),
+                                  Text(' Kuwait',
+                                      style: valueItemsStyle(context)),
                                   Padding(
-                                    padding: EdgeInsets.only(top: screenHeight * 0.01, bottom: screenHeight * 0.01),
-                                    child: Container(height: 1, color: Colors.white, width: 100),
+                                    padding: EdgeInsets.only(
+                                        top: screenHeight * 0.01,
+                                        bottom: screenHeight * 0.01),
+                                    child: Container(
+                                        height: 1,
+                                        color: Colors.white,
+                                        width: 100),
                                   ),
-                                  Text(' Oman', style: valueItemsStyle(context)),
+                                  Text(' Oman',
+                                      style: valueItemsStyle(context)),
                                   Padding(
-                                    padding: EdgeInsets.only(top: screenHeight * 0.01, bottom: screenHeight * 0.01),
-                                    child: Container(height: 1, color: Colors.white, width: 100),
+                                    padding: EdgeInsets.only(
+                                        top: screenHeight * 0.01,
+                                        bottom: screenHeight * 0.01),
+                                    child: Container(
+                                        height: 1,
+                                        color: Colors.white,
+                                        width: 100),
                                   ),
-                                  Text(' Qatar', style: valueItemsStyle(context)),
+                                  Text(' Qatar',
+                                      style: valueItemsStyle(context)),
                                   Padding(
-                                    padding: EdgeInsets.only(top: screenHeight * 0.01, bottom: screenHeight * 0.01),
-                                    child: Container(height: 1, color: Colors.white, width: 100),
+                                    padding: EdgeInsets.only(
+                                        top: screenHeight * 0.01,
+                                        bottom: screenHeight * 0.01),
+                                    child: Container(
+                                        height: 1,
+                                        color: Colors.white,
+                                        width: 100),
                                   ),
                                 ],
                               ),
@@ -140,7 +181,8 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
     return Column(
       children: [
         Padding(
-          padding: EdgeInsets.only(left: screenWidth * 0.05, top: screenHeight * 0.02),
+          padding: EdgeInsets.only(
+              left: screenWidth * 0.05, top: screenHeight * 0.02),
           child: Row(
             children: [
               Text(
@@ -152,12 +194,13 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
                 ' WE ARE'.toUpperCase(),
                 style: headingsTextStyle(context),
                 softWrap: true,
-              )
+              ),
             ],
           ),
         ),
         Padding(
-          padding: EdgeInsets.only(left: screenWidth * 0.05, top: screenHeight * 0.02),
+          padding: EdgeInsets.only(
+              left: screenWidth * 0.05, top: screenHeight * 0.02),
           child: Row(
             children: [
               Expanded(
@@ -183,7 +226,10 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(15),
-                    child: Text(softWrap: true, style: headingDescriptionStyleText(context), AppStrings.whoWeAre),
+                    child: Text(
+                        softWrap: true,
+                        style: headingDescriptionStyleText(context),
+                        AppStrings.whoWeAre),
                   ),
                 ),
               ),
@@ -214,7 +260,12 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
                 child: Padding(
                   padding: const EdgeInsets.all(20),
                   child: Column(
-                    children: [Text(softWrap: true, style: headingDescriptionStyleText(context), AppStrings.aboutUsEvents)],
+                    children: [
+                      Text(
+                          softWrap: true,
+                          style: headingDescriptionStyleText(context),
+                          AppStrings.aboutUsEvents)
+                    ],
                   ),
                 ),
               ),
@@ -231,7 +282,8 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
     return Column(
       children: [
         Padding(
-          padding: EdgeInsets.only(left: screenWidth * 0.05, top: screenHeight * 0.02),
+          padding: EdgeInsets.only(
+              left: screenWidth * 0.05, top: screenHeight * 0.02),
           child: Row(
             children: [
               Text(
@@ -243,12 +295,15 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
                 ' MISSION',
                 style: headingsTextStyle(context),
                 softWrap: true,
-              )
+              ),
             ],
           ),
         ),
         Padding(
-          padding: EdgeInsets.only(left: screenWidth * 0.05, top: screenHeight * 0.02, right: screenWidth * 0.05),
+          padding: EdgeInsets.only(
+              left: screenWidth * 0.05,
+              top: screenHeight * 0.02,
+              right: screenWidth * 0.05),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -256,20 +311,28 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
               Container(
                 // color: AppColors.orange,
                 width: double.infinity,
-                decoration:
-                    BoxDecoration(borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(10), topLeft: Radius.circular(10)), color: AppColors.orange, boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.5),
-                    spreadRadius: 0.1,
-                    blurRadius: 10,
-                  )
-                ]),
+                decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.only(
+                      bottomLeft: Radius.circular(10),
+                      topLeft: Radius.circular(10)),
+                  color: AppColors.orange,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 0.1,
+                      blurRadius: 10,
+                    ),
+                  ],
+                ),
 
                 child: Padding(
                   padding: const EdgeInsets.all(20),
                   child: Column(
                     children: [
-                      Text(softWrap: true, style: headingDescriptionStyleText(context), AppStrings.ourMission),
+                      Text(
+                          softWrap: true,
+                          style: headingDescriptionStyleText(context),
+                          AppStrings.ourMission),
                     ],
                   ),
                 ),
@@ -287,7 +350,8 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
     return Column(
       children: [
         Padding(
-          padding: EdgeInsets.only(left: screenWidth * 0.05, top: screenHeight * 0.02),
+          padding: EdgeInsets.only(
+              left: screenWidth * 0.05, top: screenHeight * 0.02),
           child: Row(
             children: [
               Text(
@@ -299,12 +363,15 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
                 ' VISION',
                 style: headingsTextStyle(context),
                 softWrap: true,
-              )
+              ),
             ],
           ),
         ),
         Padding(
-          padding: EdgeInsets.only(left: screenWidth * 0.05, top: screenHeight * 0.02, right: screenWidth * 0.05),
+          padding: EdgeInsets.only(
+              left: screenWidth * 0.05,
+              top: screenHeight * 0.02,
+              right: screenWidth * 0.05),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -312,18 +379,28 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
               Container(
                 // color: AppColors.orange,
                 width: double.infinity,
-                decoration:
-                    BoxDecoration(borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(10), topLeft: Radius.circular(10)), color: AppColors.orange, boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.5),
-                    spreadRadius: 0.1,
-                    blurRadius: 10,
-                  )
-                ]),
+                decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.only(
+                      bottomLeft: Radius.circular(10),
+                      topLeft: Radius.circular(10)),
+                  color: AppColors.orange,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 0.1,
+                      blurRadius: 10,
+                    ),
+                  ],
+                ),
                 child: Padding(
                   padding: const EdgeInsets.all(20),
                   child: Column(
-                    children: [Text(softWrap: true, style: headingDescriptionStyleText(context), AppStrings.ourVision)],
+                    children: [
+                      Text(
+                          softWrap: true,
+                          style: headingDescriptionStyleText(context),
+                          AppStrings.ourVision)
+                    ],
                   ),
                 ),
               ),
@@ -340,7 +417,10 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
     return Column(
       children: [
         Padding(
-          padding: EdgeInsets.only(left: screenWidth * 0.05, right: screenWidth * 0.02, top: screenHeight * 0.02),
+          padding: EdgeInsets.only(
+              left: screenWidth * 0.05,
+              right: screenWidth * 0.02,
+              top: screenHeight * 0.02),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -353,7 +433,11 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
                   color: AppColors.orange,
                 ),
                 child: Padding(
-                  padding: EdgeInsets.only(left: screenWidth * 0.02, right: screenWidth * 0.02, bottom: screenWidth * 0.04, top: screenWidth * 0.04),
+                  padding: EdgeInsets.only(
+                      left: screenWidth * 0.02,
+                      right: screenWidth * 0.02,
+                      bottom: screenWidth * 0.04,
+                      top: screenWidth * 0.04),
                   child: Column(
                     children: [
                       Row(
@@ -363,69 +447,84 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
                             'Our'.toUpperCase(),
                             style: ourItemsStyle(context),
                           ),
-                          Text(' Values'.toUpperCase(), style: valueItemsStyle(context)),
+                          Text(' Values'.toUpperCase(),
+                              style: valueItemsStyle(context)),
                         ],
                       ),
                       Padding(
-                        padding: EdgeInsets.only(top: 20),
+                        padding: const EdgeInsets.only(top: 20),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Expanded(
-                                child: Column(
-                              children: [
-                                Image.network(
-                                  'https://theevents.ae/assets/frontend/img/profile/about-icon1.png',
-                                  height: 35,
-                                  errorBuilder: (builder, context, _) {
-                                    return Container(
+                              child: Column(
+                                children: [
+                                  Image.network(
+                                    'https://theevents.ae/assets/frontend/img/profile/about-icon1.png',
+                                    height: 35,
+                                    errorBuilder: (builder, context, _) =>
+                                        Container(
                                       decoration: const BoxDecoration(
-                                          gradient: LinearGradient(
-                                        colors: [
-                                          Color(0xff2196F3),
-                                          Color(0xff00BCD4),
-                                        ],
-                                      )),
-                                    );
-                                  },
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(6),
-                                  child: Text('Simplicity', style: ourItemsTextStyle(context)),
-                                )
-                              ],
-                            )),
+                                        gradient: LinearGradient(
+                                          colors: [
+                                            Color(0xff2196F3),
+                                            Color(0xff00BCD4),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(6),
+                                    child: Text('Simplicity',
+                                        style: ourItemsTextStyle(context)),
+                                  ),
+                                ],
+                              ),
+                            ),
                             Expanded(
-                                child: Column(
-                              children: [
-                                Image.network('https://theevents.ae/assets/frontend/img/profile/about-icon2.png', height: 35),
-                                Padding(
-                                  padding: const EdgeInsets.all(6),
-                                  child: Text('Innovation', style: ourItemsTextStyle(context)),
-                                )
-                              ],
-                            )),
+                              child: Column(
+                                children: [
+                                  Image.network(
+                                      'https://theevents.ae/assets/frontend/img/profile/about-icon2.png',
+                                      height: 35),
+                                  Padding(
+                                    padding: const EdgeInsets.all(6),
+                                    child: Text('Innovation',
+                                        style: ourItemsTextStyle(context)),
+                                  ),
+                                ],
+                              ),
+                            ),
                             Expanded(
-                                child: Column(
-                              children: [
-                                Image.network('https://theevents.ae/assets/frontend/img/profile/about-icon3.png', height: 35),
-                                Padding(
-                                  padding: const EdgeInsets.all(6),
-                                  child: Text('Thoughtfulness', style: ourItemsTextStyle(context)),
-                                )
-                              ],
-                            )),
+                              child: Column(
+                                children: [
+                                  Image.network(
+                                      'https://theevents.ae/assets/frontend/img/profile/about-icon3.png',
+                                      height: 35),
+                                  Padding(
+                                    padding: const EdgeInsets.all(6),
+                                    child: Text('Thoughtfulness',
+                                        style: ourItemsTextStyle(context)),
+                                  ),
+                                ],
+                              ),
+                            ),
                             Expanded(
-                                child: Column(
-                              children: [
-                                Image.network('https://theevents.ae/assets/frontend/img/profile/about-icon4.png', height: 35),
-                                Padding(
-                                  padding: const EdgeInsets.all(6),
-                                  child: Text('Reliability', style: ourItemsTextStyle(context)),
-                                )
-                              ],
-                            ))
+                              child: Column(
+                                children: [
+                                  Image.network(
+                                      'https://theevents.ae/assets/frontend/img/profile/about-icon4.png',
+                                      height: 35),
+                                  Padding(
+                                    padding: const EdgeInsets.all(6),
+                                    child: Text('Reliability',
+                                        style: ourItemsTextStyle(context)),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -446,7 +545,8 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
     return Column(
       children: [
         Padding(
-          padding: EdgeInsets.only(left: screenWidth * 0.05, top: screenHeight * 0.02),
+          padding: EdgeInsets.only(
+              left: screenWidth * 0.05, top: screenHeight * 0.02),
           child: Row(
             children: [
               Text(
@@ -458,11 +558,16 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
                 ' LOCATION',
                 style: headingsTextStyle(context),
                 softWrap: true,
-              )
+              ),
             ],
           ),
         ),
-        Padding(padding: EdgeInsets.only(left: screenWidth * 0.05, top: screenHeight * 0.02, right: screenWidth * 0.05), child: Image.asset('assets/map.png')),
+        Padding(
+            padding: EdgeInsets.only(
+                left: screenWidth * 0.05,
+                top: screenHeight * 0.02,
+                right: screenWidth * 0.05),
+            child: Image.asset('assets/map.png')),
       ],
     );
   }

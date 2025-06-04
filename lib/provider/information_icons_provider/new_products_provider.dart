@@ -1,9 +1,9 @@
 import 'dart:convert';
 
+import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/models/dashboard/information_icons_models/new_products_models.dart';
 import 'package:event_app/models/product_packages_models/product_filters_model.dart';
 import 'package:event_app/provider/api_response_handler.dart';
-import 'package:event_app/utils/apiendpoints/api_end_point.dart';
 import 'package:flutter/cupertino.dart';
 
 class NewProductsProvider extends ChangeNotifier {
@@ -86,13 +86,13 @@ class NewProductsProvider extends ChangeNotifier {
     notifyListeners();
 
     // Convert selectedFilters to query parameters
-    String filtersQuery = filters.entries
+    final String filtersQuery = filters.entries
         .where((entry) => entry.value.isNotEmpty) // Exclude empty lists
         .map((entry) {
       if (entry.key == 'Prices') {
         // Handle Price range specifically
-        int minPrice = entry.value[0];
-        int maxPrice = entry.value[1];
+        final int minPrice = entry.value[0];
+        final int maxPrice = entry.value[1];
         return 'min_price=$minPrice&max_price=$maxPrice';
       } else {
         // Handle all other filters
@@ -106,8 +106,11 @@ class NewProductsProvider extends ChangeNotifier {
       }
     }).join('&');
 
-    final baseUrl = '${ApiEndpoints.newProducts}?per-page=$perPage&page=$page&sort-by=$sortBy';
-    final url = filtersQuery.isNotEmpty ? '$baseUrl&$filtersQuery&allcategories=1' : baseUrl;
+    final baseUrl =
+        '${ApiEndpoints.newProducts}?per-page=$perPage&page=$page&sort-by=$sortBy';
+    final url = filtersQuery.isNotEmpty
+        ? '$baseUrl&$filtersQuery&allcategories=1'
+        : baseUrl;
 
     print('URL $url');
 
@@ -122,7 +125,8 @@ class NewProductsProvider extends ChangeNotifier {
         // final newProducts = NewProductsModels.fromJson(jsonData).data?.records ?? [];
         final Map<String, dynamic> jsonResponse = json.decode(response.body);
         print('json response $jsonResponse');
-        final NewProductsModels apiResponse = NewProductsModels.fromJson(jsonResponse);
+        final NewProductsModels apiResponse =
+            NewProductsModels.fromJson(jsonResponse);
 
         if (page == 1) {
           _products = apiResponse.data?.records ?? [];

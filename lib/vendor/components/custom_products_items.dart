@@ -2,17 +2,8 @@ import 'package:flutter/material.dart';
 
 /// Custom class for product item
 class VendorProductView extends StatelessWidget {
-  final String id;
-  final String productName;
-  final String amount;
-  final String status;
-  final String createdAt;
-  final Color backgroundColor;
-  final Color headingColor;
-  final String imageUrl;
-
   const VendorProductView({
-    Key? key,
+    super.key,
     required this.id,
     required this.productName,
     required this.amount,
@@ -21,7 +12,15 @@ class VendorProductView extends StatelessWidget {
     required this.imageUrl,
     this.backgroundColor = Colors.white, // default background color
     this.headingColor = Colors.grey, // default heading color
-  }) : super(key: key);
+  });
+  final String id;
+  final String productName;
+  final String amount;
+  final String status;
+  final String createdAt;
+  final Color backgroundColor;
+  final Color headingColor;
+  final String imageUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -63,14 +62,15 @@ class VendorProductView extends StatelessWidget {
                       borderRadius: BorderRadius.circular(3),
                       color: Colors.green,
                     ),
-                    padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.03),
+                    padding:
+                        EdgeInsets.symmetric(horizontal: screenWidth * 0.03),
                     child: Text(status),
                   ),
                   Text(createdAt),
                 ],
               ),
             ),
-            Container(color: Colors.grey, height: 1, width: screenWidth)
+            Container(color: Colors.grey, height: 1, width: screenWidth),
           ],
         ),
       ),
@@ -80,12 +80,11 @@ class VendorProductView extends StatelessWidget {
 
 /// Custom heading widget
 class ProductListHeader extends StatelessWidget {
-  final Color headingColor;
-
   const ProductListHeader({
-    Key? key,
+    super.key,
     this.headingColor = Colors.grey, // default heading color
-  }) : super(key: key);
+  });
+  final Color headingColor;
 
   @override
   Widget build(BuildContext context) {
@@ -97,10 +96,10 @@ class ProductListHeader extends StatelessWidget {
         height: 50,
         width: screenWidth,
         color: headingColor,
-        child: Row(
+        child: const Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: const [
+          children: [
             Text('ID'),
             Text('PRODUCT'),
             Text('AMOUNT'),

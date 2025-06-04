@@ -1,8 +1,10 @@
 import 'dart:convert';
 
-SubscriptionPackageResponse subscriptionPackageResponseFromJson(String str) => SubscriptionPackageResponse.fromJson(json.decode(str));
+SubscriptionPackageResponse subscriptionPackageResponseFromJson(String str) =>
+    SubscriptionPackageResponse.fromJson(json.decode(str));
 
-String subscriptionPackageResponseToJson(SubscriptionPackageResponse data) => json.encode(data.toJson());
+String subscriptionPackageResponseToJson(SubscriptionPackageResponse data) =>
+    json.encode(data.toJson());
 
 class SubscriptionPackageResponse {
   SubscriptionPackageResponse({
@@ -10,17 +12,18 @@ class SubscriptionPackageResponse {
     required this.error,
   });
 
+  factory SubscriptionPackageResponse.fromJson(Map<dynamic, dynamic> json) =>
+      SubscriptionPackageResponse(
+        data: Data.fromJson(json['data']),
+        error: json['error'],
+      );
+
   Data data;
   bool error;
 
-  factory SubscriptionPackageResponse.fromJson(Map<dynamic, dynamic> json) => SubscriptionPackageResponse(
-        data: Data.fromJson(json["data"]),
-        error: json["error"],
-      );
-
   Map<dynamic, dynamic> toJson() => {
-        "data": data.toJson(),
-        "error": error,
+        'data': data.toJson(),
+        'error': error,
       };
 }
 
@@ -39,6 +42,20 @@ class Data {
     required this.thanksHeading,
   });
 
+  factory Data.fromJson(Map<dynamic, dynamic> json) => Data(
+        formatedPrice: json['formated_price'],
+        subHeading2: json['sub_heading2'],
+        subtime: json['subtime'],
+        heading: json['heading'],
+        subHeading: json['sub_heading'],
+        formatedVat: json['formated_vat'],
+        price: json['price'],
+        thanksSubHeading: json['thanks_sub_heading'],
+        storeEmail: json['store_email'],
+        formatedPriceWithoutVat: json['formated_price_without_vat'],
+        thanksHeading: json['thanks_heading'],
+      );
+
   String formatedPrice;
   String subHeading2;
   String subtime;
@@ -51,31 +68,17 @@ class Data {
   String formatedPriceWithoutVat;
   String thanksHeading;
 
-  factory Data.fromJson(Map<dynamic, dynamic> json) => Data(
-        formatedPrice: json["formated_price"],
-        subHeading2: json["sub_heading2"],
-        subtime: json["subtime"],
-        heading: json["heading"],
-        subHeading: json["sub_heading"],
-        formatedVat: json["formated_vat"],
-        price: json["price"],
-        thanksSubHeading: json["thanks_sub_heading"],
-        storeEmail: json["store_email"],
-        formatedPriceWithoutVat: json["formated_price_without_vat"],
-        thanksHeading: json["thanks_heading"],
-      );
-
   Map<dynamic, dynamic> toJson() => {
-        "formated_price": formatedPrice,
-        "sub_heading2": subHeading2,
-        "subtime": subtime,
-        "heading": heading,
-        "sub_heading": subHeading,
-        "formated_vat": formatedVat,
-        "price": price,
-        "thanks_sub_heading": thanksSubHeading,
-        "store_email": storeEmail,
-        "formated_price_without_vat": formatedPriceWithoutVat,
-        "thanks_heading": thanksHeading,
+        'formated_price': formatedPrice,
+        'sub_heading2': subHeading2,
+        'subtime': subtime,
+        'heading': heading,
+        'sub_heading': subHeading,
+        'formated_vat': formatedVat,
+        'price': price,
+        'thanks_sub_heading': thanksSubHeading,
+        'store_email': storeEmail,
+        'formated_price_without_vat': formatedPriceWithoutVat,
+        'thanks_heading': thanksHeading,
       };
 }

@@ -1,22 +1,23 @@
 import 'dart:convert';
 
-CommonPostRequestModel commonPostRequestModelFromJson(String str) => CommonPostRequestModel.fromJson(json.decode(str));
+CommonPostRequestModel commonPostRequestModelFromJson(String str) =>
+    CommonPostRequestModel.fromJson(json.decode(str));
 
-String commonPostRequestModelToJson(CommonPostRequestModel data) => json.encode(data.toJson());
+String commonPostRequestModelToJson(CommonPostRequestModel data) =>
+    json.encode(data.toJson());
 
 class CommonPostRequestModel {
   CommonPostRequestModel({
     bool? error,
-    dynamic data,
+    data,
     String? message,
-    dynamic errors,
   }) {
     _error = error;
     _data = data;
     _message = message;
   }
 
-  CommonPostRequestModel.fromJson(dynamic json) {
+  CommonPostRequestModel.fromJson(json) {
     _error = json['error'];
     _data = json['data'];
     _message = json['message'];

@@ -1,10 +1,8 @@
+import 'package:event_app/core/services/shared_preferences_helper.dart';
 import 'package:event_app/data/vendor/data/response/ApiResponse.dart';
 import 'package:event_app/models/vendor_models/vendor_withdrawals_model/vendor_get_withdrawals_model.dart';
 import 'package:event_app/provider/vendor/vendor_repository.dart';
-import 'package:event_app/utils/storage/shared_preferences_helper.dart';
 import 'package:flutter/cupertino.dart';
-
-import '../../../models/vendor_models/vendor_order_models/vendor_get_orders_model.dart';
 
 class VendorWithdrawalsViewModel with ChangeNotifier {
   String? _token;
@@ -15,7 +13,7 @@ class VendorWithdrawalsViewModel with ChangeNotifier {
 
   List<VendorWithdrawalRecords> get list => _list;
 
-  setToken() async {
+  Future<void> setToken() async {
     _token = await SecurePreferencesUtil.getToken();
   }
 
@@ -39,12 +37,12 @@ class VendorWithdrawalsViewModel with ChangeNotifier {
   }
 
   /// get orders method
-  vendorWithdrawals({String? search}) async {
+  Future<void> vendorWithdrawals({String? search}) async {
     await setToken();
     try {
-      Map<String, String> headers = <String, String>{
+      final Map<String, String> headers = <String, String>{
         // 'Content-Type': 'application/json',
-        "Authorization": _token!,
+        'Authorization': _token!,
       };
 
       final Map<String, String> queryParams = {
@@ -56,7 +54,8 @@ class VendorWithdrawalsViewModel with ChangeNotifier {
       // If successful, increment the current page and append data
       if (_currentPage <= _lastPage) {
         setApiResponse = ApiResponse.loading();
-        final VendorGetWithdrawalsModel response = await _myRepo.vendorWithdrawals(headers: headers, queryParams: queryParams);
+        final VendorGetWithdrawalsModel response = await _myRepo
+            .vendorWithdrawals(headers: headers, queryParams: queryParams);
         setLastPage(response);
         resetList(response);
         setApiResponse = ApiResponse.completed(response);
@@ -85,7 +84,7 @@ class VendorWithdrawalsViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  void removeElementFromList({required dynamic id}) {
+  void removeElementFromList({required id}) {
     _list.removeWhere((element) => element.id == id);
     notifyListeners();
   }

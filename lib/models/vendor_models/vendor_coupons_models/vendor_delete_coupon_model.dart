@@ -4,14 +4,16 @@ import 'dart:convert';
 /// data : null
 /// message : "Invalid coupon."
 
-VendorDeleteCouponModel vendorDeleteCouponModelFromJson(String str) => VendorDeleteCouponModel.fromJson(json.decode(str));
+VendorDeleteCouponModel vendorDeleteCouponModelFromJson(String str) =>
+    VendorDeleteCouponModel.fromJson(json.decode(str));
 
-String vendorDeleteCouponModelToJson(VendorDeleteCouponModel data) => json.encode(data.toJson());
+String vendorDeleteCouponModelToJson(VendorDeleteCouponModel data) =>
+    json.encode(data.toJson());
 
 class VendorDeleteCouponModel {
   VendorDeleteCouponModel({
     bool? error,
-    dynamic data,
+    data,
     String? message,
   }) {
     _error = error;
@@ -19,7 +21,7 @@ class VendorDeleteCouponModel {
     _message = message;
   }
 
-  VendorDeleteCouponModel.fromJson(dynamic json) {
+  VendorDeleteCouponModel.fromJson(json) {
     _error = json['error'];
     _data = json['data'];
     _message = json['message'];
@@ -31,7 +33,7 @@ class VendorDeleteCouponModel {
 
   VendorDeleteCouponModel copyWith({
     bool? error,
-    dynamic data,
+    data,
     String? message,
   }) =>
       VendorDeleteCouponModel(

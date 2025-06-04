@@ -2,13 +2,13 @@ import 'package:event_app/provider/vendor/vendor_repository.dart';
 import 'package:event_app/vendor/Components/utils/utils.dart';
 import 'package:flutter/cupertino.dart';
 
+import '../../../core/services/shared_preferences_helper.dart';
 import '../../../data/vendor/data/response/ApiResponse.dart';
-import '../../../utils/storage/shared_preferences_helper.dart';
 
 class VendorGenerateOrderInvoiceViewModel with ChangeNotifier {
   String? _token;
 
-  setToken() async {
+  Future<void> setToken() async {
     _token = await SecurePreferencesUtil.getToken();
   }
 
@@ -37,15 +37,17 @@ class VendorGenerateOrderInvoiceViewModel with ChangeNotifier {
       setApiResponse = ApiResponse.loading();
       await setToken();
 
-      Map<String, String> headers = <String, String>{
+      final Map<String, String> headers = <String, String>{
         'Content-Type': 'application/pdf',
-        "Authorization": _token!,
+        'Authorization': _token!,
       };
 
-      dynamic response = await _myRepo.vendorGenerateOrderInvoice(headers: headers, orderId: orderId.toString());
+      final dynamic response = await _myRepo.vendorGenerateOrderInvoice(
+          headers: headers, orderId: orderId.toString());
 
       /// save invoice
-      final file = await Utils.saveDocument(name: orderId, pdfResponse: response);
+      final file =
+          await Utils.saveDocument(name: orderId, pdfResponse: response);
 
       await Utils.openDocument(file);
 

@@ -1,10 +1,9 @@
 import 'dart:async';
 
+import 'package:event_app/core/helper/mixins/media_query_mixin.dart';
+import 'package:event_app/core/styles/app_sizes.dart';
 import 'package:event_app/data/vendor/data/response/apis_status.dart';
 import 'package:event_app/models/vendor_models/products/VendorGetProductsModel.dart';
-import 'package:event_app/provider/navigation_service.dart';
-import 'package:event_app/utils/mixins_and_constants/constants.dart';
-import 'package:event_app/utils/mixins_and_constants/media_query_mixin.dart';
 import 'package:event_app/vendor/components/common_widgets/vendor_action_cell.dart';
 import 'package:event_app/vendor/components/common_widgets/vendor_data_list_builder.dart';
 import 'package:event_app/vendor/components/dialogs/delete_item_alert_dialog.dart';
@@ -29,11 +28,12 @@ class VendorPackagesView extends StatefulWidget {
   State<VendorPackagesView> createState() => _VendorPackagesViewState();
 }
 
-class _VendorPackagesViewState extends State<VendorPackagesView> with MediaQueryMixin {
+class _VendorPackagesViewState extends State<VendorPackagesView>
+    with MediaQueryMixin {
   /// To show modal progress hud
   bool _isProcessing = false;
 
-  setProcessing(bool value) {
+  void setProcessing(bool value) {
     setState(() {
       _isProcessing = value;
     });
@@ -45,24 +45,25 @@ class _VendorPackagesViewState extends State<VendorPackagesView> with MediaQuery
   // scroll controller
   final ScrollController _scrollController = ScrollController();
 
-
   Future _onRefresh() async {
     try {
-      final provider = Provider.of<VendorGetPackagesViewModel>(context, listen: false);
+      final provider =
+          Provider.of<VendorGetPackagesViewModel>(context, listen: false);
 
       /// clear list on refresh
       provider.clearList();
-      setState(() {});  // ✅ Force UI update immediately after clearing
+      setState(() {}); // ✅ Force UI update immediately after clearing
       await provider.vendorGetPackages(search: _searchController.text);
       setState(() {});
-    } catch (e) {
-    }
+    } catch (e) {}
   }
 
-  void _loadMoreData() async {
+  Future<void> _loadMoreData() async {
     // Load more data here
-    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent) {
-      final provider = Provider.of<VendorGetPackagesViewModel>(context, listen: false);
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent) {
+      final provider =
+          Provider.of<VendorGetPackagesViewModel>(context, listen: false);
       if (provider.apiResponse.status != ApiStatus.LOADING) {
         await provider.vendorGetPackages(search: _searchController.text);
       }
@@ -91,55 +92,55 @@ class _VendorPackagesViewState extends State<VendorPackagesView> with MediaQuery
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.bgColor,
-      body: Utils.modelProgressHud(processing: _isProcessing, child: Utils.pageRefreshIndicator(onRefresh: _onRefresh, child: _buildUi(context))),
-    );
-  }
+  Widget build(BuildContext context) => Scaffold(
+        backgroundColor: AppColors.bgColor,
+        body: Utils.modelProgressHud(
+            processing: _isProcessing,
+            child: Utils.pageRefreshIndicator(
+                onRefresh: _onRefresh, child: _buildUi(context))),
+      );
 
-  Widget _buildUi(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: kSmallPadding),
-      child: Column(
-        children: [
-          /// Toolbar
-          _toolBar(),
-          kSmallSpace,
-          Expanded(
-            child: Consumer<VendorGetPackagesViewModel>(
-              builder: (context, provider, _) {
-                /// current api status
-                final ApiStatus? apiStatus = provider.apiResponse.status;
-                if (apiStatus == ApiStatus.LOADING && provider.list.isEmpty) {
-                  return Utils.pageLoadingIndicator(context: context);
-                }
-                if (apiStatus == ApiStatus.ERROR) {
-                  return Utils.somethingWentWrong();
-                }
-                return Column(
-                  children: [
-                    VendorDataListBuilder(
-                      scrollController: _scrollController,
-                      listLength: provider.list.length,
-                      loadingMoreData: provider.apiResponse.status == ApiStatus.LOADING,
-                      contentBuilder: (context) => _buildRecordsList(provider: provider),
-                    ),
-                  ],
-                );
-              },
+  Widget _buildUi(BuildContext context) => Padding(
+        padding: EdgeInsets.symmetric(horizontal: kSmallPadding),
+        child: Column(
+          children: [
+            /// Toolbar
+            _toolBar(),
+            kSmallSpace,
+            Expanded(
+              child: Consumer<VendorGetPackagesViewModel>(
+                builder: (context, provider, _) {
+                  /// current api status
+                  final ApiStatus? apiStatus = provider.apiResponse.status;
+                  if (apiStatus == ApiStatus.LOADING && provider.list.isEmpty) {
+                    return Utils.pageLoadingIndicator(context: context);
+                  }
+                  if (apiStatus == ApiStatus.ERROR) {
+                    return Utils.somethingWentWrong();
+                  }
+                  return Column(
+                    children: [
+                      VendorDataListBuilder(
+                        scrollController: _scrollController,
+                        listLength: provider.list.length,
+                        loadingMoreData:
+                            provider.apiResponse.status == ApiStatus.LOADING,
+                        contentBuilder: (context) =>
+                            _buildRecordsList(provider: provider),
+                      ),
+                    ],
+                  );
+                },
+              ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
+          ],
+        ),
+      );
 
-
-  Widget _buildRecordsList({required VendorGetPackagesViewModel provider}) {
-    return ListView.builder(
+  Widget _buildRecordsList({required VendorGetPackagesViewModel provider}) =>
+      ListView.builder(
         shrinkWrap: true,
-        physics: NeverScrollableScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
         itemCount: provider.list.length,
         itemBuilder: (context, index) {
           final product = provider.list[index];
@@ -148,133 +149,156 @@ class _VendorPackagesViewState extends State<VendorPackagesView> with MediaQuery
               RecordListTile(
                 onTap: () => _onRowTap(rowData: product, context: context),
                 imageAddress: product.image.toString(),
-                status: "${product.status?.label.toString()}" ?? '',
-                statusTextStyle: TextStyle(color: AppColors.getProductPackageStatusColor(product.status?.value.toString())),
+                status: '${product.status?.label.toString()}' ?? '',
+                statusTextStyle: TextStyle(
+                    color: AppColors.getProductPackageStatusColor(
+                        product.status?.value.toString())),
                 title: product.id.toString(),
                 subtitle: product.name.toString(),
                 actionCell: VendorActionCell(
-                    mainAxisSize: MainAxisSize.min,
-                    isDeleting: product.isDeleting,
-                    showDelete: true,
-                    showEdit: true,
-                    showView: false,
-                    onEdit: () => _onEditRecord(rowData: product),
-                    onDelete: () => _onDeleteRecord(rowData: product)),
+                  mainAxisSize: MainAxisSize.min,
+                  isDeleting: product.isDeleting,
+                  showDelete: true,
+                  showEdit: true,
+                  showView: false,
+                  onEdit: () => _onEditRecord(rowData: product),
+                  onDelete: () => _onDeleteRecord(rowData: product),
+                ),
               ),
               kSmallSpace,
             ],
           );
-        });
-  }
+        },
+      );
 
   /// Tool Bar
-  Widget _toolBar() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        kFormFieldSpace,
-        Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Expanded(
-              child: VendorToolbarWidgets.vendorSearchWidget(
-                  onSearchTap: () async{
-                    if(_searchController.text.isNotEmpty){
+  Widget _toolBar() => Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          kFormFieldSpace,
+          Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Expanded(
+                child: VendorToolbarWidgets.vendorSearchWidget(
+                  onSearchTap: () async {
+                    if (_searchController.text.isNotEmpty) {
                       await _onRefresh();
                     }
                   },
-                  textEditingController: _searchController, onChanged: (value)=>
-                debouncedSearch<VendorGetPackagesViewModel>(
-                  context: context,
-                  value: value,
-                  providerGetter: (context)=>context.read<VendorGetPackagesViewModel>(),
-                  refreshFunction: _onRefresh,
-                )),
-            ),
-            kExtraSmallSpace,
-            VendorToolbarWidgets.vendorCreateButton(onTap: (){
-              Navigator.of(context).push(CupertinoPageRoute(builder: (context)=> VendorCreatePackageView()));
-            }, isLoading: false),
-          ],
-        ),
-      ],
-    );
-  }
+                  textEditingController: _searchController,
+                  onChanged: (value) =>
+                      debouncedSearch<VendorGetPackagesViewModel>(
+                    context: context,
+                    value: value,
+                    providerGetter: (context) =>
+                        context.read<VendorGetPackagesViewModel>(),
+                    refreshFunction: _onRefresh,
+                  ),
+                ),
+              ),
+              kExtraSmallSpace,
+              VendorToolbarWidgets.vendorCreateButton(
+                onTap: () {
+                  Navigator.of(context).push(CupertinoPageRoute(
+                      builder: (context) => VendorCreatePackageView()));
+                },
+                isLoading: false,
+              ),
+            ],
+          ),
+        ],
+      );
 
-  _onRowTap({required BuildContext context, required GetProductRecords rowData}) {
+  void _onRowTap(
+      {required BuildContext context, required GetProductRecords rowData}) {
     /// showing through bottom sheet
     showModalBottomSheet(
-        context: context,
-        builder: (context) {
-          return BottomSheet(
-              onClosing: () {},
-              builder: (context) {
-                return Container(
-                  decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(kCardRadius)),
-                  child: SafeArea(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(vertical: kPadding, horizontal: kSmallPadding),
-                      child: SingleChildScrollView(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              height: 160,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(kCardRadius),
-                                  image: DecorationImage(
-                                    // fit: BoxFit.fill,
-                                      image: NetworkImage(
-                                          rowData.image.toString()))),
-                            ),
-                            kMediumSpace,
-                            buildRow("ID", rowData.id.toString() ?? ''),
-                            buildRow("Name", rowData.name.toString() ?? ''),
-                            buildRow("Price", rowData.priceFormat.toString() ?? ''),
-                            buildRow("Quantity", rowData.quantity.toString() ?? ''),
-                            buildRow("SKU", rowData.sku.toString() ?? ''),
-                            buildRow("Order", rowData.order.toString() ?? ''),
-                            buildRow("Created At", rowData.createdAt.toString() ?? ''),
-                            buildStatusRow(
-                                label: "Status",
-                                buttonText: rowData.status?.label?.toString() ?? '',
-                                color: AppColors.getProductPackageStatusColor(rowData.status?.value.toString())),
-                          ],
+      context: context,
+      builder: (context) => BottomSheet(
+        onClosing: () {},
+        builder: (context) => Container(
+          decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(kCardRadius)),
+          child: SafeArea(
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                  vertical: kPadding, horizontal: kSmallPadding),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      height: 160,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(kCardRadius),
+                        image: DecorationImage(
+                          // fit: BoxFit.fill,
+                          image: NetworkImage(
+                            rowData.image.toString(),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                );
-              });
-        });
+                    kMediumSpace,
+                    buildRow('ID', rowData.id.toString() ?? ''),
+                    buildRow('Name', rowData.name.toString() ?? ''),
+                    buildRow('Price', rowData.priceFormat.toString() ?? ''),
+                    buildRow('Quantity', rowData.quantity.toString() ?? ''),
+                    buildRow('SKU', rowData.sku.toString() ?? ''),
+                    buildRow('Order', rowData.order.toString() ?? ''),
+                    buildRow('Created At', rowData.createdAt.toString() ?? ''),
+                    buildStatusRow(
+                      label: 'Status',
+                      buttonText: rowData.status?.label?.toString() ?? '',
+                      color: AppColors.getProductPackageStatusColor(
+                          rowData.status?.value.toString()),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
-  _onDeleteRecord({required GetProductRecords rowData}) async {
+  Future<void> _onDeleteRecord({required GetProductRecords rowData}) async {
     deleteItemAlertDialog(
-        context: context,
-        onDelete: () async {
-          _setDeletionProcessing(rowData: rowData, processing: true);
-          Navigator.pop(context);
-          final VendorGetPackagesViewModel provider = Provider.of<VendorGetPackagesViewModel>(context, listen: false);
+      context: context,
+      onDelete: () async {
+        _setDeletionProcessing(rowData: rowData, processing: true);
+        Navigator.pop(context);
+        final VendorGetPackagesViewModel provider =
+            Provider.of<VendorGetPackagesViewModel>(context, listen: false);
 
-          final result = await context.read<VendorDeletePackageViewModel>().vendorDeletePackage(packageID: rowData.id, context: context);
+        final result = await context
+            .read<VendorDeletePackageViewModel>()
+            .vendorDeletePackage(packageID: rowData.id, context: context);
 
-          /// Fetch the viewmodel for deleting the record
-          if (result) {
-            provider.removeElementFromList(id: rowData.id);
-            setState(() {});
-          }
-          _setDeletionProcessing(rowData: rowData, processing: false);
-        });
+        /// Fetch the viewmodel for deleting the record
+        if (result) {
+          provider.removeElementFromList(id: rowData.id);
+          setState(() {});
+        }
+        _setDeletionProcessing(rowData: rowData, processing: false);
+      },
+    );
   }
 
-  _onEditRecord({required GetProductRecords rowData}) async {
-      Navigator.of(context).push(CupertinoPageRoute(builder: (context)=> VendorCreatePackageView(packageID: rowData.id.toString(),)));
+  Future<void> _onEditRecord({required GetProductRecords rowData}) async {
+    Navigator.of(context).push(CupertinoPageRoute(
+        builder: (context) => VendorCreatePackageView(
+              packageID: rowData.id.toString(),
+            )));
   }
 
   /// maintain the deletion indicator visibility by calling setState.
-  _setDeletionProcessing({required GetProductRecords rowData, required bool processing}) {
+  void _setDeletionProcessing(
+      {required GetProductRecords rowData, required bool processing}) {
     setState(() {
       rowData.isDeleting = processing;
       // setProcessing(processing); /// To show model progress hud. toggle this if don't want to show progress hud.

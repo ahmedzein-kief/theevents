@@ -174,11 +174,10 @@
 //   }
 // }
 
-
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:event_app/utils/apiendpoints/api_end_point.dart';
+import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_svg/svg.dart';
@@ -216,7 +215,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white, // Customize the app bar background color
-        leading: BackIcon(),
+        leading: const BackIcon(),
         leadingWidth: 100,
       ),
       body: SafeArea(
@@ -245,7 +244,8 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
                       children: [
                         Expanded(
                           child: Text(
-                            provider.privacyPolicyData?.name ?? 'Privacy Policy',
+                            provider.privacyPolicyData?.name ??
+                                'Privacy Policy',
                             style: privacyPolicyTextStyle(context),
                           ),
                         ),
@@ -259,25 +259,25 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
                     Html(
                       data: content,
                       style: {
-                        "div": Style(
+                        'div': Style(
                           margin: Margins.only(bottom: 4.0),
                           lineHeight: LineHeight.number(1.4),
                           whiteSpace: WhiteSpace.normal,
                           padding: HtmlPaddings.zero,
                         ),
-                        "p": Style(
+                        'p': Style(
                           margin: Margins.only(bottom: 4.0),
                           lineHeight: LineHeight.number(1.4),
                           padding: HtmlPaddings.zero,
                           whiteSpace: WhiteSpace.normal,
                         ),
-                        "li": Style(
+                        'li': Style(
                           margin: Margins.only(bottom: 4.0),
                           lineHeight: LineHeight.number(1.2),
                           padding: HtmlPaddings.zero,
                           listStyleType: ListStyleType.disc,
                         ),
-                        "strong": Style(
+                        'strong': Style(
                           fontWeight: FontWeight.w900,
                           whiteSpace: WhiteSpace.pre,
                         ),
@@ -374,14 +374,6 @@ class PrivacyPolicyProvider with ChangeNotifier {
 // }
 
 class PrivacyPolicyModel {
-  final String? view;
-  final String? name;
-  final String? slug;
-  final String? image;
-  final String? coverImage;
-  final SeoMeta? seoMeta;
-  dynamic content;
-
   PrivacyPolicyModel({
     this.view,
     this.name,
@@ -392,25 +384,28 @@ class PrivacyPolicyModel {
     this.content,
   });
 
-  factory PrivacyPolicyModel.fromJson(Map<String, dynamic> json) {
-    return PrivacyPolicyModel(
-      view: json['view'],
-      name: json['name'],
-      slug: json['slug'],
-      image: json['image'],
-      coverImage: json['cover_image'],
-      seoMeta: json['seo_meta'] != null ? SeoMeta.fromJson(json['seo_meta']) : null,
-      content: json['content'],
-    );
-  }
+  factory PrivacyPolicyModel.fromJson(Map<String, dynamic> json) =>
+      PrivacyPolicyModel(
+        view: json['view'],
+        name: json['name'],
+        slug: json['slug'],
+        image: json['image'],
+        coverImage: json['cover_image'],
+        seoMeta: json['seo_meta'] != null
+            ? SeoMeta.fromJson(json['seo_meta'])
+            : null,
+        content: json['content'],
+      );
+  final String? view;
+  final String? name;
+  final String? slug;
+  final String? image;
+  final String? coverImage;
+  final SeoMeta? seoMeta;
+  dynamic content;
 }
 
 class SeoMeta {
-  final String? title;
-  final String? description;
-  final String? image;
-  final String? robots;
-
   SeoMeta({
     this.title,
     this.description,
@@ -418,12 +413,14 @@ class SeoMeta {
     this.robots,
   });
 
-  factory SeoMeta.fromJson(Map<String, dynamic> json) {
-    return SeoMeta(
-      title: json['title'],
-      description: json['description'],
-      image: json['image'],
-      robots: json['robots'],
-    );
-  }
+  factory SeoMeta.fromJson(Map<String, dynamic> json) => SeoMeta(
+        title: json['title'],
+        description: json['description'],
+        image: json['image'],
+        robots: json['robots'],
+      );
+  final String? title;
+  final String? description;
+  final String? image;
+  final String? robots;
 }

@@ -1,7 +1,7 @@
+import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/models/auth_models/get_user_models.dart';
 import 'package:event_app/provider/auth_provider/get_user_provider.dart';
 import 'package:event_app/provider/vendor/vendor_sign_up_provider.dart';
-import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/vendor/Components/vendor_text_style.dart';
 import 'package:event_app/vendor/vendor_home/dashboard_screen.dart';
 import 'package:event_app/vendor/vendor_home/vendor_coupons/vendor_coupon_view.dart';
@@ -20,9 +20,8 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class VendorDrawerScreen extends StatefulWidget {
+  VendorDrawerScreen({super.key, this.selectedIndex});
   int? selectedIndex;
-
-  VendorDrawerScreen({Key? key, this.selectedIndex}) : super(key: key);
 
   @override
   State<VendorDrawerScreen> createState() => _VendorDrawerScreenState();
@@ -33,7 +32,7 @@ class _VendorDrawerScreenState extends State<VendorDrawerScreen> {
   UserModel? userModel;
 
   Future<UserModel?> getProfileData() async {
-    var provider = Provider.of<VendorSignUpProvider>(context, listen: false);
+    final provider = Provider.of<VendorSignUpProvider>(context, listen: false);
     final result = await provider.fetchUserData(context);
     setState(() {
       userModel = result;
@@ -48,10 +47,11 @@ class _VendorDrawerScreenState extends State<VendorDrawerScreen> {
     try {
       final provider = Provider.of<UserProvider>(context, listen: false);
       final binaryData = await provider.downloadAgreement(context);
-      var filename = invoice;
+      final filename = invoice;
 
       // Save binary data as a PD
-      final result = await PDFDownloader().saveFileInDownloadsUint(context, binaryData, filename);
+      final result = await PDFDownloader()
+          .saveFileInDownloadsUint(context, binaryData, filename);
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -120,12 +120,12 @@ class _VendorDrawerScreenState extends State<VendorDrawerScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return PopScope(
-      canPop: false,
-      child: Consumer<UserProvider>(
-        builder: (BuildContext context, UserProvider provider, Widget? child) {
-          return Stack(
+  Widget build(BuildContext context) => PopScope(
+        canPop: false,
+        child: Consumer<UserProvider>(
+          builder:
+              (BuildContext context, UserProvider provider, Widget? child) =>
+                  Stack(
             children: [
               Scaffold(
                 appBar: AppBar(
@@ -143,26 +143,28 @@ class _VendorDrawerScreenState extends State<VendorDrawerScreen> {
                   userModel: userModel, // Use userModel from provider
                   onSubtitleTap: () async {
                     Navigator.pop(context);
-                    String formattedDate = DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now());
+                    final String formattedDate =
+                        DateFormat('yyyy-MM-dd HH:mm:ss')
+                            .format(DateTime.now());
                     print(formattedDate); // Example: 2025-02-25 14:30:00
-                    var invoice = "Vendor_Agreement_$formattedDate";
+                    final invoice = 'Vendor_Agreement_$formattedDate';
                     await generateAgreement(context, invoice);
                   },
                 ),
               ),
               if (provider.isLoading) // Show loading indicator in center
                 Container(
-                  color: Colors.black.withOpacity(0.5), // Optional dim background
-                  child: Center(
+                  color:
+                      Colors.black.withOpacity(0.5), // Optional dim background
+                  child: const Center(
                     child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.peachyPink),
+                      valueColor:
+                          AlwaysStoppedAnimation<Color>(AppColors.peachyPink),
                     ), // Loading spinner
                   ),
                 ),
             ],
-          );
-        },
-      ),
-    );
-  }
+          ),
+        ),
+      );
 }

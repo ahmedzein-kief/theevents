@@ -1,6 +1,7 @@
 import 'dart:convert';
 
-SignUpResponse vendorSignupResponseFromJson(String str) => SignUpResponse.fromJson(json.decode(str));
+SignUpResponse vendorSignupResponseFromJson(String str) =>
+    SignUpResponse.fromJson(json.decode(str));
 
 class SignUpResponse {
   SignUpResponse({
@@ -9,15 +10,15 @@ class SignUpResponse {
     required this.message,
   });
 
+  factory SignUpResponse.fromJson(Map<dynamic, dynamic> json) => SignUpResponse(
+        data: json['data'] != null ? Data.fromJson(json['data']) : null,
+        error: json['error'],
+        message: json['message'],
+      );
+
   Data? data;
   bool error;
   String message;
-
-  factory SignUpResponse.fromJson(Map<dynamic, dynamic> json) => SignUpResponse(
-        data: json["data"] != null ? Data.fromJson(json["data"]) : null,
-        error: json["error"],
-        message: json["message"],
-      );
 }
 
 class Data {
@@ -36,6 +37,21 @@ class Data {
     required this.email,
   });
 
+  factory Data.fromJson(Map<dynamic, dynamic> json) => Data(
+        avatar: json['avatar'],
+        title: json['title'],
+        tokenType: json['token_type'],
+        isVerified: json['is_verified'],
+        token: json['token'],
+        name: json['name'],
+        isApproved: json['is_approved'],
+        company: json['company'],
+        isVendor: json['is_vendor'],
+        step: json['step'],
+        id: json['id'],
+        email: json['email'],
+      );
+
   String avatar;
   String title;
   String tokenType;
@@ -49,33 +65,18 @@ class Data {
   int id;
   String email;
 
-  factory Data.fromJson(Map<dynamic, dynamic> json) => Data(
-        avatar: json["avatar"],
-        title: json["title"],
-        tokenType: json["token_type"],
-        isVerified: json["is_verified"],
-        token: json["token"],
-        name: json["name"],
-        isApproved: json["is_approved"],
-        company: json["company"],
-        isVendor: json["is_vendor"],
-        step: json["step"],
-        id: json["id"],
-        email: json["email"],
-      );
-
   Map<dynamic, dynamic> toJson() => {
-        "avatar": avatar,
-        "title": title,
-        "token_type": tokenType,
-        "is_verified": isVerified,
-        "token": token,
-        "name": name,
-        "is_approved": isApproved,
-        "company": company,
-        "is_vendor": isVendor,
-        "step": step,
-        "id": id,
-        "email": email,
+        'avatar': avatar,
+        'title': title,
+        'token_type': tokenType,
+        'is_verified': isVerified,
+        'token': token,
+        'name': name,
+        'is_approved': isApproved,
+        'company': company,
+        'is_vendor': isVendor,
+        'step': step,
+        'id': id,
+        'email': email,
       };
 }

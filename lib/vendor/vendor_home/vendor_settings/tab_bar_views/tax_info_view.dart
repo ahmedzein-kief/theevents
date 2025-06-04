@@ -1,9 +1,9 @@
 import 'package:dio/dio.dart';
-import 'package:event_app/data/vendor/data/response/apis_status.dart';
+import 'package:event_app/core/helper/validators/validator.dart';
 import 'package:event_app/core/styles/app_colors.dart';
+import 'package:event_app/core/styles/app_sizes.dart';
 import 'package:event_app/core/widgets/custom_auth_views/app_custom_button.dart';
-import 'package:event_app/utils/mixins_and_constants/constants.dart';
-import 'package:event_app/utils/validator/validator.dart';
+import 'package:event_app/data/vendor/data/response/apis_status.dart';
 import 'package:event_app/vendor/components/enums/enums.dart';
 import 'package:event_app/vendor/components/services/alert_services.dart';
 import 'package:event_app/vendor/components/services/media_services.dart';
@@ -63,21 +63,23 @@ class _TaxInfoViewState extends State<TaxInfoView> {
   /// To show modal progress hud
   bool _isProcessing = false;
 
-  setProcessing(bool value) {
+  void setProcessing(bool value) {
     setState(() {
       _isProcessing = value;
     });
   }
 
   Future _onRefresh() async {
-    VendorGetSettingsViewModel vendorGetSettingsProvider = context.read<VendorGetSettingsViewModel>();
+    final VendorGetSettingsViewModel vendorGetSettingsProvider =
+        context.read<VendorGetSettingsViewModel>();
     await vendorGetSettingsProvider.vendorGetSettings();
     if (vendorGetSettingsProvider.apiResponse.status == ApiStatus.COMPLETED) {
       _initializeTheField(vendorGetSettingsProvider: vendorGetSettingsProvider);
     }
   }
 
-  _initializeTheField({required VendorGetSettingsViewModel vendorGetSettingsProvider}) {
+  void _initializeTheField(
+      {required VendorGetSettingsViewModel vendorGetSettingsProvider}) {
     final taxInfo = vendorGetSettingsProvider.apiResponse.data?.data?.taxInfo;
     if (taxInfo != null) {
       businessNameController.text = taxInfo.businessName?.toString() ?? '';
@@ -87,117 +89,124 @@ class _TaxInfoViewState extends State<TaxInfoView> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Utils.pageRefreshIndicator(
-        onRefresh: _onRefresh,
-        child: Consumer<VendorGetSettingsViewModel>(
-          builder: (context, vendorGetSettingsProvider, _) {
-            /// Show loading if refreshing
-            if (vendorGetSettingsProvider.apiResponse.status == ApiStatus.LOADING) return Utils.pageLoadingIndicator(context: context);
+  Widget build(BuildContext context) => Scaffold(
+        body: Utils.pageRefreshIndicator(
+          onRefresh: _onRefresh,
+          child: Consumer<VendorGetSettingsViewModel>(
+            builder: (context, vendorGetSettingsProvider, _) {
+              /// Show loading if refreshing
+              if (vendorGetSettingsProvider.apiResponse.status ==
+                  ApiStatus.LOADING)
+                return Utils.pageLoadingIndicator(context: context);
 
-            /// return ui if loading ends
-            return ListView(
-              physics: AlwaysScrollableScrollPhysics(),
-              children: [
-                _buildUi(),
-              ],
-            );
-          },
+              /// return ui if loading ends
+              return ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: [
+                  _buildUi(),
+                ],
+              );
+            },
+          ),
         ),
-      ),
-    );
-  }
+      );
 
-  Widget _buildUi() {
-    return SimpleCard(
+  Widget _buildUi() => SimpleCard(
         expandedContent: Form(
-      key: _formKey,
-      child: Column(
-        children: [
-          /// Business Name
-          CustomTextFormField(
-            labelText: "Business Name",
-            required: true,
-            hintText: "Enter Business Name",
-            validator: Validator.fieldCannotBeEmpty,
-            controller: businessNameController,
-            focusNode: businessNameFocusNode,
-            nextFocusNode: taxIdFocusNode,
-            onChanged: (value) {},
-          ),
-          kFormFieldSpace,
+          key: _formKey,
+          child: Column(
+            children: [
+              /// Business Name
+              CustomTextFormField(
+                labelText: 'Business Name',
+                required: true,
+                hintText: 'Enter Business Name',
+                validator: Validator.fieldCannotBeEmpty,
+                controller: businessNameController,
+                focusNode: businessNameFocusNode,
+                nextFocusNode: taxIdFocusNode,
+                onChanged: (value) {},
+              ),
+              kFormFieldSpace,
 
-          /// Tax ID
-          CustomTextFormField(
-            labelText: "Tax ID",
-            required: true,
-            validator: Validator.fieldCannotBeEmpty,
-            hintText: "Enter Tax ID",
-            controller: taxIdController,
-            focusNode: taxIdFocusNode,
-            nextFocusNode: addressFocusNode,
-            onChanged: (value) {},
-          ),
-          kFormFieldSpace,
+              /// Tax ID
+              CustomTextFormField(
+                labelText: 'Tax ID',
+                required: true,
+                validator: Validator.fieldCannotBeEmpty,
+                hintText: 'Enter Tax ID',
+                controller: taxIdController,
+                focusNode: taxIdFocusNode,
+                nextFocusNode: addressFocusNode,
+                onChanged: (value) {},
+              ),
+              kFormFieldSpace,
 
-          /// Address
-          CustomTextFormField(
-            labelText: "Address",
-            required: false,
-            hintText: "Enter Address",
-            maxLines: 3,
-            controller: addressController,
-            focusNode: addressFocusNode,
-            keyboardType: TextInputType.multiline,
-            onChanged: (value) {},
-          ),
-          kFormFieldSpace,
+              /// Address
+              CustomTextFormField(
+                labelText: 'Address',
+                required: false,
+                hintText: 'Enter Address',
+                maxLines: 3,
+                controller: addressController,
+                focusNode: addressFocusNode,
+                keyboardType: TextInputType.multiline,
+                onChanged: (value) {},
+              ),
+              kFormFieldSpace,
 
-          kFormFieldSpace,
+              kFormFieldSpace,
 
-          /// Save Button
-          Consumer<VendorSettingsViewModel>(builder: (context, provider, _) {
-            return CustomAppButton(
-                buttonText: "Save Settings",
-                borderRadius: kButtonRadius,
-                mainAxisSize: MainAxisSize.max,
-                buttonColor: AppColors.lightCoral,
-                isLoading: provider.apiResponse.status == ApiStatus.LOADING,
-                onTap: () async {
-                  try {
-                    if (_formKey.currentState?.validate() ?? false) {
-                      setProcessing(true);
-                      _createForm();
+              /// Save Button
+              Consumer<VendorSettingsViewModel>(
+                builder: (context, provider, _) => CustomAppButton(
+                  buttonText: 'Save Settings',
+                  borderRadius: kButtonRadius,
+                  mainAxisSize: MainAxisSize.max,
+                  buttonColor: AppColors.lightCoral,
+                  isLoading: provider.apiResponse.status == ApiStatus.LOADING,
+                  onTap: () async {
+                    try {
+                      if (_formKey.currentState?.validate() ?? false) {
+                        setProcessing(true);
+                        _createForm();
 
-                      /// send data to server
-                      final vendorSettingsProvider = context.read<VendorSettingsViewModel>();
-                      final result = await vendorSettingsProvider.vendorSettings(vendorSettingsType: VendorSettingType.taxInfo, form: form, context: context);
-                      if (result) {
-                        setProcessing(false);
-                        await _onRefresh();
+                        /// send data to server
+                        final vendorSettingsProvider =
+                            context.read<VendorSettingsViewModel>();
+                        final result =
+                            await vendorSettingsProvider.vendorSettings(
+                                vendorSettingsType: VendorSettingType.taxInfo,
+                                form: form,
+                                context: context);
+                        if (result) {
+                          setProcessing(false);
+                          await _onRefresh();
+                        }
                       }
+                    } catch (e) {
+                      setProcessing(false);
+                      AlertServices.showErrorSnackBar(
+                          message: 'Oops! something went wrong..',
+                          context: context);
                     }
-                  } catch (e) {
-                    setProcessing(false);
-                    AlertServices.showErrorSnackBar(message: ("Oops! something went wrong.."), context: context);
-                  }
-                });
-          }),
-        ],
-      ),
-    ));
-  }
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
 
   FormData form = FormData();
 
   void _createForm() {
     form = FormData.fromMap({
-      "tax_info": {
-        "business_name": businessNameController.text,
-        "tax_id": taxIdController.text,
-        "address": addressController.text,
-      }
+      'tax_info': {
+        'business_name': businessNameController.text,
+        'tax_id': taxIdController.text,
+        'address': addressController.text,
+      },
     });
   }
 }

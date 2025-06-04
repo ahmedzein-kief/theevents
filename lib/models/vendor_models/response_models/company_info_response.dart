@@ -1,8 +1,10 @@
 import 'dart:convert';
 
-CompanyInfoResponse companyInfoResponseFromJson(String str) => CompanyInfoResponse.fromJson(json.decode(str));
+CompanyInfoResponse companyInfoResponseFromJson(String str) =>
+    CompanyInfoResponse.fromJson(json.decode(str));
 
-String companyInfoResponseToJson(CompanyInfoResponse data) => json.encode(data.toJson());
+String companyInfoResponseToJson(CompanyInfoResponse data) =>
+    json.encode(data.toJson());
 
 class CompanyInfoResponse {
   CompanyInfoResponse({
@@ -10,16 +12,17 @@ class CompanyInfoResponse {
     required this.message,
   });
 
+  factory CompanyInfoResponse.fromJson(Map<dynamic, dynamic> json) =>
+      CompanyInfoResponse(
+        error: json['error'],
+        message: json['message'],
+      );
+
   bool error;
   String message;
 
-  factory CompanyInfoResponse.fromJson(Map<dynamic, dynamic> json) => CompanyInfoResponse(
-        error: json["error"],
-        message: json["message"],
-      );
-
   Map<dynamic, dynamic> toJson() => {
-        "error": error,
-        "message": message,
+        'error': error,
+        'message': message,
       };
 }

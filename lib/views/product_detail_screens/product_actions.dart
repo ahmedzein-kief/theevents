@@ -1,20 +1,33 @@
-import 'package:event_app/models/wishlist_models/wish_list_response_models.dart';
 import 'package:event_app/core/widgets/custom_items_views/custom_add_to_cart_button.dart';
+import 'package:event_app/models/wishlist_models/wish_list_response_models.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:provider/provider.dart';
 
+import '../../core/services/shared_preferences_helper.dart';
+import '../../core/styles/custom_text_styles.dart';
+import '../../core/widgets/custom_items_views/custom_toast.dart';
 import '../../provider/cart_item_provider/cart_item_provider.dart';
 import '../../provider/product_package_provider/product_details_provider.dart';
 import '../../provider/shortcode_fresh_picks_provider/fresh_picks_provider.dart';
 import '../../provider/wishlist_items_provider/wishlist_provider.dart';
-import '../../core/styles/custom_text_styles.dart';
-import '../../core/widgets/custom_items_views/custom_toast.dart';
-import '../../utils/storage/shared_preferences_helper.dart';
 import '../auth_screens/auth_page_view.dart';
 
 class ProductActions extends StatefulWidget {
+  const ProductActions({
+    super.key,
+    required this.onExtraOptionsError,
+    required this.productVariationID,
+    required this.mainProductID,
+    required this.wishlistProvider,
+    required this.freshPicksProvider,
+    required this.productItemsProvider,
+    required this.screenWidth,
+    required this.selectedExtraOptions,
+    required this.selectedAttributes,
+    required this.updateLoader,
+  });
   final void Function(List<Map<String, dynamic>> extraOptionErrorData)
       onExtraOptionsError;
   final void Function(bool loader) updateLoader;
@@ -26,20 +39,6 @@ class ProductActions extends StatefulWidget {
   final double screenWidth;
   final Map<String, dynamic> selectedExtraOptions;
   final List<Map<String, dynamic>?> selectedAttributes;
-
-  const ProductActions({
-    Key? key,
-    required this.onExtraOptionsError,
-    required this.productVariationID,
-    required this.mainProductID,
-    required this.wishlistProvider,
-    required this.freshPicksProvider,
-    required this.productItemsProvider,
-    required this.screenWidth,
-    required this.selectedExtraOptions,
-    required this.selectedAttributes,
-    required this.updateLoader,
-  }) : super(key: key);
 
   @override
   _ProductActionsState createState() => _ProductActionsState();
@@ -57,41 +56,41 @@ class _ProductActionsState extends State<ProductActions> {
   Future<bool> _isLoggedIn() async =>
       (await SecurePreferencesUtil.getToken()) != null;
 
-  void _handleAddToCart(BuildContext context) async {
-    List<Map<String, dynamic>> extraOptionErrorData = [];
+  Future<void> _handleAddToCart(BuildContext context) async {
+    final List<Map<String, dynamic>> extraOptionErrorData = [];
     if (widget.productItemsProvider.apiResponse?.data?.record?.options
             .isNotEmpty ==
         true) {
       widget.productItemsProvider.apiResponse?.data?.record?.options.forEach(
         (action) {
-          var selectedOption = widget.selectedExtraOptions['${action.id}'];
-          var optionData =
+          final selectedOption = widget.selectedExtraOptions['${action.id}'];
+          final optionData =
               (selectedOption is Map<String, dynamic>) ? selectedOption : null;
 
           if (optionData == null &&
               action.optionType.toLowerCase() != 'textarea') {
-            var errorData = {
+            final errorData = {
               'option_id': action.id,
               'error': true,
             };
             extraOptionErrorData.add(errorData);
           } else if (optionData?['values'] == null &&
               action.optionType.toLowerCase() != 'textarea') {
-            var errorData = {
+            final errorData = {
               'option_id': action.id,
               'error': true,
             };
             extraOptionErrorData.add(errorData);
           } else if ((optionData?['values'] == null ||
-                  optionData?['values'] == "null") &&
+                  optionData?['values'] == 'null') &&
               action.optionType.toLowerCase() == 'datepicker') {
-            var errorData = {
+            final errorData = {
               'option_id': action.id,
               'error': true,
             };
             extraOptionErrorData.add(errorData);
           } else {
-            var errorData = {
+            final errorData = {
               'option_id': action.id,
               'error': false,
             };
@@ -109,7 +108,7 @@ class _ProductActionsState extends State<ProductActions> {
       return;
     }
 
-    bool loggedIn = await _isLoggedIn();
+    final bool loggedIn = await _isLoggedIn();
     if (!loggedIn) {
       PersistentNavBarNavigator.pushNewScreen(
         context,
@@ -117,10 +116,10 @@ class _ProductActionsState extends State<ProductActions> {
         withNavBar: false,
         pageTransitionAnimation: PageTransitionAnimation.fade,
       );
-      CustomToast customToast = CustomToast(context);
+      final CustomToast customToast = CustomToast(context);
       customToast.showToast(
         context: context,
-        textHint: "Please Log-In to add items to Your Cart.",
+        textHint: 'Please Log-In to add items to Your Cart.',
         onDismiss: () {
           customToast.removeToast();
         },
@@ -146,10 +145,11 @@ class _ProductActionsState extends State<ProductActions> {
   }
 
   Future<WishlistResponseModels?> addRemoveWishList(
-      BuildContext context, bool isInWishlist) async {
-    return await widget.freshPicksProvider
-        .addRemoveWishList(context, widget.mainProductID);
-  }
+    BuildContext context,
+    bool isInWishlist,
+  ) async =>
+      widget.freshPicksProvider
+          .addRemoveWishList(context, widget.mainProductID);
 
   @override
   Widget build(BuildContext context) {
@@ -157,10 +157,10 @@ class _ProductActionsState extends State<ProductActions> {
     final wishlistProvider =
         Provider.of<WishlistProvider>(context, listen: true);
 
-    var isOutOfStock =
+    final isOutOfStock =
         widget.productItemsProvider.apiResponse?.data?.record?.outOfStock ??
             false;
-    var inCart =
+    final inCart =
         widget.productItemsProvider.apiResponse?.data?.record?.inCart ?? false;
 
     return Container(
@@ -177,14 +177,14 @@ class _ProductActionsState extends State<ProductActions> {
                 child: AppCustomButton(
                   isLoading: _isLoading || cartProvider.isLoading,
                   onPressed: () => _handleAddToCart(context),
-                  title: "ADD TO CART",
+                  title: 'ADD TO CART',
                 ),
               ),
             SizedBox(width: widget.screenWidth * 0.04),
             Expanded(
               child: GestureDetector(
                 onTap: () async {
-                  bool loggedIn = await _isLoggedIn();
+                  final bool loggedIn = await _isLoggedIn();
                   if (!loggedIn) {
                     PersistentNavBarNavigator.pushNewScreen(
                       context,
@@ -192,23 +192,24 @@ class _ProductActionsState extends State<ProductActions> {
                       withNavBar: false,
                       pageTransitionAnimation: PageTransitionAnimation.fade,
                     );
-                    CustomToast customToast = CustomToast(context);
+                    final CustomToast customToast = CustomToast(context);
                     customToast.showToast(
                       context: context,
-                      textHint: "Please Log-In to add items to your Wishlist.",
+                      textHint: 'Please Log-In to add items to your Wishlist.',
                       onDismiss: () {
                         customToast.removeToast();
                       },
                     );
-                    return null;
+                    return;
                   }
                   widget.updateLoader(true);
                   final wishResult =
                       await addRemoveWishList(context, inWishList);
                   if (wishResult != null) {
                     final mainProvider = Provider.of<ProductItemsProvider>(
-                        context,
-                        listen: false);
+                      context,
+                      listen: false,
+                    );
                     mainProvider
                         .updateWishListData(wishResult.data?.added ?? false);
                     // setState(() {
@@ -243,7 +244,7 @@ class _ProductActionsState extends State<ProductActions> {
                           Padding(
                             padding: const EdgeInsets.only(left: 5),
                             child: Text(
-                              "WISHLIST",
+                              'WISHLIST',
                               textAlign: TextAlign.center,
                               overflow: TextOverflow.ellipsis,
                               maxLines: 1,

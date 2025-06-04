@@ -1,6 +1,6 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:event_app/core/styles/app_colors.dart';
-import 'package:event_app/utils/mixins_and_constants/media_query_mixin.dart';
+import 'package:event_app/core/helper/mixins/media_query_mixin.dart';
 import 'package:event_app/vendor/components/input_borders_hub/input_border_hub.dart';
 import 'package:flutter/material.dart';
 
@@ -61,7 +61,8 @@ class CustomDropdown extends StatefulWidget {
   State<CustomDropdown> createState() => _CustomDropdownState();
 }
 
-class _CustomDropdownState extends State<CustomDropdown> with MediaQueryMixin<CustomDropdown> {
+class _CustomDropdownState extends State<CustomDropdown>
+    with MediaQueryMixin<CustomDropdown> {
   String? selectedValue;
   final TextEditingController textEditingController = TextEditingController();
 
@@ -75,8 +76,14 @@ class _CustomDropdownState extends State<CustomDropdown> with MediaQueryMixin<Cu
   Widget build(BuildContext context) {
     // creating border for text field
     final border = widget.isOutlinedBorder
-        ? InputBordersHub.getOutlinedInputBorder(borderColor: widget.borderColor, borderWidth: widget.borderWidth, borderRadius: widget.borderRadius)
-        : InputBordersHub.getUnderlinedInputBorder(borderColor: widget.borderColor, borderWidth: widget.borderWidth, borderRadius: widget.borderRadius);
+        ? InputBordersHub.getOutlinedInputBorder(
+            borderColor: widget.borderColor,
+            borderWidth: widget.borderWidth,
+            borderRadius: widget.borderRadius)
+        : InputBordersHub.getUnderlinedInputBorder(
+            borderColor: widget.borderColor,
+            borderWidth: widget.borderWidth,
+            borderRadius: widget.borderRadius);
 
     // final localization = AppLocalizations.of(context)!;
     return IgnorePointer(
@@ -106,7 +113,8 @@ class _CustomDropdownState extends State<CustomDropdown> with MediaQueryMixin<Cu
           // isCollapsed: true,
           isDense: true,
           // contentPadding: widget.contentPadding ?? EdgeInsets.symmetric(vertical: 12.0, horizontal: screenWidth * 0.03),
-          contentPadding: widget.contentPadding ?? const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+          contentPadding: widget.contentPadding ??
+              const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
 
           prefixIcon: widget.prefix,
           prefixIconConstraints: const BoxConstraints(
@@ -117,7 +125,10 @@ class _CustomDropdownState extends State<CustomDropdown> with MediaQueryMixin<Cu
           // alignLabelWithHint: false,
           hintText: widget.hintText,
           hintFadeDuration: const Duration(milliseconds: 500),
-          hintStyle: const TextStyle(color: AppColors.softBlueGrey, fontSize: 14, fontWeight: FontWeight.w500),
+          hintStyle: const TextStyle(
+              color: AppColors.softBlueGrey,
+              fontSize: 14,
+              fontWeight: FontWeight.w500),
           border: border,
           focusedBorder: border,
           // errorBorder: border,
@@ -128,11 +139,19 @@ class _CustomDropdownState extends State<CustomDropdown> with MediaQueryMixin<Cu
         ),
 
         // cursorColor: AppColors.darkGrey,
-        style: widget.textStyle ?? TextStyle(color: widget.textColor ?? AppColors.softBlueGrey, overflow: TextOverflow.ellipsis),
+        style: widget.textStyle ??
+            TextStyle(
+                color: widget.textColor ?? AppColors.softBlueGrey,
+                overflow: TextOverflow.ellipsis),
         // padding: EdgeInsets.zero,
         hint: Text(
           widget.hintText ?? 'Select',
-          style: widget.textStyle ?? TextStyle(color: widget.textColor ?? AppColors.softBlueGrey, fontSize: 14, fontWeight: FontWeight.w500, overflow: TextOverflow.ellipsis),
+          style: widget.textStyle ??
+              TextStyle(
+                  color: widget.textColor ?? AppColors.softBlueGrey,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  overflow: TextOverflow.ellipsis),
           overflow: TextOverflow.ellipsis,
         ),
         iconStyleData: const IconStyleData(
@@ -147,7 +166,8 @@ class _CustomDropdownState extends State<CustomDropdown> with MediaQueryMixin<Cu
           ),
           // iconSize: 20
         ),
-        menuItemStyleData: const MenuItemStyleData(padding: EdgeInsets.symmetric(horizontal: 0)),
+        menuItemStyleData: const MenuItemStyleData(
+            padding: EdgeInsets.symmetric(horizontal: 0)),
         dropdownStyleData: DropdownStyleData(
           useSafeArea: true,
           width: screenWidth - 10,

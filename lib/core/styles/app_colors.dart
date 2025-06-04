@@ -46,10 +46,14 @@ class AppColors {
   static const Color deleteAccount = Color(0xCCFF0000);
   static const Color searchBackground = Color(0xFFECE6F0);
   static const Color darkGrey = Color(0xFF2C2C2C);
-  static const Color mainHead = Color(0xFF2C2C2C); // The first two characters '1B' represent the alpha channel (transparency)
-  static const Color packagesBackground = Color(0xFFE77D6F); // The first two characters '1B' represent the alpha channel (transparency)
-  static const Color packagesBackgroundS = Color(0xFFB18966); // The first two characters '1B' represent the alpha channel (transparency)
-  static const Color packagesBackgroundL = Color(0xFFB18966); // The first two characters '1B' represent the alpha channel (transparency)
+  static const Color mainHead = Color(
+      0xFF2C2C2C); // The first two characters '1B' represent the alpha channel (transparency)
+  static const Color packagesBackground = Color(
+      0xFFE77D6F); // The first two characters '1B' represent the alpha channel (transparency)
+  static const Color packagesBackgroundS = Color(
+      0xFFB18966); // The first two characters '1B' represent the alpha channel (transparency)
+  static const Color packagesBackgroundL = Color(
+      0xFFB18966); // The first two characters '1B' represent the alpha channel (transparency)
 
   static const Color bgColor = Color(0xfff7f8fb);
   static const Color stoneGray = Color(0xff999999);
@@ -69,19 +73,30 @@ class AppColors {
 
   static Color getShipmentStatusColor(String? status) {
     const statusColors = {
-      ShipmentStatusConst.NOT_APPROVED: Colors.grey, // Neutral for unapproved orders
+      ShipmentStatusConst.NOT_APPROVED:
+          Colors.grey, // Neutral for unapproved orders
       ShipmentStatusConst.APPROVED: Colors.green, // Green for approved status
       ShipmentStatusConst.PENDING: Colors.amber, // Yellow for pending status
-      ShipmentStatusConst.ARRANGE_SHIPMENT: Colors.blue, // Blue to indicate action required
-      ShipmentStatusConst.READY_TO_BE_SHIPPED_OUT: Colors.orangeAccent, // Orange to indicate urgency
-      ShipmentStatusConst.PICKING: Colors.deepPurpleAccent, // Purple for warehouse-related actions
-      ShipmentStatusConst.DELAY_PICKING: Colors.red, // Red for delayed processes
-      ShipmentStatusConst.PICKED: Colors.teal, // Teal to signify successful picking
-      ShipmentStatusConst.NOT_PICKED: Colors.redAccent, // Red for failure or issue
-      ShipmentStatusConst.DELIVERING: Colors.blueAccent, // Blue to indicate in-transit
-      ShipmentStatusConst.DELIVERED: AppColors.success, // Light green for successful delivery
-      ShipmentStatusConst.NOT_DELIVERED: Colors.red, // Red for unsuccessful delivery
-      ShipmentStatusConst.AUDITED: Colors.indigo, // Indigo for reviewed/audited status
+      ShipmentStatusConst.ARRANGE_SHIPMENT:
+          Colors.blue, // Blue to indicate action required
+      ShipmentStatusConst.READY_TO_BE_SHIPPED_OUT:
+          Colors.orangeAccent, // Orange to indicate urgency
+      ShipmentStatusConst.PICKING:
+          Colors.deepPurpleAccent, // Purple for warehouse-related actions
+      ShipmentStatusConst.DELAY_PICKING:
+          Colors.red, // Red for delayed processes
+      ShipmentStatusConst.PICKED:
+          Colors.teal, // Teal to signify successful picking
+      ShipmentStatusConst.NOT_PICKED:
+          Colors.redAccent, // Red for failure or issue
+      ShipmentStatusConst.DELIVERING:
+          Colors.blueAccent, // Blue to indicate in-transit
+      ShipmentStatusConst.DELIVERED:
+          AppColors.success, // Light green for successful delivery
+      ShipmentStatusConst.NOT_DELIVERED:
+          Colors.red, // Red for unsuccessful delivery
+      ShipmentStatusConst.AUDITED:
+          Colors.indigo, // Indigo for reviewed/audited status
       ShipmentStatusConst.CANCELED: Colors.black,
     };
     return statusColors[status?.toLowerCase().trim()] ?? Colors.transparent;
@@ -91,8 +106,10 @@ class AppColors {
     const statusColors = {
       PaymentStatusConst.PENDING: AppColors.pumpkinOrange,
       PaymentStatusConst.COMPLETED: AppColors.success,
-      PaymentStatusConst.REFUNDING: Colors.amber, // Amber for pending refund status
-      PaymentStatusConst.REFUNDED: AppColors.success, // Green for successfully refunded status
+      PaymentStatusConst.REFUNDING:
+          Colors.amber, // Amber for pending refund status
+      PaymentStatusConst.REFUNDED:
+          AppColors.success, // Green for successfully refunded status
       PaymentStatusConst.FRAUD: Colors.red, // Red to indicate fraud
       PaymentStatusConst.FAILED: Colors.red, // Red to indicate failure
     };
@@ -103,9 +120,11 @@ class AppColors {
     const statusColors = {
       OrderStatusConst.PENDING: Colors.amber, // Amber for pending status
       OrderStatusConst.PROCESSING: Colors.blue, // Blue for processing orders
-      OrderStatusConst.COMPLETED: AppColors.success, // Green for completed orders
+      OrderStatusConst.COMPLETED:
+          AppColors.success, // Green for completed orders
       OrderStatusConst.CANCELLED: Colors.red, // Red for cancelled orders
-      OrderStatusConst.PARTIAL_RETURNED: AppColors.pumpkinOrange, // Orange for partial returns
+      OrderStatusConst.PARTIAL_RETURNED:
+          AppColors.pumpkinOrange, // Orange for partial returns
       OrderStatusConst.RETURNED: Colors.teal, // Teal for fully returned orders
     };
     return statusColors[status?.toLowerCase().trim()] ?? Colors.transparent;
@@ -134,11 +153,11 @@ class AppColors {
       WithdrawalStatusConstants.PENDING: AppColors.pumpkinOrange,
       WithdrawalStatusConstants.PROCESSING: Colors.blue,
       WithdrawalStatusConstants.COMPLETED: AppColors.success,
-      WithdrawalStatusConstants.CANCELED: AppColors.neutralGray,  // Neutral gray for canceled transactions
-      WithdrawalStatusConstants.REFUSED: Colors.red,    // Red to indicate refusal/rejection
+      WithdrawalStatusConstants.CANCELED:
+          AppColors.neutralGray, // Neutral gray for canceled transactions
+      WithdrawalStatusConstants.REFUSED:
+          Colors.red, // Red to indicate refusal/rejection
     };
     return statusColors[status?.toLowerCase().trim()] ?? Colors.transparent;
   }
-
-
 }

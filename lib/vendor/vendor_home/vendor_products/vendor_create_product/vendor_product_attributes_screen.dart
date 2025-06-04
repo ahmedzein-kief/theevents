@@ -7,17 +7,22 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class VendorProductAttributeScreen extends StatefulWidget {
-  String? productId = null;
+  VendorProductAttributeScreen(
+      {super.key,
+      this.initialAttributes,
+      this.listAttributesSets,
+      this.productId});
+  String? productId;
   List<Map<String, dynamic>>? initialAttributes = [];
   List<AttributeSetsData>? listAttributesSets;
 
-  VendorProductAttributeScreen({this.initialAttributes, this.listAttributesSets, this.productId});
-
   @override
-  _VendorProductAttributeScreenState createState() => _VendorProductAttributeScreenState();
+  _VendorProductAttributeScreenState createState() =>
+      _VendorProductAttributeScreenState();
 }
 
-class _VendorProductAttributeScreenState extends State<VendorProductAttributeScreen> {
+class _VendorProductAttributeScreenState
+    extends State<VendorProductAttributeScreen> {
   List<Map<String, dynamic>> attributes = [];
 
   List<String> attributeMainNames = [];
@@ -26,7 +31,7 @@ class _VendorProductAttributeScreenState extends State<VendorProductAttributeScr
   /// To show modal progress hud
   bool _isProcessing = false;
 
-  setProcessing(bool value) {
+  void setProcessing(bool value) {
     setState(() {
       _isProcessing = value;
     });
@@ -35,7 +40,8 @@ class _VendorProductAttributeScreenState extends State<VendorProductAttributeScr
   Future addAttributesToProduct() async {
     try {
       setProcessing(true);
-      final provider = Provider.of<VendorCreateProductViewModel>(context, listen: false);
+      final provider =
+          Provider.of<VendorCreateProductViewModel>(context, listen: false);
 
       final result = await provider.addAttributeToExistingProduct(
         context: context,
@@ -51,13 +57,13 @@ class _VendorProductAttributeScreenState extends State<VendorProductAttributeScr
       setState(() {});
     } catch (e) {
       setProcessing(false);
-      print("Error in fetching products: $e");
+      print('Error in fetching products: $e');
     }
   }
 
   void updateList(List<Map<String, bool>> data, List<String> namesToCheck) {
-    for (var map in data) {
-      String key = map.keys.first; // Assuming each map has only one key
+    for (final map in data) {
+      final String key = map.keys.first; // Assuming each map has only one key
       if (namesToCheck.contains(key)) {
         map[key] = true;
       }
@@ -65,22 +71,27 @@ class _VendorProductAttributeScreenState extends State<VendorProductAttributeScr
   }
 
   void updateNameList() {
-    List<String> attributeMap = attributes
-        .where((attr) => attr["name"] is String) // Ensure "name" is a String
-        .map((attr) => attr["name"] as String) // Directly extract the String
+    final List<String> attributeMap = attributes
+        .where((attr) => attr['name'] is String) // Ensure "name" is a String
+        .map((attr) => attr['name'] as String) // Directly extract the String
         .toList();
 
-    remainingNames = attributeMainNames.where((name) => !attributeMap.contains(name)).toList();
+    remainingNames = attributeMainNames
+        .where((name) => !attributeMap.contains(name))
+        .toList();
   }
 
   void addAttribute() {
-    if (remainingNames.length != 0) {
+    if (remainingNames.isNotEmpty) {
       setState(() {
         attributes.add({
           'name': remainingNames.isNotEmpty ? remainingNames[0] : '',
-          'id': getAttributeId(remainingNames.isNotEmpty ? remainingNames[0] : ''),
-          'value': getChildAttributeFirstValue(remainingNames.isNotEmpty ? remainingNames[0] : ''),
-          'value_id': getChildAttributeFirstValueId(remainingNames.isNotEmpty ? remainingNames[0] : ''),
+          'id': getAttributeId(
+              remainingNames.isNotEmpty ? remainingNames[0] : ''),
+          'value': getChildAttributeFirstValue(
+              remainingNames.isNotEmpty ? remainingNames[0] : ''),
+          'value_id': getChildAttributeFirstValueId(
+              remainingNames.isNotEmpty ? remainingNames[0] : ''),
         });
         updateNameList();
       });
@@ -103,43 +114,45 @@ class _VendorProductAttributeScreenState extends State<VendorProductAttributeScr
     Navigator.pop(context, attributes);
   }
 
-  int getAttributeId(String selectedAttribute) {
-    return widget.listAttributesSets
-            ?.firstWhere(
-              (element) => element.title.toLowerCase() == selectedAttribute.toLowerCase(),
-              orElse: () => AttributeSetsData(title: '', attributes: [], id: -1),
-            )
-            .id ??
-        -1;
-  }
+  int getAttributeId(String selectedAttribute) =>
+      widget.listAttributesSets
+          ?.firstWhere(
+            (element) =>
+                element.title.toLowerCase() == selectedAttribute.toLowerCase(),
+            orElse: () => AttributeSetsData(title: '', attributes: [], id: -1),
+          )
+          .id ??
+      -1;
 
-  String getChildAttributeFirstValue(String selectedAttribute) {
-    return widget.listAttributesSets
-            ?.firstWhere(
-              (element) => element.title.toLowerCase() == selectedAttribute.toLowerCase(),
-              orElse: () => AttributeSetsData(title: '', attributes: [], id: -1),
-            )
-            .attributes[0]
-            .title ??
-        '';
-  }
+  String getChildAttributeFirstValue(String selectedAttribute) =>
+      widget.listAttributesSets
+          ?.firstWhere(
+            (element) =>
+                element.title.toLowerCase() == selectedAttribute.toLowerCase(),
+            orElse: () => AttributeSetsData(title: '', attributes: [], id: -1),
+          )
+          .attributes[0]
+          .title ??
+      '';
 
-  int getChildAttributeFirstValueId(String selectedAttribute) {
-    return widget.listAttributesSets
-            ?.firstWhere(
-              (element) => element.title.toLowerCase() == selectedAttribute.toLowerCase(),
-              orElse: () => AttributeSetsData(title: '', attributes: [], id: -1),
-            )
-            .attributes[0]
-            .id ??
-        -1;
-  }
+  int getChildAttributeFirstValueId(String selectedAttribute) =>
+      widget.listAttributesSets
+          ?.firstWhere(
+            (element) =>
+                element.title.toLowerCase() == selectedAttribute.toLowerCase(),
+            orElse: () => AttributeSetsData(title: '', attributes: [], id: -1),
+          )
+          .attributes[0]
+          .id ??
+      -1;
 
   @override
   void initState() {
     super.initState();
 
-    remainingNames = attributeMainNames = widget.listAttributesSets?.map((e) => e.title.toString()).toList() ?? [];
+    remainingNames = attributeMainNames =
+        widget.listAttributesSets?.map((e) => e.title.toString()).toList() ??
+            [];
 
     if (widget.initialAttributes != null) {
       attributes.addAll(widget.initialAttributes!);
@@ -150,19 +163,18 @@ class _VendorProductAttributeScreenState extends State<VendorProductAttributeScr
   }
 
   @override
-  Widget build(BuildContext context) {
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (bool didPop, Object? result) {
-        if (!didPop) {
-          _returnBack();
-        }
-      },
-      child: Scaffold(
+  Widget build(BuildContext context) => PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (bool didPop, Object? result) {
+          if (!didPop) {
+            _returnBack();
+          }
+        },
+        child: Scaffold(
           appBar: AppBar(
-            title: Text("Attributes", style: vendorName(context)),
+            title: Text('Attributes', style: vendorName(context)),
             leading: IconButton(
-              icon: Icon(Icons.arrow_back),
+              icon: const Icon(Icons.arrow_back),
               onPressed: _returnBack,
             ),
             actions: widget.productId == null
@@ -173,13 +185,13 @@ class _VendorProductAttributeScreenState extends State<VendorProductAttributeScr
                         addAttributesToProduct();
                       },
                       child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 8),
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
                         child: Text(
-                          "Update",
+                          'Update',
                           style: vendorButtonText(context),
                         ),
                       ),
-                    )
+                    ),
                   ],
           ),
           body: Utils.modelProgressHud(
@@ -190,74 +202,97 @@ class _VendorProductAttributeScreenState extends State<VendorProductAttributeScr
                 child: Column(
                   children: [
                     Text(
-                      "Adding new attributes helps the product to have many options, such as size or color.",
+                      'Adding new attributes helps the product to have many options, such as size or color.',
                       style: vendorDescription(),
                     ),
                     Expanded(
                       child: ListView.builder(
                         itemCount: attributes.length,
                         itemBuilder: (context, index) {
-                          String selectedAttribute = attributes[index]['name'] ?? '';
+                          final String selectedAttribute =
+                              attributes[index]['name'] ?? '';
 
                           // Find the matching attribute set based on the selected attribute name
-                          var selectedSet = widget.listAttributesSets?.firstWhere(
+                          final selectedSet = widget.listAttributesSets
+                                  ?.firstWhere(
                                 (element) => element.title == selectedAttribute,
-                                orElse: () => AttributeSetsData(title: '', attributes: [], id: -1),
+                                orElse: () => AttributeSetsData(
+                                    title: '', attributes: [], id: -1),
                               ) ??
-                              AttributeSetsData(title: '', attributes: [], id: -1);
+                              AttributeSetsData(
+                                  title: '', attributes: [], id: -1);
 
                           // Get available values based on the selected attribute set
-                          List<String> availableValues = selectedSet.attributes.map((attr) => attr.title.toString()).toList();
+                          final List<String> availableValues = selectedSet
+                              .attributes
+                              .map((attr) => attr.title.toString())
+                              .toList();
                           remainingNames.remove(selectedAttribute);
-                          final dropDownList = ([selectedAttribute] + remainingNames);
+                          final dropDownList =
+                              [selectedAttribute] + remainingNames;
 
                           print('dropDownList ${dropDownList.length}');
 
                           return Card(
                             elevation: 3,
-                            margin: EdgeInsets.symmetric(vertical: 8),
+                            margin: const EdgeInsets.symmetric(vertical: 8),
                             child: Padding(
                               padding: const EdgeInsets.all(12.0),
                               child: Row(
                                 children: [
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         CustomDropdown(
                                           value: selectedAttribute,
-                                          hintText: "Select Attribute Name",
-                                          textStyle: TextStyle(color: Colors.grey, fontSize: 15),
+                                          hintText: 'Select Attribute Name',
+                                          textStyle: const TextStyle(
+                                              color: Colors.grey, fontSize: 15),
                                           menuItemsList: dropDownList
-                                              .map((element) => DropdownMenuItem(
-                                                    child: Text(element),
-                                                    value: element,
-                                                  ))
+                                              .map(
+                                                (element) => DropdownMenuItem(
+                                                  value: element,
+                                                  child: Text(element),
+                                                ),
+                                              )
                                               .toList(),
                                           onChanged: (value) {
                                             setState(() {
                                               attributes[index]['name'] = value;
-                                              attributes[index]['id'] = getChildAttributeFirstValueId(value);
-                                              attributes[index]['value'] = getChildAttributeFirstValue(value);
-                                              attributes[index]['value_id'] = getChildAttributeFirstValueId(value);
+                                              attributes[index]['id'] =
+                                                  getChildAttributeFirstValueId(
+                                                      value);
+                                              attributes[index]['value'] =
+                                                  getChildAttributeFirstValue(
+                                                      value);
+                                              attributes[index]['value_id'] =
+                                                  getChildAttributeFirstValueId(
+                                                      value);
                                               updateNameList();
                                             });
                                           },
                                         ),
-                                        SizedBox(height: 8),
+                                        const SizedBox(height: 8),
                                         CustomDropdown(
-                                          hintText: "Select Attribute Value",
-                                          value: attributes[index]['value'] ?? '',
-                                          textStyle: TextStyle(color: Colors.grey, fontSize: 15),
+                                          hintText: 'Select Attribute Value',
+                                          value:
+                                              attributes[index]['value'] ?? '',
+                                          textStyle: const TextStyle(
+                                              color: Colors.grey, fontSize: 15),
                                           menuItemsList: availableValues
-                                              .map((val) => DropdownMenuItem(
-                                                    child: Text(val),
-                                                    value: val,
-                                                  ))
+                                              .map(
+                                                (val) => DropdownMenuItem(
+                                                  value: val,
+                                                  child: Text(val),
+                                                ),
+                                              )
                                               .toList(),
                                           onChanged: (value) {
                                             setState(() {
-                                              attributes[index]['value'] = value;
+                                              attributes[index]['value'] =
+                                                  value;
                                             });
                                           },
                                         ),
@@ -265,7 +300,8 @@ class _VendorProductAttributeScreenState extends State<VendorProductAttributeScr
                                     ),
                                   ),
                                   IconButton(
-                                    icon: Icon(Icons.delete, color: Colors.red),
+                                    icon: const Icon(Icons.delete,
+                                        color: Colors.red),
                                     onPressed: () => removeAttribute(index),
                                   ),
                                 ],
@@ -278,16 +314,16 @@ class _VendorProductAttributeScreenState extends State<VendorProductAttributeScr
                     ElevatedButton(
                       onPressed: addAttribute,
                       child: Text(
-                        "Add More Attribute",
+                        'Add More Attribute',
                         style: vendorButtonText(context),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
               onRefresh: addAttributesToProduct,
             ),
-          )),
-    );
-  }
+          ),
+        ),
+      );
 }

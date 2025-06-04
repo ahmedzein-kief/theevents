@@ -13,18 +13,17 @@ void debouncedSearch<T>({
   final provider = providerGetter(context);
   final apiResponse = (provider as dynamic).apiResponse;
 
-
   // Cancel any existing debounce timer
   _debounce?.cancel();
 
   // Start a new debounce timer
   _debounce = Timer(debounceDuration, () async {
-    if ((value == null || value.isEmpty)) {
+    if (value == null || value.isEmpty) {
       await refreshFunction(); // Call the provided refresh function
       return;
     }
 
-    if ((value.isNotEmpty == true)) {
+    if (value.isNotEmpty == true) {
       await refreshFunction(); // Call the provided refresh function
     }
   });

@@ -12,7 +12,8 @@ class FeaturedBrandsItemsProvider with ChangeNotifier {
   bool isLoading = false;
   bool hasError = false;
 
-  Future<HomeBrandsTypesModels?> fetchHomeBrands(List<int> ids, BuildContext context) async {
+  Future<HomeBrandsTypesModels?> fetchHomeBrands(
+      List<int> ids, BuildContext context) async {
     const String url = 'https://api.staging.theevents.ae/api/v1/ecom-tags';
     final queryParameters = {
       'ids': ids.map((id) => id.toString()).join(','), // Join IDs with a comma
@@ -31,7 +32,8 @@ class FeaturedBrandsItemsProvider with ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        homeBrandsTypes = HomeBrandsTypesModels.fromJson(json.decode(response.body));
+        homeBrandsTypes =
+            HomeBrandsTypesModels.fromJson(json.decode(response.body));
         isLoading = false;
         hasError = false;
         notifyListeners();
@@ -40,12 +42,13 @@ class FeaturedBrandsItemsProvider with ChangeNotifier {
         isLoading = false;
         hasError = true;
         notifyListeners();
-        throw Exception('Failed to load data with status code: ${response.statusCode}');
+        throw Exception(
+            'Failed to load data with status code: ${response.statusCode}');
       }
     } catch (e) {
       isLoading = false;
       hasError = true;
-      notifyListeners();// Log the error for debugging
+      notifyListeners(); // Log the error for debugging
       throw Exception('Failed to load data');
     }
   }

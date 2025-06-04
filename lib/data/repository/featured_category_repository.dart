@@ -1,9 +1,9 @@
+import 'package:event_app/core/services/shared_preferences_helper.dart';
 import 'package:event_app/provider/api_response_handler.dart';
-import 'package:event_app/utils/storage/shared_preferences_helper.dart';
 import 'package:flutter/cupertino.dart';
 
+import '../../core/network/api_endpoints/api_end_point.dart';
 import '../../models/dashboard/feature_categories_model/feature_category_banner_model.dart';
-import '../../utils/apiendpoints/api_end_point.dart';
 
 class FeatureCategoryRepository {
   final ApiResponseHandler _apiResponseHandler = ApiResponseHandler();
@@ -12,7 +12,7 @@ class FeatureCategoryRepository {
   Future<PageData> featureCategoryBanner(BuildContext context) async {
     try {
       final tokenLogin = await SecurePreferencesUtil.getToken();
-      final url = ApiEndpoints.categoryViewAllBanner;
+      const url = ApiEndpoints.categoryViewAllBanner;
       final headers = {
         'Authorization': 'Bearer $tokenLogin',
       };
@@ -38,7 +38,7 @@ class FeatureCategoryRepository {
   Future<PageData> orderScreenBanner(BuildContext context) async {
     try {
       final tokenLogin = await SecurePreferencesUtil.getToken();
-      final url = ApiEndpoints.orderScreenBanner;
+      const url = ApiEndpoints.orderScreenBanner;
       final headers = {
         'Authorization': 'Bearer $tokenLogin',
       };

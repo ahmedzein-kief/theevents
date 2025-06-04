@@ -2,18 +2,19 @@ import 'package:event_app/models/product_packages_models/product_options_model.d
 import 'package:flutter/material.dart';
 
 class DropdownWidget extends StatelessWidget {
-  final ProductOptionsModel option;
-  final String? selectedValue;
-  final ValueChanged<String?> onChanged;
-  final String? errorMessage; // Optional error message
+  // Optional error message
 
   const DropdownWidget({
-    Key? key,
+    super.key,
     required this.option,
     required this.selectedValue,
     required this.onChanged,
     this.errorMessage, // Add optional errorMessage parameter
-  }) : super(key: key);
+  });
+  final ProductOptionsModel option;
+  final String? selectedValue;
+  final ValueChanged<String?> onChanged;
+  final String? errorMessage;
 
   @override
   Widget build(BuildContext context) {
@@ -35,25 +36,31 @@ class DropdownWidget extends StatelessWidget {
             ),
           ),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
             decoration: BoxDecoration(
               border: Border.all(
-                color: errorMessage != null ? Colors.red : Colors.grey, // Red border on error
+                color: errorMessage != null
+                    ? Colors.red
+                    : Colors.grey, // Red border on error
                 width: 1.0,
               ),
               borderRadius: BorderRadius.circular(8.0),
             ),
             child: DropdownButton<String>(
-              value: dropdownValues.contains(selectedValue) ? selectedValue : null,
-              hint: const Text("Select Location"),
+              value:
+                  dropdownValues.contains(selectedValue) ? selectedValue : null,
+              hint: const Text('Select Location'),
               isExpanded: true,
               underline: const SizedBox.shrink(),
-              items: option.values.map((value) {
-                return DropdownMenuItem<String>(
-                  value: value.optionValue,
-                  child: Text(value.optionValue),
-                );
-              }).toList(),
+              items: option.values
+                  .map(
+                    (value) => DropdownMenuItem<String>(
+                      value: value.optionValue,
+                      child: Text(value.optionValue),
+                    ),
+                  )
+                  .toList(),
               onChanged: onChanged,
             ),
           ),

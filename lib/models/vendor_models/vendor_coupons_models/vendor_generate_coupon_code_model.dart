@@ -4,22 +4,26 @@ import 'dart:convert';
 /// data : "RZPMMMBFUVJS"
 /// message : null
 
-VendorGenerateCouponCodeModel vendorGenerateCouponCodeModelFromJson(String str) => VendorGenerateCouponCodeModel.fromJson(json.decode(str));
+VendorGenerateCouponCodeModel vendorGenerateCouponCodeModelFromJson(
+        String str) =>
+    VendorGenerateCouponCodeModel.fromJson(json.decode(str));
 
-String vendorGenerateCouponCodeModelToJson(VendorGenerateCouponCodeModel data) => json.encode(data.toJson());
+String vendorGenerateCouponCodeModelToJson(
+        VendorGenerateCouponCodeModel data) =>
+    json.encode(data.toJson());
 
 class VendorGenerateCouponCodeModel {
   VendorGenerateCouponCodeModel({
     bool? error,
     String? data,
-    dynamic message,
+    message,
   }) {
     _error = error;
     _data = data;
     _message = message;
   }
 
-  VendorGenerateCouponCodeModel.fromJson(dynamic json) {
+  VendorGenerateCouponCodeModel.fromJson(json) {
     _error = json['error'];
     _data = json['data'];
     _message = json['message'];
@@ -32,7 +36,7 @@ class VendorGenerateCouponCodeModel {
   VendorGenerateCouponCodeModel copyWith({
     bool? error,
     String? data,
-    dynamic message,
+    message,
   }) =>
       VendorGenerateCouponCodeModel(
         error: error ?? _error,

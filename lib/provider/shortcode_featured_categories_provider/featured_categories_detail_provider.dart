@@ -1,8 +1,8 @@
 import 'dart:convert';
 
+import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/models/product_packages_models/product_filters_model.dart';
 import 'package:event_app/provider/api_response_handler.dart';
-import 'package:event_app/utils/apiendpoints/api_end_point.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart';
 
@@ -20,7 +20,8 @@ class FeaturedCategoriesDetailProvider with ChangeNotifier {
 
   bool get isLoading => _isLoading;
 
-  Future<void> fetchFeaturedCategoryBanner(BuildContext context, {required String slug}) async {
+  Future<void> fetchFeaturedCategoryBanner(BuildContext context,
+      {required String slug}) async {
     _isLoading = true;
     notifyListeners();
 
@@ -37,7 +38,6 @@ class FeaturedCategoriesDetailProvider with ChangeNotifier {
       } else {
         throw Exception('Failed to load data');
       }
-    } catch (error) {
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -78,13 +78,13 @@ class FeaturedCategoriesDetailProvider with ChangeNotifier {
     notifyListeners();
 
     // Convert selectedFilters to query parameters
-    String filtersQuery = filters.entries
+    final String filtersQuery = filters.entries
         .where((entry) => entry.value.isNotEmpty) // Exclude empty lists
         .map((entry) {
       if (entry.key == 'Prices') {
         // Handle Price range specifically
-        int minPrice = entry.value[0];
-        int maxPrice = entry.value[1];
+        final int minPrice = entry.value[0];
+        final int maxPrice = entry.value[1];
         return 'min_price=$minPrice&max_price=$maxPrice';
       } else {
         // Handle all other filters
@@ -98,9 +98,11 @@ class FeaturedCategoriesDetailProvider with ChangeNotifier {
       }
     }).join('&');
 
-    final baseUrl = '${ApiEndpoints.categoryProducts}$slug?per-page=$perPage&page=$page&sort-by=$sortBy';
-    final url = filtersQuery.isNotEmpty ? '$baseUrl&$filtersQuery&allcategories=1' : baseUrl;
-
+    final baseUrl =
+        '${ApiEndpoints.categoryProducts}$slug?per-page=$perPage&page=$page&sort-by=$sortBy';
+    final url = filtersQuery.isNotEmpty
+        ? '$baseUrl&$filtersQuery&allcategories=1'
+        : baseUrl;
 
     try {
       final response = await _apiResponseHandler.getRequest(
@@ -110,7 +112,8 @@ class FeaturedCategoriesDetailProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonResponse = json.decode(response.body);
-        final FeaturedCategoryProductsModels apiResponse = FeaturedCategoryProductsModels.fromJson(jsonResponse);
+        final FeaturedCategoryProductsModels apiResponse =
+            FeaturedCategoryProductsModels.fromJson(jsonResponse);
         if (page == 1) {
           _recordsProducts = apiResponse.data.records;
           _paginations = apiResponse.data.pagination;
@@ -156,12 +159,13 @@ class FeaturedCategoriesDetailProvider with ChangeNotifier {
     } else {}
     notifyListeners();
 
-    final url = '${ApiEndpoints.categoryPackages}$slug?per-page=$perPage&page=$page&sort-by=$sortBy';
+    final url =
+        '${ApiEndpoints.categoryPackages}$slug?per-page=$perPage&page=$page&sort-by=$sortBy';
 
     print(url);
 
     try {
-      Response response = await _apiResponseHandler.getRequest(
+      final Response response = await _apiResponseHandler.getRequest(
         url,
         context: context,
       );
@@ -170,7 +174,8 @@ class FeaturedCategoriesDetailProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
-        final FeaturedCategoryProductsModels apiResponse = FeaturedCategoryProductsModels.fromJson(jsonResponse);
+        final FeaturedCategoryProductsModels apiResponse =
+            FeaturedCategoryProductsModels.fromJson(jsonResponse);
         print(apiResponse.data.records);
         notifyListeners();
 

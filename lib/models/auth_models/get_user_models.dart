@@ -1,15 +1,5 @@
 // user_model.dart
 class UserModel {
-  final int id;
-  final String name;
-  final String email;
-  final String avatar;
-  final String token;
-  final String? phone;
-  final int? isVendor;
-  final bool? isApproved;
-  final bool? isVerified;
-
   UserModel({
     required this.id,
     required this.name,
@@ -22,17 +12,24 @@ class UserModel {
     required this.isVerified,
   });
 
-  factory UserModel.fromJson(Map<String, dynamic> json) {
-    return UserModel(
-      id: json['id'],
-      name: json['name'],
-      email: json['email'],
-      avatar: json['avatar'],
-      token: json['token'],
-      phone: json['phone'],
-      isVendor: json['is_vendor'],
-      isApproved: json['is_approved'],
-      isVerified: json['is_verified'],
-    );
-  }
+  factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
+        id: json['id'],
+        name: json['name'],
+        email: json['email'],
+        avatar: json['avatar'],
+        token: json['token'],
+        phone: json['phone'],
+        isVendor: json['is_vendor'],
+        isApproved: json['is_approved'],
+        isVerified: json['is_verified'],
+      );
+  final int id;
+  final String name;
+  final String email;
+  final String avatar;
+  final String token;
+  final String? phone;
+  final int? isVendor;
+  final bool? isApproved;
+  final bool? isVerified;
 }

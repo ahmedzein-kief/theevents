@@ -1,13 +1,23 @@
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../core/constants/app_strings.dart';
 import '../../../../provider/information_icons_provider/gift_card_payments_provider.dart';
 
 class PaymentMethods extends StatefulWidget {
-  const PaymentMethods(
-      {super.key, this.onSelectionChanged, this.subCardShow = true});
+  const PaymentMethods({
+    super.key,
+    this.onSelectionChanged,
+    this.subCardShow = true,
+    this.amount,
+    this.paymentType,
+  });
+
   final void Function(Map<String, String> selectedMethod)? onSelectionChanged;
   final bool? subCardShow;
+  final String? amount;
+  final String? paymentType;
 
   @override
   State<PaymentMethods> createState() => _PaymentMethodsState();
@@ -24,43 +34,51 @@ class _PaymentMethodsState extends State<PaymentMethods> {
   }
 
   Future<void> fetchDataOfRadio() async {
-    final paymentMethodProvider =
-        Provider.of<PaymentMethodProviderGiftCard>(context, listen: false);
-    await paymentMethodProvider.fetchPaymentMethods(context);
+    final paymentMethodProvider = Provider.of<PaymentMethodProviderGiftCard>(context, listen: false);
+    await paymentMethodProvider.fetchPaymentMethods(
+      context,
+      paymentType: widget.paymentType,
+      amount: widget.amount,
+    );
 
-    /// Automatically select the first payment method and its sub-option when data is loaded
+    /// التحقق من وجود عناصر قبل الوصول إليها
     if (paymentMethodProvider.paymentMethods.isNotEmpty) {
-      final firstMethod = paymentMethodProvider.paymentMethods.first;
-      setState(() {
-        expandedMethod = firstMethod.name;
+      // البحث عن أول طريقة دفع صالحة
+      final firstMethod = paymentMethodProvider.paymentMethods.firstOrNull;
 
-        /// Automatically expand the first method
-        if (firstMethod.subOptions.isNotEmpty) {
-          selectedSubOption = firstMethod.subOptions.first.value.first
-              .value; // Automatically select the first sub-option
-        }
+      if (firstMethod != null) {
+        setState(() {
+          expandedMethod = firstMethod.name;
 
-        final callback = widget.onSelectionChanged;
+          /// التحقق من وجود خيارات فرعية
+          if (firstMethod.subOptions.isNotEmpty && firstMethod.subOptions.first.value.isNotEmpty) {
+            selectedSubOption = firstMethod.subOptions.first.value.first.value;
 
-        if (callback != null) {
-          callback(
-            updatePaymentMethod(
-              firstMethod.code,
-              firstMethod.subOptions.first.key,
-              firstMethod.subOptions.first.value.first.value,
-            ),
-          );
-        }
-        paymentMethodProvider.setSelectedMethod(
-            firstMethod.name); // Set the first method as selected
-      });
+            final callback = widget.onSelectionChanged;
+            if (callback != null) {
+              callback(
+                updatePaymentMethod(
+                  firstMethod.code,
+                  firstMethod.subOptions.first.key,
+                  firstMethod.subOptions.first.value.first.value,
+                ),
+              );
+            }
+          }
+          paymentMethodProvider.setSelectedMethod(firstMethod.name);
+        });
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
     final dynamic screenWidth = MediaQuery.sizeOf(context).width;
     final dynamic screenHeight = MediaQuery.sizeOf(context).height;
+
     return Consumer<PaymentMethodProviderGiftCard>(
       builder: (context, paymentProvider, child) {
         if (paymentProvider.isLoading) {
@@ -70,14 +88,14 @@ class _PaymentMethodsState extends State<PaymentMethods> {
         }
 
         if (paymentProvider.hasError) {
-          return const Center(
-            child: Text('Failed to load payment methods.'),
+          return Center(
+            child: Text(AppStrings.failedToLoadPaymentMethods.tr),
           );
         }
 
         if (paymentProvider.paymentMethods.isEmpty) {
-          return const Center(
-            child: Text('No payment methods available.'),
+          return Center(
+            child: Text(AppStrings.noPaymentMethodsAvailable.tr),
           );
         }
 
@@ -89,106 +107,125 @@ class _PaymentMethodsState extends State<PaymentMethods> {
             final paymentMethod = paymentProvider.paymentMethods[index];
 
             return Column(
-              // Main (Parent) Radio Button with Sub-options
               children: [
                 Container(
                   margin: const EdgeInsets.symmetric(vertical: 8),
                   decoration: BoxDecoration(
                     color: paymentProvider.selectedMethod == paymentMethod.name
-                        ? Colors.blue[50]
-                        : Colors.white,
+                        ? isDarkMode
+                            ? Colors.blue[250]
+                            : Colors.blue[50]
+                        : Theme.of(context).colorScheme.surface,
                     borderRadius: BorderRadius.circular(4),
                     border: Border.all(
-                      color:
-                          paymentProvider.selectedMethod == paymentMethod.name
-                              ? Colors.blue
-                              : Colors.grey.shade300,
+                      color: paymentProvider.selectedMethod == paymentMethod.name ? Colors.blue : Colors.grey.shade300,
                     ),
                   ),
                   child: RadioListTile<String>(
                     title: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Text(paymentMethod.label),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Image.network(paymentMethod.image,
-                                width: paymentMethod.imgWidth.toDouble(),
-                                height: 40),
-                            const SizedBox(width: 4),
-                            if (paymentMethod.image1.isNotEmpty)
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: Image.network(paymentMethod.image1,
-                                    width: paymentMethod.imgWidth1.toDouble(),
-                                    height: 40),
-                              ),
-                          ],
+                        // النص - يأخذ المساحة المتاحة
+                        Expanded(
+                          flex: 3,
+                          child: Text(
+                            paymentMethod.label,
+                            style: const TextStyle(fontSize: 14),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        // الصور - مساحة محددة
+                        Expanded(
+                          flex: 2,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              // الصورة الأولى
+                              if (paymentMethod.image.isNotEmpty && _isValidUrl(paymentMethod.image))
+                                Flexible(
+                                  child: _buildPaymentImage(
+                                    paymentMethod.image,
+                                    paymentMethod.imgWidth.toDouble(),
+                                  ),
+                                ),
+
+                              const SizedBox(width: 4),
+
+                              // الصورة الثانية
+                              if (paymentMethod.image1.isNotEmpty && _isValidUrl(paymentMethod.image1))
+                                Flexible(
+                                  child: _buildPaymentImage(
+                                    paymentMethod.image1,
+                                    paymentMethod.imgWidth1.toDouble(),
+                                  ),
+                                ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
                     activeColor: Colors.blue,
-                    // Change the color of the selected sub-option radio button
                     value: paymentMethod.name,
                     groupValue: paymentProvider.selectedMethod,
                     onChanged: (value) {
                       paymentProvider.setSelectedMethod(value!);
                       setState(() {
-                        // Expand the selected main option
                         expandedMethod = paymentMethod.name;
 
-                        // Auto-select the first sub-option if available
-                        if (paymentMethod.subOptions.isNotEmpty) {
-                          selectedSubOption =
-                              paymentMethod.subOptions.first.value.first.value;
+                        // التحقق من وجود خيارات فرعية
+                        if (paymentMethod.subOptions.isNotEmpty && paymentMethod.subOptions.first.value.isNotEmpty) {
+                          selectedSubOption = paymentMethod.subOptions.first.value.first.value;
 
                           final callback = widget.onSelectionChanged;
-
                           if (callback != null) {
                             callback(
                               updatePaymentMethod(
                                 paymentMethod.code,
                                 paymentMethod.subOptions.first.key,
-                                paymentMethod
-                                    .subOptions.first.value.first.value,
+                                paymentMethod.subOptions.first.value.first.value,
                               ),
                             );
                           }
                         } else {
-                          selectedSubOption =
-                              null; // Clear sub-option if none are available
+                          selectedSubOption = null;
                         }
                       });
                     },
                   ),
                 ),
 
-                // Sub-options (nested radio buttons) displayed when the main option is expanded
+                // الخيارات الفرعية
                 if (widget.subCardShow == true &&
                     expandedMethod == paymentMethod.name &&
                     paymentMethod.subOptions.isNotEmpty)
                   ...paymentMethod.subOptions.map(
                     (subOption) => Container(
                       padding: EdgeInsets.only(
-                          left: screenWidth * 0.050,
-                          right: screenWidth * 0.050),
+                        left: screenWidth * 0.050,
+                        right: screenWidth * 0.050,
+                      ),
                       child: Column(
                         children: subOption.value
+                            .where((type) {
+                              // 🔹 Hide Tabby if paymentType = gift_card
+                              if (widget.paymentType == 'gift_card' && type.value == 'tabby') {
+                                return false;
+                              }
+                              return true;
+                            })
                             .map(
                               (type) => Container(
                                 margin: const EdgeInsets.symmetric(vertical: 4),
                                 decoration: BoxDecoration(
                                   color: selectedSubOption == type.value
-                                      ? Colors.blue[50]
-                                      : Colors.white,
+                                      ? isDarkMode
+                                          ? Colors.blue[250]
+                                          : Colors.blue[50]
+                                      : Theme.of(context).colorScheme.surface,
                                   borderRadius: BorderRadius.circular(4),
                                   border: Border.all(
-                                    color: selectedSubOption == type.value
-                                        ? Colors.blue.shade200
-                                        : Colors.grey.shade300,
+                                    color:
+                                        selectedSubOption == type.value ? Colors.blue.shade200 : Colors.grey.shade300,
                                   ),
                                 ),
                                 child: RadioListTile<String>(
@@ -196,16 +233,11 @@ class _PaymentMethodsState extends State<PaymentMethods> {
                                   value: type.value,
                                   groupValue: selectedSubOption,
                                   activeColor: Colors.blue,
-                                  // Change the color of the selected sub-option radio button
-                                  selectedTileColor: Colors.red[200],
-                                  // Change the background color of the selected sub-option tile
                                   onChanged: (value) {
                                     setState(() {
-                                      selectedSubOption =
-                                          value; // Update selected sub-option
+                                      selectedSubOption = value;
                                     });
                                     final callback = widget.onSelectionChanged;
-
                                     if (callback != null) {
                                       callback(
                                         updatePaymentMethod(
@@ -231,14 +263,77 @@ class _PaymentMethodsState extends State<PaymentMethods> {
     );
   }
 
-  Map<String, String> updatePaymentMethod(
-      String paymentMethod, String optionKey, String optionValue) {
-    final Map<String, String> paymentMap = {};
+  // دالة مساعدة لبناء الصور مع معالجة الأخطاء
+  Widget _buildPaymentImage(String imageUrl, double width) {
+    return Container(
+      constraints: BoxConstraints(
+        maxWidth: width > 0 ? width : 50,
+        maxHeight: 40,
+      ),
+      child: Image.network(
+        imageUrl,
+        width: width > 0 ? width : 50,
+        height: 40,
+        fit: BoxFit.contain,
+        errorBuilder: (context, error, stackTrace) {
+          // في حالة فشل تحميل الصورة
+          return Container(
+            width: width > 0 ? width : 50,
+            height: 40,
+            decoration: BoxDecoration(
+              color: Colors.grey[200],
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: const Icon(
+              Icons.payment,
+              color: Colors.grey,
+              size: 20,
+            ),
+          );
+        },
+        loadingBuilder: (context, child, loadingProgress) {
+          if (loadingProgress == null) return child;
+          return SizedBox(
+            width: width > 0 ? width : 50,
+            height: 40,
+            child: const Center(
+              child: SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
 
+  // دالة للتحقق من صحة الرابط
+  bool _isValidUrl(String url) {
+    if (url.isEmpty) return false;
+    try {
+      Uri.parse(url);
+      return url.startsWith('http://') || url.startsWith('https://');
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Map<String, String> updatePaymentMethod(
+    String paymentMethod,
+    String optionKey,
+    String optionValue,
+  ) {
+    final Map<String, String> paymentMap = {};
     paymentMap['payment_method'] = paymentMethod;
     paymentMap['sub_option_key'] = optionKey;
     paymentMap['sub_option_value'] = optionValue;
-
     return paymentMap;
   }
+}
+
+// إضافة extension مساعد للتحقق من وجود العنصر الأول
+extension ListExtension<T> on List<T> {
+  T? get firstOrNull => isEmpty ? null : first;
 }

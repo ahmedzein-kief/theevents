@@ -52,7 +52,7 @@ class VendorCreateCouponViewModel with ChangeNotifier {
           await _myRepo.vendorCreateCoupon(headers: headers, body: body);
       setApiResponse = ApiResponse.completed(response);
       AlertServices.showSuccessSnackBar(
-          message: response.message.toString(), context: context);
+          message: response.message.toString(), context: context,);
       setLoading(false);
       return true;
     } catch (error) {
@@ -64,7 +64,7 @@ class VendorCreateCouponViewModel with ChangeNotifier {
 
       setApiResponse = ApiResponse.error(error.toString());
       AlertServices.showErrorSnackBar(
-          message: error.toString(), context: context);
+          message: error.toString(), context: context,);
       setLoading(false);
       return false;
     }

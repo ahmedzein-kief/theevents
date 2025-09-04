@@ -22,7 +22,7 @@ class MediaServices {
     'docx',
     'txt',
     'xls',
-    'xlsx'
+    'xlsx',
   ];
 
   Future<File?> getSingleImageFromGallery() async {
@@ -52,7 +52,7 @@ class MediaServices {
   }
 
   Future<File?> getSingleFileFromPicker(
-      {List<String>? allowedExtensions}) async {
+      {List<String>? allowedExtensions,}) async {
     try {
       final FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
@@ -63,7 +63,7 @@ class MediaServices {
       if (result != null && result.files.isNotEmpty) {
         final String filePath = result.files.single.path!;
         if (_isAllowedExtension(
-            filePath, allowedExtensions ?? _allowedAllExtensions)) {
+            filePath, allowedExtensions ?? _allowedAllExtensions,)) {
           return File(filePath);
         } else {
           // Handle unsupported file type
@@ -80,7 +80,7 @@ class MediaServices {
   }
 
   Future<List<File>?> getMultipleFilesFromPicker(
-      {List<String>? allowedExtensions}) async {
+      {List<String>? allowedExtensions,}) async {
     try {
       final FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
@@ -93,7 +93,7 @@ class MediaServices {
         for (final file in result.files) {
           final String filePath = file.path!;
           if (_isAllowedExtension(
-              filePath, allowedExtensions ?? _allowedAllExtensions)) {
+              filePath, allowedExtensions ?? _allowedAllExtensions,)) {
             files.add(File(filePath));
           } else {
             // Handle unsupported file type

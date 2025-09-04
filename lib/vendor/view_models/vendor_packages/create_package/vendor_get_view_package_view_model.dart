@@ -31,7 +31,7 @@ class VendorGetViewPackageViewModel with ChangeNotifier {
       _vendorProductViewApiResponse;
 
   set setProductViewApiResponse(
-      ApiResponse<NewProductViewDataResponse> response) {
+      ApiResponse<NewProductViewDataResponse> response,) {
     _vendorProductViewApiResponse = response;
     notifyListeners();
   }
@@ -56,7 +56,7 @@ class VendorGetViewPackageViewModel with ChangeNotifier {
     } catch (error) {
       _vendorProductViewApiResponse = ApiResponse.error(error.toString());
       AlertServices.showErrorSnackBar(
-          message: error.toString(), context: context);
+          message: error.toString(), context: context,);
       setLoading(false);
       return false;
     }

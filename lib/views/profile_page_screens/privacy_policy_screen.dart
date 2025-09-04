@@ -81,7 +81,7 @@
 //                                     padding: EdgeInsets.only(
 //                                         left: screenWidth * 0.02),
 //                                     child: SvgPicture.asset(
-//                                         AppStrings.privacyPolicyIcon,
+//                                         AppStrings.privacyPolicyIcon.tr,
 //                                         color: Theme.of(context)
 //                                             .colorScheme
 //                                             .onPrimary),
@@ -174,17 +174,20 @@
 //   }
 // }
 
-import 'dart:convert';
 import 'dart:developer';
 
+import 'package:dio/dio.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
+
 import '../../core/constants/app_strings.dart';
+import '../../core/helper/di/locator.dart';
 import '../../core/styles/custom_text_styles.dart';
+import '../../core/widgets/custom_app_views/default_app_bar.dart';
 import '../../core/widgets/custom_back_icon.dart';
 
 class PrivacyPolicyScreen extends StatefulWidget {
@@ -213,9 +216,8 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
     final screenWidth = MediaQuery.sizeOf(context).width;
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white, // Customize the app bar background color
-        leading: const BackIcon(),
+      appBar: const DefaultAppBar(
+        leading: BackIcon(),
         leadingWidth: 100,
       ),
       body: SafeArea(
@@ -245,12 +247,12 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
                         Expanded(
                           child: Text(
                             provider.privacyPolicyData?.name ??
-                                'Privacy Policy',
+                                AppStrings.privacyPolicy.tr,
                             style: privacyPolicyTextStyle(context),
                           ),
                         ),
                         SvgPicture.asset(
-                          AppStrings.privacyPolicyIcon,
+                          AppStrings.privacyPolicyIcon.tr,
                           color: Theme.of(context).colorScheme.onPrimary,
                         ),
                       ],
@@ -309,12 +311,12 @@ class PrivacyPolicyProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await http.get(
-        Uri.parse(ApiEndpoints.privacyPolicy),
-      );
+      final response = await locator.get<Dio>().get(
+            ApiEndpoints.privacyPolicy,
+          );
 
       if (response.statusCode == 200) {
-        final responseBody = jsonDecode(response.body);
+        final responseBody = response.data;
         _privacyPolicyData = PrivacyPolicyModel.fromJson(responseBody['data']);
       } else {
         log('Failed to load data');
@@ -344,10 +346,10 @@ class PrivacyPolicyProvider with ChangeNotifier {
 //
 //     try {
 //       final response = await http.get(
-//           Uri.parse('https://api.staging.theevents.ae/api/v1/pages/privacy-policy'));
+//           Uri.parse('https://apistaging.theevents.ae/api/v1/pages/privacy-policy'));
 //
 //       if (response.statusCode == 200) {
-//         final responseBody = jsonDecode(response.body);
+//         final responseBody = response.data;
 //         _privacyPolicyData = PrivacyPolicyModel.fromJson(responseBody['data']);
 //
 //         extractContentFromHtml(_privacyPolicyData?.content ?? '');

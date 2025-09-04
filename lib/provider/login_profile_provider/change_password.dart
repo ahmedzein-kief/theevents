@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/core/utils/custom_toast.dart';
@@ -20,7 +19,7 @@ class ChangePasswordProvider with ChangeNotifier {
   }
 
   Future<void> changePassword(
-      String token, ChangePasswordRequest request, BuildContext context) async {
+      String token, ChangePasswordRequest request, BuildContext context,) async {
     const urlChangePassword = ApiEndpoints.changePassword;
     const url = urlChangePassword;
     final headers = {
@@ -32,9 +31,9 @@ class ChangePasswordProvider with ChangeNotifier {
 
     try {
       final response = await _apiResponseHandler.postRequest(url,
-          headers: headers, body: request.toJson());
+          headers: headers, body: request.toJson(),);
 
-      final responseData = json.decode(response.body);
+      final responseData = response.data;
       if (response.statusCode == 200) {
         setStatus(ApiStatus.completed); // Set status to compl
         CustomSnackbar.showSuccess(context, 'Password updated successfully.');
@@ -52,7 +51,8 @@ class ChangePasswordRequest {
   ChangePasswordRequest(
       {required this.oldPassword,
       required this.password,
-      required this.password_confirmation});
+      required this.password_confirmation,});
+
   String oldPassword;
   String password;
   String password_confirmation;

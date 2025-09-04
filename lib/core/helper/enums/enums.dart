@@ -1,3 +1,5 @@
+enum ProductFilter { categories, brands, tags, prices, colors }
+
 enum GenderType { male, female }
 
 enum LoadingStatus { loading, complete }
@@ -24,8 +26,6 @@ enum WeightUnit { kg, lbs }
 enum HeightUnit { cm, feet }
 
 enum ChatMode { video, text }
-
-enum AthleteFilter { rating, nutrition, gender, newlyAdded, trending }
 
 enum ChatUser { user, athlete }
 

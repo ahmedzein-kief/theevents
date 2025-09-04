@@ -1,9 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/models/product_packages_models/product_details_models.dart';
 import 'package:event_app/views/product_detail_screens/full_screen_image_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../../core/constants/app_strings.dart';
 import '../../core/styles/app_colors.dart';
 import '../../core/styles/custom_text_styles.dart';
 
@@ -16,6 +18,7 @@ class ProductImageScreen extends StatefulWidget {
     required this.record,
     required this.images,
   });
+
   final String? selectedImageUrl;
   final double screenWidth;
   final Function(String?) onImageUpdate;
@@ -27,6 +30,31 @@ class ProductImageScreen extends StatefulWidget {
 }
 
 class _ProductImageScreenState extends State<ProductImageScreen> {
+  String? currentImageUrl;
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize with selectedImageUrl or first image if available
+    currentImageUrl = widget.selectedImageUrl ?? (widget.images.isNotEmpty ? widget.images.first.small : null);
+
+    // If we initialized with first image and it's different from selectedImageUrl, update parent
+    if (currentImageUrl != widget.selectedImageUrl && currentImageUrl != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        widget.onImageUpdate(currentImageUrl);
+      });
+    }
+  }
+
+  @override
+  void didUpdateWidget(ProductImageScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Update current image if selectedImageUrl changes
+    if (widget.selectedImageUrl != oldWidget.selectedImageUrl) {
+      currentImageUrl = widget.selectedImageUrl ?? (widget.images.isNotEmpty ? widget.images.first.small : null);
+    }
+  }
+
   @override
   Widget build(BuildContext context) => Material(
         elevation: 3,
@@ -55,48 +83,45 @@ class _ProductImageScreenState extends State<ProductImageScreen> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) => FullScreenImageView(
-                                    imageUrl: widget.selectedImageUrl),
+                                  imageUrl: currentImageUrl,
+                                ),
                               ),
                             );
                           },
                           child: CachedNetworkImage(
-                            imageUrl: widget.selectedImageUrl ?? '',
+                            imageUrl: currentImageUrl ?? '',
                             height: widget.screenWidth * 0.55,
                             width: widget.screenWidth * 0.6,
                             fit: BoxFit.fill,
-                            errorWidget: (context, object, error) =>
-                                Image.asset(
-                              'assets/placeholder.png', // Replace with your actual image path
-                              fit: BoxFit.cover, // Adjust fit if needed
+                            errorWidget: (context, object, error) => Image.asset(
+                              'assets/placeholder.png',
+                              fit: BoxFit.cover,
                               height: MediaQuery.sizeOf(context).height * 0.28,
                               width: double.infinity,
                             ),
                             errorListener: (object) {
                               Image.asset(
-                                'assets/placeholder.png', // Replace with your actual image path
-                                fit: BoxFit.cover, // Adjust fit if needed
-                                height:
-                                    MediaQuery.sizeOf(context).height * 0.28,
+                                'assets/placeholder.png',
+                                fit: BoxFit.cover,
+                                height: MediaQuery.sizeOf(context).height * 0.28,
                                 width: double.infinity,
                               );
                             },
-                            placeholder: (BuildContext context, String url) =>
-                                Container(
+                            placeholder: (BuildContext context, String url) => Container(
                               height: MediaQuery.sizeOf(context).height * 0.28,
                               width: double.infinity,
-                              color: Colors.blueGrey[300], // Background color
+                              color: Colors.blueGrey[300],
                               child: Stack(
                                 alignment: Alignment.center,
                                 children: [
                                   Image.asset(
-                                    'assets/placeholder.png', // Replace with your actual image path
-                                    fit: BoxFit.cover, // Adjust fit if needed
-                                    height: MediaQuery.sizeOf(context).height *
-                                        0.28,
+                                    'assets/placeholder.png',
+                                    fit: BoxFit.cover,
+                                    height: MediaQuery.sizeOf(context).height * 0.28,
                                     width: double.infinity,
                                   ),
                                   const CupertinoActivityIndicator(
-                                    radius: 16, // Adjust size of the loader
+                                    radius: 16,
                                     animating: true,
                                   ),
                                 ],
@@ -119,24 +144,30 @@ class _ProductImageScreenState extends State<ProductImageScreen> {
                                 itemCount: widget.images.length,
                                 itemBuilder: (context, index) {
                                   final image = widget.images[index];
+                                  final isSelected = currentImageUrl == image.small;
 
                                   return Padding(
                                     padding: const EdgeInsets.only(
-                                        bottom: 0, top: 5),
+                                      bottom: 0,
+                                      top: 5,
+                                    ),
                                     child: GestureDetector(
                                       onTap: () {
+                                        setState(() {
+                                          currentImageUrl = image.small;
+                                        });
                                         widget.onImageUpdate(image.small);
                                       },
                                       child: Container(
                                         decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(4),
-                                            border: Border.all(
-                                                color: Colors.black,
-                                                width: 0.2)),
+                                          borderRadius: BorderRadius.circular(4),
+                                          border: Border.all(
+                                            color: isSelected ? Colors.blue : Colors.black,
+                                            width: isSelected ? 2.0 : 0.2,
+                                          ),
+                                        ),
                                         child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(4),
+                                          borderRadius: BorderRadius.circular(4),
                                           child: CachedNetworkImage(
                                             imageUrl: image.small,
                                             height: widget.screenWidth * 0.18,
@@ -144,52 +175,40 @@ class _ProductImageScreenState extends State<ProductImageScreen> {
                                             fit: BoxFit.cover,
                                             errorListener: (object) {
                                               Image.asset(
-                                                'assets/placeholder.png', // Replace with your actual image path
-                                                fit: BoxFit
-                                                    .cover, // Adjust fit if needed
-                                                height:
-                                                    MediaQuery.sizeOf(context)
-                                                            .height *
-                                                        0.28,
+                                                'assets/placeholder.png',
+                                                fit: BoxFit.cover,
+                                                height: MediaQuery.sizeOf(context).height * 0.28,
                                                 width: double.infinity,
                                               );
                                             },
-                                            errorWidget:
-                                                (context, object, error) =>
-                                                    Image.asset(
-                                              'assets/placeholder.png', // Replace with your actual image path
-                                              fit: BoxFit
-                                                  .cover, // Adjust fit if needed
-                                              height: MediaQuery.sizeOf(context)
-                                                      .height *
-                                                  0.28,
+                                            errorWidget: (context, object, error) => Image.asset(
+                                              'assets/placeholder.png',
+                                              fit: BoxFit.cover,
+                                              height: MediaQuery.sizeOf(context).height * 0.28,
                                               width: double.infinity,
                                             ),
-                                            placeholder: (BuildContext context,
-                                                    String url) =>
+                                            placeholder: (
+                                              BuildContext context,
+                                              String url,
+                                            ) =>
                                                 Container(
-                                              height: MediaQuery.sizeOf(context)
-                                                      .height *
-                                                  0.28,
+                                              height: MediaQuery.sizeOf(context).height * 0.28,
                                               width: double.infinity,
-                                              color: Colors.blueGrey[
-                                                  300], // Background color
+                                              color: Colors.blueGrey[300],
                                               child: Stack(
                                                 alignment: Alignment.center,
                                                 children: [
                                                   Image.asset(
-                                                    'assets/placeholder.png', // Replace with your actual image path
-                                                    fit: BoxFit
-                                                        .cover, // Adjust fit if needed
+                                                    'assets/placeholder.png',
+                                                    fit: BoxFit.cover,
                                                     height: MediaQuery.sizeOf(
-                                                                context)
-                                                            .height *
+                                                          context,
+                                                        ).height *
                                                         0.28,
                                                     width: double.infinity,
                                                   ),
                                                   const CupertinoActivityIndicator(
-                                                    radius:
-                                                        16, // Adjust size of the loader
+                                                    radius: 16,
                                                     animating: true,
                                                   ),
                                                 ],
@@ -210,15 +229,17 @@ class _ProductImageScreenState extends State<ProductImageScreen> {
                   ),
                   Padding(
                     padding: EdgeInsets.only(
-                        left: widget.screenWidth * 0.06,
-                        right: widget.screenWidth * 0.06),
+                      left: widget.screenWidth * 0.06,
+                      right: widget.screenWidth * 0.06,
+                    ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Container(
                           padding: const EdgeInsets.all(2),
                           decoration: BoxDecoration(
-                              border: Border.all(color: Colors.grey)),
+                            border: Border.all(color: Colors.grey),
+                          ),
                           child: Row(
                             children: [
                               Padding(
@@ -229,39 +250,25 @@ class _ProductImageScreenState extends State<ProductImageScreen> {
                                   style: ratings(context),
                                 ),
                               ),
-                              const Icon(Icons.star,
-                                  size: 13, color: Colors.green),
+                              const Icon(
+                                Icons.star,
+                                size: 13,
+                                color: Colors.green,
+                              ),
                               Container(
                                 height: 15,
                                 width: 1,
                                 color: AppColors.semiTransparentBlack,
-                                margin:
-                                    const EdgeInsets.symmetric(horizontal: 5),
+                                margin: const EdgeInsets.symmetric(horizontal: 5),
                               ),
                               Text(
-                                // '5k ratings',
-                                '${widget.record.review!.reviewsCount.toString()} k ratings',
+                                '${widget.record.review!.reviewsCount.toString()} k ${AppStrings.ratings.tr}',
                                 maxLines: 1,
                                 style: ratings(context),
                               ),
                             ],
                           ),
                         ),
-                        /*Container(
-                        padding:  EdgeInsets.all(2),
-                        decoration: BoxDecoration(border: Border.all(color: Colors.grey)),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                             Icon(CupertinoIcons.viewfinder_circle_fill, size: 13, color: Colors.grey),
-                            Text(
-                              "View Similar",
-                              maxLines: 1,
-                              style: ratings(context),
-                            ),
-                          ],
-                        ),
-                      ),*/
                       ],
                     ),
                   ),

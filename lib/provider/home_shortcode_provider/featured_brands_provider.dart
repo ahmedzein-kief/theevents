@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/models/dashboard/featured_top_brands_models/feature_brands_items.dart';
 import 'package:event_app/models/product_packages_models/product_filters_model.dart';
@@ -36,7 +34,7 @@ class FeaturedBrandsProvider with ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        _topBrands = HomeTopBrandsModels.fromJson(json.decode(response.body));
+        _topBrands = HomeTopBrandsModels.fromJson(response.data);
         _errorMessage = null;
       } else {
         throw Exception('');
@@ -73,7 +71,7 @@ class FeaturedBrandsProvider with ChangeNotifier {
         context: context,
       );
       if (response.statusCode == 200) {
-        final jsonResponse = json.decode(response.body);
+        final jsonResponse = response.data;
         _featuredBrandsBanner = BrandsResponse.fromJson(jsonResponse);
         _isLoading = false;
         notifyListeners();
@@ -107,7 +105,7 @@ class FeaturedBrandsProvider with ChangeNotifier {
   Future<void> fetchBrandsItems(BuildContext context,
       {String sortBy = 'default_sorting',
       int perPage = 12,
-      int page = 1}) async {
+      int page = 1,}) async {
     if (page == 1) {
       branLoader = true;
       notifyListeners();
@@ -126,7 +124,7 @@ class FeaturedBrandsProvider with ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        final data = ApiResponse.fromJson(json.decode(response.body));
+        final data = ApiResponse.fromJson(response.data);
 
         if (page == 1) {
           _brands = data.data.records;
@@ -165,7 +163,7 @@ class FeaturedBrandsProvider with ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+        final data = response.data;
         _brandModel = FeaturedBrand.fromJson(data['data'] ?? {});
       } else {
         _error = 'Failed to load data: ${response.statusCode}';
@@ -246,7 +244,7 @@ class FeaturedBrandsProvider with ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> jsonResponse = json.decode(response.body);
+        final Map<String, dynamic> jsonResponse = response.data;
         final TopBrandsProducts apiResponse =
             TopBrandsProducts.fromJson(jsonResponse);
 
@@ -287,7 +285,7 @@ class FeaturedBrandsProvider with ChangeNotifier {
       {required String slug,
       int perPage = 12,
       page = 1,
-      String sortBy = 'default_sorting'}) async {
+      String sortBy = 'default_sorting',}) async {
     if (page == 1) {
       _isMoreLoading = true;
       _isLoadingPackages = true;
@@ -306,7 +304,7 @@ class FeaturedBrandsProvider with ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> jsonResponse = json.decode(response.body);
+        final Map<String, dynamic> jsonResponse = response.data;
         final TopBrandsProducts apiResponse =
             TopBrandsProducts.fromJson(jsonResponse);
 

@@ -1,10 +1,7 @@
-import 'dart:convert';
-
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/models/product_packages_models/product_filters_model.dart';
 import 'package:event_app/provider/api_response_handler.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:http/http.dart';
 
 import '../../models/dashboard/feature_categories_model/featured_category_products_models.dart';
 import '../../models/dashboard/feature_categories_model/product_category_model.dart';
@@ -21,7 +18,7 @@ class FeaturedCategoriesDetailProvider with ChangeNotifier {
   bool get isLoading => _isLoading;
 
   Future<void> fetchFeaturedCategoryBanner(BuildContext context,
-      {required String slug}) async {
+      {required String slug,}) async {
     _isLoading = true;
     notifyListeners();
 
@@ -33,7 +30,7 @@ class FeaturedCategoriesDetailProvider with ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
+        final data = response.data;
         _productCategoryBanner = ProductCategoryBanner.fromJson(data);
       } else {
         throw Exception('Failed to load data');
@@ -111,7 +108,7 @@ class FeaturedCategoriesDetailProvider with ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> jsonResponse = json.decode(response.body);
+        final Map<String, dynamic> jsonResponse = response.data;
         final FeaturedCategoryProductsModels apiResponse =
             FeaturedCategoryProductsModels.fromJson(jsonResponse);
         if (page == 1) {
@@ -165,7 +162,7 @@ class FeaturedCategoriesDetailProvider with ChangeNotifier {
     print(url);
 
     try {
-      final Response response = await _apiResponseHandler.getRequest(
+      final response = await _apiResponseHandler.getRequest(
         url,
         context: context,
       );
@@ -173,7 +170,7 @@ class FeaturedCategoriesDetailProvider with ChangeNotifier {
       print(response.statusCode);
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+        final Map<String, dynamic> jsonResponse = response.data;
         final FeaturedCategoryProductsModels apiResponse =
             FeaturedCategoryProductsModels.fromJson(jsonResponse);
         print(apiResponse.data.records);

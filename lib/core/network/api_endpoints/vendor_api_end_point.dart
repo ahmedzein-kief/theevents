@@ -1,10 +1,9 @@
 class VendorApiEndpoints {
   static const String baseUrl =
-      'https://api.staging.theevents.ae/api/v1/vendor/';
+      'https://apistaging.theevents.ae/api/v1/vendor/';
   static const String baseUrlSettings =
-      'https://api.staging.theevents.ae/api/v1/';
-  static const String imageBaseURL =
-      'https://api.staging.theevents.ae/storage/';
+      'https://apistaging.theevents.ae/api/v1/';
+  static const String imageBaseURL = 'https://apistaging.theevents.ae/storage/';
   static const String vendorProductBaseUrl = 'https://theevents.ae/products/';
 
   /*static const String baseUrl = 'https://events-api.clientswork.in/api/v1/';
@@ -13,12 +12,16 @@ class VendorApiEndpoints {
   //   Urls Of Api Endpoints  new one
   static const String signup = '${baseUrl}register';
   static const String meta = '${baseUrl}meta';
+  static const String vendorTypes =
+      'https://apistaging.theevents.ae/api/v1/getVendorsTypes';
+  static const String vendorPermissions = '${baseUrl}getPermissions';
   static const String settings_subscription =
       '${baseUrlSettings}settings/subscription';
   static const String pay = '${baseUrlSettings}payment-methods';
   static const String emailResend = '${baseUrlSettings}email/resend';
   static const String previewAgreement = '${baseUrl}preview-agreement';
   static const String downloadAgreement = '${baseUrl}download-agreement';
+  static const String getAgreementUrl = '${baseUrl}get-agreement-url';
 
   /// product
   static String get vendorProducts => '${baseUrl}products';
@@ -152,4 +155,6 @@ class VendorApiEndpoints {
 
   static String get addAttributeToProduct =>
       '${baseUrl}products/add-attribute-to-product/';
+
+  static String get rejectionHistory => '${baseUrl}rejection-history/';
 }

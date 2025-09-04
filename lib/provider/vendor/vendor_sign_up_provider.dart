@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:typed_data';
+import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
@@ -21,8 +21,10 @@ import 'package:event_app/models/vendor_models/response_models/payment_methods_r
 import 'package:event_app/models/vendor_models/response_models/signup_response.dart';
 import 'package:flutter/cupertino.dart';
 
+import '../../core/helper/di/locator.dart';
 import '../../core/services/shared_preferences_helper.dart';
 import '../../core/utils/custom_toast.dart';
+import '../../models/dashboard/vendor_permissions.dart';
 import '../../models/vendor_models/post_models/payment_post_data.dart';
 import '../../models/vendor_models/post_models/signup_post_data.dart';
 import '../../models/vendor_models/response_models/subscription_package_response.dart';
@@ -55,7 +57,7 @@ class VendorSignUpProvider with ChangeNotifier {
         bodyString: jsonEncode(postSignUpData),
       );
       if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
+        final jsonData = response.data;
         final dataModel = SignUpResponse.fromJson(jsonData);
         CustomSnackbar.showSuccess(context, dataModel.message);
         _isLoading = false;
@@ -126,7 +128,7 @@ class VendorSignUpProvider with ChangeNotifier {
     } else {
       if (boiData.passportServerFilePath?.isNotEmpty == true) {
         formData.fields.add(
-            MapEntry('passport_file_name', boiData.passportFileName ?? ''));
+            MapEntry('passport_file_name', boiData.passportFileName ?? ''),);
       }
     }
 
@@ -146,7 +148,7 @@ class VendorSignUpProvider with ChangeNotifier {
       } else {
         if (asiData.ownerEIDServerFilePath?.isNotEmpty == true) {
           formData.fields.add(
-              MapEntry('owner_eid_file_name', asiData.ownerEIDFileName ?? ''));
+              MapEntry('owner_eid_file_name', asiData.ownerEIDFileName ?? ''),);
         }
       }
       if (asiData.passportFile != null) {
@@ -162,7 +164,7 @@ class VendorSignUpProvider with ChangeNotifier {
       } else {
         if (asiData.passportServerFilePath?.isNotEmpty == true) {
           formData.fields.add(MapEntry(
-              'owner_passport_file_name', asiData.passportFileName ?? ''));
+              'owner_passport_file_name', asiData.passportFileName ?? '',),);
         }
       }
       if (asiData.poamoaFile != null) {
@@ -178,14 +180,14 @@ class VendorSignUpProvider with ChangeNotifier {
       } else {
         if (asiData.poamoaServerPath?.isNotEmpty == true) {
           formData.fields.add(MapEntry(
-              'signatory_poamoa_file_name', asiData.poamoaFileName ?? ''));
+              'signatory_poamoa_file_name', asiData.poamoaFileName ?? '',),);
         }
       }
     }
 
     try {
       // Make Dio request
-      final dio = Dio();
+      final dio = locator.get<Dio>();
 
       final response = await dio.post(
         url,
@@ -254,7 +256,7 @@ class VendorSignUpProvider with ChangeNotifier {
     } else {
       if (ciData.companyLogoFileServerPath?.isNotEmpty == true) {
         formData.fields.add(
-            MapEntry('company_logo_name', ciData.companyLogoFileName ?? ''));
+            MapEntry('company_logo_name', ciData.companyLogoFileName ?? ''),);
       }
     }
 
@@ -311,7 +313,7 @@ class VendorSignUpProvider with ChangeNotifier {
 
     try {
       final response = await _apiResponseHandler.postDioMultipartRequest(
-          url, headers, formData);
+          url, headers, formData,);
 
       if (response.statusCode == 200) {
         final dataModel = CompanyInfoResponse.fromJson(response.data);
@@ -369,13 +371,13 @@ class VendorSignUpProvider with ChangeNotifier {
     } else {
       if (bdData.bankLetterFileServerPath?.isNotEmpty == true) {
         formData.fields.add(
-            MapEntry('bank_letter_file_name', bdData.bankLetterFileName ?? ''));
+            MapEntry('bank_letter_file_name', bdData.bankLetterFileName ?? ''),);
       }
     }
 
     try {
       final response = await _apiResponseHandler.postDioMultipartRequest(
-          url, headers, formData);
+          url, headers, formData,);
 
       if (response.statusCode == 200) {
         final dataModel = BankDetailsResponse.fromJson(response.data);
@@ -433,14 +435,13 @@ class VendorSignUpProvider with ChangeNotifier {
     } else {
       if (caData.companyStampFileServerPath?.isNotEmpty == true) {
         formData.fields.add(MapEntry(
-            'company_stamp_file_name', caData.companyStampFileName ?? ''));
+            'company_stamp_file_name', caData.companyStampFileName ?? '',),);
       }
     }
 
     try {
       final response = await _apiResponseHandler.postDioMultipartRequest(
-          url, headers, formData);
-
+          url, headers, formData,);
       if (response.statusCode == 200) {
         final dataModel = ContractAgreementResponse.fromJson(response.data);
         CustomSnackbar.showSuccess(context, dataModel.message);
@@ -487,7 +488,7 @@ class VendorSignUpProvider with ChangeNotifier {
 
     try {
       final response = await _apiResponseHandler.postDioMultipartRequest(
-          url, headers, formData);
+          url, headers, formData,);
 
       if (response.statusCode == 200) {
         final dataModel = CheckoutPaymentModel.fromJson(response.data);
@@ -511,6 +512,40 @@ class VendorSignUpProvider with ChangeNotifier {
     } finally {
       _isLoading = false;
       notifyListeners();
+    }
+  }
+
+  Future<List<Map<String, dynamic>>?> getAllVendorTypes() async {
+    const url = VendorApiEndpoints.vendorTypes;
+    try {
+      final response = await _apiResponseHandler.getDioRequest(url);
+      if (response.statusCode == 200) {
+        final jsonData =
+            List<Map<String, dynamic>>.from(response.data['data']['roles']);
+        return jsonData;
+      } else {
+        throw Exception('Failed to Vendor types');
+      }
+    } catch (e) {
+      debugPrint('EXCEPTION :: ${e.toString()}');
+      return null;
+    }
+  }
+
+  Future<VendorPermissions> getAllVendorPermissions(int vendorId) async {
+    const url = VendorApiEndpoints.vendorPermissions;
+    try {
+      final response =
+          await _apiResponseHandler.getDioRequest('$url/$vendorId');
+
+      if (response.statusCode == 200) {
+        final permissions = response.data['data']['permissions'];
+        return VendorPermissions.fromJson(permissions);
+      }
+      return const VendorPermissions();
+    } catch (e) {
+      debugPrint('EXCEPTION :: ${e.toString()}');
+      return const VendorPermissions();
     }
   }
 
@@ -543,7 +578,7 @@ class VendorSignUpProvider with ChangeNotifier {
         return null;
       }
     } catch (e) {
-      print('EXCEPTION :: ${e.toString()}');
+      debugPrint('EXCEPTION :: ${e.toString()}');
       if (e is DioException) {
         CustomSnackbar.showError(context, _errorMessage(e.response));
       } else {}
@@ -556,13 +591,13 @@ class VendorSignUpProvider with ChangeNotifier {
     }
   }
 
-  Future<Uint8List?> previewAgreement(
+  Future<Map<String, dynamic>?> previewAgreement(
     BuildContext context,
   ) async {
     _isLoading = true;
     notifyListeners();
 
-    const url = VendorApiEndpoints.previewAgreement;
+    const url = VendorApiEndpoints.meta;
     final token = await SecurePreferencesUtil.getToken();
     final headers = {
       'Authorization': token ?? '',
@@ -572,7 +607,7 @@ class VendorSignUpProvider with ChangeNotifier {
       final response = await _apiResponseHandler.getDioRequest(
         url,
         headers: headers,
-        responseType: ResponseType.bytes,
+        // responseType: ResponseType.bytes,
       );
 
       if (response.statusCode == 200) {
@@ -715,6 +750,7 @@ class VendorSignUpProvider with ChangeNotifier {
   }
 
   Future<UserModel?> fetchUserData(BuildContext context) async {
+    log('fetchUserData', name: 'VENDOR');
     notifyListeners();
     const url = ApiEndpoints.getCustomer;
     final token = await SecurePreferencesUtil.getToken();
@@ -730,7 +766,7 @@ class VendorSignUpProvider with ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        final responseData = json.decode(response.body);
+        final responseData = response.data;
         print('user response => $responseData');
         notifyListeners();
         return UserModel.fromJson(responseData['data']);
@@ -757,7 +793,7 @@ class VendorSignUpProvider with ChangeNotifier {
         message = errorData['message'];
       }
     } else {
-      final jsonData = json.decode(response.body);
+      final jsonData = response.data;
       if (response != null) {
         errors = jsonData['errors'];
         error = jsonData['error'];

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/models/orders/order_detail_model.dart';
 import 'package:event_app/models/vendor_models/products/create_product/common_data_response.dart';
@@ -13,8 +14,11 @@ import 'package:html/parser.dart';
 import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
 
+import '../../../../core/constants/app_strings.dart';
+
 class OrderDetailsScreen extends StatefulWidget {
   const OrderDetailsScreen({super.key, required this.orderID});
+
   final String orderID;
 
   @override
@@ -31,7 +35,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   }
 
   Future<CommonDataResponse?> uploadProof(
-      String filePath, String fileName) async {
+      String filePath, String fileName,) async {
     final provider = Provider.of<OrderDataProvider>(context, listen: false);
     final response =
         await provider.uploadProof(context, filePath, fileName, widget.orderID);
@@ -70,14 +74,14 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error: ${e.toString()}'),
+          content: Text('${AppStrings.error.tr}: ${e.toString()}'),
         ),
       );
     } finally {}
   }
 
   Future<void> getInvoice(
-      BuildContext? context, String orderID, String invoice) async {
+      BuildContext? context, String orderID, String invoice,) async {
     if (!mounted) return;
     if (context == null) return;
     try {
@@ -97,7 +101,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error: ${e.toString()}'),
+          content: Text('${AppStrings.error.tr}: ${e.toString()}'),
         ),
       );
     } finally {}
@@ -105,8 +109,8 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
 
   @override
   Widget build(BuildContext context) => BaseAppBar(
-        textBack: 'Back',
-        title: 'Order Details',
+        textBack: AppStrings.back.tr,
+        title: AppStrings.orderDetails.tr,
         customBackIcon: const Icon(
           Icons.arrow_back_ios_sharp,
           size: 16,
@@ -136,14 +140,16 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           _buildInteractiveSection(
-                            title: 'Order Info',
+                            title: AppStrings.orderInfo.tr,
                             content: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                _infoRow('Order number:', data.code),
-                                _infoRow('Time:', data.createdAt),
                                 _infoRow(
-                                  'Order status:',
+                                    '${AppStrings.orderNumber.tr}:', data.code,),
+                                _infoRow(
+                                    '${AppStrings.time.tr}:', data.createdAt,),
+                                _infoRow(
+                                  '${AppStrings.orderStatus.tr}:',
                                   data.status,
                                   valueStyle:
                                       const TextStyle(color: Colors.orange),
@@ -152,7 +158,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                             ),
                           ),
                           _buildInteractiveSection(
-                            title: 'Products',
+                            title: AppStrings.products.tr,
                             content: Column(
                               children: data.products
                                   .map((product) => _buildProductRow(product))
@@ -160,15 +166,18 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                             ),
                           ),
                           _buildInteractiveSection(
-                            title: 'Charges',
+                            title: AppStrings.charges.tr,
                             content: Column(
                               children: [
-                                _infoRow('Tax:', data.taxAmount),
-                                _infoRow('Discount:', data.discountAmount),
-                                _infoRow('Shipping fee:', data.shippingAmount),
+                                _infoRow(
+                                    '${AppStrings.tax.tr}:', data.taxAmount,),
+                                _infoRow('${AppStrings.discount.tr}:',
+                                    data.discountAmount,),
+                                _infoRow('${AppStrings.shippingFee.tr}:',
+                                    data.shippingAmount,),
                                 Divider(thickness: 1, color: Colors.grey[300]),
                                 _infoRow(
-                                  'Total Amount:',
+                                  '${AppStrings.totalAmount.tr}:',
                                   data.totalAmount,
                                   valueStyle: const TextStyle(
                                     fontWeight: FontWeight.bold,
@@ -179,11 +188,11 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                             ),
                           ),
                           _buildInteractiveSection(
-                            title: 'Shipping Info',
+                            title: AppStrings.shippingInfo.tr,
                             content: Column(
                               children: [
                                 _infoRow(
-                                  'Shipping Status:',
+                                  AppStrings.shippingStatus.tr,
                                   convertHtmlToString(data.shipping.status),
                                   valueStyle: const TextStyle(
                                     color: Colors.orange,
@@ -191,9 +200,9 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                   ),
                                 ),
                                 _infoRow(
-                                  'Date shipped:',
+                                  AppStrings.dateShipped.tr,
                                   convertHtmlToString(
-                                      data.shipping.dateShipped),
+                                      data.shipping.dateShipped,),
                                   valueStyle: const TextStyle(
                                     color: Colors.black,
                                     fontSize: 16,
@@ -205,7 +214,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                           if (data.status.toLowerCase() != 'canceled' &&
                               data.status.toLowerCase() != 'completed') ...{
                             _buildInteractiveSection(
-                              title: 'Upload Payment Proof',
+                              title: AppStrings.uploadPaymentProof.tr,
                               content: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -214,36 +223,35 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                       text: TextSpan(
                                         style: TextStyle(
                                             color: Colors.grey[700],
-                                            fontSize: 16),
+                                            fontSize: 16,),
                                         children: [
-                                          const TextSpan(
-                                              text:
-                                                  'You have uploaded a copy of your payment proof.\n\n'),
-                                          const TextSpan(
-                                            text: 'View Receipt: ',
+                                          TextSpan(
+                                              text: AppStrings
+                                                  .uploadedProofNote.tr,),
+                                          TextSpan(
+                                            text: AppStrings.viewReceipt.tr,
                                           ),
                                           TextSpan(
                                             text: '${data.proofFile}\n\n',
                                             style: const TextStyle(
                                                 color: AppColors.lightCoral,
-                                                fontWeight: FontWeight.bold),
+                                                fontWeight: FontWeight.bold,),
                                             recognizer: TapGestureRecognizer()
                                               ..onTap = () async {
                                                 await downloadProof(context);
                                               },
                                           ),
-                                          const TextSpan(
-                                              text:
-                                                  'Or you can upload a new one, the old one will be replaced.'),
+                                          TextSpan(
+                                              text: AppStrings.reuploadNote.tr,),
                                         ],
                                       ),
                                     )
                                   else
                                     Text(
-                                      'The order is currently being processed. For expedited processing, kindly upload a copy of your payment proof:',
+                                      AppStrings.noProofUploaded.tr,
                                       style: TextStyle(
                                           color: Colors.grey[700],
-                                          fontSize: 16),
+                                          fontSize: 16,),
                                     ),
                                   const SizedBox(height: 8),
                                   ElevatedButton.icon(
@@ -253,7 +261,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                       if (file != null) {
                                         final result = await uploadProof(
                                             file.path,
-                                            path.basename(file.path));
+                                            path.basename(file.path),);
                                       }
                                     },
                                     style: ElevatedButton.styleFrom(
@@ -261,7 +269,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                       foregroundColor: Colors.white,
                                     ),
                                     icon: const Icon(Icons.upload),
-                                    label: const Text('Upload Payment Proof'),
+                                    label: Text(AppStrings.uploadButton.tr),
                                   ),
                                 ],
                               ),
@@ -273,19 +281,19 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                 content: RichText(
                                   text: TextSpan(
                                     style: TextStyle(
-                                        color: Colors.grey[700], fontSize: 16),
+                                        color: Colors.grey[700], fontSize: 16,),
                                     children: [
-                                      const TextSpan(
+                                      TextSpan(
                                           text:
-                                              'You have uploaded a copy of your payment proof.\n\n'),
-                                      const TextSpan(
-                                        text: 'View Receipt: ',
+                                              AppStrings.uploadedProofNote.tr,),
+                                      TextSpan(
+                                        text: AppStrings.viewReceipt.tr,
                                       ),
                                       TextSpan(
                                         text: '${data.proofFile}\n\n',
                                         style: const TextStyle(
                                             color: AppColors.lightCoral,
-                                            fontWeight: FontWeight.bold),
+                                            fontWeight: FontWeight.bold,),
                                         recognizer: TapGestureRecognizer()
                                           ..onTap = () async {
                                             await downloadProof(context);
@@ -322,9 +330,9 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                     onPressed: () {
                                       final invoice = 'Invoice_${data.code}';
                                       getInvoice(
-                                          context, widget.orderID, invoice);
+                                          context, widget.orderID, invoice,);
                                     },
-                                    child: const Text('Invoice'),
+                                    child: Text(AppStrings.invoice.tr),
                                   ),
                                 ),
                               const SizedBox(width: 16),
@@ -338,7 +346,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                     onPressed: () {
                                       _showCancelConfirmationDialog(context);
                                     },
-                                    child: const Text('Cancel'),
+                                    child: Text(AppStrings.cancel.tr),
                                   ),
                                 ),
                             ],
@@ -352,7 +360,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                         child: const Center(
                           child: CircularProgressIndicator(
                             valueColor: AlwaysStoppedAnimation<Color>(
-                                AppColors.peachyPink),
+                                AppColors.peachyPink,),
                           ),
                         ),
                       ),
@@ -447,11 +455,11 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
           product.productName,
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
-        subtitle: Text('Quantity: ${product.qty}'),
+        subtitle: Text('${AppStrings.quantity.tr}: ${product.qty}'),
         trailing: Text(
           product.totalFormat,
           style: const TextStyle(
-              color: Colors.black87, fontWeight: FontWeight.bold),
+              color: Colors.black87, fontWeight: FontWeight.bold,),
         ),
       );
 
@@ -459,14 +467,14 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     showDialog(
       context: context,
       builder: (BuildContext context) => AlertDialog(
-        title: const Text(
-          'Confirmation',
-          style: TextStyle(
+        title: Text(
+          AppStrings.confirmation.tr,
+          style: const TextStyle(
             fontWeight: FontWeight.bold, // Make text bold
             fontSize: 18, // Optional: Set font size
           ),
         ),
-        content: const Text('Are you sure you want to cancel this order?'),
+        content: Text(AppStrings.confirmationMessage.tr),
         actions: [
           TextButton(
             onPressed: () {
@@ -475,9 +483,9 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
             style: TextButton.styleFrom(
               foregroundColor: AppColors.lightCoral, // Set text color for "No"
             ),
-            child: const Text(
-              'No',
-              style: TextStyle(fontSize: 16),
+            child: Text(
+              AppStrings.no.tr,
+              style: const TextStyle(fontSize: 16),
             ),
           ),
           TextButton(
@@ -488,9 +496,9 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
             style: TextButton.styleFrom(
               foregroundColor: AppColors.lightCoral, // Set text color for "Yes"
             ),
-            child: const Text(
-              'Yes',
-              style: TextStyle(fontSize: 16),
+            child: Text(
+              AppStrings.yes.tr,
+              style: const TextStyle(fontSize: 16),
             ),
           ),
         ],

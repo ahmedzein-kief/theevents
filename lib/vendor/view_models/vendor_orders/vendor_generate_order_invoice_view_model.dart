@@ -43,7 +43,7 @@ class VendorGenerateOrderInvoiceViewModel with ChangeNotifier {
       };
 
       final dynamic response = await _myRepo.vendorGenerateOrderInvoice(
-          headers: headers, orderId: orderId.toString());
+          headers: headers, orderId: orderId.toString(),);
 
       /// save invoice
       final file =

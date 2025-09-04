@@ -606,7 +606,6 @@ class Shipping {
     String? cityName,
     String? stateName,
     String? countryName,
-    zipCode,
   }) {
     _id = id;
     _name = name;
@@ -616,7 +615,6 @@ class Shipping {
     _cityName = cityName;
     _stateName = stateName;
     _countryName = countryName;
-    _zipCode = zipCode;
   }
 
   Shipping.fromJson(json) {
@@ -628,7 +626,6 @@ class Shipping {
     _cityName = json['city_name'];
     _stateName = json['state_name'];
     _countryName = json['country_name'];
-    _zipCode = json['zip_code'];
   }
 
   dynamic _id;
@@ -639,7 +636,6 @@ class Shipping {
   String? _cityName;
   String? _stateName;
   String? _countryName;
-  dynamic _zipCode;
 
   dynamic get id => _id;
 
@@ -657,8 +653,6 @@ class Shipping {
 
   String? get countryName => _countryName;
 
-  dynamic get zipCode => _zipCode;
-
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map['id'] = _id;
@@ -669,7 +663,7 @@ class Shipping {
     map['city_name'] = _cityName;
     map['state_name'] = _stateName;
     map['country_name'] = _countryName;
-    map['zip_code'] = _zipCode;
+
     return map;
   }
 }

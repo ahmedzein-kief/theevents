@@ -15,12 +15,12 @@ class CustomTextFieldHeadings extends StatelessWidget {
                 text: title,
                 style: TextStyle(
                     color: Theme.of(context).colorScheme.onPrimary,
-                    fontSize: 14), // Black color for the text
+                    fontSize: 14,), // Black color for the text
               ),
               TextSpan(
                 text: textView,
                 style: const TextStyle(
-                    color: Colors.red, fontSize: 14), // Red color for the '*'
+                    color: Colors.red, fontSize: 14,), // Red color for the '*'
               ),
             ],
           ),

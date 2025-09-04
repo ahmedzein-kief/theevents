@@ -4,11 +4,14 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 
+import '../core/helper/di/locator.dart';
 import '../views/auth_screens/auth_page_view.dart';
 
 class ApiResponseHandler {
+  ApiResponseHandler({Dio? dio}) : dio = dio ?? locator.get<Dio>();
+  final Dio dio;
+
   Future<dynamic> getRequest(
     String url, {
     Map<String, String> headers = const {},
@@ -17,23 +20,19 @@ class ApiResponseHandler {
     required BuildContext context,
   }) async {
     try {
-      final Uri uri = queryParams.isNotEmpty
-          ? Uri.parse(url).replace(queryParameters: queryParams)
-          : Uri.parse(url);
-
-      final Map<String, String>? headersOrNull =
-          headers.isNotEmpty ? headers : null;
-
-      final response = await http.get(uri, headers: headersOrNull);
-
+      final response = await dio.get(
+        url,
+        queryParameters: queryParams.isNotEmpty ? queryParams : null,
+        options: Options(headers: headers.isNotEmpty ? headers : null),
+      );
       if (response.statusCode != 401) {
-        return authService ? _handleResponse(response) : response;
+        return authService ? _handleDioResponse(response) : response;
       } else {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => AuthScreen()),
         );
-        throw HttpException('Failed with status code: ${response.statusCode}');
+        throw Exception('Failed with status code: ${response.statusCode}');
       }
     } catch (e) {
       throw authService
@@ -48,19 +47,15 @@ class ApiResponseHandler {
     Map<String, String> queryParams = const {},
   }) async {
     try {
-      final Uri uri = queryParams.isNotEmpty
-          ? Uri.parse(url).replace(queryParameters: queryParams)
-          : Uri.parse(url);
-
-      final Map<String, String>? headersOrNull =
-          headers.isNotEmpty ? headers : null;
-
-      final response = await http.delete(uri, headers: headersOrNull);
-
+      final response = await dio.delete(
+        url,
+        queryParameters: queryParams.isNotEmpty ? queryParams : null,
+        options: Options(headers: headers.isNotEmpty ? headers : null),
+      );
       if (response.statusCode != 401) {
         return response;
       } else {
-        throw HttpException('Failed with status code: ${response.statusCode}');
+        throw Exception('Failed with status code: ${response.statusCode}');
       }
     } catch (e) {
       throw Exception('Error during API request: $e');
@@ -76,30 +71,57 @@ class ApiResponseHandler {
     bool authService = false,
   }) async {
     try {
-      final Uri uri = queryParams.isNotEmpty
-          ? Uri.parse(url).replace(queryParameters: queryParams)
-          : Uri.parse(url);
-
-      final Map<String, String>? headersOrNull =
-          headers.isNotEmpty ? headers : null;
-      final dynamic bodyOrNull = body.isNotEmpty
+      final dynamic data = body.isNotEmpty
           ? body
           : bodyString.isNotEmpty
               ? bodyString
               : null;
 
-      final response =
-          await http.post(uri, headers: headersOrNull, body: bodyOrNull);
+      final response = await dio.post(
+        url,
+        data: data,
+        queryParameters: queryParams.isNotEmpty ? queryParams : null,
+        options: Options(
+          headers: headers.isNotEmpty ? headers : null,
+          validateStatus: (status) {
+            return status! < 500; // Only reject server errors (5xx)
+          },
+        ),
+      );
 
-      if (response.statusCode != 401) {
-        return authService ? _handleResponse(response) : response;
-      } else {
-        throw HttpException('Failed with status code: ${response.statusCode}');
-      }
+      return authService ? _handleDioResponse(response) : response;
     } catch (e) {
       throw authService
           ? _handleException(e)
           : Exception('Error during API request: $e');
+    }
+  }
+
+// Change this to return an Exception instead of Map
+  Exception _handleException(Object e) {
+    if (e is SocketException) {
+      return Exception(
+          'No internet connection. Please check your network settings.',);
+    } else if (e is TimeoutException) {
+      return Exception('Request timed out. Please try again.');
+    } else if (e is DioException) {
+      switch (e.type) {
+        case DioExceptionType.connectionTimeout:
+        case DioExceptionType.sendTimeout:
+        case DioExceptionType.receiveTimeout:
+          return Exception(
+              'Connection timeout. Please check your internet connection.',);
+        case DioExceptionType.connectionError:
+          return Exception(
+              'No internet connection. Please check your network.',);
+        case DioExceptionType.badResponse:
+          final message = e.response?.data?['message'] ?? 'Request failed';
+          return Exception('Server error: $message');
+        default:
+          return Exception('Network error: ${e.message}');
+      }
+    } else {
+      return Exception('An error occurred: ${e.toString()}');
     }
   }
 
@@ -109,7 +131,6 @@ class ApiResponseHandler {
     FormData formData,
   ) {
     // Make Dio request
-    final dio = Dio();
     try {
       return dio.post(
         url,
@@ -135,8 +156,6 @@ class ApiResponseHandler {
     ResponseType? responseType,
   }) {
     // Make Dio request
-    final dio = Dio();
-
     try {
       return dio.get(
         url,
@@ -155,9 +174,9 @@ class ApiResponseHandler {
     }
   }
 
-  Future<Map<String, dynamic>> _handleResponse(http.Response response) async {
-    final responseBody = json.decode(utf8.decode(response.bodyBytes));
-
+  Future<Map<String, dynamic>> _handleDioResponse(Response response) async {
+    final responseBody =
+        response.data is String ? json.decode(response.data) : response.data;
     switch (response.statusCode) {
       case HttpStatus.ok:
         return {
@@ -189,26 +208,6 @@ class ApiResponseHandler {
         final errorMessages =
             responseBody['message'] ?? 'Unknown error occurred';
         return {'status': false, 'message': errorMessages};
-    }
-  }
-
-  Map<String, dynamic> _handleException(Object e) {
-    if (e is SocketException) {
-      return {
-        'status': false,
-        'message':
-            'No internet connection. Please check your network settings.',
-      };
-    } else if (e is TimeoutException) {
-      return {
-        'status': false,
-        'message': 'Request timed out. Please try again.',
-      };
-    } else {
-      return {
-        'status': false,
-        'message': 'An error occurred: ${e.toString()}',
-      };
     }
   }
 }

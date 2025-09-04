@@ -1,34 +1,36 @@
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/provider/customer/account_view_models/reviews/customer_get_product_reviews_view_model.dart';
 import 'package:event_app/views/base_screens/profile_screens/reviews/customer_reviewed_view.dart';
 import 'package:event_app/views/base_screens/profile_screens/reviews/customer_waiting_for_review_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../core/styles/custom_text_styles.dart';
+import '../../../core/constants/app_strings.dart';
 import '../../../core/widgets/custom_profile_views/custom_back_appbar_view.dart';
 
 class ProfileReviewScreen extends StatefulWidget {
   const ProfileReviewScreen({super.key, this.initialTabIndex = 0});
+
   final int initialTabIndex;
 
   @override
   State<ProfileReviewScreen> createState() => _ProfileReviewScreenState();
 }
 
-class _ProfileReviewScreenState extends State<ProfileReviewScreen>
-    with SingleTickerProviderStateMixin {
+class _ProfileReviewScreenState extends State<ProfileReviewScreen> with SingleTickerProviderStateMixin {
   TabController? _tabController;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(
-        length: 2, initialIndex: widget.initialTabIndex, vsync: this);
+      length: 2,
+      initialIndex: widget.initialTabIndex,
+      vsync: this,
+    );
     WidgetsBinding.instance.addPostFrameCallback((callback) async {
       context.read<CustomerGetProductReviewsViewModel>().clearList();
-      context
-          .read<CustomerGetProductReviewsViewModel>()
-          .customerGetProductReviews();
+      context.read<CustomerGetProductReviewsViewModel>().customerGetProductReviews();
     });
   }
 
@@ -42,21 +44,23 @@ class _ProfileReviewScreenState extends State<ProfileReviewScreen>
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.sizeOf(context).width;
     final screenHeight = MediaQuery.sizeOf(context).height;
+    final theme = Theme.of(context);
     return Scaffold(
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            const BackAppBarStyle(
+            BackAppBarStyle(
               icon: Icons.arrow_back_ios,
-              text: 'My Account',
+              text: AppStrings.myAccount.tr,
             ),
             Padding(
               padding: EdgeInsets.only(
-                  top: screenHeight * 0.04,
-                  left: screenWidth * 0.04,
-                  right: screenWidth * 0.04),
+                top: screenHeight * 0.04,
+                left: screenWidth * 0.04,
+                right: screenWidth * 0.04,
+              ),
               child: ClipRRect(
                 // borderRadius: const BorderRadius.all(Radius.circular(10)),
                 child: Container(
@@ -64,36 +68,31 @@ class _ProfileReviewScreenState extends State<ProfileReviewScreen>
                   // margin: const EdgeInsets.symmetric(horizontal: 20),
                   padding: const EdgeInsets.all(2),
                   decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.all(Radius.circular(5)),
-                    color: Colors.grey.shade100,
+                    borderRadius: const BorderRadius.all(Radius.circular(9)),
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Color(0xff787880).withAlpha(((1 - 0.12) * 255).toInt()) // opposite alpha
+                        : Color(0xff787880).withAlpha((0.12 * 255).toInt()), // normal alpha
                   ),
                   child: Consumer<CustomerGetProductReviewsViewModel>(
                     builder: (context, provider, _) => TabBar(
                       controller: _tabController,
-                      indicatorSize: TabBarIndicatorSize.tab,
                       dividerColor: Colors.transparent,
-                      indicator: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(color: Colors.black45, width: 0.1),
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(5)),
+                      indicatorColor: theme.colorScheme.onSurface,
+                      labelStyle: TextStyle(
+                        color: theme.colorScheme.onSurface,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
                       ),
-                      labelColor: Colors.black54,
-                      unselectedLabelColor: Colors.black54,
+                      unselectedLabelStyle: TextStyle(color: theme.colorScheme.onSurface, fontSize: 13),
+                      unselectedLabelColor: theme.colorScheme.onSurface,
                       tabs: [
                         WaitingForReviewTab(
                           key: const Key('1'),
-                          count: provider
-                                  .apiResponse.data?.data?.products?.length
-                                  .toString() ??
-                              '0',
+                          count: provider.apiResponse.data?.data?.products?.length.toString() ?? '0',
                         ),
                         ReviewedTab(
                           key: const Key('2'),
-                          count: provider.apiResponse.data?.data?.reviews
-                                  ?.pagination?.total
-                                  .toString() ??
-                              '0',
+                          count: provider.apiResponse.data?.data?.reviews?.pagination?.total.toString() ?? '0',
                         ),
                       ],
                     ),
@@ -122,6 +121,7 @@ class _ProfileReviewScreenState extends State<ProfileReviewScreen>
 
 class WaitingForReviewTab extends StatelessWidget {
   WaitingForReviewTab({super.key, this.count});
+
   String? count;
 
   @override
@@ -131,8 +131,7 @@ class WaitingForReviewTab extends StatelessWidget {
           children: [
             Expanded(
               child: Text(
-                'Waiting For Review ${count != null ? "($count)" : ''}',
-                style: reviewTabs(context),
+                '${AppStrings.waitingForReview.tr} ${count != null ? "($count)" : ''}',
                 textAlign: TextAlign.center,
               ),
             ),
@@ -143,6 +142,7 @@ class WaitingForReviewTab extends StatelessWidget {
 
 class ReviewedTab extends StatelessWidget {
   ReviewedTab({super.key, this.count});
+
   String? count;
 
   @override
@@ -151,8 +151,7 @@ class ReviewedTab extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Reviewed ${count != null ? "($count)" : ''}',
-              style: reviewTabs(context),
+              '${AppStrings.reviewed.tr} ${count != null ? "($count)" : ''}',
               textAlign: TextAlign.center,
             ),
           ],

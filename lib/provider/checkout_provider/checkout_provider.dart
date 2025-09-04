@@ -1,5 +1,6 @@
-import 'dart:convert';
+import 'dart:developer';
 
+import 'package:dio/dio.dart';
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/core/utils/custom_toast.dart';
 import 'package:event_app/models/dashboard/information_icons_models/gift_card_models/checkout_payment_model.dart';
@@ -28,26 +29,23 @@ class CheckoutProvider with ChangeNotifier {
     final url = '${ApiEndpoints.checkout}$checkoutToken';
     final headers = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer $tokenLogin',
+      'Authorization': tokenLogin,
     };
 
-    final marketPlaceList =
-        sessionCheckoutData?.marketplace?.data?.keys.toList() ?? [];
+    final marketPlaceList = sessionCheckoutData?.marketplace.keys.toList() ?? [];
 
     final Map<String, String> postDataMap = {
       'tracked_start_checkout': checkoutToken,
     };
 
-    print('token $tokenLogin');
-    print('checkoutToken $checkoutToken');
+    log('token $tokenLogin');
+    log('checkoutToken $checkoutToken');
 
     if (marketPlaceList.isNotEmpty) {
       for (final value in marketPlaceList) {
         // Add to postDataMap
-        postDataMap['shipping_method[$value]'] =
-            'default'; // Ensure non-null value
-        postDataMap['shipping_option[$value]'] =
-            shippingMethod['method_id'] ?? ''; // Ensure non-null value
+        postDataMap['shipping_method[$value]'] = 'default'; // Ensure non-null value
+        postDataMap['shipping_option[$value]'] = shippingMethod['method_id'] ?? ''; // Ensure non-null value
       }
     }
 
@@ -60,9 +58,7 @@ class CheckoutProvider with ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
-
-        print('json data $jsonData');
+        final jsonData = response.data;
 
         _checkoutData = CheckoutResponse.fromJson(jsonData);
 
@@ -84,7 +80,7 @@ class CheckoutProvider with ChangeNotifier {
   ) async {
     final url = isApply ? ApiEndpoints.couponApply : ApiEndpoints.couponRemove;
     final headers = {
-      'Authorization': 'Bearer $tokenLogin',
+      'Authorization': tokenLogin,
     };
 
     final Map<String, String> postDataMap = {
@@ -100,7 +96,7 @@ class CheckoutProvider with ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
+        final jsonData = response.data;
 
         notifyListeners();
         if (jsonData['error'] == false) {
@@ -118,65 +114,92 @@ class CheckoutProvider with ChangeNotifier {
     String checkoutToken,
     String token,
     CheckoutResponse checkoutData,
-    Map<String, String> paymentMethod,
+    Map paymentMethod,
+    bool isNewAddress,
   ) async {
+    log('checkoutData checkoutPaymentLink');
+
     final data = checkoutData.data;
+    if (data == null) return null;
 
-    final Map<String, String> postDataMap = {
+    // Create FormData
+    final formData = FormData.fromMap({
       'tracked_start_checkout': checkoutToken,
+      'amount': data.orderAmount.toString(),
       'is_mobile': '1',
-      'amount': data?.orderAmount?.toString() ?? '',
       'payment_method': paymentMethod['payment_method'] ?? '',
-      paymentMethod['sub_option_key'] ?? '':
-          paymentMethod['sub_option_value'] ?? '',
-      'description': '',
-      'address[address_id]':
-          data?.sessionCheckoutData?.addressId.toString() ?? '',
-      'address[name]': data?.sessionCheckoutData?.name ?? '',
-      'address[email]': data?.sessionCheckoutData?.email ?? '',
-      'address[phone]': data?.sessionCheckoutData?.phone ?? '',
-      'address[country]': data?.sessionCheckoutData?.country ?? '',
-      'address[city]': data?.sessionCheckoutData?.city ?? '',
-      'address[address]': data?.sessionCheckoutData?.address ?? '',
-      'billing_address_same_as_shipping_address': '1',
-    };
+    });
 
-    final vendorData = data?.sessionCheckoutData?.marketplace?.data;
+    // Add payment method sub-options if available
+    if (paymentMethod['sub_option_key'] != null && paymentMethod['sub_option_value'] != null) {
+      formData.fields.add(MapEntry(
+        paymentMethod['sub_option_key']!,
+        paymentMethod['sub_option_value']!,
+      ));
+    }
 
-    vendorData?.forEach((key, value) {
-      final id = key; // The key acts as the ID
-      final method = data?.defaultShippingMethod;
-      final option = data?.defaultShippingOption;
-      // Add to postDataMap
-      postDataMap['shipping_method[$id]'] =
-          method ?? ''; // Ensure non-null value
-      postDataMap['shipping_option[$id]'] =
-          option ?? ''; // Ensure non-null value
+    // Add address fields
+    final session = data.sessionCheckoutData;
+    formData.fields.addAll([
+      MapEntry('address[name]', session.name ?? ''),
+      MapEntry('address[email]', session.email ?? ''),
+      MapEntry('address[phone]', session.phone ?? ''),
+      MapEntry('address[country]', session.country ?? ''),
+      MapEntry('address[city]', session.city ?? ''),
+      MapEntry('address[address]', session.address ?? ''),
+      MapEntry('address[address_id]', isNewAddress ? 'new' : data.sessionCheckoutData.addressId.toString()),
+    ]);
+
+    // Add shipping info per vendor
+    final vendorData = data.sessionCheckoutData.marketplace;
+    vendorData.forEach((key, value) {
+      final id = key;
+      final method = data.defaultShippingMethod ?? 'default';
+      final option = data.defaultShippingOption ?? '';
+      formData.fields.addAll([
+        MapEntry('shipping_method[$id]', method),
+        MapEntry('shipping_option[$id]', option),
+      ]);
     });
 
     final url = '${ApiEndpoints.checkout}$checkoutToken/process';
     final headers = {
-      'Authorization': 'Bearer $token',
+      'Authorization': token,
+      // 'Content-Type' header is automatically set to 'multipart/form-data' by Dio
+      // when using FormData, so we don't need to include it here
     };
 
     try {
-      final response = await _apiResponseHandler.postRequest(url,
-          headers: headers, body: postDataMap);
+      // Use the multipart request method
+      final response = await _apiResponseHandler.postDioMultipartRequest(
+        url,
+        headers,
+        formData,
+      );
 
       if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
-
-        final data = CheckoutPaymentModel.fromJson(jsonData);
-
+        final jsonData = response.data;
+        final paymentData = CheckoutPaymentModel.fromJson(jsonData);
         notifyListeners();
-
-        return data.data.checkoutUrl;
+        return paymentData.data.checkoutUrl;
       } else {
-        final jsonResponse = json.decode(response.body);
+        final jsonResponse = response.data;
         CustomSnackbar.showError(context, '${jsonResponse["message"]}');
         throw Exception('Failed to load data');
       }
-    } catch (e) {}
+    } catch (e) {
+      log('checkoutPaymentLink error: $e');
+
+      // Handle DioException specifically to get better error messages
+      if (e is DioException) {
+        final errorMessage = e.response?.data?['message'] ?? e.message;
+        log('Dio error details: $errorMessage');
+        CustomSnackbar.showError(context, 'Payment failed: $errorMessage');
+      } else {
+        CustomSnackbar.showError(context, 'Payment failed: ${e.toString()}');
+      }
+    }
+
     notifyListeners();
     return null;
   }

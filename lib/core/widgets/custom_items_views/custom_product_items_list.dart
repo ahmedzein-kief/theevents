@@ -85,7 +85,7 @@ class CustomListView extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(brandName,
-                                    style: wishTopItemStyle(context)),
+                                    style: wishTopItemStyle(context),),
                                 Flexible(
                                   child: Text(
                                     brandDescription,
@@ -101,10 +101,10 @@ class CustomListView extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(actualPrice,
-                                        style: wishTopItemStyle(context)),
+                                        style: wishTopItemStyle(context),),
                                     const SizedBox(width: 10),
                                     Text(standardPrice,
-                                        style: wishItemSalePrice(context)),
+                                        style: wishItemSalePrice(context),),
                                     const SizedBox(width: 10),
                                     Text(offPrice, style: wishItemSaleOff()),
                                   ],
@@ -137,7 +137,7 @@ class CustomListView extends StatelessWidget {
                                                 'Add to cart',
                                                 style: TextStyle(
                                                     fontSize: 10,
-                                                    color: Colors.white),
+                                                    color: Colors.white,),
                                               ),
                                             ],
                                           ),
@@ -161,7 +161,7 @@ class CustomListView extends StatelessWidget {
                                                 'Notify me',
                                                 style: TextStyle(
                                                     fontSize: 10,
-                                                    color: Colors.white),
+                                                    color: Colors.white,),
                                               ),
                                             ],
                                           ),

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -8,6 +9,7 @@ import '../../core/constants/app_strings.dart';
 import '../../core/styles/app_colors.dart';
 import '../../core/widgets/custom_app_views/search_bar.dart';
 import '../../provider/cart_item_provider/cart_item_provider.dart';
+import '../../provider/locale_provider.dart';
 import '../../provider/shortcode_fresh_picks_provider/fresh_picks_provider.dart';
 import '../../provider/shortcode_home_page_provider.dart';
 import '../../provider/wishlist_items_provider/wishlist_provider.dart';
@@ -30,70 +32,203 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenViewState extends State<HomeScreen> {
-  // KEY FOR STORE THE USERNAME
   String? userName;
-
   late bool _isLoggedIn = false;
-
-  // FUNCTION FOR STORE The Name of user
-  Future<void> _loadUserName() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      userName = ModalRoute.of(context)!.settings.arguments as String? ??
-          prefs.getString('userName');
-    });
-  }
-
-  Future<void> _loadLoginState() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
-    });
-  }
+  Locale? _currentLocale;
+  bool _isRefreshing = false;
+  Timer? _debounceTimer;
 
   final String assetName = 'assets/applogo.svg';
-
-  Future<void> fetchHomePageData(BuildContext context) async {
-    final provider = Provider.of<HomePageProvider>(context, listen: false);
-    await provider.fetchHomePageData();
-  }
-
-  Future<void> _refreshHomePage() async {
-    await fetchHomePageData(context);
-  }
+  late final TextEditingController _searchController;
 
   @override
   void initState() {
+    _searchController = TextEditingController();
+    _currentLocale = Provider.of<LocaleProvider>(context, listen: false).locale;
+
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await Future.wait([
-        // _loadUserName(),
         _loadLoginState(),
-        fetchHomePageData(context),
+        _fetchAllHomePageData(),
       ]);
-      // _loadUserName();
-      // fetchHomePageData(context);
     });
     super.initState();
   }
 
   @override
+  void dispose() {
+    _searchController.dispose();
+    _debounceTimer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // Listen for locale changes and refresh ALL data
+    final newLocale = Provider.of<LocaleProvider>(context).locale;
+    if (_currentLocale != newLocale) {
+      _currentLocale = newLocale;
+      _refetchAllDataForLocaleChange();
+    }
+  }
+
+  Future<void> _loadLoginState() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (mounted) {
+      setState(() {
+        _isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+      });
+    }
+  }
+
+  // NEW: Comprehensive data refresh for locale changes
+  Future<void> _refetchAllDataForLocaleChange() async {
+    if (_isRefreshing) return;
+
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(const Duration(milliseconds: 300), () async {
+      if (mounted) {
+        setState(() => _isRefreshing = true);
+      }
+
+      try {
+        await _fetchAllHomePageData();
+      } catch (e) {
+        debugPrint('Error refetching home page data: $e');
+      } finally {
+        if (mounted) {
+          setState(() => _isRefreshing = false);
+        }
+      }
+    });
+  }
+
+  // NEW: Fetch all home page related data
+  Future<void> _fetchAllHomePageData() async {
+    final provider = Provider.of<HomePageProvider>(context, listen: false);
+    final freshPicksProvider = Provider.of<FreshPicksProvider>(context, listen: false);
+
+    await Future.wait([
+      provider.fetchHomePageData(context, forceRefresh: true),
+      // Add fresh picks refresh if method exists
+      // freshPicksProvider.fetchFreshPicks(context),
+    ]);
+  }
+
+  Future<void> _refreshHomePage() async {
+    await _fetchAllHomePageData();
+  }
+
+  Widget _buildLoadingOverlay() {
+    return Container(
+      color: Colors.black.withOpacity(0.5),
+      child: const Center(
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(AppColors.peachyPink),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContent(HomePageProvider provider) {
+    if (provider.isLoading && provider.extractedData.isEmpty) {
+      return _buildShimmerLoading();
+    } else if (provider.extractedData.isEmpty) {
+      return Center(
+        child: IconButton(
+          icon: const Icon(
+            Icons.refresh,
+            size: 40,
+            color: AppColors.peachyPink,
+          ),
+          onPressed: _refreshHomePage,
+        ),
+      );
+    } else {
+      return SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 10),
+          child: Column(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: provider.extractedData.map((data) {
+                  return _buildShortcodeWidget(data);
+                }).toList(),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+  }
+
+  Widget _buildShortcodeWidget(Map<String, dynamic> data) {
+    switch (data['shortcode']) {
+      case 'shortcode-simple-slider':
+        return SimpleSlider(data: data);
+      case 'shortcode-featured-categories':
+        return FeaturedCategoriesScreen(data: data);
+      case 'shortcode-information-icons':
+        return ShortcodeInformationIconsScreen(data: data);
+      case 'shortcode-events-bazaar':
+        return EventBazaarScreen(data: data);
+      case 'shortcode-vendors-by-type':
+        return UsersByTypeScreen(data: data);
+      case 'shortcode-ads':
+        return BannerAdsScreen(data: data);
+      case 'shortcode-fresh-picks':
+        return FreshPicksScreen(data: data);
+      case 'shortcode-users-by-type':
+        return UsersByTypeScreen(data: data);
+      case 'shortcode-featured-brands':
+        return FeaturedBrandsScreen(data: data);
+      case 'shortcode-two-tags-blocks-with-ad':
+        return SliderTwoTagsWithAdScreen(data: data);
+      default:
+        return const SizedBox.shrink();
+    }
+  }
+
+  Widget _buildShimmerLoading() {
+    return ListView.builder(
+      itemCount: 5,
+      itemBuilder: (context, index) {
+        return Container(
+          height: 200,
+          margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+          decoration: BoxDecoration(
+            color: Colors.grey[300],
+            borderRadius: BorderRadius.circular(12),
+          ),
+        );
+      },
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final String displayName = userName ?? '';
-    final wishlistProvider =
-        Provider.of<WishlistProvider>(context, listen: true);
-    final mainProvider = Provider.of<HomePageProvider>(context, listen: true);
-    final freshListProvider =
-        Provider.of<FreshPicksProvider>(context, listen: true);
-    final cartProvider = Provider.of<CartProvider>(context, listen: true);
+    final wishlistProvider = Provider.of<WishlistProvider>(context);
+    final mainProvider = Provider.of<HomePageProvider>(context);
+    final freshListProvider = Provider.of<FreshPicksProvider>(context);
+    final cartProvider = Provider.of<CartProvider>(context);
+
+    final isLoading = mainProvider.isLoading ||
+        wishlistProvider.isLoading ||
+        freshListProvider.isLoading ||
+        cartProvider.isLoading ||
+        _isRefreshing;
+
     return BaseAppBar(
-      firstRightIconPath: AppStrings.firstRightIconPath,
-      secondRightIconPath: AppStrings.secondRightIconPath,
-      thirdRightIconPath: AppStrings.thirdRightIconPath,
+      firstRightIconPath: AppStrings.firstRightIconPath.tr,
+      secondRightIconPath: AppStrings.secondRightIconPath.tr,
+      thirdRightIconPath: AppStrings.thirdRightIconPath.tr,
       body: RefreshIndicator(
         color: Theme.of(context).colorScheme.onPrimary,
-        onRefresh: () async {
-          _refreshHomePage();
-        },
+        onRefresh: _refreshHomePage,
         child: Scaffold(
           backgroundColor: Theme.of(context).colorScheme.surface,
           body: SafeArea(
@@ -101,93 +236,20 @@ class _HomeScreenViewState extends State<HomeScreen> {
               children: [
                 Column(
                   children: [
-                    const CustomSearchBar(
-                      hintText: 'Search Events',
+                    CustomSearchBar(
+                      hintText: AppStrings.searchEvents.tr,
+                      controller: _searchController,
                     ),
                     Expanded(
                       child: Consumer<HomePageProvider>(
                         builder: (context, provider, _) {
-                          if (mainProvider.isLoading) {
-                            // return _buildShimmerLoading();
-                            return Container();
-                          } else if (provider.extractedData.isEmpty) {
-                            return Center(
-                              child: IconButton(
-                                icon: const Icon(Icons.refresh,
-                                    size: 40, color: AppColors.peachyPink),
-                                onPressed: _refreshHomePage,
-                              ),
-                            );
-                          } else {
-                            return SingleChildScrollView(
-                              child: Padding(
-                                padding: const EdgeInsets.only(bottom: 10),
-                                child: Column(
-                                  children: [
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.stretch,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children:
-                                          provider.extractedData.map((data) {
-                                        switch (data['shortcode']) {
-                                          case 'shortcode-simple-slider':
-                                            return SimpleSlider(data: data);
-                                          case 'shortcode-featured-categories':
-                                            return FeaturedCategoriesScreen(
-                                                data: data);
-                                          case 'shortcode-information-icons':
-                                            return ShortcodeInformationIconsScreen(
-                                                data: data);
-                                          case 'shortcode-events-bazaar':
-                                            return EventBazaarScreen(
-                                                data: data);
-                                          case 'shortcode-vendors-by-type':
-                                            return UsersByTypeScreen(
-                                                data: data);
-                                          case 'shortcode-ads':
-                                            return BannerAdsScreen(data: data);
-                                          case 'shortcode-fresh-picks':
-                                            return FreshPicksScreen(data: data);
-                                          case 'shortcode-users-by-type':
-                                            return UsersByTypeScreen(
-                                                data: data);
-                                          case 'shortcode-featured-brands':
-                                            return FeaturedBrandsScreen(
-                                                data: data);
-                                          case 'shortcode-two-tags-blocks-with-ad':
-                                            return SliderTwoTagsWithAdScreen(
-                                                data: data);
-                                          default:
-                                            return const SizedBox.shrink();
-                                        }
-                                      }).toList(),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          }
+                          return _buildContent(provider);
                         },
                       ),
                     ),
                   ],
                 ),
-                if (mainProvider.isLoading ||
-                    wishlistProvider.isLoading ||
-                    freshListProvider.isLoading ||
-                    cartProvider.isLoading)
-                  Container(
-                    color: Colors.black
-                        .withOpacity(0.5), // Semi-transparent background
-                    child: const Center(
-                      child: CircularProgressIndicator(
-                        valueColor:
-                            AlwaysStoppedAnimation<Color>(AppColors.peachyPink),
-                      ),
-                    ),
-                  ),
+                if (isLoading) _buildLoadingOverlay(),
               ],
             ),
           ),
@@ -196,5 +258,3 @@ class _HomeScreenViewState extends State<HomeScreen> {
     );
   }
 }
-
-//    this is one of the

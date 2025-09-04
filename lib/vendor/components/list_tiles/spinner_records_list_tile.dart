@@ -62,9 +62,9 @@ class _SpinnerRecordListTileState extends State<SpinnerRecordListTile>
                 dense: false,
                 // minTileHeight: 60,
                 contentPadding: EdgeInsets.symmetric(
-                    horizontal: kPadding, vertical: kSmallPadding),
+                    horizontal: kPadding, vertical: kSmallPadding,),
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(kSmallCardRadius)),
+                    borderRadius: BorderRadius.circular(kSmallCardRadius),),
                 leading: widget.leading ??
                     ClipRRect(
                       borderRadius: BorderRadius.circular(kSmallCardRadius),

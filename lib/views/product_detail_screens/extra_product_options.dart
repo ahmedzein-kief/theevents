@@ -1,3 +1,5 @@
+import 'package:event_app/core/constants/app_strings.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/models/product_packages_models/product_options_model.dart';
 import 'package:event_app/views/product_detail_screens/custom_widgets/widget_date_picker.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +16,7 @@ class ExtraProductOptions extends StatefulWidget {
     required this.extraOptionsError,
     required this.selectedOptions,
   });
+
   final void Function(Map<String, dynamic> selectedOptions) onSelectedOptions;
   final List<ProductOptionsModel> options;
   final List<Map<String, dynamic>> extraOptionsError;
@@ -86,8 +89,9 @@ class _ExtraProductOptionsState extends State<ExtraProductOptions> {
       },
       child: Padding(
         padding: EdgeInsets.symmetric(
-            horizontal: widget.screenWidth * 0.06,
-            vertical: widget.screenWidth * 0.06),
+          horizontal: widget.screenWidth * 0.06,
+          vertical: widget.screenWidth * 0.06,
+        ),
         child: Column(
           children: widget.options.map((option) {
             switch (option.optionType) {
@@ -102,9 +106,7 @@ class _ExtraProductOptionsState extends State<ExtraProductOptions> {
                     });
                   },
                   errorMessage:
-                      (selectedLocation?.isEmpty == true) && option.isError
-                          ? 'Please select location'
-                          : null,
+                      (selectedLocation?.isEmpty == true) && option.isError ? AppStrings.pleaseSelectLocation.tr : null,
                 );
               case 'datepicker':
                 return DatePickerWidget(
@@ -116,9 +118,7 @@ class _ExtraProductOptionsState extends State<ExtraProductOptions> {
                       updateOptions();
                     });
                   },
-                  errorMessage: selectedDate == null && option.isError
-                      ? 'Please select valid date'
-                      : null,
+                  errorMessage: selectedDate == null && option.isError ? AppStrings.pleaseSelectValidDate.tr : null,
                 );
               case 'textarea':
                 return TextAreaWidget(
@@ -130,8 +130,7 @@ class _ExtraProductOptionsState extends State<ExtraProductOptions> {
                       updateOptions();
                     });
                   },
-                  errorMessage:
-                      option.isError ? 'Message cannot be empty' : null,
+                  errorMessage: option.isError ? AppStrings.messageCanNotBeEmpty.tr : null,
                 );
               default:
                 return const SizedBox.shrink();

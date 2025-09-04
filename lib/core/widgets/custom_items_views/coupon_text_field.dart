@@ -83,7 +83,7 @@ class _CustomTextFieldWithCouponState extends State<CustomTextFieldWithCoupon> {
                         hintStyle: const TextStyle(color: Colors.grey),
                         enabledBorder: const OutlineInputBorder(
                           borderSide: BorderSide(
-                              color: Colors.grey), // Unfocused border
+                              color: Colors.grey,), // Unfocused border
                         ),
                         focusedBorder: const OutlineInputBorder(
                           borderSide:
@@ -112,10 +112,10 @@ class _CustomTextFieldWithCouponState extends State<CustomTextFieldWithCoupon> {
                         onTap: () {
                           if (validCoupon) {
                             widget.onCouponApplyRemove(
-                                _couponController.text, false);
+                                _couponController.text, false,);
                           } else {
                             widget.onCouponApplyRemove(
-                                _couponController.text, true);
+                                _couponController.text, true,);
                           }
                         },
                         child: Container(

@@ -1,35 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
 
-import '../../../core/styles/app_colors.dart';
 import '../../Components/vendor_text_style.dart';
 
-WidgetStateProperty<Color?> checkboxColor() =>
+WidgetStateProperty<Color?> checkboxColor(BuildContext context) =>
     WidgetStateProperty.resolveWith((Set<WidgetState> states) {
       if (states.contains(WidgetState.selected)) {
-        return AppColors.lightCoral; // Color when the checkbox is selected
+        return Theme.of(context).colorScheme.primary;
       }
       if (states.contains(WidgetState.hovered)) {
-        return Colors.blue; // Color when the checkbox is hovered
+        return Theme.of(context).colorScheme.secondary;
       }
       if (states.contains(WidgetState.disabled)) {
-        return Colors.grey; // Color when the checkbox is disabled
+        return Theme.of(context).colorScheme.outline;
       }
-      return null; // Default color
+      return null;
     });
 
-WidgetStateProperty<Color?> checkColor() =>
+WidgetStateProperty<Color?> checkColor(BuildContext context) =>
     WidgetStateProperty.resolveWith((Set<WidgetState> states) {
       if (states.contains(WidgetState.selected)) {
-        return Colors.white; // Color when the checkbox is selected
+        return Theme.of(context).colorScheme.onPrimary;
       }
       if (states.contains(WidgetState.hovered)) {
-        return Colors.blue; // Color when the checkbox is hovered
+        return Theme.of(context).colorScheme.secondary;
       }
       if (states.contains(WidgetState.disabled)) {
-        return Colors.grey; // Color when the checkbox is disabled
+        return Theme.of(context).colorScheme.outline;
       }
-      return null; // Default color
+      return null;
     });
 
 /// checkbox list tile
@@ -57,14 +56,14 @@ class CustomCheckBoxTile extends StatelessWidget {
         contentPadding: EdgeInsets.zero,
         dense: true,
         visualDensity: VisualDensity.compact,
-        fillColor: checkboxColor(),
+        fillColor: checkboxColor(context),
         splashRadius: 5,
         tileColor: Colors.white,
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         title: Text(
           title.toString(),
           style: const TextStyle(
-              fontSize: 14, fontWeight: FontWeight.w400, color: Colors.black),
+              fontSize: 14, fontWeight: FontWeight.w400, color: Colors.black,),
         ),
         subtitle: subTitle != null ? Text(subTitle ?? '') : null,
         checkboxShape: RoundedRectangleBorder(
@@ -96,7 +95,7 @@ class CustomCheckBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Checkbox(
         visualDensity: VisualDensity.compact,
-        fillColor: checkboxColor(),
+        fillColor: checkboxColor(context),
         splashRadius: 5,
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         checkColor: Colors.white,
@@ -122,7 +121,7 @@ class CustomGFCheckbox extends StatefulWidget {
       required this.text,
       this.textStyle,
       this.type,
-      this.focusNode});
+      this.focusNode,});
   FocusNode? focusNode;
   final bool value;
   final ValueChanged<bool?> onChanged;

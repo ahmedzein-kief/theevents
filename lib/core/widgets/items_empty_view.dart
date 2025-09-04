@@ -21,14 +21,14 @@ class _ItemsEmptyViewState extends State<ItemsEmptyView> {
             padding: EdgeInsets.only(
                 left: screenWidth * 0.02,
                 right: screenWidth * 0.02,
-                top: screenHeight * 0.02),
+                top: screenHeight * 0.02,),
             child: Container(
               width: double.infinity,
               decoration: const BoxDecoration(color: AppColors.lightCoral),
               height: 50,
               child: const Align(
                   alignment: Alignment.center,
-                  child: Text('No records found!')),
+                  child: Text('No records found!'),),
             ),
           ),
         ],

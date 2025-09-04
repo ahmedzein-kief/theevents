@@ -120,7 +120,7 @@ class _VendorProductFaqScreenState extends State<VendorProductFaqScreen> {
                       fieldTitle(
                           text: 'Select from existing FAQs',
                           textStyle:
-                              const TextStyle(color: AppColors.lightCoral)),
+                              const TextStyle(color: AppColors.lightCoral),),
                       kMinorSpace,
                       CustomMultiselectDropdown(
                         dropdownItems: _faqDropdownItems,
@@ -143,7 +143,7 @@ class _VendorProductFaqScreenState extends State<VendorProductFaqScreen> {
                         alignment: Alignment.center, // Center align explicitly
                         child: Text('Or',
                             style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 16)),
+                                fontWeight: FontWeight.bold, fontSize: 16,),),
                       ),
                     ],
                   ),
@@ -152,14 +152,14 @@ class _VendorProductFaqScreenState extends State<VendorProductFaqScreen> {
               Flexible(
                 child: ListView.builder(
                   padding: const EdgeInsets.only(
-                      left: 16, right: 16, bottom: 80, top: 16),
+                      left: 16, right: 16, bottom: 80, top: 16,),
                   itemCount: productFAQs.length,
                   itemBuilder: (context, sectionIndex) => Card(
                     margin: const EdgeInsets.only(bottom: 16),
                     elevation: 3,
                     child: Padding(
                       padding: const EdgeInsets.only(
-                          bottom: 16, left: 16, right: 16),
+                          bottom: 16, left: 16, right: 16,),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [

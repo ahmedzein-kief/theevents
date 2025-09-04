@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/core/utils/custom_toast.dart';
@@ -20,7 +19,7 @@ class ProfileUpdateProvider with ChangeNotifier {
   }
 
   Future<void> editProfileDetails(
-      String token, ProfileUpdateResponse request, BuildContext context) async {
+      String token, ProfileUpdateResponse request, BuildContext context,) async {
     const urlChangePassword = ApiEndpoints.editAccount;
     const url = urlChangePassword;
     final headers = {
@@ -32,9 +31,9 @@ class ProfileUpdateProvider with ChangeNotifier {
 
     try {
       final response = await _apiResponseHandler.postRequest(url,
-          headers: headers, body: request.toJson());
+          headers: headers, body: request.toJson(),);
 
-      final responseData = json.decode(response.body);
+      final responseData = response.data;
       if (response.statusCode == 200) {
         setStatus(ApiStatus.completed); // Set status to comp
         CustomSnackbar.showSuccess(context, responseData['message']);
@@ -63,7 +62,7 @@ class ProfileUpdateProvider with ChangeNotifier {
         headers: headers,
       );
 
-      final responseData = json.decode(response.body);
+      final responseData = response.data;
       if (response.statusCode == 200) {
         setStatus(ApiStatus.completed);
         CustomSnackbar.showSuccess(context, responseData['message']);
@@ -84,7 +83,8 @@ class ProfileUpdateResponse {
   ProfileUpdateResponse(
       {required this.fullName,
       required this.fullEmail,
-      required this.phoneNumber});
+      required this.phoneNumber,});
+
   String fullName;
   String fullEmail;
   String phoneNumber;

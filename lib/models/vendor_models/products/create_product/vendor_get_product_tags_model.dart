@@ -4,7 +4,7 @@ VendorGetProductTagsModel vendorGetProductTagsModelFromJson(String str) =>
     VendorGetProductTagsModel.fromJson(json.decode(str));
 
 String vendorGetProductTagsModelToJson(
-        VendorGetProductTagsModel vendorProductTags) =>
+        VendorGetProductTagsModel vendorProductTags,) =>
     json.encode(vendorProductTags.toJson());
 
 class VendorGetProductTagsModel {

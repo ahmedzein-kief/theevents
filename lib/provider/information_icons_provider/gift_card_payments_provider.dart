@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/provider/api_response_handler.dart';
 import 'package:flutter/cupertino.dart';
@@ -34,7 +32,7 @@ class PaymentMethodsData {
   factory PaymentMethodsData.fromJson(Map<String, dynamic> json) =>
       PaymentMethodsData(
         paymentMethods: List<PaymentMethod>.from(
-            json['payment_methods'].map((x) => PaymentMethod.fromJson(x))),
+            json['payment_methods'].map((x) => PaymentMethod.fromJson(x)),),
         currency: json['currency'],
         selectedMethod: json['selected_method'],
         defaultMethod: json['default'],
@@ -70,7 +68,7 @@ class PaymentMethod {
         imgWidth: json['img_width'],
         imgWidth1: json['img_width1'],
         subOptions: List<SubOption>.from(
-            json['sub_options'].map((x) => SubOption.fromJson(x))),
+            json['sub_options'].map((x) => SubOption.fromJson(x)),),
       );
   String label;
   String name;
@@ -92,7 +90,7 @@ class SubOption {
   factory SubOption.fromJson(Map<String, dynamic> json) => SubOption(
         key: json['key'],
         value: List<PaymentType>.from(
-            json['value'].map((x) => PaymentType.fromJson(x))),
+            json['value'].map((x) => PaymentType.fromJson(x)),),
       );
   String key;
   List<PaymentType> value;
@@ -128,16 +126,22 @@ class PaymentMethodProviderGiftCard with ChangeNotifier {
 
   List<PaymentMethod> get paymentMethods => _paymentMethods;
 
-  Future<void> fetchPaymentMethods(BuildContext context) async {
+  Future<void> fetchPaymentMethods(BuildContext context,
+      {String? paymentType, String? amount,}) async {
     const url = ApiEndpoints.paymentMethods;
+
     try {
       final response = await _apiResponseHandler.getRequest(
         url,
+        queryParams: {
+          'payment_type': paymentType ?? '',
+          'amount': amount ?? '',
+        },
         context: context,
       );
 
       if (response.statusCode == 200) {
-        final decodedData = json.decode(response.body);
+        final decodedData = response.data;
         final PaymentMethodsResponse result =
             PaymentMethodsResponse.fromJson(decodedData);
 

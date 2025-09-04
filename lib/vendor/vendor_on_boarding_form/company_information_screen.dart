@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:camera_gallery_image_picker/camera_gallery_image_picker.dart';
+import 'package:event_app/core/constants/vendor_app_strings.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/helper/validators/validator.dart';
 import 'package:event_app/core/services/shared_preferences_helper.dart';
 import 'package:event_app/models/vendor_models/post_models/company_info_post_data.dart';
@@ -21,6 +23,7 @@ import '../components/vendor_text_style.dart';
 
 class CompanyInformationScreen extends StatefulWidget {
   const CompanyInformationScreen({super.key, required this.onNext});
+
   final VoidCallback onNext;
 
   @override
@@ -65,6 +68,7 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
 
   CountryModels? countryModel;
   String countryCode = '';
+  List<Map<String, dynamic>>? vendorTypes;
 
   Future<void> fetchCountryData() async {
     try {
@@ -77,11 +81,12 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
 
   Future<void> getAllMetaData() async {
     final provider = Provider.of<VendorSignUpProvider>(context, listen: false);
+    vendorTypes = await provider.getAllVendorTypes();
     final response = await provider.getAllMetaData(context);
 
     if (response != null) {
       SecurePreferencesUtil.saveServerStep(
-          int.parse(response.data['step'] ?? '1'));
+          int.parse(response.data['step'] ?? '1'),);
       /**
        * Parsing company information data
        */
@@ -125,19 +130,26 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
   }
 
   String findCountryNameUsingCode(String code) {
-    if (code.length > 3) {
-      countryCode = countryModel?.data?.list
-              ?.firstWhere((countryData) => countryData.label == code)
-              .value ??
-          '';
+    if (code.isEmpty) return '';
 
-      return code;
+    final countries = countryModel?.data?.list ?? [];
+
+    if (code.length > 3) {
+      final matchedCountry = countries.firstWhere(
+        (c) => c.name == code,
+        orElse: () => CountryList(code: '', name: ''),
+      );
+
+      countryCode = matchedCountry.code ?? '';
+      return code; // because input was already the country name
     } else {
+      final matchedCountry = countries.firstWhere(
+        (c) => c.code == code,
+        orElse: () => CountryList(code: '', name: ''),
+      );
+
       countryCode = code;
-      return countryModel?.data?.list
-              ?.firstWhere((countryData) => countryData.value == code)
-              .label ??
-          '';
+      return matchedCountry.name ?? code;
     }
   }
 
@@ -216,7 +228,7 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                             left: screenWidth * 0.04,
                             right: screenWidth * 0.04,
                             top: screenHeight * 0.03,
-                            bottom: screenHeight * 0.015),
+                            bottom: screenHeight * 0.015,),
                         child: Container(
                           decoration: BoxDecoration(
                             boxShadow: [
@@ -238,20 +250,22 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                               elevation: 15,
                               child: Padding(
                                 padding: const EdgeInsets.only(
-                                    top: 20, left: 10, right: 10, bottom: 30),
+                                    top: 20, left: 10, right: 10, bottom: 30,),
                                 child: Column(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     Text(
-                                      'Company Information',
+                                      VendorAppStrings.companyInformation.tr,
                                       style: loginHeading(),
                                     ),
                                     VendorCustomTextFields(
-                                      labelText: 'Company Name',
-                                      hintText: 'Enter company name',
-                                      textStar: ' *',
+                                      labelText:
+                                          VendorAppStrings.companyName.tr,
+                                      hintText:
+                                          VendorAppStrings.enterCompanyName.tr,
+                                      textStar: VendorAppStrings.asterick.tr,
                                       controller: _companyNameController,
                                       keyboardType: TextInputType.name,
                                       focusNode: _companyNameFocusNode,
@@ -262,9 +276,11 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                                       },
                                     ),
                                     VendorCustomTextFields(
-                                      labelText: 'Upload Company Logo',
-                                      hintText: 'No file chosen',
-                                      textStar: ' *',
+                                      labelText:
+                                          VendorAppStrings.uploadCompanyLogo.tr,
+                                      hintText:
+                                          VendorAppStrings.noFileChosen.tr,
+                                      textStar: VendorAppStrings.asterick.tr,
                                       controller: _companyLogoController,
                                       keyboardType: TextInputType.name,
                                       focusNode: _companyLogoFocusNode,
@@ -273,7 +289,7 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                                       prefixContainerColor:
                                           Colors.grey.shade300,
                                       borderSideColor: const BorderSide(
-                                          color: Colors.grey, width: 0.5),
+                                          color: Colors.grey, width: 0.5,),
                                       prefixIconColor: Colors.black,
                                       nextFocusNode: _companyCategoryFocusNode,
                                       isEditable: false,
@@ -299,9 +315,11 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                                       },
                                     ),
                                     VendorCustomTextFields(
-                                      labelText: 'Company Category Type',
-                                      hintText: 'Please select CC type',
-                                      textStar: ' *',
+                                      labelText: VendorAppStrings
+                                          .companyCategoryType.tr,
+                                      hintText:
+                                          VendorAppStrings.selectCcType.tr,
+                                      textStar: VendorAppStrings.asterick.tr,
                                       controller: _companyCategoryController,
                                       keyboardType: TextInputType.name,
                                       focusNode: _companyCategoryFocusNode,
@@ -315,8 +333,8 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                                         final categoryType =
                                             await showCompanyCategoryType(
                                                 context,
-                                                _companyCategoryController
-                                                    .text);
+                                                _companyCategoryController.text,
+                                                vendorTypes,);
                                         if (categoryType != null) {
                                           _companyCategoryController.text =
                                               categoryType;
@@ -325,9 +343,11 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                                       },
                                     ),
                                     VendorCustomTextFields(
-                                      labelText: 'Company Email',
-                                      hintText: 'Enter company email',
-                                      textStar: ' *',
+                                      labelText:
+                                          VendorAppStrings.companyEmail.tr,
+                                      hintText:
+                                          VendorAppStrings.enterCompanyEmail.tr,
+                                      textStar: VendorAppStrings.asterick.tr,
                                       controller: _companyEmailController,
                                       keyboardType: TextInputType.name,
                                       focusNode: _companyEmailFocusNode,
@@ -338,9 +358,11 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                                       },
                                     ),
                                     VendorCustomTextFields(
-                                      labelText: 'Phone Number (Landline)',
-                                      textStar: ' *',
-                                      hintText: 'Enter phone number',
+                                      labelText: VendorAppStrings
+                                          .phoneNumberLandline.tr,
+                                      textStar: VendorAppStrings.asterick.tr,
+                                      hintText:
+                                          VendorAppStrings.enterPhoneNumber.tr,
                                       controller: _companyNumberController,
                                       prefixIcon:
                                           Icons.keyboard_arrow_down_outlined,
@@ -354,9 +376,11 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                                       },
                                     ),
                                     VendorCustomTextFields(
-                                      labelText: 'Mobile Number',
-                                      textStar: ' *',
-                                      hintText: 'Enter mobile number',
+                                      labelText:
+                                          VendorAppStrings.mobileNumber.tr,
+                                      textStar: VendorAppStrings.asterick.tr,
+                                      hintText:
+                                          VendorAppStrings.enterMobileNumber.tr,
                                       controller: _mobileNumberController,
                                       prefixIcon:
                                           Icons.keyboard_arrow_down_outlined,
@@ -370,9 +394,11 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                                       },
                                     ),
                                     VendorCustomTextFields(
-                                      labelText: 'Trade License Number',
-                                      hintText: 'Enter trade license number',
-                                      textStar: ' *',
+                                      labelText: VendorAppStrings
+                                          .tradeLicenseNumber.tr,
+                                      hintText: VendorAppStrings
+                                          .enterTradeLicenseNumber.tr,
+                                      textStar: VendorAppStrings.asterick.tr,
                                       controller: _tlnController,
                                       keyboardType: TextInputType.name,
                                       focusNode: _tlnFocusNode,
@@ -381,7 +407,7 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                                       prefixContainerColor:
                                           Colors.grey.shade300,
                                       borderSideColor: const BorderSide(
-                                          color: Colors.grey, width: 0.5),
+                                          color: Colors.grey, width: 0.5,),
                                       prefixIconColor: Colors.black,
                                       nextFocusNode: _utlFocusNode,
                                       validator: Validator.tradingNumber,
@@ -390,9 +416,11 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                                       },
                                     ),
                                     VendorCustomTextFields(
-                                      labelText: 'Upload Trade License (pdf)',
-                                      hintText: 'No file chosen',
-                                      textStar: ' *',
+                                      labelText: VendorAppStrings
+                                          .uploadTradeLicensePdf.tr,
+                                      hintText:
+                                          VendorAppStrings.noFileChosen.tr,
+                                      textStar: VendorAppStrings.asterick.tr,
                                       controller: _utlController,
                                       keyboardType: TextInputType.name,
                                       focusNode: _utlFocusNode,
@@ -401,7 +429,7 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                                       prefixContainerColor:
                                           Colors.grey.shade300,
                                       borderSideColor: const BorderSide(
-                                          color: Colors.grey, width: 0.5),
+                                          color: Colors.grey, width: 0.5,),
                                       prefixIconColor: Colors.black,
                                       nextFocusNode: _cAddressFocusNode,
                                       validator: Validator.fieldRequired,
@@ -427,9 +455,11 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                                       },
                                     ),
                                     VendorCustomTextFields(
-                                      labelText: 'Company Address',
-                                      hintText: 'Enter company address',
-                                      textStar: ' *',
+                                      labelText:
+                                          VendorAppStrings.companyAddress.tr,
+                                      hintText: VendorAppStrings
+                                          .enterCompanyAddress.tr,
+                                      textStar: VendorAppStrings.asterick.tr,
                                       controller: _addressController,
                                       keyboardType: TextInputType.name,
                                       focusNode: _cAddressFocusNode,
@@ -441,10 +471,11 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                                       },
                                     ),
                                     VendorCustomTextFields(
-                                      labelText:
-                                          'Trade License Number Expiry Date',
-                                      hintText: 'yyyy-MM-dd',
-                                      textStar: ' *',
+                                      labelText: VendorAppStrings
+                                          .tradeLicenseNumberExpiryDate.tr,
+                                      hintText: VendorAppStrings
+                                          .enterTradeLicenseExpiryDate.tr,
+                                      textStar: VendorAppStrings.asterick.tr,
                                       controller:
                                           _tradeLicenseNumberExpiryController,
                                       keyboardType: TextInputType.name,
@@ -459,7 +490,8 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                                         final result =
                                             await showDatePickerDialog(
                                           context,
-                                          'yyyy-MM-dd',
+                                          VendorAppStrings
+                                              .enterTradeLicenseExpiryDate.tr,
                                         );
                                         if (result != null) {
                                           final date =
@@ -472,9 +504,10 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                                       },
                                     ),
                                     VendorCustomTextFields(
-                                      labelText: 'Country',
-                                      hintText: 'Please select country',
-                                      textStar: ' *',
+                                      labelText: VendorAppStrings.country.tr,
+                                      hintText:
+                                          VendorAppStrings.selectCountry.tr,
+                                      textStar: VendorAppStrings.asterick.tr,
                                       controller: _countryController,
                                       keyboardType: TextInputType.name,
                                       focusNode: _countryFocusNode,
@@ -490,9 +523,9 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                                           final List<CountryList> filteredList =
                                               countryModel?.data?.list
                                                       ?.where((value) =>
-                                                          value.value
+                                                          value.code
                                                               ?.toLowerCase() ==
-                                                          'ae')
+                                                          '+971',)
                                                       .toList() ??
                                                   [];
                                           showDialog(
@@ -506,10 +539,10 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                                                   (selectedCountry) {
                                                 setState(() {
                                                   countryCode =
-                                                      selectedCountry.value ??
+                                                      selectedCountry.code ??
                                                           '';
                                                   _countryController.text =
-                                                      selectedCountry.label ??
+                                                      selectedCountry.name ??
                                                           '';
                                                   ciModel.companyCountry =
                                                       countryCode;
@@ -521,9 +554,10 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                                       },
                                     ),
                                     VendorCustomTextFields(
-                                      labelText: 'Region',
-                                      hintText: 'Please select region',
-                                      textStar: ' *',
+                                      labelText: VendorAppStrings.region.tr,
+                                      hintText:
+                                          VendorAppStrings.selectRegion.tr,
+                                      textStar: VendorAppStrings.asterick.tr,
                                       controller: _regionController,
                                       keyboardType: TextInputType.name,
                                       focusNode: _regionFocusNode,
@@ -535,7 +569,7 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                                       validator: Validator.region,
                                       onIconPressed: () async {
                                         final region = await showRegionDropdown(
-                                            context, _regionController.text);
+                                            context, _regionController.text,);
                                         if (region != null) {
                                           _regionController.text = region;
                                           ciModel.companyRegion = region;
@@ -543,9 +577,10 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                                       },
                                     ),
                                     VendorCustomTextFields(
-                                      labelText:
-                                          'NOC/POA (If Applicable - pdf)',
-                                      hintText: 'No file chosen',
+                                      labelText: VendorAppStrings
+                                          .nocPoaIfApplicablePdf.tr,
+                                      hintText:
+                                          VendorAppStrings.noFileChosen.tr,
                                       textStar: '',
                                       controller: _nocApplicableController,
                                       keyboardType: TextInputType.name,
@@ -555,7 +590,7 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                                       prefixContainerColor:
                                           Colors.grey.shade300,
                                       borderSideColor: const BorderSide(
-                                          color: Colors.grey, width: 0.5),
+                                          color: Colors.grey, width: 0.5,),
                                       // Only red on the left side
                                       prefixIconColor: Colors.black,
                                       isEditable: false,
@@ -583,9 +618,10 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                                       },
                                     ),
                                     VendorCustomTextFields(
-                                      labelText:
-                                          'Vat Certificate (If Applicable - pdf)',
-                                      hintText: 'No file chosen',
+                                      labelText: VendorAppStrings
+                                          .vatCertificateIfApplicablePdf.tr,
+                                      hintText:
+                                          VendorAppStrings.noFileChosen.tr,
                                       textStar: '',
                                       controller: _vatCertificateController,
                                       keyboardType: TextInputType.name,
@@ -595,7 +631,7 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                                       prefixContainerColor:
                                           Colors.grey.shade300,
                                       borderSideColor: const BorderSide(
-                                          color: Colors.grey, width: 0.5),
+                                          color: Colors.grey, width: 0.5,),
                                       prefixIconColor: Colors.black,
                                       isEditable: false,
                                       // validator: Validator.fieldRequired,
@@ -639,11 +675,11 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                                                 });
                                               },
                                             ),
-                                            const Text('Home'),
+                                            Text(VendorAppStrings.home.tr),
                                           ],
                                         ),
                                         const SizedBox(
-                                            width: 20), // Space between buttons
+                                            width: 20,), // Space between buttons
                                         Row(
                                           children: [
                                             Radio<String>(
@@ -659,7 +695,7 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                                                 });
                                               },
                                             ),
-                                            const Text('Shop'),
+                                            Text(VendorAppStrings.shop.tr),
                                           ],
                                         ),
                                       ],
@@ -680,7 +716,7 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
               alignment: Alignment.bottomCenter,
               child: CustomVendorAuthButton(
                 isLoading: mainProvider.isLoading,
-                title: 'Save & Continue',
+                title: VendorAppStrings.saveAndContinue.tr,
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     final result = await updateCompanyInfoData(

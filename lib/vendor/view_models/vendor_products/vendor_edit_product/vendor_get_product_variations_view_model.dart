@@ -64,7 +64,7 @@ class VendorGetProductVariationsViewModel with ChangeNotifier {
         setApiResponse = ApiResponse.loading();
         final VendorGetProductVariationsModel response =
             await _myRepo.vendorGetProductVariations(
-                headers: headers, body: body, productID: productID);
+                headers: headers, body: body, productID: productID,);
         setLastPage(response);
         resetList(response);
         setApiResponse = ApiResponse.completed(response);

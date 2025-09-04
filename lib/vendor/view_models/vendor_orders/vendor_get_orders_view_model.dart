@@ -56,7 +56,7 @@ class VendorGetOrdersViewModel with ChangeNotifier {
       if (_currentPage <= _lastPage) {
         setApiResponse = ApiResponse.loading();
         final VendorGetOrdersModel response = await _myRepo.vendorGetOrders(
-            headers: headers, queryParams: queryParams);
+            headers: headers, queryParams: queryParams,);
         setLastPage(response);
         resetList(response);
         setApiResponse = ApiResponse.completed(response);

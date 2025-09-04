@@ -1,11 +1,10 @@
-import 'package:event_app/core/styles/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 TextStyle joinSeller() => GoogleFonts.inter(
     textStyle: const TextStyle(overflow: TextOverflow.ellipsis),
     fontSize: 20,
-    fontWeight: FontWeight.w600);
+    fontWeight: FontWeight.w600,);
 
 TextStyle vendorDescription() => const TextStyle(
       fontSize: 12,
@@ -18,20 +17,20 @@ TextStyle vendorDescriptionAgreement() =>
     GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w300);
 
 TextStyle signHere() => GoogleFonts.inter(
-    fontSize: 13, color: Colors.grey, fontWeight: FontWeight.bold);
+    fontSize: 13, color: Colors.grey, fontWeight: FontWeight.bold,);
 
 TextStyle agreementAccept() => GoogleFonts.inter(
-    fontSize: 13, color: Colors.grey, fontWeight: FontWeight.bold);
+    fontSize: 13, color: Colors.grey, fontWeight: FontWeight.bold,);
 
 TextStyle headingFields() => GoogleFonts.inter(
     textStyle: const TextStyle(overflow: TextOverflow.ellipsis),
     fontSize: 15,
-    fontWeight: FontWeight.w500);
+    fontWeight: FontWeight.w500,);
 
 TextStyle loginHeading() => GoogleFonts.inter(
     textStyle: const TextStyle(overflow: TextOverflow.ellipsis),
     fontSize: 18,
-    fontWeight: FontWeight.w600);
+    fontWeight: FontWeight.w600,);
 
 TextStyle VendorAuth() =>
     GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w500);
@@ -43,7 +42,7 @@ TextStyle paymentHeading() =>
     GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w600);
 
 TextStyle congratulations() => GoogleFonts.inter(
-    fontSize: 20, color: Colors.green, fontWeight: FontWeight.bold);
+    fontSize: 20, color: Colors.green, fontWeight: FontWeight.bold,);
 
 TextStyle paymentDesc() => GoogleFonts.inter(
       fontSize: 14,
@@ -70,11 +69,11 @@ TextStyle vendorName(context) => TextStyle(
       fontWeight: FontWeight.w300,
     );
 
-TextStyle vendorButtonText(context) => const TextStyle(
+TextStyle vendorButtonText(context) => TextStyle(
       fontSize: 16,
       overflow: TextOverflow.visible,
       fontFamily: 'FontSf',
-      color: AppColors.lightCoral,
+      color: Theme.of(context).colorScheme.primary,
       fontWeight: FontWeight.w300,
     );
 
@@ -119,7 +118,7 @@ TextStyle vendorNewProduct(context) => GoogleFonts.inter(
       textStyle: const TextStyle(
         overflow: TextOverflow.ellipsis,
       ),
-      color: Colors.green,
+      color: Theme.of(context).colorScheme.secondary,
       fontWeight: FontWeight.w400,
     );
 
@@ -128,7 +127,7 @@ TextStyle vendorNoProduct(context) => GoogleFonts.inter(
       textStyle: const TextStyle(
         overflow: TextOverflow.visible,
       ),
-      color: Colors.blue,
+      color: Theme.of(context).colorScheme.primary,
       fontWeight: FontWeight.w400,
     );
 
@@ -137,7 +136,7 @@ TextStyle vendorNewProducts(context) => GoogleFonts.inter(
       textStyle: const TextStyle(
         overflow: TextOverflow.visible,
       ),
-      color: Colors.red,
+      color: Theme.of(context).colorScheme.error,
       fontWeight: FontWeight.w400,
     );
 
@@ -166,7 +165,7 @@ TextStyle vendorProductsNone(context) => GoogleFonts.inter(
       textStyle: const TextStyle(
         overflow: TextOverflow.visible,
       ),
-      color: Colors.blue,
+      color: Theme.of(context).colorScheme.primary,
       fontWeight: FontWeight.w600,
     );
 
@@ -175,7 +174,7 @@ TextStyle vendorDate(context) => GoogleFonts.montserrat(
       textStyle: const TextStyle(
         overflow: TextOverflow.visible,
       ),
-      color: AppColors.peachyPink,
+      color: Theme.of(context).colorScheme.secondary,
       fontWeight: FontWeight.w400,
     );
 
@@ -197,9 +196,9 @@ TextStyle views(context) => GoogleFonts.inter(
       fontWeight: FontWeight.w600,
     );
 
-TextStyle subtitleTextStyle(context) => const TextStyle(
+TextStyle subtitleTextStyle(context) => TextStyle(
       fontSize: 12,
-      color: Colors.grey,
+      color: Theme.of(context).colorScheme.secondary,
       fontWeight: FontWeight.w400,
       height: 2,
     );

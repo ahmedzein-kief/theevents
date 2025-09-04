@@ -11,7 +11,8 @@ class VendorProductAttributeScreen extends StatefulWidget {
       {super.key,
       this.initialAttributes,
       this.listAttributesSets,
-      this.productId});
+      this.productId,});
+
   String? productId;
   List<Map<String, dynamic>>? initialAttributes = [];
   List<AttributeSetsData>? listAttributesSets;
@@ -87,11 +88,11 @@ class _VendorProductAttributeScreenState
         attributes.add({
           'name': remainingNames.isNotEmpty ? remainingNames[0] : '',
           'id': getAttributeId(
-              remainingNames.isNotEmpty ? remainingNames[0] : ''),
+              remainingNames.isNotEmpty ? remainingNames[0] : '',),
           'value': getChildAttributeFirstValue(
-              remainingNames.isNotEmpty ? remainingNames[0] : ''),
+              remainingNames.isNotEmpty ? remainingNames[0] : '',),
           'value_id': getChildAttributeFirstValueId(
-              remainingNames.isNotEmpty ? remainingNames[0] : ''),
+              remainingNames.isNotEmpty ? remainingNames[0] : '',),
         });
         updateNameList();
       });
@@ -195,8 +196,11 @@ class _VendorProductAttributeScreenState
                   ],
           ),
           body: Utils.modelProgressHud(
+            context: context,
             processing: _isProcessing,
             child: Utils.pageRefreshIndicator(
+              context: context,
+              onRefresh: addAttributesToProduct,
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
@@ -217,10 +221,10 @@ class _VendorProductAttributeScreenState
                                   ?.firstWhere(
                                 (element) => element.title == selectedAttribute,
                                 orElse: () => AttributeSetsData(
-                                    title: '', attributes: [], id: -1),
+                                    title: '', attributes: [], id: -1,),
                               ) ??
                               AttributeSetsData(
-                                  title: '', attributes: [], id: -1);
+                                  title: '', attributes: [], id: -1,);
 
                           // Get available values based on the selected attribute set
                           final List<String> availableValues = selectedSet
@@ -249,7 +253,7 @@ class _VendorProductAttributeScreenState
                                           value: selectedAttribute,
                                           hintText: 'Select Attribute Name',
                                           textStyle: const TextStyle(
-                                              color: Colors.grey, fontSize: 15),
+                                              color: Colors.grey, fontSize: 15,),
                                           menuItemsList: dropDownList
                                               .map(
                                                 (element) => DropdownMenuItem(
@@ -263,13 +267,13 @@ class _VendorProductAttributeScreenState
                                               attributes[index]['name'] = value;
                                               attributes[index]['id'] =
                                                   getChildAttributeFirstValueId(
-                                                      value);
+                                                      value,);
                                               attributes[index]['value'] =
                                                   getChildAttributeFirstValue(
-                                                      value);
+                                                      value,);
                                               attributes[index]['value_id'] =
                                                   getChildAttributeFirstValueId(
-                                                      value);
+                                                      value,);
                                               updateNameList();
                                             });
                                           },
@@ -280,7 +284,7 @@ class _VendorProductAttributeScreenState
                                           value:
                                               attributes[index]['value'] ?? '',
                                           textStyle: const TextStyle(
-                                              color: Colors.grey, fontSize: 15),
+                                              color: Colors.grey, fontSize: 15,),
                                           menuItemsList: availableValues
                                               .map(
                                                 (val) => DropdownMenuItem(
@@ -301,7 +305,7 @@ class _VendorProductAttributeScreenState
                                   ),
                                   IconButton(
                                     icon: const Icon(Icons.delete,
-                                        color: Colors.red),
+                                        color: Colors.red,),
                                     onPressed: () => removeAttribute(index),
                                   ),
                                 ],
@@ -321,7 +325,6 @@ class _VendorProductAttributeScreenState
                   ],
                 ),
               ),
-              onRefresh: addAttributesToProduct,
             ),
           ),
         ),

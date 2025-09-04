@@ -1,3 +1,4 @@
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/helper/mixins/media_query_mixin.dart';
 import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/core/styles/app_sizes.dart';
@@ -12,6 +13,7 @@ import 'package:event_app/vendor/view_models/vendor_revenues/vendor_revenues_vie
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/constants/vendor_app_strings.dart';
 import '../../components/generics/debouced_search.dart';
 
 class VendorRevenuesView extends StatefulWidget {
@@ -21,8 +23,7 @@ class VendorRevenuesView extends StatefulWidget {
   State<VendorRevenuesView> createState() => _VendorRevenuesViewState();
 }
 
-class _VendorRevenuesViewState extends State<VendorRevenuesView>
-    with MediaQueryMixin {
+class _VendorRevenuesViewState extends State<VendorRevenuesView> with MediaQueryMixin {
   /// To show modal progress hud
   bool _isProcessing = false;
 
@@ -40,8 +41,7 @@ class _VendorRevenuesViewState extends State<VendorRevenuesView>
 
   Future _onRefresh() async {
     try {
-      final provider =
-          Provider.of<VendorRevenuesViewModel>(context, listen: false);
+      final provider = Provider.of<VendorRevenuesViewModel>(context, listen: false);
 
       /// clear list on refresh
       provider.clearList();
@@ -53,8 +53,7 @@ class _VendorRevenuesViewState extends State<VendorRevenuesView>
 
   Future<void> _loadMoreData() async {
     // Load more data here
-    if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent) {
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent) {
       final provider = context.read<VendorRevenuesViewModel>();
       if (provider.apiResponse.status != ApiStatus.LOADING) {
         await provider.vendorRevenues(search: _searchController.text);
@@ -85,11 +84,15 @@ class _VendorRevenuesViewState extends State<VendorRevenuesView>
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        backgroundColor: AppColors.bgColor,
         body: Utils.modelProgressHud(
-            processing: _isProcessing,
-            child: Utils.pageRefreshIndicator(
-                onRefresh: _onRefresh, child: _buildUi(context))),
+          context: context,
+          processing: _isProcessing,
+          child: Utils.pageRefreshIndicator(
+            onRefresh: _onRefresh,
+            child: _buildUi(context),
+            context: context,
+          ),
+        ),
       );
 
   Widget _buildUi(BuildContext context) => Padding(
@@ -109,8 +112,9 @@ class _VendorRevenuesViewState extends State<VendorRevenuesView>
                   }
                   if (apiStatus == ApiStatus.ERROR) {
                     return ListView(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        children: [Utils.somethingWentWrong()]);
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      children: [Utils.somethingWentWrong()],
+                    );
                   }
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -119,10 +123,8 @@ class _VendorRevenuesViewState extends State<VendorRevenuesView>
                       VendorDataListBuilder(
                         scrollController: _scrollController,
                         listLength: provider.list.length,
-                        loadingMoreData:
-                            provider.apiResponse.status == ApiStatus.LOADING,
-                        contentBuilder: (context) =>
-                            _buildRecordsList(provider: provider),
+                        loadingMoreData: provider.apiResponse.status == ApiStatus.LOADING,
+                        contentBuilder: (context) => _buildRecordsList(provider: provider),
                       ),
                     ],
                   );
@@ -133,8 +135,7 @@ class _VendorRevenuesViewState extends State<VendorRevenuesView>
         ),
       );
 
-  Widget _buildRecordsList({required VendorRevenuesViewModel provider}) =>
-      ListView.builder(
+  Widget _buildRecordsList({required VendorRevenuesViewModel provider}) => ListView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         itemCount: provider.list.length,
@@ -175,16 +176,17 @@ class _VendorRevenuesViewState extends State<VendorRevenuesView>
             onChanged: (value) => debouncedSearch<VendorRevenuesViewModel>(
               context: context,
               value: value,
-              providerGetter: (context) =>
-                  context.read<VendorRevenuesViewModel>(),
+              providerGetter: (context) => context.read<VendorRevenuesViewModel>(),
               refreshFunction: _onRefresh,
             ),
           ),
         ],
       );
 
-  void _onRowTap(
-      {required BuildContext context, required RevenueRecord rowData}) {
+  void _onRowTap({
+    required BuildContext context,
+    required RevenueRecord rowData,
+  }) {
     /// showing through bottom sheet
     showModalBottomSheet(
       context: context,
@@ -193,8 +195,9 @@ class _VendorRevenuesViewState extends State<VendorRevenuesView>
         onClosing: () {},
         builder: (context) => Container(
           decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(kCardRadius)),
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(kCardRadius),
+          ),
           child: SafeArea(
             child: Padding(
               padding: EdgeInsets.all(kSmallPadding),
@@ -202,13 +205,28 @@ class _VendorRevenuesViewState extends State<VendorRevenuesView>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    buildRow('ID', rowData.id.toString()),
-                    buildRow('Order Code', rowData.orderCode.toString()),
-                    buildRow('Amount', rowData.amountFormat.toString()),
-                    buildRow('Sub Amount', rowData.subAmountFormat.toString()),
-                    buildRow('Fee', rowData.feeFormat.toString()),
-                    buildRow('Type', rowData.type.toString()),
-                    buildRow('Created At', rowData.createdAt.toString() ?? ''),
+                    buildRow(VendorAppStrings.id.tr, rowData.id.toString()),
+                    buildRow(
+                      VendorAppStrings.orderCode.tr,
+                      rowData.orderCode.toString(),
+                    ),
+                    buildRow(
+                      VendorAppStrings.amount.tr,
+                      rowData.amountFormat.toString(),
+                    ),
+                    buildRow(
+                      VendorAppStrings.subAmount.tr,
+                      rowData.subAmountFormat.toString(),
+                    ),
+                    buildRow(
+                      VendorAppStrings.fee.tr,
+                      rowData.feeFormat.toString(),
+                    ),
+                    buildRow(VendorAppStrings.type.tr, rowData.type.toString()),
+                    buildRow(
+                      VendorAppStrings.createdAt.tr,
+                      rowData.createdAt.toString() ?? '',
+                    ),
                   ],
                 ),
               ),

@@ -1,8 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../core/constants/app_strings.dart';
 import '../../../../core/network/api_status/api_status.dart';
 import '../../../../core/styles/custom_text_styles.dart';
 import '../../../../provider/user_order_provider/order_banner_provider.dart';
@@ -39,7 +41,7 @@ class _OrderPageBannerScreenState extends State<OrderPageBannerScreen> {
             padding: EdgeInsets.only(
                 left: screenWidth * 0.02,
                 right: screenWidth * 0.02,
-                top: screenHeight * 0.02),
+                top: screenHeight * 0.02,),
             child: Consumer<UserOrderProvider>(
               builder: (BuildContext context, provider, Widget? child) {
                 if (provider.apiStatus == ApiStatus.loading) {
@@ -56,7 +58,7 @@ class _OrderPageBannerScreenState extends State<OrderPageBannerScreen> {
                     children: [
                       Container(
                         decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(4)),
+                            borderRadius: BorderRadius.circular(4),),
                         height: 100,
                         width: double.infinity,
                         child: CachedNetworkImage(
@@ -89,8 +91,8 @@ class _OrderPageBannerScreenState extends State<OrderPageBannerScreen> {
                         ),
                       ),
                       SizedBox(height: screenHeight * 0.02),
-                      Text(provider.pageData?.name ?? 'Orders',
-                          style: boldHomeTextStyle()),
+                      Text(provider.pageData?.name ?? AppStrings.orders.tr,
+                          style: boldHomeTextStyle(),),
                     ],
                   );
                 } else if (provider.apiStatus == ApiStatus.error) {

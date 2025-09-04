@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:event_app/models/product_packages_models/product_filters_model.dart';
 import 'package:event_app/provider/api_response_handler.dart';
@@ -60,7 +59,7 @@ class SearchBarProvider extends ChangeNotifier {
     }).join('&');
 
     final baseUrl =
-        'https://api.staging.theevents.ae/api/v1/search-bar?q=$query&per-page=$perPage&page=$page&sort-by=$sortBy';
+        'https://apistaging.theevents.ae/api/v1/search-bar?q=$query&per-page=$perPage&page=$page&sort-by=$sortBy';
     final url = filtersQuery.isNotEmpty
         ? '$baseUrl&$filtersQuery&allcategories=1'
         : baseUrl;
@@ -71,7 +70,7 @@ class SearchBarProvider extends ChangeNotifier {
         context: context,
       );
       if (response.statusCode == 200) {
-        final Map<String, dynamic> jsonResponse = json.decode(response.body);
+        final Map<String, dynamic> jsonResponse = response.data;
         final NewProductsModels apiResponse =
             NewProductsModels.fromJson(jsonResponse);
 
@@ -101,6 +100,7 @@ class NewProductsModels {
     data = json['data'] != null ? BestSellerData.fromJson(json['data']) : null;
     message = json['message'];
   }
+
   bool? error;
   BestSellerData? data;
   String? message;
@@ -139,6 +139,7 @@ class BestSellerData {
         ? ProductFiltersModel.fromJson(json['filters'])
         : null;
   }
+
   List<dynamic>? parent;
   Pagination? pagination;
   List<Records>? records;
@@ -173,6 +174,7 @@ class Pagination {
       perPage = json['per_page'] as int?;
     }
   }
+
   int? total;
   int? lastPage;
   int? currentPage;
@@ -228,6 +230,7 @@ class Records {
     brand = json['brand'] != null ? Store.fromJson(json['brand']) : null;
     labels = json['labels']?.map((v) => v).toList();
   }
+
   dynamic id;
   String? name;
   String? slug;
@@ -286,6 +289,7 @@ class Review {
     average = json['average'];
     reviewsCount = _toInt(json['reviews_count']);
   }
+
   dynamic average;
   dynamic reviewsCount;
 
@@ -317,6 +321,7 @@ class Prices {
     discountPercentage = _toInt(json['discount_percentage']);
     hasDiscount = json['has_discount'];
   }
+
   int? price;
   dynamic priceWithTaxes;
   int? frontSalePrice;
@@ -362,6 +367,7 @@ class Store {
     reviewsCount = _toInt(json['reviews_count']);
     enabled = json['enabled'];
   }
+
   int? id;
   String? name;
   String? slug;

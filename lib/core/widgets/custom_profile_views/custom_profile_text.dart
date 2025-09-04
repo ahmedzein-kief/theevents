@@ -10,7 +10,7 @@ class CustomProfileText extends StatelessWidget {
       required this.title,
       required this.imagePath,
       this.iconColor = Colors.grey,
-      required this.onTap});
+      required this.onTap,});
   final String title;
   final String imagePath;
   final Color? iconColor;
@@ -30,7 +30,7 @@ class CustomProfileText extends StatelessWidget {
                       SvgPicture.asset(imagePath,
                           width: 21,
                           height: 21,
-                          color: Theme.of(context).colorScheme.onPrimary),
+                          color: Theme.of(context).colorScheme.onPrimary,),
                       const SizedBox(width: 16),
                       Text(title, style: profileItems(context)),
                     ],

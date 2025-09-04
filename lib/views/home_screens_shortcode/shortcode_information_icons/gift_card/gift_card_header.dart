@@ -2,12 +2,13 @@ import 'package:event_app/models/dashboard/information_icons_models/gift_card_mo
 import 'package:flutter/material.dart';
 
 class GiftCardHeader extends StatelessWidget {
-  double screenHeight;
-  double screenWidth;
+  final double screenHeight;
+  final double screenWidth;
   final Data? data;
   final String? giftCard;
 
-  GiftCardHeader({
+  const GiftCardHeader({
+    super.key,
     required this.screenHeight,
     required this.screenWidth,
     this.data,
@@ -16,26 +17,21 @@ class GiftCardHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var coverImage;
-
-    if (data == null) {
-      coverImage = "";
-    } else {
-      coverImage = data?.coverImage;
-    }
+    final String coverImage = data?.coverImage ?? '';
 
     return Column(
       children: [
         ClipRRect(
           borderRadius: BorderRadius.circular(5),
           child: Image.network(
+            coverImage,
             height: screenHeight * 0.15,
             width: screenWidth,
             fit: BoxFit.cover,
-            coverImage,
+            errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image, size: 40), // fallback
           ),
         ),
-        Text(giftCard ?? '')
+        Text(giftCard ?? ''),
       ],
     );
   }

@@ -1,19 +1,24 @@
-import 'dart:convert';
-
+import 'package:dio/dio.dart';
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/models/product_packages_models/product_filters_model.dart';
 import 'package:event_app/provider/api_response_handler.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:http/http.dart' as http;
+import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 
+import '../../core/helper/di/locator.dart';
 import '../../core/services/shared_preferences_helper.dart';
 import '../../core/utils/custom_toast.dart';
+import '../../core/widgets/custom_items_views/custom_toast.dart';
 import '../../models/dashboard/fresh_picks_models/fresh_picks_model.dart';
 import '../../models/dashboard/fresh_picks_models/freshpicks_ecom_tags_model.dart';
 import '../../models/dashboard/fresh_picks_models/freshpicks_top_banner_model.dart';
 import '../../models/wishlist_models/wish_list_response_models.dart';
+import '../../views/auth_screens/auth_page_view.dart';
 
 class FreshPicksProvider extends ChangeNotifier {
+  FreshPicksProvider({Dio? dio}) : dio = dio ?? locator.get<Dio>();
+  final Dio dio;
+
   //    ================================================= Fresh Picks Home Page  Provider =================================================================
   final ApiResponseHandler _apiResponseHandler = ApiResponseHandler();
 
@@ -32,8 +37,37 @@ class FreshPicksProvider extends ChangeNotifier {
 
   bool get isMoreLoading => _isMoreLoading;
 
-  Future<void> fetchData(BuildContext context,
-      {int perPage = 12, int page = 1, int random = 1}) async {
+  /// Check if user is logged in
+  Future<bool> _isLoggedIn() async {
+    final token = await SecurePreferencesUtil.getToken();
+    return token != null && token.isNotEmpty;
+  }
+
+  /// Navigate to login screen with appropriate message
+  void _navigateToLogin(BuildContext context, String messageKey) {
+    PersistentNavBarNavigator.pushNewScreen(
+      context,
+      screen: AuthScreen(),
+      withNavBar: false,
+      pageTransitionAnimation: PageTransitionAnimation.fade,
+    );
+
+    final CustomToast customToast = CustomToast(context);
+    customToast.showToast(
+      context: context,
+      textHint: messageKey,
+      onDismiss: () {
+        customToast.removeToast();
+      },
+    );
+  }
+
+  Future<void> fetchData(
+    BuildContext context, {
+    int perPage = 12,
+    int page = 1,
+    int random = 1,
+  }) async {
     _isLoading = true;
     notifyListeners();
 
@@ -48,7 +82,7 @@ class FreshPicksProvider extends ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        final jsonData = jsonDecode(response.body);
+        final jsonData = response.data;
         final data = HomeFreshPicksModels.fromJson(jsonData);
         records = data.data?.records;
         productFilters = data.data?.filters;
@@ -71,12 +105,11 @@ class FreshPicksProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // const String url = 'https://api.staging.theevents.ae/api/v1/pages/tags';
       const String url = ApiEndpoints.homeProductsViewAllBanner;
-      final response = await http.get(Uri.parse(url));
+      final response = await dio.get(url);
 
       if (response.statusCode == 200) {
-        final jsonData = jsonDecode(response.body);
+        final jsonData = response.data;
         tagsModel = TagsModel.fromJson(jsonData);
         _isLoading = false;
         notifyListeners();
@@ -92,10 +125,11 @@ class FreshPicksProvider extends ChangeNotifier {
 
 //    =================================================================  E-com Tags Items List of Fresh Picks  =+================================================================
 
-  Future<void> fetchEcomTags(
-      {String sortBy = 'default_sorting',
-      int page = 1,
-      int perPage = 20}) async {
+  Future<void> fetchEcomTags({
+    String sortBy = 'default_sorting',
+    int page = 1,
+    int perPage = 20,
+  }) async {
     if (page == 1) {
       _isLoading = true;
     } else {
@@ -104,12 +138,11 @@ class FreshPicksProvider extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    final url =
-        '${ApiEndpoints.eComTagsAll}?per_page=$perPage&page=$page&sort-by=$sortBy';
+    final url = '${ApiEndpoints.eComTagsAll}?per_page=$perPage&page=$page&sort-by=$sortBy';
     try {
-      final response = await http.get(Uri.parse(url));
+      final response = await dio.get(url);
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+        final data = response.data;
         final ecomTagsResponse = EcomTagsResponse.fromJson(data);
 
         if (page == 1) {
@@ -132,63 +165,90 @@ class FreshPicksProvider extends ChangeNotifier {
   }
 
   ///      ----------------------------------------------------------------   ADD THE ITEMS TO THE WISHLIST SCREEN  ----------------------------------------------------------------
-  ///  with login
+  ///  with login check
   Future<void> handleHeartTap(BuildContext context, int itemId) async {
+    // Check authentication first
+    final bool loggedIn = await _isLoggedIn();
+    if (!loggedIn) {
+      _navigateToLogin(context, 'Please log in to manage your wishlist');
+      return;
+    }
+
     _isLoading = true;
     notifyListeners();
-    final token = await SecurePreferencesUtil.getToken();
-    final url = '${ApiEndpoints.wishList}$itemId';
-    final response = await http.post(
-      Uri.parse(url),
-      headers: {
-        'Authorization': 'Bearer $token',
-      },
-    );
-    if (response.statusCode == 200) {
-      final responseData = json.decode(response.body);
-      final wishlistResponse = WishlistResponseModels.fromJson(responseData);
-      if (!wishlistResponse.error!) {
-        CustomSnackbar.showSuccess(context, wishlistResponse.message!);
-        notifyListeners(); // Notify listeners to update the UI
+
+    try {
+      final token = await SecurePreferencesUtil.getToken();
+      final url = '${ApiEndpoints.wishList}$itemId';
+
+      final response = await dio.post(
+        url,
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = response.data;
+        final wishlistResponse = WishlistResponseModels.fromJson(responseData);
+
+        if (!wishlistResponse.error!) {
+          CustomSnackbar.showSuccess(context, wishlistResponse.message!);
+        } else {
+          CustomSnackbar.showError(context, wishlistResponse.message!);
+        }
       } else {
-        CustomSnackbar.showError(context, wishlistResponse.message!);
+        CustomSnackbar.showError(context, 'Failed to update wishlist.');
       }
-    } else {
-      CustomSnackbar.showError(context, 'Failed to update wishlist.');
+    } catch (e) {
+      CustomSnackbar.showError(context, 'An error occurred. Please try again.');
+    } finally {
+      _isLoading = false;
+      notifyListeners();
     }
-    _isLoading = false;
-    notifyListeners();
   }
 
   Future<WishlistResponseModels?> addRemoveWishList(
-      BuildContext context, int itemId) async {
+    BuildContext context,
+    int itemId,
+  ) async {
+    // Check authentication first
+    final bool loggedIn = await _isLoggedIn();
+    if (!loggedIn) {
+      _navigateToLogin(context, 'Please log in to manage your wishlist');
+      return null;
+    }
+
     _isLoading = true;
     notifyListeners();
-    final token = await SecurePreferencesUtil.getToken();
-    final url = '${ApiEndpoints.wishList}$itemId';
-    final response = await http.post(
-      Uri.parse(url),
-      headers: {
-        'Authorization': 'Bearer $token',
-      },
-    );
 
-    if (response.statusCode == 200) {
-      final responseData = json.decode(response.body);
-      final wishlistResponse = WishlistResponseModels.fromJson(responseData);
-      if (!wishlistResponse.error!) {
-        CustomSnackbar.showSuccess(context, wishlistResponse.message!);
-        _isLoading = false;
-        notifyListeners(); // Notify listeners to update the UI
-        return wishlistResponse;
+    try {
+      final token = await SecurePreferencesUtil.getToken();
+      final url = '${ApiEndpoints.wishList}$itemId';
+
+      final response = await dio.post(
+        url,
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = response.data;
+        final wishlistResponse = WishlistResponseModels.fromJson(responseData);
+
+        if (!wishlistResponse.error!) {
+          CustomSnackbar.showSuccess(context, wishlistResponse.message!);
+          return wishlistResponse;
+        } else {
+          CustomSnackbar.showError(context, wishlistResponse.message!);
+        }
       } else {
-        CustomSnackbar.showError(context, wishlistResponse.message!);
+        CustomSnackbar.showError(context, 'Failed to update wishlist.');
       }
-    } else {
-      CustomSnackbar.showError(context, 'Failed to update wishlist.');
+    } catch (e) {
+      CustomSnackbar.showError(context, 'An error occurred. Please try again.');
+    } finally {
+      _isLoading = false;
+      notifyListeners();
     }
-    _isLoading = false;
-    notifyListeners();
+
     return null;
   }
 }

@@ -1,4 +1,6 @@
 import 'package:event_app/core/constants/app_strings.dart';
+import 'package:event_app/core/constants/vendor_app_strings.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/core/styles/app_sizes.dart';
 import 'package:event_app/core/widgets/bottom_navigation_bar.dart';
@@ -8,6 +10,8 @@ import 'package:event_app/vendor/components/vendor_text_style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../models/dashboard/vendor_permissions.dart';
+
 /// Vendor Drawer
 class VendorDrawerView extends StatelessWidget {
   // Callback function for subtitle text tap
@@ -16,13 +20,16 @@ class VendorDrawerView extends StatelessWidget {
     super.key,
     required this.selectedIndex,
     required this.onItemTapped,
-    required this.userModel,
-    required this.onSubtitleTap,
+    this.userModel,
+    this.onSubtitleTap,
+    required this.vendorPermissions,
   });
+
   final int selectedIndex; // To hold the current selected index
   final ValueChanged<int> onItemTapped; // Callback to handle item taps
   final UserModel? userModel;
   final VoidCallback? onSubtitleTap;
+  final VendorPermissions vendorPermissions;
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +37,7 @@ class VendorDrawerView extends StatelessWidget {
     final double screenHeight = MediaQuery.sizeOf(context).height;
     return Drawer(
       width: screenWidth * 0.75,
-      backgroundColor: VendorColors.vendorAppBackground,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       child: SafeArea(
         child: ListView(
           padding: EdgeInsets.zero,
@@ -41,40 +48,47 @@ class VendorDrawerView extends StatelessWidget {
                 CustomAppBarVendor(
                   imageUrl: userModel?.avatar,
                   titleText: userModel?.name,
-                  subtitleText: 'Download Agreement',
+                  subtitleText: VendorAppStrings.downloadAgreement.tr,
                   onSubtitleTap: onSubtitleTap,
                   isShowBack: true,
                 ),
-                SizedBox(height: screenHeight * 0.03),
+                //SizedBox(height: screenHeight * 0.03),
                 Column(
                   children: [
                     _buildDrawerItem(
                       context,
-                      title: 'Dashboard',
+                      title: VendorAppStrings.dashboard.tr,
                       assetAddress: 'assets/vendor_assets/drawer/home.svg',
                       isSelected: selectedIndex == 0,
                       onTap: () => onItemTapped(0),
                     ),
                     _divider(screenWidth),
-                    _buildDrawerItem(
-                      context,
-                      title: 'Products',
-                      assetAddress: 'assets/vendor_assets/drawer/products.svg',
-                      isSelected: selectedIndex == 1,
-                      onTap: () => onItemTapped(1),
-                    ),
+                    if (vendorPermissions.allowProducts) ...[
+                      _buildDrawerItem(
+                        context,
+                        title: VendorAppStrings.products.tr,
+                        assetAddress:
+                            'assets/vendor_assets/drawer/products.svg',
+                        isSelected: selectedIndex == 1,
+                        onTap: () => onItemTapped(1),
+                      ),
+                      _divider(screenWidth),
+                    ],
+                    if (vendorPermissions.allowPackages) ...[
+                      _buildDrawerItem(
+                        context,
+                        title: VendorAppStrings.packages.tr,
+                        assetAddress:
+                            'assets/vendor_assets/drawer/packages.svg',
+                        isSelected: selectedIndex == 2,
+                        onTap: () => onItemTapped(2),
+                      ),
+                      _divider(screenWidth),
+                    ],
                     _divider(screenWidth),
                     _buildDrawerItem(
                       context,
-                      title: 'Packages',
-                      assetAddress: 'assets/vendor_assets/drawer/packages.svg',
-                      isSelected: selectedIndex == 2,
-                      onTap: () => onItemTapped(2),
-                    ),
-                    _divider(screenWidth),
-                    _buildDrawerItem(
-                      context,
-                      title: 'Orders',
+                      title: VendorAppStrings.orders.tr,
                       assetAddress: 'assets/vendor_assets/drawer/orders.svg',
                       isSelected: selectedIndex == 3,
                       onTap: () => onItemTapped(3),
@@ -82,7 +96,7 @@ class VendorDrawerView extends StatelessWidget {
                     _divider(screenWidth),
                     _buildDrawerItem(
                       context,
-                      title: 'Order Returns',
+                      title: VendorAppStrings.orderReturns.tr,
                       assetAddress:
                           'assets/vendor_assets/drawer/order_returns.svg',
                       isSelected: selectedIndex == 4,
@@ -91,7 +105,7 @@ class VendorDrawerView extends StatelessWidget {
                     _divider(screenWidth),
                     _buildDrawerItem(
                       context,
-                      title: 'Coupons',
+                      title: VendorAppStrings.coupons.tr,
                       assetAddress: 'assets/vendor_assets/drawer/coupon.svg',
                       isSelected: selectedIndex == 5,
                       onTap: () => onItemTapped(5),
@@ -99,7 +113,7 @@ class VendorDrawerView extends StatelessWidget {
                     _divider(screenWidth),
                     _buildDrawerItem(
                       context,
-                      title: 'Withdrawals',
+                      title: VendorAppStrings.withdrawals.tr,
                       assetAddress:
                           'assets/vendor_assets/drawer/withdrawal.svg',
                       isSelected: selectedIndex == 6,
@@ -108,7 +122,7 @@ class VendorDrawerView extends StatelessWidget {
                     _divider(screenWidth),
                     _buildDrawerItem(
                       context,
-                      title: 'Reviews',
+                      title: VendorAppStrings.reviews.tr,
                       assetAddress: 'assets/vendor_assets/drawer/reviews.svg',
                       isSelected: selectedIndex == 7,
                       onTap: () => onItemTapped(7),
@@ -116,7 +130,7 @@ class VendorDrawerView extends StatelessWidget {
                     _divider(screenWidth),
                     _buildDrawerItem(
                       context,
-                      title: 'Revenues',
+                      title: VendorAppStrings.revenues.tr,
                       assetAddress: 'assets/vendor_assets/drawer/revenues.svg',
                       isSelected: selectedIndex == 8,
                       onTap: () => onItemTapped(8),
@@ -124,7 +138,7 @@ class VendorDrawerView extends StatelessWidget {
                     _divider(screenWidth),
                     _buildDrawerItem(
                       context,
-                      title: 'Settings',
+                      title: VendorAppStrings.settings.tr,
                       assetAddress: 'assets/vendor_assets/drawer/settings.svg',
                       isSelected: selectedIndex == 9,
                       onTap: () => onItemTapped(9),
@@ -132,14 +146,14 @@ class VendorDrawerView extends StatelessWidget {
                     _divider(screenWidth),
                     _buildDrawerItem(
                       context,
-                      title: 'Logout from Vendor',
+                      title: VendorAppStrings.logoutFromVendor.tr,
                       assetAddress: 'assets/vendor_assets/drawer/logout.svg',
                       isSelected: false,
                       onTap: () {
                         Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const BaseHomeScreen()));
+                                builder: (context) => const BaseHomeScreen(),),);
                       },
                     ),
                     _divider(screenWidth),
@@ -149,10 +163,11 @@ class VendorDrawerView extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SvgPicture.asset(AppStrings.appLogo, width: 60, height: 60),
-                    const Padding(
-                      padding: EdgeInsets.only(left: 15, top: 8),
-                      child: Text('© 2025 The Events. All Rights Reserved.'),
+                    SvgPicture.asset(AppStrings.appLogo.tr,
+                        width: 60, height: 60,),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 15, top: 8),
+                      child: Text(VendorAppStrings.copyrightText.tr),
                     ),
                   ],
                 ),
@@ -177,13 +192,15 @@ class VendorDrawerView extends StatelessWidget {
           margin: const EdgeInsets.only(top: 20),
           padding: EdgeInsets.only(bottom: 3, left: kPadding, right: kPadding),
           decoration: BoxDecoration(
-              border: Border(bottom: BorderSide(color: Colors.grey.shade400))),
+              border: Border(bottom: BorderSide(color: Colors.grey.shade400)),),
           child: Row(
             children: [
               SvgPicture.asset(
                 assetAddress,
                 colorFilter: ColorFilter.mode(
-                  isSelected ? AppColors.peachyPink : Colors.black,
+                  isSelected
+                      ? AppColors.peachyPink
+                      : Theme.of(context).colorScheme.onPrimary,
                   BlendMode.srcIn,
                 ),
                 width: 24,
@@ -197,7 +214,7 @@ class VendorDrawerView extends StatelessWidget {
                     fontSize: 14,
                     color: isSelected
                         ? AppColors.peachyPink
-                        : AppColors.neutralGray,
+                        : Theme.of(context).colorScheme.onPrimary,
                     fontWeight:
                         isSelected ? FontWeight.w700 : FontWeight.normal,
                   ),

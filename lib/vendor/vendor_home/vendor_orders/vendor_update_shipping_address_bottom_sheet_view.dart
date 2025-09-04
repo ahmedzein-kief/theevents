@@ -1,3 +1,7 @@
+import 'dart:developer';
+
+import 'package:event_app/core/constants/vendor_app_strings.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/helper/validators/validator.dart';
 import 'package:event_app/core/network/api_status/api_status.dart';
 import 'package:event_app/core/styles/app_sizes.dart';
@@ -9,9 +13,11 @@ import 'package:event_app/provider/payment_address/customer_address.dart';
 import 'package:event_app/vendor/view_models/vendor_orders/vendor_get_order_details_view_model.dart';
 import 'package:event_app/vendor/view_models/vendor_orders/vendor_update_shipping_address_view_model.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/styles/app_colors.dart';
+import '../../../models/wishlist_models/states_cities_models.dart';
+import '../../../views/country_picker/country_pick_screen.dart';
 import '../../Components/utils/utils.dart';
 
 class VendorUpdateShippingAddressBottomSheetView extends StatefulWidget {
@@ -25,13 +31,14 @@ class VendorUpdateShippingAddressBottomSheetView extends StatefulWidget {
     required this.shipmentId,
     this.showUseDefaultButton = true,
   });
+
   final GlobalKey<FormState> formKey;
   final String orderId;
   final String shipmentId;
   final VoidCallback onSave;
   final VoidCallback onUpdate;
   final CustomerRecords? customerAddress;
-  final showUseDefaultButton;
+  final bool showUseDefaultButton;
 
   @override
   _VendorUpdateShippingAddressBottomSheetViewState createState() =>
@@ -42,79 +49,371 @@ class _VendorUpdateShippingAddressBottomSheetViewState
     extends State<VendorUpdateShippingAddressBottomSheetView> {
   final _formKey = GlobalKey<FormState>();
 
+  // Controllers
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _zipController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _countryController = TextEditingController();
   final TextEditingController _stateController = TextEditingController();
   final TextEditingController _cityController = TextEditingController();
-  String countryCode = '';
 
+  // Focus Nodes
   final FocusNode _nameFocusNode = FocusNode();
   final FocusNode _phoneFocusNode = FocusNode();
   final FocusNode _emailFocusNode = FocusNode();
-  final FocusNode _zipFocusNode = FocusNode();
   final FocusNode _addressFocusNode = FocusNode();
   final FocusNode _countryFocusNode = FocusNode();
   final FocusNode _stateFocusNode = FocusNode();
   final FocusNode _cityFocusNode = FocusNode();
 
-  CountryModels? countryModel;
+  // State variables
+  String countryCode = '';
   bool _isChecked = false;
-
-  void _toggleCheckBox(bool? value) {
-    setState(() {
-      _isChecked = value!;
-    });
-  }
-
   bool _isProcessing = false;
 
-  void setProcessing(value) {
-    setState(() {
-      _isProcessing = value;
-    });
-  }
-
-  Future<void> fetchCountryData() async {
-    try {
-      setProcessing(true);
-      countryModel = await fetchCountries(context);
-      if (widget.customerAddress != null) {
-        _nameController.text = widget.customerAddress?.name ?? '';
-        _phoneController.text = widget.customerAddress?.phone ?? '';
-        _emailController.text = widget.customerAddress?.email ?? '';
-        _zipController.text = widget.customerAddress?.zip_code ?? '';
-        _addressController.text = widget.customerAddress?.address ?? '';
-        _countryController.text =
-            findCountryNameUsingCode(widget.customerAddress?.country ?? '');
-        _stateController.text = widget.customerAddress?.state ?? '';
-        _cityController.text = widget.customerAddress?.city ?? '';
-      }
-      setProcessing(false);
-    } catch (error) {
-      setProcessing(false);
-      print('error $error');
-    }
-  }
-
-  String findCountryNameUsingCode(String code) {
-    countryCode = code;
-    return countryModel?.data?.list
-            ?.firstWhere((countryData) => countryData.value == code)
-            .label ??
-        '';
-  }
+  // Location data
+  CountryModels? countryModel;
+  int? selectedCountryId;
+  StateModels? stateModel;
+  CityModels? cityModel;
+  bool _stateLoader = false;
+  bool _cityLoader = false;
+  StateRecord? selectedState;
+  CityRecord? selectedCity;
 
   @override
   void initState() {
+    super.initState();
     WidgetsBinding.instance.addPostFrameCallback((callback) async {
       await fetchCountryData();
     });
+  }
 
-    super.initState();
+  @override
+  void dispose() {
+    _disposeControllers();
+    _disposeFocusNodes();
+    super.dispose();
+  }
+
+  // Dispose methods
+  void _disposeControllers() {
+    _nameController.dispose();
+    _phoneController.dispose();
+    _emailController.dispose();
+
+    _addressController.dispose();
+    _countryController.dispose();
+    _stateController.dispose();
+    _cityController.dispose();
+  }
+
+  void _disposeFocusNodes() {
+    _nameFocusNode.dispose();
+    _phoneFocusNode.dispose();
+    _emailFocusNode.dispose();
+
+    _addressFocusNode.dispose();
+    _countryFocusNode.dispose();
+    _stateFocusNode.dispose();
+    _cityFocusNode.dispose();
+  }
+
+  // Utility methods
+  void setProcessing(bool value) {
+    if (mounted) {
+      setState(() {
+        _isProcessing = value;
+      });
+    }
+  }
+
+  void _toggleCheckBox(bool? value) {
+    setState(() {
+      _isChecked = value ?? false;
+    });
+  }
+
+  // Replace your fetchCountryData method with this complete implementation
+  Future<void> fetchCountryData() async {
+    try {
+      setProcessing(true);
+
+      // Fetch all countries first
+      countryModel = await fetchCountries(context);
+
+      if (widget.customerAddress != null &&
+          countryModel?.data?.list?.isNotEmpty == true) {
+        final countryName = widget.customerAddress?.country;
+
+        // Find the country that matches the customer's address
+        final countryRecord = countryModel!.data!.list!.firstWhere(
+          (element) => element.name == countryName,
+          orElse: () =>
+              countryModel!.data!.list!.first, // fallback to first country
+        );
+
+        // Set country data
+        selectedCountryId = countryRecord.id;
+        countryCode = countryRecord.code ?? '';
+
+        // Fetch states for this country
+        if (selectedCountryId != null) {
+          stateModel = await fetchStates(context, selectedCountryId!);
+
+          // Find and set the matching state
+          if (stateModel?.data?.isNotEmpty == true) {
+            final stateName = widget.customerAddress?.state;
+
+            selectedState = stateModel!.data!.firstWhere(
+              (element) => element.name == stateName,
+              orElse: () => stateModel!.data!.first, // fallback to first state
+            );
+
+            // Fetch cities for this state
+            if (selectedState?.id != null) {
+              cityModel = await fetchCities(
+                  context, selectedState!.id!, selectedCountryId!,);
+
+              // Find and set the matching city
+              if (cityModel?.data?.isNotEmpty == true) {
+                final cityName = widget.customerAddress?.city;
+
+                selectedCity = cityModel!.data!.firstWhere(
+                  (element) => element.name == cityName,
+                  orElse: () =>
+                      cityModel!.data!.first, // fallback to first city
+                );
+              }
+            }
+          }
+        }
+
+        // Populate the form with the existing address data
+        _populateAddressForm();
+      }
+
+      setProcessing(false);
+    } catch (error) {
+      log('Error fetching countries: $error');
+      setProcessing(false);
+    }
+  }
+
+// Also update your _populateAddressForm method to handle the selected objects
+  void _populateAddressForm() {
+    final address = widget.customerAddress;
+
+    if (address != null) {
+      _nameController.text = address.name ?? '';
+      _phoneController.text = address.phone ?? '';
+      _emailController.text = address.email ?? '';
+
+      _addressController.text = address.address ?? '';
+
+      // Set country controller text
+      _countryController.text = address.country ?? '';
+
+      // Set state controller text
+      _stateController.text = address.state ?? '';
+
+      // Set city controller text
+      _cityController.text = address.city ?? '';
+    }
+  }
+
+// Update your fetchStateData method to preserve existing selection when possible
+  Future<void> fetchStateData(int countryId) async {
+    try {
+      setState(() {
+        _stateLoader = true;
+        // Don't clear controllers if we're populating from existing data
+        if (widget.customerAddress == null) {
+          _stateController.clear();
+          _cityController.clear();
+          selectedState = null;
+          selectedCity = null;
+        }
+        stateModel = null;
+        cityModel = null;
+      });
+
+      stateModel = await fetchStates(context, countryId);
+
+      log('STATE MODEL ${stateModel?.data?.length.toString() ?? 'No data'}');
+
+      setState(() {
+        _stateLoader = false;
+      });
+    } catch (error) {
+      log('Error fetching states: $error');
+      setState(() {
+        _stateLoader = false;
+      });
+    }
+  }
+
+// Update your fetchCityData method to preserve existing selection when possible
+  Future<void> fetchCityData(int stateId, int countryId) async {
+    try {
+      setState(() {
+        _cityLoader = true;
+        // Don't clear controller if we're populating from existing data
+        if (widget.customerAddress == null) {
+          _cityController.clear();
+          selectedCity = null;
+        }
+        cityModel = null;
+      });
+
+      cityModel = await fetchCities(context, stateId, countryId);
+
+      setState(() {
+        _cityLoader = false;
+      });
+    } catch (error) {
+      log('Error fetching cities: $error');
+      setState(() {
+        _cityLoader = false;
+      });
+    }
+  }
+
+  // UI Builder methods
+  Widget _buildCountryField() {
+    return CustomFieldProfileScreen(
+      isEditable: false,
+      hintText: VendorAppStrings.enterCountry.tr,
+      controller: _countryController,
+      focusNode: _countryFocusNode,
+      labelText: VendorAppStrings.enterCountry.tr,
+      nextFocusNode: _stateFocusNode,
+      suffixIcon: const Icon(Icons.arrow_drop_down_outlined),
+      formFieldValidator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please select country.';
+        }
+        return null;
+      },
+      onTap: () async {
+        if (countryModel?.data?.list?.isNotEmpty ?? false) {
+          showDialog(
+            context: context,
+            builder: (context) => CountryPickerDialog(
+              countryList: countryModel!.data!.list!,
+              currentSelection: _countryController.text,
+              onCountrySelected: (selectedCountry) {
+                setState(() {
+                  countryCode = selectedCountry.code ?? '';
+                  selectedCountryId = selectedCountry.id ?? 0;
+                  _countryController.text = selectedCountry.name ?? '';
+                });
+
+                if (selectedCountryId != null) {
+                  fetchStateData(selectedCountryId!);
+                }
+              },
+            ),
+          );
+        }
+      },
+    );
+  }
+
+  Widget _buildStateField() {
+    return CustomFieldProfileScreen(
+      hintText: VendorAppStrings.enterState.tr,
+      controller: _stateController,
+      focusNode: _stateFocusNode,
+      labelText: VendorAppStrings.state.tr,
+      nextFocusNode: _cityFocusNode,
+      isEditable: false,
+      formFieldValidator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'State is required.';
+        }
+        return null;
+      },
+      suffixIcon: _stateLoader
+          ? const Center(
+              child: SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(
+                  backgroundColor: AppColors.peachyPink,
+                ),
+              ),
+            )
+          : const Icon(Icons.arrow_drop_down_outlined),
+      onTap: () async {
+        log('stateModel?.data?.isNotEmpty  ${stateModel?.data?.isNotEmpty}');
+        if (stateModel?.data?.isNotEmpty ?? false) {
+          showDialog(
+            context: context,
+            builder: (context) => StatePickerDialog(
+              stateList: stateModel!.data!,
+              currentSelection: selectedState,
+              onStateSelected: (state) {
+                setState(() {
+                  selectedState = state;
+                  _stateController.text = selectedState?.name ?? '';
+                });
+
+                if (selectedState?.id != null && selectedCountryId != null) {
+                  fetchCityData(selectedState!.id!, selectedCountryId!);
+                }
+              },
+            ),
+          );
+        }
+      },
+    );
+  }
+
+  Widget _buildCityField() {
+    return CustomFieldProfileScreen(
+      hintText: VendorAppStrings.enterCity.tr,
+      controller: _cityController,
+      focusNode: _cityFocusNode,
+      labelText: VendorAppStrings.city.tr,
+      nextFocusNode: _cityFocusNode,
+      isEditable: false,
+      formFieldValidator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'City cannot be empty.';
+        }
+        return null;
+      },
+      suffixIcon: _cityLoader
+          ? const Center(
+              child: SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(
+                  backgroundColor: AppColors.peachyPink,
+                ),
+              ),
+            )
+          : const Icon(Icons.arrow_drop_down_outlined),
+      onTap: () async {
+        if (cityModel?.data?.isNotEmpty ?? false) {
+          showDialog(
+            context: context,
+            builder: (context) => CityPickerDialog(
+              cityList: cityModel!.data!,
+              currentSelection: selectedCity,
+              onCitySelected: (city) {
+                setState(() {
+                  selectedCity = city;
+                  _cityController.text = selectedCity?.name ?? '';
+                });
+              },
+            ),
+          );
+        }
+      },
+    );
   }
 
   @override
@@ -127,6 +426,7 @@ class _VendorUpdateShippingAddressBottomSheetViewState
       child: Scaffold(
         body: SafeArea(
           child: Utils.modelProgressHud(
+            context: context,
             processing: _isProcessing,
             child: SingleChildScrollView(
               child: Form(
@@ -134,7 +434,7 @@ class _VendorUpdateShippingAddressBottomSheetViewState
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // Custom Field for Change Password
+                    // Name Field
                     CustomFieldProfileScreen(
                       hintText: 'Enter your name',
                       controller: _nameController,
@@ -146,6 +446,7 @@ class _VendorUpdateShippingAddressBottomSheetViewState
 
                     SizedBox(height: screenHeight * 0.01),
 
+                    // Phone Field
                     CustomFieldProfileScreen(
                       hintText: 'Enter phone Number',
                       controller: _phoneController,
@@ -158,40 +459,25 @@ class _VendorUpdateShippingAddressBottomSheetViewState
 
                     SizedBox(height: screenHeight * 0.01),
 
+                    // Email Field
                     CustomFieldProfileScreen(
                       hintText: 'Enter Email address',
                       controller: _emailController,
                       focusNode: _emailFocusNode,
                       labelText: 'Email',
                       keyboardType: TextInputType.emailAddress,
-                      nextFocusNode: _zipFocusNode,
+                      nextFocusNode: _addressFocusNode,
                       formFieldValidator: Validator.emailOptional,
                     ),
 
                     SizedBox(height: screenHeight * 0.01),
 
+                    // Address Field
                     CustomFieldProfileScreen(
-                      hintText: 'Enter Zip Code',
-                      controller: _zipController,
-                      // Use another controller for different fields
-                      focusNode: _zipFocusNode,
-                      labelText: ' Zip Code',
-                      keyboardType: TextInputType.number,
-                      nextFocusNode: _addressFocusNode,
-                      formFieldValidator: Validator.zipCodeOptional,
-                      textInputFormatters: [
-                        LengthLimitingTextInputFormatter(
-                            5), // Set the maximum character limit
-                      ],
-                    ),
-                    SizedBox(height: screenHeight * 0.01),
-
-                    CustomFieldProfileScreen(
-                      hintText: 'Enter address',
+                      hintText: VendorAppStrings.enterAddress.tr,
                       controller: _addressController,
-                      // Use another controller for different fields
                       focusNode: _addressFocusNode,
-                      labelText: ' Address',
+                      labelText: VendorAppStrings.enterAddress.tr,
                       keyboardType: TextInputType.streetAddress,
                       nextFocusNode: _countryFocusNode,
                       formFieldValidator: (value) {
@@ -201,82 +487,46 @@ class _VendorUpdateShippingAddressBottomSheetViewState
                         return null;
                       },
                     ),
+
                     SizedBox(height: screenHeight * 0.01),
 
-                    CustomFieldProfileScreen(
-                      isEditable: false,
-                      onTap: () async {
-                        // Allow opening the country picker only if it's editable
+                    // Country Field
+                    _buildCountryField(),
 
-                        if (countryModel != null &&
-                            countryModel?.data != null) {
-                          _showCountryPicker(countryModel?.data?.list ?? []);
-                        } else {
-                          print('Country field is not editable.');
-                        }
-                      },
-                      hintText: 'Enter Country',
-                      controller: _countryController,
-                      focusNode: _countryFocusNode,
-                      labelText: ' Country',
-                      nextFocusNode: _stateFocusNode,
-                      suffixIcon: const Icon(Icons.arrow_drop_down_outlined),
-                      formFieldValidator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please select country.';
-                        }
-                        return null;
-                      },
-                    ),
                     SizedBox(height: screenHeight * 0.01),
 
-                    CustomFieldProfileScreen(
-                      hintText: 'Enter State',
-                      controller: _stateController,
-                      // Use another controller for different fields
-                      focusNode: _stateFocusNode,
-                      labelText: 'State',
-                      keyboardType: TextInputType.streetAddress,
-                      nextFocusNode: _cityFocusNode,
-                    ),
+                    // State Field
+                    _buildStateField(),
+
                     SizedBox(height: screenHeight * 0.01),
 
-                    CustomFieldProfileScreen(
-                      hintText: 'Enter City',
-                      controller: _cityController,
-                      // Use another controller for different fields
-                      focusNode: _cityFocusNode,
-                      labelText: 'City',
-                      keyboardType: TextInputType.streetAddress,
-                      nextFocusNode: _cityFocusNode,
-                      formFieldValidator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'City cannot be empty.';
-                        }
-                        return null;
-                      },
-                    ),
+                    // City Field
+                    _buildCityField(),
 
+                    // Use Default Address Checkbox
                     if (!widget.showUseDefaultButton) kSmallSpace,
 
                     if (widget.showUseDefaultButton)
                       Padding(
                         padding: EdgeInsets.symmetric(
-                            horizontal: screenWidth * 0.05,
-                            vertical: screenHeight * 0.02),
+                          horizontal: screenWidth * 0.05,
+                          vertical: screenHeight * 0.02,
+                        ),
                         child: Row(
                           children: [
                             Checkbox(
-                                focusColor: Colors.black,
-                                activeColor: Colors.black,
-                                checkColor: Colors.white,
-                                value: _isChecked,
-                                onChanged: _toggleCheckBox),
-                            const Text('Use this default address'),
+                              focusColor: Colors.black,
+                              activeColor: Colors.black,
+                              checkColor: Colors.white,
+                              value: _isChecked,
+                              onChanged: _toggleCheckBox,
+                            ),
+                            Text(VendorAppStrings.useThisDefaultAddress.tr),
                           ],
                         ),
                       ),
 
+                    // Update Button
                     ChangeNotifierProvider(
                       create: (context) =>
                           VendorUpdateShippingAddressViewModel(),
@@ -284,8 +534,7 @@ class _VendorUpdateShippingAddressBottomSheetViewState
                         builder: (context, provider, _) => AppCustomButton(
                           isLoading:
                               provider.apiResponse.status == ApiStatus.loading,
-                          title: 'Update',
-                          // Show "Update" or "Save" based on address existence
+                          title: VendorAppStrings.update.tr,
                           onPressed: () async {
                             try {
                               if (_formKey.currentState?.validate() ?? false) {
@@ -298,70 +547,46 @@ class _VendorUpdateShippingAddressBottomSheetViewState
                                   country: countryCode,
                                   city: _cityController.text,
                                   state: _stateController.text,
-                                  zipCode: _zipController.text,
+                                  countryId: _countryController.text,
+                                  stateId: _stateController.text,
+                                  cityId: _cityController.text,
                                 );
+
                                 final form = address
                                     .vendorOrderDetailsUpdateShippingAddressToJson();
 
-                                /// converting json form
                                 final result =
                                     await provider.vendorUpdateShippingAddress(
-                                        shippingID:
-                                            widget.shipmentId.toString(),
-                                        form: form,
-                                        context: context);
+                                  shippingID: widget.shipmentId.toString(),
+                                  form: form,
+                                  context: context,
+                                );
+
                                 if (result) {
-                                  /// refresh the order detail page
+                                  // Refresh the order detail page
                                   context
                                       .read<VendorGetOrderDetailsViewModel>()
                                       .vendorGetOrderDetails(
-                                          orderId: widget.orderId);
-                                  Navigator.pop(context);
+                                          orderId: widget.orderId,);
+
+                                  if (mounted) {
+                                    Navigator.pop(context);
+                                  }
                                 }
                               }
                             } catch (e) {
-                              print('Error while updating address: $e');
+                              log('Error while updating address: $e');
                             }
                           },
                         ),
                       ),
                     ),
+
                     SizedBox(height: screenHeight * 0.02),
                   ],
                 ),
               ),
             ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _showCountryPicker(List<CountryList> countryList) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) => Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2)),
-        child: Container(
-          child: Column(
-            children: [
-              Expanded(
-                child: ListView.builder(
-                  itemCount: countryList.length,
-                  itemBuilder: (context, index) => ListTile(
-                    title: Text(countryList[index].label ?? 'Unknown Country'),
-                    onTap: () {
-                      setState(() {
-                        countryCode = countryList[index].value ?? '';
-                        _countryController.text =
-                            countryList[index].label ?? '';
-                      });
-                      Navigator.pop(context); // Close the dialog
-                    },
-                  ),
-                ),
-              ),
-            ],
           ),
         ),
       ),

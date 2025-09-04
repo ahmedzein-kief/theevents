@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 class CustomSnackbar {
-  static void showSuccess(BuildContext context, String message,
-      {Color backgroundColor = Colors.white}) {
+  static void showSuccess(
+    BuildContext context,
+    String message, {
+    Color backgroundColor = Colors.white,
+  }) {
     final OverlayState overlayState = Overlay.of(context);
     showTopSnackBar(
       overlayState,
@@ -13,7 +16,10 @@ class CustomSnackbar {
   }
 
   static Widget _buildSnackbar(
-          BuildContext context, String message, Color backgroundColor) =>
+    BuildContext context,
+    String message,
+    Color backgroundColor,
+  ) =>
       Container(
         margin: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 5.0),
         padding: const EdgeInsets.all(20.0),
@@ -46,12 +52,13 @@ class CustomSnackbar {
 
   //   custom snack bar for the error messages
   static void showError(BuildContext context, String message,
-      {Color backgroundColor = Colors.red}) {
+      {Color backgroundColor = Colors.red, Duration? displayDuration}) {
     final OverlayState overlayState = Overlay.of(context);
     showTopSnackBar(
       overlayState,
       _buildErrorSnackBar(context, message, backgroundColor),
       reverseAnimationDuration: const Duration(milliseconds: 300),
+      displayDuration: displayDuration ?? const Duration(seconds: 2),
       // CustomSnackBar.error(
       //     message: message,
       //     textStyle: const TextStyle(color: Colors.white),
@@ -67,7 +74,10 @@ class CustomSnackbar {
   }
 
   static Widget _buildErrorSnackBar(
-          BuildContext context, String message, Color backgroundColor) =>
+    BuildContext context,
+    String message,
+    Color backgroundColor,
+  ) =>
       Container(
         margin: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 5.0),
         padding: const EdgeInsets.all(20.0),

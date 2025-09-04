@@ -1,5 +1,7 @@
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:flutter/material.dart';
 
+import '../../core/constants/app_strings.dart'; // <--- IMPORT AppStrings
 import '../../core/styles/custom_text_styles.dart';
 
 class PaymentConfirmText extends StatefulWidget {
@@ -18,47 +20,53 @@ class _PaymentConfirmTextState extends State<PaymentConfirmText> {
       padding: EdgeInsets.only(
           top: screenHeight * 0.04,
           right: screenWidth * 0.02,
-          left: screenHeight * 0.02),
+          left: screenHeight * 0.02,),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Please Confirm and submit your order',
-              style: chooseStyle(context)),
+          Text(
+            AppStrings.confirmAndSubmitOrder.tr, // <--- REFACTORED
+            style: chooseStyle(context),
+          ),
           SizedBox(height: screenHeight * 0.01),
           RichText(
-            textAlign: TextAlign.center,
+            // Consider textAlign: TextAlign.start for better readability
+            textAlign: TextAlign.start,
             text: TextSpan(
               style: description(context),
-              // Apply your default text style here
               children: <TextSpan>[
-                const TextSpan(
-                  text:
-                      'By clicking submit order, you agree to event’s ', // Regular text
+                TextSpan(
+                  text: AppStrings.byClickingSubmit.tr, // <--- REFACTORED
                 ),
                 TextSpan(
-                  text: '\nTerms of Use', // Underlined text
+                  // Note: '\n' is removed here. It's better to handle new lines
+                  // with layout widgets like Wrap or Column for better responsiveness.
+                  // If you must have a line break, consider using `\n${AppStrings.termsOfUse.tr}`
+                  text: AppStrings.termsOfUse.tr, // <--- REFACTORED
                   style: TextStyle(
                     color: Theme.of(context)
                         .colorScheme
                         .onPrimary
                         .withOpacity(0.6),
-                    decoration:
-                        TextDecoration.underline, // Underline decoration
+                    decoration: TextDecoration.underline,
                   ),
-                ),
-                const TextSpan(
-                  text: ' and ', // Regular text
+                  // Add recognizer for tap events here if needed
+                  // recognizer: TapGestureRecognizer()..onTap = () => print('Terms Tapped'),
                 ),
                 TextSpan(
-                  text: 'Privacy Policy', // Underlined text
+                  text: AppStrings.and.tr, // <--- REFACTORED
+                ),
+                TextSpan(
+                  text: AppStrings.privacyPolicy.tr, // <--- REFACTORED
                   style: TextStyle(
                     color: Theme.of(context)
                         .colorScheme
                         .onPrimary
                         .withOpacity(0.6),
-                    decoration:
-                        TextDecoration.underline, // Underline decoration
+                    decoration: TextDecoration.underline,
                   ),
+                  // Add recognizer for tap events here if needed
+                  // recognizer: TapGestureRecognizer()..onTap = () => print('Policy Tapped'),
                 ),
               ],
             ),

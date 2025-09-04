@@ -4,16 +4,18 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../styles/custom_text_styles.dart';
 
 class ProfileItem extends StatelessWidget {
-  const ProfileItem(
-      {super.key,
-      required this.imagePath,
-      required this.title,
-      this.textWidth,
-      this.onTap,
-      this.routeName,
-      this.arguments,
-      this.width,
-      this.height});
+  const ProfileItem({
+    super.key,
+    required this.imagePath,
+    required this.title,
+    this.textWidth,
+    this.onTap,
+    this.routeName,
+    this.arguments,
+    this.width,
+    this.height,
+  });
+
   final String imagePath;
   final String title;
   final VoidCallback? onTap;
@@ -55,10 +57,14 @@ class ProfileItem extends StatelessWidget {
                 color: Theme.of(context).colorScheme.onPrimary,
               ),
               SizedBox(width: textWidth ?? screenHeight * 0.02),
-              Text(
-                title,
-                style:
-                    profileItems(context), // Assuming this is defined elsewhere
+              Expanded(
+                child: Text(
+                  title,
+                  style: profileItems(context),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  softWrap: false,
+                ),
               ),
             ],
           ),

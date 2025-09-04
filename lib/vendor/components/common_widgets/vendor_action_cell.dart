@@ -39,7 +39,7 @@ class VendorActionCell extends StatelessWidget {
                 GestureDetector(
                   onTap: onEdit,
                   child: SvgPicture.asset(
-                      'assets/vendor_assets/settings/edit_record.svg'),
+                      'assets/vendor_assets/settings/edit_record.svg',),
                 ),
                 // Spacer between icons
                 kExtraSmallSpace,
@@ -54,7 +54,7 @@ class VendorActionCell extends StatelessWidget {
                   child: isDeleting
                       ? Utils.pageLoadingIndicator(context: context)
                       : SvgPicture.asset(
-                          'assets/vendor_assets/settings/delete_record.svg'),
+                          'assets/vendor_assets/settings/delete_record.svg',),
                 ),
               ],
             ),
@@ -66,7 +66,7 @@ class VendorActionCell extends StatelessWidget {
                 GestureDetector(
                   onTap: onView,
                   child: const Icon(Icons.remove_red_eye,
-                      color: AppColors.cornflowerBlue),
+                      color: AppColors.cornflowerBlue,),
                 ),
               ],
             ),

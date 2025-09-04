@@ -1,3 +1,4 @@
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/helper/mixins/media_query_mixin.dart';
 import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/core/styles/app_sizes.dart';
@@ -12,18 +13,17 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../core/constants/app_strings.dart';
 import '../../../../provider/customer/account_view_models/reviews/customer_get_product_reviews_view_model.dart';
 
 class CustomerWaitingForReviewsView extends StatefulWidget {
   const CustomerWaitingForReviewsView({super.key});
 
   @override
-  State<CustomerWaitingForReviewsView> createState() =>
-      _CustomerWaitingForReviewsViewState();
+  State<CustomerWaitingForReviewsView> createState() => _CustomerWaitingForReviewsViewState();
 }
 
-class _CustomerWaitingForReviewsViewState
-    extends State<CustomerWaitingForReviewsView> with MediaQueryMixin {
+class _CustomerWaitingForReviewsViewState extends State<CustomerWaitingForReviewsView> with MediaQueryMixin {
   /// To show modal progress hud
   bool _isProcessing = false;
 
@@ -41,8 +41,10 @@ class _CustomerWaitingForReviewsViewState
 
   Future _onRefresh() async {
     try {
-      final provider = Provider.of<CustomerGetProductReviewsViewModel>(context,
-          listen: false);
+      final provider = Provider.of<CustomerGetProductReviewsViewModel>(
+        context,
+        listen: false,
+      );
 
       /// clear list on refresh
       provider.clearList();
@@ -54,13 +56,15 @@ class _CustomerWaitingForReviewsViewState
 
   Future<void> _loadMoreData() async {
     // Load more data here
-    if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent) {
-      final provider = Provider.of<CustomerGetProductReviewsViewModel>(context,
-          listen: false);
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent) {
+      final provider = Provider.of<CustomerGetProductReviewsViewModel>(
+        context,
+        listen: false,
+      );
       if (provider.apiResponse.status != ApiStatus.LOADING) {
         await provider.customerGetProductReviews(
-            search: _searchController.text);
+          search: _searchController.text,
+        );
       }
     }
   }
@@ -88,11 +92,16 @@ class _CustomerWaitingForReviewsViewState
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        backgroundColor: AppColors.bgColor,
+        // backgroundColor: AppColors.bgColor,
         body: Utils.modelProgressHud(
-            processing: _isProcessing,
-            child: Utils.pageRefreshIndicator(
-                onRefresh: _onRefresh, child: _buildUi(context))),
+          context: context,
+          processing: _isProcessing,
+          child: Utils.pageRefreshIndicator(
+            context: context,
+            onRefresh: _onRefresh,
+            child: _buildUi(context),
+          ),
+        ),
       );
 
   Widget _buildUi(BuildContext context) => Padding(
@@ -109,8 +118,9 @@ class _CustomerWaitingForReviewsViewState
                   }
                   if (apiStatus == ApiStatus.ERROR) {
                     return ListView(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        children: [Utils.somethingWentWrong()]);
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      children: [Utils.somethingWentWrong()],
+                    );
                   }
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -120,20 +130,19 @@ class _CustomerWaitingForReviewsViewState
                         onNoDataAvailable: Padding(
                           padding: const EdgeInsets.all(12.0),
                           child: Text(
-                            'You do not have any products to review yet. Just shopping!',
+                            AppStrings.noProductsAvailable.tr,
                             style: GoogleFonts.inter(
-                                fontSize: 20,
-                                color: AppColors.peachyPink,
-                                fontWeight: FontWeight.bold),
+                              fontSize: 20,
+                              color: AppColors.peachyPink,
+                              fontWeight: FontWeight.bold,
+                            ),
                             textAlign: TextAlign.start,
                           ),
                         ),
                         scrollController: _scrollController,
                         listLength: provider.list.length,
-                        loadingMoreData:
-                            provider.apiResponse.status == ApiStatus.LOADING,
-                        contentBuilder: (context) =>
-                            _buildRecordsList(provider: provider),
+                        loadingMoreData: provider.apiResponse.status == ApiStatus.LOADING,
+                        contentBuilder: (context) => _buildRecordsList(provider: provider),
                       ),
                     ],
                   );
@@ -145,8 +154,10 @@ class _CustomerWaitingForReviewsViewState
       );
 
   double initialRating = 0;
-  Widget _buildRecordsList(
-          {required CustomerGetProductReviewsViewModel provider}) =>
+
+  Widget _buildRecordsList({
+    required CustomerGetProductReviewsViewModel provider,
+  }) =>
       ListView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
@@ -177,11 +188,14 @@ class _CustomerWaitingForReviewsViewState
                   },
                   onRatingUpdate: (rating) async {
                     /// navigate to submit review view
-                    await Navigator.of(context).push(CupertinoPageRoute(
+                    await Navigator.of(context).push(
+                      CupertinoPageRoute(
                         builder: (context) => CustomerSubmitReviewView(
-                              currentRating: rating,
-                              productsAvailableForReview: record,
-                            )));
+                          currentRating: rating,
+                          productsAvailableForReview: record,
+                        ),
+                      ),
+                    );
                   },
                 ),
               ),

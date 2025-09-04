@@ -1,3 +1,5 @@
+import 'package:event_app/core/constants/vendor_app_strings.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:flutter/material.dart';
 
 /// Custom class for product item
@@ -13,6 +15,7 @@ class VendorProductView extends StatelessWidget {
     this.backgroundColor = Colors.white, // default background color
     this.headingColor = Colors.grey, // default heading color
   });
+
   final String id;
   final String productName;
   final String amount;
@@ -84,6 +87,7 @@ class ProductListHeader extends StatelessWidget {
     super.key,
     this.headingColor = Colors.grey, // default heading color
   });
+
   final Color headingColor;
 
   @override
@@ -96,15 +100,15 @@ class ProductListHeader extends StatelessWidget {
         height: 50,
         width: screenWidth,
         color: headingColor,
-        child: const Row(
+        child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('ID'),
-            Text('PRODUCT'),
-            Text('AMOUNT'),
-            Text('STATUS'),
-            Text('CREATED AT'),
+            Text(VendorAppStrings.id.tr),
+            Text(VendorAppStrings.product.tr),
+            Text(VendorAppStrings.amountHeader.tr),
+            Text(VendorAppStrings.status.tr),
+            Text(VendorAppStrings.createdAt.tr),
           ],
         ),
       ),

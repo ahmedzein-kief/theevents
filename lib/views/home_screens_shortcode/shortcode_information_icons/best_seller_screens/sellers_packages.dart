@@ -1,6 +1,8 @@
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../core/constants/app_strings.dart';
 import '../../../../core/styles/app_colors.dart';
 import '../../../../core/styles/custom_text_styles.dart';
 import '../../../../core/widgets/custom_items_views/product_card.dart';
@@ -96,20 +98,20 @@ class _FeaturedBrandsProductsScreenState extends State<BestSellersPackages> {
           if (provider.isLoading) {
             return const Center(
                 child: CircularProgressIndicator(
-                    color: Colors.black, strokeWidth: 0.5));
+                    color: Colors.black, strokeWidth: 0.5,),);
           } else if (provider.packages.isEmpty) {
             return Padding(
               padding: EdgeInsets.only(
                   top: screenHeight * 0.04,
                   left: screenWidth * 0.02,
-                  right: screenWidth * 0.02),
+                  right: screenWidth * 0.02,),
               child: Container(
                 width: double.infinity,
                 height: 50,
                 decoration: const BoxDecoration(color: AppColors.lightCoral),
-                child: const Align(
+                child: Align(
                     alignment: Alignment.center,
-                    child: Text('No records found!')),
+                    child: Text(AppStrings.noRecordsFound.tr),),
               ),
             );
           } else {
@@ -134,40 +136,40 @@ class _FeaturedBrandsProductsScreenState extends State<BestSellersPackages> {
                         items: [
                           DropdownMenuItem(
                               value: 'default_sorting',
-                              child: Text('Default Sorting',
-                                  style: sortingStyle(context))),
+                              child: Text(AppStrings.sortByDefault.tr,
+                                  style: sortingStyle(context),),),
                           DropdownMenuItem(
                               value: 'date_asc',
-                              child:
-                                  Text('Oldest', style: sortingStyle(context))),
+                              child: Text(AppStrings.sortByOldest.tr,
+                                  style: sortingStyle(context),),),
                           DropdownMenuItem(
                               value: 'date_desc',
-                              child:
-                                  Text('Newest', style: sortingStyle(context))),
+                              child: Text(AppStrings.sortByNewest.tr,
+                                  style: sortingStyle(context),),),
                           DropdownMenuItem(
                               value: 'name_asc',
-                              child: Text('Name: A-Z',
-                                  style: sortingStyle(context))),
+                              child: Text(AppStrings.sortByNameAz.tr,
+                                  style: sortingStyle(context),),),
                           DropdownMenuItem(
                               value: 'name_desc',
-                              child: Text('Name: Z-A',
-                                  style: sortingStyle(context))),
+                              child: Text(AppStrings.sortByNameZa.tr,
+                                  style: sortingStyle(context),),),
                           DropdownMenuItem(
                               value: 'price_asc',
-                              child: Text('Price: low to high',
-                                  style: sortingStyle(context))),
+                              child: Text(AppStrings.sortByPriceLowToHigh.tr,
+                                  style: sortingStyle(context),),),
                           DropdownMenuItem(
                               value: 'price_desc',
-                              child: Text('Price: high to low',
-                                  style: sortingStyle(context))),
+                              child: Text(AppStrings.sortByPriceHighToLow.tr,
+                                  style: sortingStyle(context),),),
                           DropdownMenuItem(
                               value: 'rating_asc',
-                              child: Text('Rating: low to high',
-                                  style: sortingStyle(context))),
+                              child: Text(AppStrings.sortByRatingLowToHigh.tr,
+                                  style: sortingStyle(context),),),
                           DropdownMenuItem(
                               value: 'rating_desc',
-                              child: Text('Rating: high to low',
-                                  style: sortingStyle(context))),
+                              child: Text(AppStrings.sortByRatingHighToLow.tr,
+                                  style: sortingStyle(context),),),
                         ],
                       ),
                     ),
@@ -186,7 +188,7 @@ class _FeaturedBrandsProductsScreenState extends State<BestSellersPackages> {
                                     crossAxisCount: 2,
                                     childAspectRatio: 0.6,
                                     mainAxisSpacing: 10,
-                                    crossAxisSpacing: 10),
+                                    crossAxisSpacing: 10,),
                             itemCount: provider.products.length +
                                 (_isFetchingMoreProducts ? 1 : 0),
                             shrinkWrap: true,

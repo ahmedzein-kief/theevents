@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/models/product_packages_models/product_filters_model.dart';
@@ -23,7 +22,7 @@ class BestSellerProvider with ChangeNotifier {
   String? get errorMessage => _errorMessage;
 
   Future<void> fetchBannerBestSeller(BuildContext context) async {
-    // const url = 'https://api.staging.theevents.ae/api/v1/collections/best-sellers';
+    // const url = 'https://apistaging.theevents.ae/api/v1/collections/best-sellers';
     const url = ApiEndpoints.bestSellerBanner;
 
     try {
@@ -37,7 +36,7 @@ class BestSellerProvider with ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
+        final jsonData = response.data;
         _collection = CollectionModel.fromJson(jsonData);
       } else {
         throw Exception('Failed to load collection data');
@@ -115,10 +114,10 @@ class BestSellerProvider with ChangeNotifier {
         context: context,
       );
       if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
+        final jsonData = response.data;
         // final jsonResponse = NewProductsModels.fromJson(jsonData).data?.records ?? [];
 
-        final Map<String, dynamic> jsonResponse = json.decode(response.body);
+        final Map<String, dynamic> jsonResponse = response.data;
         final NewProductsModels apiResponse =
             NewProductsModels.fromJson(jsonResponse);
 
@@ -148,7 +147,7 @@ class BestSellerProvider with ChangeNotifier {
   Future<void> fetchPackagesNew(BuildContext context,
       {int page = 1,
       int perPage = 12,
-      String sortBy = 'default_sorting'}) async {
+      String sortBy = 'default_sorting',}) async {
     // _isLoading = false;
 
     if (page == 1) {
@@ -165,10 +164,10 @@ class BestSellerProvider with ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
+        final jsonData = response.data;
         // final jsonResponse = NewProductsModels.fromJson(jsonData).data?.records ?? [];
 
-        final Map<String, dynamic> jsonResponse = json.decode(response.body);
+        final Map<String, dynamic> jsonResponse = response.data;
         final NewProductsModels apiResponse =
             NewProductsModels.fromJson(jsonResponse);
 

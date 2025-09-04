@@ -3,7 +3,9 @@ import 'package:event_app/data/vendor/data/response/ApiResponse.dart';
 import 'package:event_app/models/vendor_models/products/VendorGetProductsModel.dart';
 import 'package:event_app/models/vendor_models/products/create_product/common_data_response.dart';
 import 'package:event_app/provider/vendor/vendor_repository.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+
+import '../../../models/rejection_history_model.dart';
 
 class VendorGetProductsViewModel with ChangeNotifier {
   String? _token;
@@ -56,7 +58,7 @@ class VendorGetProductsViewModel with ChangeNotifier {
       if (_currentPage <= _lastPage) {
         setApiResponse = ApiResponse.loading();
         final VendorGetProductsModel response = await _myRepo.vendorGetProducts(
-            headers: headers, queryParams: queryParams);
+            headers: headers, queryParams: queryParams,);
         setLastPage(response);
         resetList(response);
         setApiResponse = ApiResponse.completed(response);
@@ -120,6 +122,50 @@ class VendorGetProductsViewModel with ChangeNotifier {
 
   void removeElementFromList({required id}) {
     _list.removeWhere((element) => element.id == id);
+    notifyListeners();
+  }
+
+  List<RejectionHistoryModel> _rejectionHistory = [];
+
+  bool _isLoadingRejectionHistory = false;
+
+  String? _error;
+
+  List<RejectionHistoryModel> get rejectionHistory => _rejectionHistory;
+
+  bool get isLoadingRejectionHistory => _isLoadingRejectionHistory;
+
+  String? get error => _error;
+
+  Future<void> loadRejectionHistory(String productId) async {
+    final Map<String, String> headers = <String, String>{
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': _token!,
+    };
+
+    _setLoading(true);
+    _clearError();
+
+    try {
+      final response = await _myRepo.rejectionHistoryWithFullResponse(
+          headers: headers, productID: productId,);
+
+      _rejectionHistory = response.data.history;
+    } catch (e) {
+      _error = e.toString();
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  void _setLoading(bool loading) {
+    _isLoadingRejectionHistory = loading;
+    notifyListeners();
+  }
+
+  void _clearError() {
+    _error = null;
     notifyListeners();
   }
 }

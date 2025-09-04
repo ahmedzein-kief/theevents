@@ -35,7 +35,7 @@ class VendorUploadImagesViewModel with ChangeNotifier {
   }
 
   Future<List<UploadImagesModel?>> uploadAllImages(
-      BuildContext context, List<UploadImagesModel> images) async {
+      BuildContext context, List<UploadImagesModel> images,) async {
     try {
       setLoading(true);
       setApiResponse = ApiResponse.loading();
@@ -86,7 +86,7 @@ class VendorUploadImagesViewModel with ChangeNotifier {
       // Handle overall result
       if (results.any((e) => e?.file == null)) {
         AlertServices.showErrorSnackBar(
-            message: 'Some images failed to upload', context: context);
+            message: 'Some images failed to upload', context: context,);
       } else {
         AlertServices.showSuccessSnackBar(
           message: 'All images uploaded successfully',
@@ -97,7 +97,7 @@ class VendorUploadImagesViewModel with ChangeNotifier {
     } catch (error) {
       setApiResponse = ApiResponse.error(error.toString());
       AlertServices.showErrorSnackBar(
-          message: error.toString(), context: context);
+          message: error.toString(), context: context,);
       return [];
     } finally {
       setLoading(false);

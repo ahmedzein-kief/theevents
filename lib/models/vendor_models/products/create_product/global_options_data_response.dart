@@ -44,7 +44,7 @@ class GlobalOptionsData {
         updatedAt: json['updated_at'],
         optionType: json['option_type'],
         values: List<GlobalOptionsValues>.from(
-            json['values'].map((x) => GlobalOptionsValues.fromJson(x))),
+            json['values'].map((x) => GlobalOptionsValues.fromJson(x)),),
         name: json['name'],
         createdAt: json['created_at'],
         id: json['id'],
@@ -69,7 +69,7 @@ class GlobalOptionsData {
       case var _
           when optionType.contains('Botble\\Ecommerce\\Option\\OptionType\\'):
         result = optionType.replaceAll(
-            'Botble\\Ecommerce\\Option\\OptionType\\', '');
+            'Botble\\Ecommerce\\Option\\OptionType\\', '',);
         break;
       case var _ when optionType.contains('Botble\\Ecommerce\\Enums\\'):
         result = optionType.replaceAll('Botble\\Ecommerce\\Enums\\', '');

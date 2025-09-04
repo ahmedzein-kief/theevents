@@ -5,7 +5,7 @@ import '../../styles/custom_text_styles.dart';
 
 class CustomTextRow extends StatelessWidget {
   const CustomTextRow(
-      {super.key, required this.title, this.seeAll, this.onTap});
+      {super.key, required this.title, this.seeAll, this.onTap,});
   final String title;
   final String? seeAll;
   final Function()? onTap;
@@ -18,7 +18,7 @@ class CustomTextRow extends StatelessWidget {
       padding: EdgeInsets.only(
           left: screenWidth * 0.04,
           right: screenWidth * 0.04,
-          bottom: screenHeight * 0.01),
+          bottom: screenHeight * 0.01,),
       child: SizedBox(
         height: 40,
         // color: Colors.green,

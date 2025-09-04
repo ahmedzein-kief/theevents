@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/helper/validators/validator.dart';
 import 'package:event_app/core/widgets/bottom_navigation_bar.dart';
 import 'package:event_app/vendor/components/vendor_stepper_screen.dart';
@@ -68,13 +71,13 @@ class LoginScreenState extends State<LoginScreen> {
                       padding: EdgeInsets.only(
                           left: screenWidth * 0.05,
                           right: screenWidth * 0.05,
-                          bottom: screeHeight * 0.04),
+                          bottom: screeHeight * 0.04,),
                       child: RichText(
                         text: TextSpan(
                           style: loginTextStyle(context),
                           children: [
                             TextSpan(
-                              text: 'Login',
+                              text: AppStrings.login.tr,
                               style: GoogleFonts.inter(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 24,
@@ -91,20 +94,20 @@ class LoginScreenState extends State<LoginScreen> {
                         Padding(
                           padding: EdgeInsets.only(
                               left: screenWidth * 0.05,
-                              right: screenWidth * 0.05),
+                              right: screenWidth * 0.05,),
                           child: CustomTextFields(
                             hintStyle: GoogleFonts.inter(
                                 fontWeight: FontWeight.w400,
                                 fontSize: 16,
                                 color:
-                                    Theme.of(context).colorScheme.onSecondary),
+                                    Theme.of(context).colorScheme.onSecondary,),
                             formFieldValidator: Validator.email,
                             textEditingController: _emailController,
                             inputType: TextInputType.emailAddress,
-                            hintText: 'Enter your Email',
+                            hintText: AppStrings.enterYourEmail.tr,
                             leftIcon: SvgPicture.asset(
                               color: Theme.of(context).colorScheme.onPrimary,
-                              AppStrings.emailIcon,
+                              AppStrings.emailIcon.tr,
                               height: screeHeight * 0.02,
                             ),
                           ),
@@ -113,21 +116,21 @@ class LoginScreenState extends State<LoginScreen> {
                           padding: EdgeInsets.only(
                               left: screenWidth * 0.05,
                               right: screenWidth * 0.05,
-                              bottom: 10),
+                              bottom: 10,),
                           child: CustomTextFields(
                             hintStyle: GoogleFonts.inter(
                                 fontWeight: FontWeight.w400,
                                 fontSize: 16,
                                 color:
-                                    Theme.of(context).colorScheme.onSecondary),
+                                    Theme.of(context).colorScheme.onSecondary,),
                             leftIcon: SvgPicture.asset(
                               color: Theme.of(context).colorScheme.onPrimary,
-                              AppStrings.passwordIcon,
+                              AppStrings.passwordIcon.tr,
                               height: screeHeight * 0.025,
                             ),
                             formFieldValidator: (value) {
                               if (value == null || value.isEmpty) {
-                                return 'Password is required.';
+                                return AppStrings.passRequired.tr;
                               }
 
                               return null;
@@ -143,14 +146,14 @@ class LoginScreenState extends State<LoginScreen> {
                                 fit: BoxFit.cover,
                                 color: Theme.of(context).colorScheme.onPrimary,
                                 _passShowNot
-                                    ? AppStrings.hideEye
-                                    : AppStrings.showEye,
+                                    ? AppStrings.hideEye.tr
+                                    : AppStrings.showEye.tr,
                               ),
                             ),
                             isObsecureText: _passShowNot,
                             textEditingController: _passwordController,
                             inputType: TextInputType.visiblePassword,
-                            hintText: 'Enter your Password',
+                            hintText: AppStrings.enterYourPassword.tr,
                           ),
                         ),
                         /*Padding(
@@ -194,8 +197,8 @@ class LoginScreenState extends State<LoginScreen> {
                               builder: (context, authProvider, child) =>
                                   CustomAuthButton(
                                 title: authProvider.isLoading
-                                    ? 'Continue...'
-                                    : 'Continue',
+                                    ? '${AppStrings.continueo.tr}...'
+                                    : AppStrings.continueo.tr,
                                 isLoading: authProvider.isLoading,
                                 onPressed: () async {
                                   if (_formKey.currentState?.validate() ??
@@ -205,8 +208,9 @@ class LoginScreenState extends State<LoginScreen> {
                                       _emailController.text,
                                       _passwordController.text,
                                       _rememberMe,
-                                      TokenName: mobileLogin,
+                                      tokenName: mobileLogin,
                                     );
+                                    log('userData response: ${userData?.data}');
 
                                     if (userData?.data != null) {
                                       await SecurePreferencesUtil.setVendorData(
@@ -219,53 +223,53 @@ class LoginScreenState extends State<LoginScreen> {
 
                                       if (userData?.data?.isVendor == 1) {
                                         await SecurePreferencesUtil.saveToken(
-                                            'Bearer ${userData?.data!.token}');
+                                            'Bearer ${userData?.data!.token}',);
                                         if (_rememberMe) {
                                           await SecurePreferencesUtil.setBool(
                                               SecurePreferencesUtil
                                                   .isLoggedInKey,
-                                              true);
+                                              true,);
                                         }
                                         if (userData?.data?.isApproved ==
                                                 true &&
                                             userData?.data?.isVerified ==
                                                 true) {
                                           Navigator.of(context).popUntil(
-                                              (route) => route.isFirst);
+                                              (route) => route.isFirst,);
                                           Navigator.of(context).pushReplacement(
                                             MaterialPageRoute(
                                                 builder: (_) =>
-                                                    VendorDrawerScreen()),
+                                                    VendorDrawerScreen(),),
                                           );
                                         } else {
                                           Navigator.of(context).popUntil(
-                                              (route) => route.isFirst);
+                                              (route) => route.isFirst,);
                                           Navigator.of(context).push(
                                             MaterialPageRoute(
                                                 builder: (_) =>
-                                                    const BaseHomeScreen()),
+                                                    const BaseHomeScreen(),),
                                           );
                                           Navigator.of(context).push(
                                             MaterialPageRoute(
                                                 builder: (_) =>
-                                                    const VendorStepperScreen()),
+                                                    const VendorStepperScreen(),),
                                           );
                                         }
                                       } else {
                                         await SecurePreferencesUtil.saveToken(
-                                            'Bearer ${userData?.data!.token}');
+                                            'Bearer ${userData?.data!.token}',);
                                         if (_rememberMe) {
                                           await SecurePreferencesUtil.setBool(
                                               SecurePreferencesUtil
                                                   .isLoggedInKey,
-                                              true);
+                                              true,);
                                         }
                                         Navigator.of(context)
                                             .popUntil((route) => route.isFirst);
                                         Navigator.of(context).pushReplacement(
                                           MaterialPageRoute(
                                               builder: (_) =>
-                                                  const BaseHomeScreen()),
+                                                  const BaseHomeScreen(),),
                                         );
                                       }
                                     }
@@ -279,15 +283,15 @@ class LoginScreenState extends State<LoginScreen> {
                           padding: EdgeInsets.only(
                               top: screeHeight * 0.04,
                               left: screenWidth * 0.05,
-                              right: screenWidth * 0.05),
+                              right: screenWidth * 0.05,),
                           child: RichText(
                             text: TextSpan(
                               children: [
                                 TextSpan(
-                                    text: 'Have trouble logging in? ',
-                                    style: loginTermsConditionStyle(context)),
+                                    text: AppStrings.haveTroubleLogging.tr,
+                                    style: loginTermsConditionStyle(context),),
                                 TextSpan(
-                                  text: 'Get help',
+                                  text: AppStrings.getHelp.tr,
                                   style: GoogleFonts.inter(
                                     color: AppColors.vividRed,
                                     fontWeight: FontWeight.bold,
@@ -302,17 +306,17 @@ class LoginScreenState extends State<LoginScreen> {
                           padding: EdgeInsets.only(
                               top: screeHeight * 0.01,
                               left: screenWidth * 0.05,
-                              right: screenWidth * 0.05),
+                              right: screenWidth * 0.05,),
                           child: InkWell(
                             onTap: () {
                               Navigator.push(
                                   context,
                                   CupertinoPageRoute(
                                       builder: (context) =>
-                                          const ForgotPasswordScreen()));
+                                          const ForgotPasswordScreen(),),);
                             },
                             child: Text(
-                              'Forgot Password?',
+                              AppStrings.forgetPassword.tr,
                               style: GoogleFonts.inter(
                                 color: Colors.blue,
                                 fontWeight: FontWeight.w400,

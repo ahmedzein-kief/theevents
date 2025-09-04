@@ -18,7 +18,7 @@ class Data {
       {required this.parent,
       required this.pagination,
       required this.records,
-      required this.filters});
+      required this.filters,});
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
         parent: Parent.fromJson(json['parent']),

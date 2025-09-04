@@ -33,6 +33,7 @@ class VendorDashboardViewModel with ChangeNotifier {
   /// get products method
   Future<void> getDashboardData(String startDate, String endDate) async {
     await setToken();
+
     try {
       final Map<String, String> headers = <String, String>{
         // 'Content-Type': 'application/json',
@@ -51,7 +52,7 @@ class VendorDashboardViewModel with ChangeNotifier {
 
       setApiResponse = ApiResponse.loading();
       final DashboardDataResponse response = await _myRepo.getDashboardData(
-          headers: headers, queryParams: queryParams);
+          headers: headers, queryParams: queryParams,);
       setApiResponse = ApiResponse.completed(response);
     } catch (error) {
       setApiResponse = ApiResponse.error(error.toString());

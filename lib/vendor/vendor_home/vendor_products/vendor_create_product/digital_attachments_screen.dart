@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:event_app/core/constants/vendor_app_strings.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/models/vendor_models/products/holder_models/upload_images_model.dart';
 import 'package:event_app/vendor/components/services/media_services.dart';
@@ -13,6 +15,7 @@ import 'package:provider/provider.dart';
 
 class DigitalAttachmentsScreen extends StatefulWidget {
   const DigitalAttachmentsScreen({super.key, this.initialImages});
+
   final List<UploadImagesModel>? initialImages;
 
   @override
@@ -94,16 +97,18 @@ class _DigitalAttachmentsScreenState extends State<DigitalAttachmentsScreen> {
         },
         child: Scaffold(
           appBar: AppBar(
-            title: Text('Digital Attachments', style: vendorName(context)),
+            title: Text(VendorAppStrings.digitalAttachments.tr,
+                style: vendorName(context),),
             leading: IconButton(
               icon: const Icon(Icons.arrow_back),
               onPressed: _returnBack,
             ),
           ),
           body: Utils.modelProgressHud(
+            context: context,
             processing: _isProcessing,
             child: _selectedImages.isEmpty
-                ? const Center(child: Text('No attachments selected.'))
+                ? Center(child: Text(VendorAppStrings.noAttachmentsSelected.tr))
                 : ListView.builder(
                     padding:
                         const EdgeInsets.only(left: 10, right: 10, bottom: 80),

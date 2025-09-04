@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:event_app/core/constants/app_strings.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/helper/mixins/media_query_mixin.dart';
 import 'package:event_app/core/styles/app_sizes.dart';
 import 'package:event_app/core/utils/custom_toast.dart';
@@ -28,6 +30,7 @@ class CustomerSubmitReviewView extends StatefulWidget {
     this.currentRating,
     required this.productsAvailableForReview,
   });
+
   double? currentRating;
   final ProductsAvailableForReview productsAvailableForReview;
 
@@ -56,7 +59,7 @@ class _CustomerSubmitReviewViewState extends State<CustomerSubmitReviewView>
   Future<void> _addPhotos() async {
     try {
       final files = await MediaServices().getMultipleFilesFromPicker(
-          allowedExtensions: MediaServices().allowedImageExtension);
+          allowedExtensions: MediaServices().allowedImageExtension,);
 
       if (files?.isNotEmpty ?? false) {
         const int maxCount = 6; // Maximum number of files allowed
@@ -66,7 +69,8 @@ class _CustomerSubmitReviewViewState extends State<CustomerSubmitReviewView>
         if (_photos.length + files!.length > maxCount) {
           CustomSnackbar.showError(
             context,
-            'You can only select a maximum of $maxCount files',
+            AppStrings.maxFilesError.tr
+                .replaceAll('maxCount', maxCount.toString()),
           );
           return;
         }
@@ -83,20 +87,20 @@ class _CustomerSubmitReviewViewState extends State<CustomerSubmitReviewView>
             _photos.add(file);
           } else {
             CustomSnackbar.showError(context,
-                "${file.path.split('/').last} size must be less than 2MB");
+                "${file.path.split('/').last} size must be less than 2MB",);
           }
 
           // Recheck max count after adding each file
           if (_photos.length >= maxCount) {
             CustomSnackbar.showError(context,
-                'You have reached the maximum limit of $maxCount files');
+                'You have reached the maximum limit of $maxCount files',);
             break;
           }
         }
         setState(() {});
       }
     } catch (e) {
-      print('Failed to Add Photos $e');
+      print('${AppStrings.failedToAddPhotos.tr} $e');
     }
   }
 
@@ -121,9 +125,9 @@ class _CustomerSubmitReviewViewState extends State<CustomerSubmitReviewView>
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              const BackAppBarStyle(
+              BackAppBarStyle(
                 icon: Icons.arrow_back_ios,
-                text: 'My Account',
+                text: AppStrings.myAccount.tr,
               ),
               Expanded(child: _reviewForm(context)),
             ],
@@ -167,13 +171,12 @@ class _CustomerSubmitReviewViewState extends State<CustomerSubmitReviewView>
                   direction: Axis.horizontal,
                   itemCount: 5,
                   itemSize: 30,
-                  itemBuilder: (context, _) {
+                  itemBuilder: (context, _) => const Icon(
+                    Icons.star,
+
                     /// show static color here
-                    return const Icon(
-                      Icons.star,
-                      color: Colors.amber,
-                    );
-                  },
+                    color: Colors.amber,
+                  ),
                   onRatingUpdate: (rating) async {
                     /// navigate to submit review view
                     widget.currentRating = rating;
@@ -183,7 +186,7 @@ class _CustomerSubmitReviewViewState extends State<CustomerSubmitReviewView>
 
                 /// Review textarea
                 CustomTextFormField(
-                  labelText: 'Review',
+                  labelText: AppStrings.review.tr,
                   required: true,
                   maxLines: 4,
                   hintText: '',
@@ -193,13 +196,13 @@ class _CustomerSubmitReviewViewState extends State<CustomerSubmitReviewView>
                 kSmallSpace,
 
                 /// upload up to 6 photos with max 2 mb size
-                const Text(
-                  'Upload Photos',
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                Text(
+                  AppStrings.uploadPhotos.tr,
+                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
                 ),
-                const Text(
-                  'You can upload up to 6 photos, each photo max size is 2MB.',
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
+                Text(
+                  AppStrings.uploadPhotosMessage.tr,
+                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
                 ),
                 kSmallSpace,
 
@@ -224,7 +227,7 @@ class _CustomerSubmitReviewViewState extends State<CustomerSubmitReviewView>
                               ),
                               child: CustomAppButton(
                                 borderRadius: 4,
-                                buttonText: 'Submit Review',
+                                buttonText: AppStrings.submitReview.tr,
                                 buttonColor: AppColors.lightCoral,
                                 isLoading: provider.apiResponse.status ==
                                     ApiStatus.LOADING,
@@ -235,7 +238,7 @@ class _CustomerSubmitReviewViewState extends State<CustomerSubmitReviewView>
                                       _createForm();
                                       final result =
                                           await provider.customerSubmitReview(
-                                              form: formData, context: context);
+                                              form: formData, context: context,);
                                       if (result) {
                                         Navigator.pop(context, 1);
                                         Navigator.pushReplacement(
@@ -244,11 +247,11 @@ class _CustomerSubmitReviewViewState extends State<CustomerSubmitReviewView>
                                                 builder: (context) =>
                                                     const ProfileReviewScreen(
                                                       initialTabIndex: 1,
-                                                    )));
+                                                    ),),);
                                       }
                                     } catch (e) {
                                       print(
-                                          'Error while submitting review: $e');
+                                          '${AppStrings.errorSubmittingReview.tr} $e',);
                                     }
                                   }
                                 },

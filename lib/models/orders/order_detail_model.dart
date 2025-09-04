@@ -67,7 +67,7 @@ class OrderDetailData {
         createdAt: json['created_at'],
         fullAddress: json['full_address'],
         products: List<OrderDetailProduct>.from(
-            json['products'].map((x) => OrderDetailProduct.fromJson(x))),
+            json['products'].map((x) => OrderDetailProduct.fromJson(x)),),
         shipping: Shipping.fromJson(json['shipping']),
         price: json['price'],
         isCanceled: json['is_canceled'],

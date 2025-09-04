@@ -221,7 +221,7 @@ class DashboardInfoCard extends StatelessWidget {
         onTap: onTap,
         child: Container(
           padding: EdgeInsets.symmetric(
-              vertical: kExtraSmallPadding, horizontal: kTinyPadding),
+              vertical: kExtraSmallPadding, horizontal: kTinyPadding,),
           decoration: BoxDecoration(
             color: containerColor,
             borderRadius: BorderRadius.circular(kTinyCardRadius),

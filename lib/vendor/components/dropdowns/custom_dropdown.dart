@@ -1,6 +1,6 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/core/helper/mixins/media_query_mixin.dart';
+import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/vendor/components/input_borders_hub/input_border_hub.dart';
 import 'package:flutter/material.dart';
 
@@ -12,7 +12,7 @@ class CustomDropdown extends StatefulWidget {
   final List<DropdownMenuItem> menuItemsList;
 
   // final List<dynamic> menuList;
-  final void Function(dynamic value) onChanged;
+  final String? Function(dynamic)? onChanged;
   final FocusNode? currentFocusNode;
   final FocusNode? nextFocusNode;
 
@@ -61,8 +61,7 @@ class CustomDropdown extends StatefulWidget {
   State<CustomDropdown> createState() => _CustomDropdownState();
 }
 
-class _CustomDropdownState extends State<CustomDropdown>
-    with MediaQueryMixin<CustomDropdown> {
+class _CustomDropdownState extends State<CustomDropdown> with MediaQueryMixin<CustomDropdown> {
   String? selectedValue;
   final TextEditingController textEditingController = TextEditingController();
 
@@ -79,11 +78,13 @@ class _CustomDropdownState extends State<CustomDropdown>
         ? InputBordersHub.getOutlinedInputBorder(
             borderColor: widget.borderColor,
             borderWidth: widget.borderWidth,
-            borderRadius: widget.borderRadius)
+            borderRadius: widget.borderRadius,
+          )
         : InputBordersHub.getUnderlinedInputBorder(
             borderColor: widget.borderColor,
             borderWidth: widget.borderWidth,
-            borderRadius: widget.borderRadius);
+            borderRadius: widget.borderRadius,
+          );
 
     // final localization = AppLocalizations.of(context)!;
     return IgnorePointer(
@@ -102,19 +103,19 @@ class _CustomDropdownState extends State<CustomDropdown>
         value: widget.value,
         onChanged: (value) {
           setState(() {
-            widget.onChanged(value);
+            widget.onChanged?.call(value);
             FocusScope.of(context).requestFocus(widget.nextFocusNode);
           });
         },
         focusNode: widget.currentFocusNode,
         decoration: InputDecoration(
+          fillColor: widget.readOnly ?? false ? Colors.grey.shade200 : _getAdaptiveFillColor(context),
           errorText: widget.errorText,
           errorMaxLines: 5,
           // isCollapsed: true,
           isDense: true,
           // contentPadding: widget.contentPadding ?? EdgeInsets.symmetric(vertical: 12.0, horizontal: screenWidth * 0.03),
-          contentPadding: widget.contentPadding ??
-              const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+          contentPadding: widget.contentPadding ?? const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
 
           prefixIcon: widget.prefix,
           prefixIconConstraints: const BoxConstraints(
@@ -126,32 +127,34 @@ class _CustomDropdownState extends State<CustomDropdown>
           hintText: widget.hintText,
           hintFadeDuration: const Duration(milliseconds: 500),
           hintStyle: const TextStyle(
-              color: AppColors.softBlueGrey,
-              fontSize: 14,
-              fontWeight: FontWeight.w500),
+            color: AppColors.softBlueGrey,
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+          ),
           border: border,
           focusedBorder: border,
           // errorBorder: border,
           enabledBorder: border,
           focusedErrorBorder: border,
-          filled: widget.filled,
-          fillColor: Colors.grey.shade200,
+          filled: widget.filled ?? true,
         ),
 
         // cursorColor: AppColors.darkGrey,
         style: widget.textStyle ??
             TextStyle(
-                color: widget.textColor ?? AppColors.softBlueGrey,
-                overflow: TextOverflow.ellipsis),
+              color: widget.textColor ?? AppColors.softBlueGrey,
+              overflow: TextOverflow.ellipsis,
+            ),
         // padding: EdgeInsets.zero,
         hint: Text(
           widget.hintText ?? 'Select',
           style: widget.textStyle ??
               TextStyle(
-                  color: widget.textColor ?? AppColors.softBlueGrey,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  overflow: TextOverflow.ellipsis),
+                color: widget.textColor ?? AppColors.softBlueGrey,
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                overflow: TextOverflow.ellipsis,
+              ),
           overflow: TextOverflow.ellipsis,
         ),
         iconStyleData: const IconStyleData(
@@ -166,17 +169,18 @@ class _CustomDropdownState extends State<CustomDropdown>
           ),
           // iconSize: 20
         ),
-        menuItemStyleData: const MenuItemStyleData(
-            padding: EdgeInsets.symmetric(horizontal: 0)),
+        // menuItemStyleData: const MenuItemStyleData(
+        //   padding: EdgeInsets.symmetric(horizontal: 10),
+        // ),
         dropdownStyleData: DropdownStyleData(
           useSafeArea: true,
-          width: screenWidth - 10,
+          width: .7 * screenWidth,
 
           /// This is responsible for spacing between the prefix icon and Dropdown text.
           maxHeight: screenHeight / 1.5,
           padding: const EdgeInsets.only(left: 10),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: _getAdaptiveFillColor(context),
             borderRadius: BorderRadius.circular(15),
           ),
         ),
@@ -209,5 +213,11 @@ class _CustomDropdownState extends State<CustomDropdown>
         validator: widget.validator,
       ),
     );
+  }
+
+  Color _getAdaptiveFillColor(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? const Color(0xFF3A3A3A) // Dark → opposite alpha
+        : const Color(0xFFF5F5F5); // Light → normal alpha
   }
 }

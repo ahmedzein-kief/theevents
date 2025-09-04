@@ -28,7 +28,7 @@ class Data {
   factory Data.fromJson(Map<dynamic, dynamic> json) => Data(
         pagination: Pagination.fromJson(json['pagination']),
         records: List<RevenueRecord>.from(
-            json['records'].map((x) => RevenueRecord.fromJson(x))),
+            json['records'].map((x) => RevenueRecord.fromJson(x)),),
       );
 
   Pagination? pagination;

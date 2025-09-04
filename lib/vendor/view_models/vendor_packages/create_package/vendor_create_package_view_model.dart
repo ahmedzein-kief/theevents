@@ -71,7 +71,7 @@ class VendorCreatePackageViewModel with ChangeNotifier {
     } catch (error) {
       _setVendorCreatePackageApiResponse = ApiResponse.error(error.toString());
       AlertServices.showErrorSnackBar(
-          message: error.toString(), context: context);
+          message: error.toString(), context: context,);
       setLoading(false);
       return false;
     }
@@ -125,7 +125,7 @@ class VendorCreatePackageViewModel with ChangeNotifier {
     } catch (error) {
       _setVendorUpdatePackageApiResponse = ApiResponse.error(error.toString());
       AlertServices.showErrorSnackBar(
-          message: error.toString(), context: context);
+          message: error.toString(), context: context,);
       setLoading(false);
       return false;
     }

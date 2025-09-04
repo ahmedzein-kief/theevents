@@ -38,7 +38,7 @@ class VendorSettingsViewModel with ChangeNotifier {
   Future<bool> vendorSettings(
       {required VendorSettingType vendorSettingsType,
       required form,
-      required BuildContext context}) async {
+      required BuildContext context,}) async {
     try {
       setLoading(true);
       setApiResponse = ApiResponse.loading();
@@ -54,20 +54,20 @@ class VendorSettingsViewModel with ChangeNotifier {
           await _myRepo.vendorSettings(url: url, headers: headers, body: body);
       setApiResponse = ApiResponse.completed(response);
       AlertServices.showSuccessSnackBar(
-          message: response.message.toString(), context: context);
+          message: response.message.toString(), context: context,);
       setLoading(false);
       return true;
     } catch (error) {
       setApiResponse = ApiResponse.error(error.toString());
       AlertServices.showErrorSnackBar(
-          message: error.toString(), context: context);
+          message: error.toString(), context: context,);
       setLoading(false);
       return false;
     }
   }
 
   String _getUpdateSettingsUrl(
-      {required VendorSettingType vendorSettingsType}) {
+      {required VendorSettingType vendorSettingsType,}) {
     switch (vendorSettingsType) {
       case VendorSettingType.store:
         return VendorApiEndpoints.vendorStoreSettings;

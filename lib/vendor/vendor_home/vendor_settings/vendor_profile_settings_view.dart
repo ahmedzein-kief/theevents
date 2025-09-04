@@ -1,4 +1,5 @@
-import 'package:event_app/core/styles/app_colors.dart';
+import 'package:event_app/core/constants/vendor_app_strings.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/styles/app_sizes.dart';
 import 'package:event_app/vendor/components/app_bars/vendor_common_app_bar.dart';
 import 'package:event_app/vendor/components/utils/utils.dart';
@@ -12,82 +13,84 @@ import 'package:provider/provider.dart';
 
 class VendorProfileSettingsView extends StatefulWidget {
   VendorProfileSettingsView({super.key, this.initialIndex});
+
   int? initialIndex;
 
   @override
-  State<VendorProfileSettingsView> createState() =>
-      _VendorProfileSettingsViewState();
+  State<VendorProfileSettingsView> createState() => _VendorProfileSettingsViewState();
 }
 
-class _VendorProfileSettingsViewState extends State<VendorProfileSettingsView>
-    with TickerProviderStateMixin {
+class _VendorProfileSettingsViewState extends State<VendorProfileSettingsView> with TickerProviderStateMixin {
   late TabController _tabController;
 
   @override
   void initState() {
     _tabController = TabController(
-        initialIndex: widget.initialIndex ?? 0, length: 3, vsync: this);
+      initialIndex: widget.initialIndex ?? 0,
+      length: 3,
+      vsync: this,
+    );
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        backgroundColor: AppColors.bgColor,
-        appBar: widget.initialIndex != null
-            ? const VendorCommonAppBar(title: 'Settings')
-            : null,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        appBar: widget.initialIndex != null ? VendorCommonAppBar(title: VendorAppStrings.settingsTitle.tr) : null,
         body: Utils.pageRefreshIndicator(
-            onRefresh: () async {}, child: _buildUI(context)),
+          context: context,
+          onRefresh: () async {},
+          child: _buildUI(context),
+        ),
       );
 
   Widget _buildUI(context) {
     const double tabHeight = 30;
+    final theme = Theme.of(context);
     return Padding(
       padding: EdgeInsets.symmetric(
-          vertical: kExtraSmallPadding, horizontal: kPadding),
+        vertical: kExtraSmallPadding,
+        horizontal: kPadding,
+      ),
       child: Column(
         children: [
+          /// THEME TOGGLE SWITCH
+          // const ThemeToggleSwitch(),
+          kFormFieldSpace,
+
           /// TAB BAR
           Container(
             decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(9)),
+              // color: theme.colorScheme.primary,
+              borderRadius: BorderRadius.circular(9),
+            ),
             child: TabBar(
-              // automaticIndicatorColorAdjustment: false,
               controller: _tabController,
               dividerColor: Colors.transparent,
-              indicatorColor: Colors.black,
-              // labelColor: Colors.black,
-              indicatorSize: TabBarIndicatorSize.tab,
-              padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
-              // indicatorPadding: const EdgeInsets.symmetric(horizontal: 0),
-              labelStyle: const TextStyle(
-                  color: Colors.black,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600),
-              unselectedLabelStyle:
-                  const TextStyle(color: Colors.black, fontSize: 13),
-              unselectedLabelColor: Colors.black,
+              indicatorColor: theme.colorScheme.onPrimary,
+              labelStyle: TextStyle(
+                color: theme.colorScheme.onPrimary,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
+              unselectedLabelStyle: TextStyle(color: theme.colorScheme.onPrimary, fontSize: 13),
+              unselectedLabelColor: theme.colorScheme.onPrimary,
               dragStartBehavior: DragStartBehavior.down,
-              indicator: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(color: Colors.white),
-                  borderRadius: BorderRadius.circular(6)),
-              tabs: const [
+              tabs: [
                 Tab(
-                  key: Key('1'),
+                  key: const Key('1'),
                   height: tabHeight,
-                  child: Text('Store'),
+                  child: Text(VendorAppStrings.store.tr),
                 ),
                 Tab(
-                  key: Key('2'),
+                  key: const Key('2'),
                   height: tabHeight,
-                  child: Text('Tax Info'),
+                  child: Text(VendorAppStrings.taxInfo.tr),
                 ),
                 Tab(
-                  key: Key('3'),
+                  key: const Key('3'),
                   height: tabHeight,
-                  child: Text('Payout Info'),
+                  child: Text(VendorAppStrings.payoutInfo.tr),
                 ),
               ],
             ),

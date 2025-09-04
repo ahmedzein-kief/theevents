@@ -81,7 +81,7 @@ class _CustomAppButtonState extends State<CustomAppButton> {
           border: Border.all(
               color: widget.isLoading
                   ? widget.loadingIndicatorColor ?? Colors.transparent
-                  : widget.borderColor ?? Colors.transparent),
+                  : widget.borderColor ?? Colors.transparent,),
         ),
         child: Row(
           mainAxisSize: widget.mainAxisSize ?? MainAxisSize.min,
@@ -90,13 +90,13 @@ class _CustomAppButtonState extends State<CustomAppButton> {
           children: [
             if (widget.prefixIcon != null)
               Icon(widget.prefixIcon,
-                  color: widget.prefixIconColor ?? Colors.white, size: 18),
+                  color: widget.prefixIconColor ?? Colors.white, size: 18,),
             SizedBox(width: widget.prefixIcon != null ? 8.0 : 0),
             // Add spacing if prefixIcon is present
             if (widget.isLoading)
               Utils.pageLoadingIndicator(
                   context: context,
-                  color: widget.loadingIndicatorColor ?? Colors.white)
+                  color: widget.loadingIndicatorColor ?? Colors.white,)
             else
               Text(
                 widget.buttonText,
@@ -111,7 +111,7 @@ class _CustomAppButtonState extends State<CustomAppButton> {
             // Add spacing if suffixIcon is present
             if (widget.suffixIcon != null)
               Icon(widget.suffixIcon,
-                  color: widget.suffixIconColor ?? Colors.white, size: 18),
+                  color: widget.suffixIconColor ?? Colors.white, size: 18,),
           ],
         ),
       ),

@@ -59,7 +59,7 @@ class _ChooseFileCardState extends State<ChooseFileCard> {
                 onTap: widget.onChoose,
                 child: ClipRRect(
                     borderRadius: BorderRadius.circular(kFileCardRadius),
-                    child: _buildImageContent()),
+                    child: _buildImageContent(),),
               ),
               if (widget.file != null || widget.imageLink != null)
                 _buildCloseButton(),

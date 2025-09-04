@@ -33,7 +33,7 @@ class VendorConfirmOrderViewModel with ChangeNotifier {
   }
 
   Future<bool> vendorConfirmOrder(
-      {required orderID, required BuildContext context}) async {
+      {required orderID, required BuildContext context,}) async {
     try {
       setLoading(true);
       setApiResponse = ApiResponse.loading();
@@ -44,17 +44,17 @@ class VendorConfirmOrderViewModel with ChangeNotifier {
       };
 
       final CommonPostRequestModel response = await _myRepo.vendorConfirmOrder(
-          headers: headers, orderID: orderID.toString());
+          headers: headers, orderID: orderID.toString(),);
       setApiResponse = ApiResponse.completed(response);
       AlertServices.showSuccessSnackBar(
           message: apiResponse.data?.message?.toString() ?? '',
-          context: context);
+          context: context,);
       setLoading(false);
       return true;
     } catch (error) {
       setApiResponse = ApiResponse.error(error.toString());
       AlertServices.showErrorSnackBar(
-          message: error.toString() ?? '', context: context);
+          message: error.toString() ?? '', context: context,);
       setLoading(false);
       return false;
     }

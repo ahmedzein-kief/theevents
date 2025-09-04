@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/core/services/shared_preferences_helper.dart';
 import 'package:event_app/provider/api_response_handler.dart';
@@ -16,10 +14,13 @@ class AddressModel {
     required this.address,
     required this.country,
     required this.city,
-    this.state = '',
-    this.zipCode = '',
+    required this.state,
+    required this.countryId,
+    required this.stateId,
+    required this.cityId,
     this.isDefault = true,
   });
+
   final String id;
   final String name;
   final String email;
@@ -28,7 +29,9 @@ class AddressModel {
   final String country;
   final String city;
   final String state;
-  final String zipCode;
+  final String countryId;
+  final String stateId;
+  final String cityId;
   final bool isDefault;
 
   Map<String, dynamic> toJson() => {
@@ -40,7 +43,9 @@ class AddressModel {
         'country': country,
         'city': city,
         'state': state,
-        'zip_code': zipCode,
+        'country_id': countryId,
+        'state_id': stateId,
+        'city_id': cityId,
         'is_default': isDefault ? 1 : 0,
       };
 
@@ -53,7 +58,9 @@ class AddressModel {
         'country': country,
         'city': city,
         'state': state,
-        'zip_code': zipCode,
+        'country_id': countryId,
+        'state_id': stateId,
+        'city_id': cityId,
         'is_default': isDefault ? '1' : '0',
       };
 
@@ -66,7 +73,9 @@ class AddressModel {
         'country': country,
         'city': city,
         'state': state,
-        'zip_code': zipCode,
+        'country_id': countryId,
+        'state_id': stateId,
+        'city_id': cityId,
       };
 }
 
@@ -101,11 +110,11 @@ class AddressProvider with ChangeNotifier {
     try {
       // Encode the address object to JSON string format
       final response = await _apiResponseHandler.postRequest(url,
-          headers: headers, body: address.toJsonString());
+          headers: headers, body: address.toJsonString(),);
 
       if (response.statusCode == 200) {
         setStatus(ApiStatus.completed);
-        final responseData = json.decode(response.body);
+        final responseData = response.data;
         final createData = CreateAddressResponse.fromJson(responseData);
         _isLoading = false;
         notifyListeners();

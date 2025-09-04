@@ -1,15 +1,13 @@
-import 'dart:convert';
-
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/models/dashboard/user_by_type_model/view_all_items_models.dart';
 import 'package:event_app/provider/api_response_handler.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:provider/provider.dart';
 
 import '../../models/dashboard/vendor_by_type_models/vendot_type_by_model.dart';
+import '../locale_provider.dart';
 
 class VendorByTypeProvider extends ChangeNotifier {
-  //    +++++++++++++++++++++++++++++++++++++++++++++    USER BY TYPE BANNER +++++++++++++++++++++++++++++++++
-
   final ApiResponseHandler _apiResponseHandler = ApiResponseHandler();
   bool _isLoading = true;
   String errorMessage = '';
@@ -18,12 +16,27 @@ class VendorByTypeProvider extends ChangeNotifier {
 
   bool get isLoading => _isLoading;
 
+  // Cache for vendor type banner data
+  final Map<String, VendorTypeData> _cachedVendorTypeData = {};
+
   Future<void> fetchVendorTypeById(
     int typeId,
-    BuildContext context,
-  ) async {
+    BuildContext context, {
+    bool forceRefresh = false,
+  }) async {
     _isLoading = true;
     notifyListeners();
+
+    final currentLocale = Provider.of<LocaleProvider>(context, listen: false).locale.languageCode;
+    final cacheKey = 'vendor-type-$typeId-$currentLocale';
+
+    // Check cache first (unless forcing refresh)
+    if (_cachedVendorTypeData[cacheKey] != null && !forceRefresh) {
+      vendorTypeData = _cachedVendorTypeData[cacheKey];
+      _isLoading = false;
+      notifyListeners();
+      return;
+    }
 
     final url = '${ApiEndpoints.userByTypeBanner}$typeId';
 
@@ -31,29 +44,44 @@ class VendorByTypeProvider extends ChangeNotifier {
       final response = await _apiResponseHandler.getRequest(
         url,
         context: context,
+        queryParams: {'locale': currentLocale},
       );
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> responseData = json.decode(response.body);
+        final Map<String, dynamic> responseData = response.data;
         final VendorTypeBy vendorType = VendorTypeBy.fromJson(responseData);
 
         vendorTypeData = vendorType.data;
+        if (vendorType.data != null) {
+          _cachedVendorTypeData[cacheKey] = vendorType.data!; // Cache the data
+        }
         errorMessage = '';
       } else {
         errorMessage = 'Failed to load data: ${response.statusCode}';
-        throw Exception(errorMessage);
+
+        // Fallback to cached data if available
+        if (_cachedVendorTypeData[cacheKey] != null) {
+          vendorTypeData = _cachedVendorTypeData[cacheKey];
+        } else {
+          throw Exception(errorMessage);
+        }
       }
     } catch (error) {
       errorMessage = error.toString();
 
-      rethrow;
+      // Fallback to cached data if available
+      if (_cachedVendorTypeData[cacheKey] != null) {
+        vendorTypeData = _cachedVendorTypeData[cacheKey];
+      } else {
+        rethrow;
+      }
     } finally {
       _isLoading = false;
       notifyListeners();
     }
   }
 
-//       +++++++++++++++++++++++++++++++++++++++++++++++++  USER BY TYPE VIEW ALL ITEMS  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  // ++++++++++++++++++++++++++++++++++++++++++++++++  USER BY TYPE VIEW ALL ITEMS  +++++++++++++++++++++++++++++++++
   List<Vendor> _vendors = [];
   String _errorMessage = '';
   Pagination? _paginationUser;
@@ -62,45 +90,88 @@ class VendorByTypeProvider extends ChangeNotifier {
 
   List<Vendor> get vendors => _vendors;
 
-  Future<void> fetchVendors(BuildContext context,
-      {required int typeId,
-      String sortBy = 'default_sorting',
-      int page = 1,
-      int perPage = 12}) async {
+  String get errorMessageVendors => _errorMessage;
+
+  Pagination? get pagination => _paginationUser;
+
+  bool get isMoreLoading => _isMoreLoading;
+
+  // Cache for vendors list data (per page and locale)
+  final Map<String, VendorResponse> _cachedVendorsData = {};
+
+  Future<void> fetchVendors(
+    BuildContext context, {
+    required int typeId,
+    String sortBy = 'default_sorting',
+    int page = 1,
+    int perPage = 12,
+    bool forceRefresh = false,
+  }) async {
     if (page == 1) {
       userLoader = true;
-      notifyListeners();
     } else {
       _isMoreLoading = true;
+    }
+    notifyListeners();
+
+    final currentLocale = Provider.of<LocaleProvider>(context, listen: false).locale.languageCode;
+    final cacheKey = 'vendors-$typeId-$sortBy-$page-$perPage-$currentLocale';
+
+    // Check cache first for first page (unless forcing refresh)
+    if (page == 1 && _cachedVendorsData[cacheKey] != null && !forceRefresh) {
+      final cachedResponse = _cachedVendorsData[cacheKey]!;
+      _vendors = cachedResponse.records;
+      _paginationUser = cachedResponse.pagination;
+      _errorMessage = '';
+
+      userLoader = false;
+      _isMoreLoading = false;
       notifyListeners();
+      return;
     }
 
     try {
-      final url =
-          '${ApiEndpoints.userByTypeStores}?limit=$perPage&page=$page&type_id=$typeId&sort-by=$sortBy';
+      final url = '${ApiEndpoints.customerByType}/$typeId?limit=$perPage&page=$page&sort-by=$sortBy';
 
       final response = await _apiResponseHandler.getRequest(
         url,
         context: context,
+        queryParams: {'locale': currentLocale},
       );
 
-      // final response = await http.get(url);
-
       if (response.statusCode == 200) {
-        final Map<String, dynamic> responseData = json.decode(response.body);
+        final Map<String, dynamic> responseData = response.data;
         final vendorResponse = VendorResponse.fromJson(responseData['data']);
-        _paginationUser = vendorResponse.pagination;
         _errorMessage = '';
 
         if (page == 1) {
           _vendors = vendorResponse.records;
           _paginationUser = vendorResponse.pagination;
+          // Cache first page data
+          _cachedVendorsData[cacheKey] = vendorResponse;
         } else {
           _vendors.addAll(vendorResponse.records);
+          _paginationUser = vendorResponse.pagination;
+        }
+      } else {
+        _errorMessage = 'Failed to load data: ${response.statusCode}';
+
+        // Fallback to cached data if available for first page
+        if (page == 1 && _cachedVendorsData[cacheKey] != null) {
+          final cachedResponse = _cachedVendorsData[cacheKey]!;
+          _vendors = cachedResponse.records;
+          _paginationUser = cachedResponse.pagination;
         }
       }
     } catch (error) {
       _errorMessage = error.toString();
+
+      // Fallback to cached data if available for first page
+      if (page == 1 && _cachedVendorsData[cacheKey] != null) {
+        final cachedResponse = _cachedVendorsData[cacheKey]!;
+        _vendors = cachedResponse.records;
+        _paginationUser = cachedResponse.pagination;
+      }
     } finally {
       userLoader = false;
       _isMoreLoading = false;
@@ -108,5 +179,41 @@ class VendorByTypeProvider extends ChangeNotifier {
     }
   }
 
-//      ++++++++++++++++++++++++++++++++++++++++++
+  // Clear cache methods
+  void clearVendorTypeCache() {
+    _cachedVendorTypeData.clear();
+  }
+
+  void clearVendorTypeCacheForType(int typeId, String locale) {
+    final cacheKey = 'vendor-type-$typeId-$locale';
+    _cachedVendorTypeData.remove(cacheKey);
+  }
+
+  void clearVendorsCache() {
+    _cachedVendorsData.clear();
+  }
+
+  void clearVendorsCacheForType(int typeId, String locale) {
+    // Remove all cache entries for this typeId and locale
+    final keysToRemove = _cachedVendorsData.keys
+        .where(
+          (key) => key.contains('vendors-$typeId-') && key.contains('-$locale'),
+        )
+        .toList();
+
+    for (final key in keysToRemove) {
+      _cachedVendorsData.remove(key);
+    }
+  }
+
+  // Refresh method for locale changes
+  Future<void> refreshForLocaleChange(BuildContext context, int typeId) async {
+    await fetchVendorTypeById(typeId, context, forceRefresh: true);
+    await fetchVendors(
+      context,
+      typeId: typeId,
+      page: 1,
+      forceRefresh: true,
+    );
+  }
 }

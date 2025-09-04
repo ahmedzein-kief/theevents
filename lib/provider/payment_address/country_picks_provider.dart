@@ -1,83 +1,93 @@
-import 'dart:convert';
-
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/provider/api_response_handler.dart';
 import 'package:flutter/material.dart';
 
 class CountryModels {
-  // Change Null? to String?
-
   CountryModels({this.error, this.data, this.message});
 
-  CountryModels.fromJson(Map<String, dynamic> json) {
-    error = json['error'];
-    data = json['data'] != null ? Data.fromJson(json['data']) : null;
-    message = json['message']; // Assume message is of type String
+  factory CountryModels.fromJson(Map<String, dynamic> json) {
+    return CountryModels(
+      error: json['error'],
+      data: json['data'] != null
+          ? Data.fromApiList(json['data']) // adapt new API shape
+          : null,
+      message: json['message'],
+    );
   }
+
   bool? error;
   Data? data;
   String? message;
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = {};
-    data['error'] = error;
-    if (this.data != null) {
-      data['data'] = this.data!.toJson();
+    final Map<String, dynamic> result = {};
+    result['error'] = error;
+    if (data != null) {
+      result['data'] = data!.toJson();
     }
-    data['message'] = message;
-    return data;
+    result['message'] = message;
+    return result;
   }
 }
 
 class Data {
   Data({this.list, this.isMulti});
 
-  Data.fromJson(Map<String, dynamic> json) {
-    if (json['list'] != null) {
-      list = <CountryList>[];
-      json['list'].forEach((v) {
-        list!.add(CountryList.fromJson(v));
-      });
-    }
-    isMulti = json['is_multi'];
+  /// Adapt from new API where "data" is a list of country objects
+  factory Data.fromApiList(List<dynamic> apiList) {
+    return Data(
+      list: apiList.map((json) {
+        return CountryList.fromJson(json);
+      }).toList(),
+    );
   }
+
   List<CountryList>? list;
   bool? isMulti;
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = {};
+    final Map<String, dynamic> result = {};
     if (list != null) {
-      data['list'] = list!.map((v) => v.toJson()).toList();
+      result['list'] = list!.map((v) => v.toJson()).toList();
     }
-    data['is_multi'] = isMulti;
-    return data;
+    result['is_multi'] = isMulti;
+    return result;
   }
 }
 
 class CountryList {
-  CountryList({this.label, this.value, this.title});
+  CountryList({this.id, this.name, this.code, this.iso});
 
-  CountryList.fromJson(Map<String, dynamic> json) {
-    label = json['label'];
-    value = json['value'];
-    title = json['title'];
+  factory CountryList.fromJson(Map<String, dynamic> json) {
+    return CountryList(
+      id: json['id'] is String && json['id'].toString().isEmpty
+          ? null
+          : (json['id'] is int
+              ? json['id']
+              : int.tryParse(json['id'].toString())),
+      name: json['name'],
+      code: json['code'],
+      iso: json['iso'],
+    );
   }
-  String? label;
-  String? value;
-  String? title;
+
+  int? id;
+  String? name;
+  String? code;
+  String? iso;
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = {};
-    data['label'] = label;
-    data['value'] = value;
-    data['title'] = title;
-    return data;
+    return {
+      'id': id,
+      'name': name,
+      'code': code,
+      'iso': iso,
+    };
   }
 }
 
 Future<CountryModels?> fetchCountries(BuildContext context) async {
   final ApiResponseHandler apiResponseHandler = ApiResponseHandler();
-
   const url = ApiEndpoints.countryList;
 
   final response = await apiResponseHandler.getRequest(
@@ -86,7 +96,7 @@ Future<CountryModels?> fetchCountries(BuildContext context) async {
   );
 
   if (response.statusCode == 200) {
-    final jsonResponse = json.decode(response.body);
+    final jsonResponse = response.data;
     return CountryModels.fromJson(jsonResponse);
   } else {
     throw Exception('Failed to load country list');

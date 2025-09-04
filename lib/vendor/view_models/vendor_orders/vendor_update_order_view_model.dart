@@ -35,7 +35,7 @@ class VendorUpdateOrderViewModel with ChangeNotifier {
   Future<bool> vendorUpdateOrder(
       {required orderID,
       required String description,
-      required BuildContext context}) async {
+      required BuildContext context,}) async {
     try {
       setLoading(true);
       setApiResponse = ApiResponse.loading();
@@ -48,17 +48,17 @@ class VendorUpdateOrderViewModel with ChangeNotifier {
       final dynamic body = {'description': description};
 
       final CommonPostRequestModel response = await _myRepo.vendorUpdateOrder(
-          headers: headers, orderID: orderID.toString(), body: body);
+          headers: headers, orderID: orderID.toString(), body: body,);
       setApiResponse = ApiResponse.completed(response);
       AlertServices.showSuccessSnackBar(
           message: apiResponse.data?.message?.toString() ?? '',
-          context: context);
+          context: context,);
       setLoading(false);
       return true;
     } catch (error) {
       setApiResponse = ApiResponse.error(error.toString());
       AlertServices.showErrorSnackBar(
-          message: error.toString() ?? '', context: context);
+          message: error.toString() ?? '', context: context,);
       setLoading(false);
       return false;
     }

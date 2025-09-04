@@ -18,7 +18,7 @@ import 'package:provider/provider.dart';
 
 class VendorProductOverviewView extends StatefulWidget {
   const VendorProductOverviewView(
-      {super.key, this.overviewModel, required this.productType});
+      {super.key, this.overviewModel, required this.productType,});
   final String productType;
   final VendorProductOverviewModel? overviewModel;
 
@@ -300,7 +300,7 @@ class _VendorProductOverviewViewState extends State<VendorProductOverviewView>
                   left: kPadding,
                   right: kPadding,
                   top: viewInsets.top,
-                  bottom: viewInsets.bottom),
+                  bottom: viewInsets.bottom,),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -331,7 +331,7 @@ class _VendorProductOverviewViewState extends State<VendorProductOverviewView>
                         if (_priceSaleController.text.isNotEmpty) {
                           _showCurrentAppliedDiscountController.text =
                               calculateDiscountPercentage(_priceController.text,
-                                      _priceSaleController.text)
+                                      _priceSaleController.text,)
                                   .toString();
                         }
                       });
@@ -356,7 +356,7 @@ class _VendorProductOverviewViewState extends State<VendorProductOverviewView>
                       setState(() {
                         _showCurrentAppliedDiscountController.text =
                             calculateDiscountPercentage(_priceController.text,
-                                    _priceSaleController.text)
+                                    _priceSaleController.text,)
                                 .toString();
                       });
                     },
@@ -380,7 +380,7 @@ class _VendorProductOverviewViewState extends State<VendorProductOverviewView>
                             ),
                             TextSpan(
                               text: Validator.formatToTwoDecimalPlaces(
-                                  _showCurrentAppliedDiscountController.text),
+                                  _showCurrentAppliedDiscountController.text,),
                               style: const TextStyle(
                                 fontSize: 12,
                                 color: Colors.grey,
@@ -416,7 +416,7 @@ class _VendorProductOverviewViewState extends State<VendorProductOverviewView>
                           style: const TextStyle(
                               color: AppColors.lightCoral,
                               decoration: TextDecoration.none,
-                              fontSize: 13),
+                              fontSize: 13,),
                         ),
                       ),
                     ],
@@ -586,7 +586,7 @@ class _VendorProductOverviewViewState extends State<VendorProductOverviewView>
                                   .map(
                                     (element) => Padding(
                                       padding: EdgeInsets.symmetric(
-                                          horizontal: kExtraSmallPadding),
+                                          horizontal: kExtraSmallPadding,),
                                       child: VendorCustomRadioListTile(
                                         value: element.value,
                                         groupValue: _stockStatusController.text,
@@ -629,7 +629,7 @@ class _VendorProductOverviewViewState extends State<VendorProductOverviewView>
                             });
                             validateDateAndAssignErrors(
                                 _fromDateController.text,
-                                _toDateController.text);
+                                _toDateController.text,);
                             if ((_formKey.currentState?.validate() ?? false) &&
                                 startDateErrorText == null &&
                                 endDateErrorText == null &&
@@ -657,7 +657,7 @@ Widget texFieldPrefix(
         text,
         textStyle,
         onTap,
-        tooltipMessage}) =>
+        tooltipMessage,}) =>
     Material(
       color: Colors.transparent,
       child: Tooltip(

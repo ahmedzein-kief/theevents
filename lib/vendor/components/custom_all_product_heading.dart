@@ -25,7 +25,7 @@ class CustomAllProductHeading extends StatelessWidget {
             padding: EdgeInsets.only(
                 top: screenHeight * 0.01,
                 left: screenWidth * 0.03,
-                right: screenHeight * 0.02),
+                right: screenHeight * 0.02,),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisSize: MainAxisSize.max,
@@ -34,22 +34,22 @@ class CustomAllProductHeading extends StatelessWidget {
                 Text(
                   text1,
                   style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.bold),
+                      fontSize: 16, fontWeight: FontWeight.bold,),
                 ),
                 Text(
                   text2,
                   style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.bold),
+                      fontSize: 16, fontWeight: FontWeight.bold,),
                 ),
                 Text(
                   text3,
                   style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.bold),
+                      fontSize: 16, fontWeight: FontWeight.bold,),
                 ),
                 Text(
                   text4,
                   style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.bold),
+                      fontSize: 16, fontWeight: FontWeight.bold,),
                 ),
               ],
             ),

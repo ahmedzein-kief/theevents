@@ -1,3 +1,4 @@
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/provider/auth_provider/user_auth_provider.dart';
 import 'package:event_app/views/auth_screens/auth_page_view.dart';
@@ -7,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:provider/provider.dart';
 
+import '../../core/constants/app_strings.dart';
 import '../../core/styles/custom_text_styles.dart';
 import '../../core/widgets/custom_auth_views/custom_auth_button.dart';
 import '../../core/widgets/custom_auth_views/custom_text_fields.dart';
@@ -34,7 +36,7 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen> {
           child: SingleChildScrollView(
             child: Padding(
               padding: EdgeInsets.only(
-                  right: screenWidth * 0.05, left: screenWidth * 0.05),
+                  right: screenWidth * 0.05, left: screenWidth * 0.05,),
               child: Stack(
                 children: [
                   Container(
@@ -55,16 +57,16 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen> {
                       child: Padding(
                         padding: EdgeInsets.only(
                             left: screenWidth * 0.05,
-                            right: screenWidth * 0.05),
+                            right: screenWidth * 0.05,),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Padding(
                               padding:
                                   EdgeInsets.only(top: screenHeight * 0.04),
-                              child: Text('Forgot Password?',
+                              child: Text(AppStrings.forgetPassword.tr,
                                   textAlign: TextAlign.center,
-                                  style: textStyleLogoutTop(context)),
+                                  style: textStyleLogoutTop(context),),
                             ),
                             Padding(
                               padding:
@@ -81,21 +83,21 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen> {
                                         'assets/emailicon.png',
                                         color: Theme.of(context)
                                             .colorScheme
-                                            .onPrimary),
+                                            .onPrimary,),
                                     formFieldValidator: (value) {
                                       if (value == null || value.isEmpty) {
-                                        return 'Please enter your email';
+                                        return AppStrings.emailRequired.tr;
                                       }
                                       return null;
                                     },
-                                    hintText: 'Email Address',
+                                    hintText: AppStrings.emailAddress.tr,
                                   ),
                                   Consumer<AuthProvider>(
                                     builder: (context, provider, child) =>
                                         Padding(
                                       padding: EdgeInsets.symmetric(
                                           vertical: screenHeight * 0.01,
-                                          horizontal: screenWidth * 0.03),
+                                          horizontal: screenWidth * 0.03,),
                                       child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.center,
@@ -118,7 +120,7 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen> {
                                           //   },
                                           // ),
                                           CustomAuthButton(
-                                            title: 'Send',
+                                            title: AppStrings.send.tr,
                                             isLoading: provider
                                                 .isLoading, // Show loading indicator when provider is loading
                                             onPressed: () {
@@ -128,7 +130,7 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen> {
                                                 provider
                                                     .forgotPassword(
                                                         _emailController.text,
-                                                        context)
+                                                        context,)
                                                     .then((_) {
                                                   // if (provider.message != null) {
                                                   //   if (provider.errors != null) {
@@ -151,7 +153,7 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen> {
                                             child: Padding(
                                               padding: EdgeInsets.only(
                                                   top: screenHeight * 0.1,
-                                                  bottom: screenHeight * 0.02),
+                                                  bottom: screenHeight * 0.02,),
                                               child: GestureDetector(
                                                 onTap: () {
                                                   PersistentNavBarNavigator
@@ -175,19 +177,22 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen> {
                                                       MainAxisAlignment.center,
                                                   children: [
                                                     Text(
-                                                      'Do not have account yet?  ',
+                                                      AppStrings
+                                                          .doNotHaveAccountYet
+                                                          .tr,
                                                       style:
                                                           textStyleLogoutNoAC(
-                                                              context),
+                                                              context,),
                                                     ),
                                                     Text(
-                                                      'Create one now',
+                                                      AppStrings
+                                                          .createOneNow.tr,
                                                       style: GoogleFonts.inter(
                                                           fontSize: 12,
                                                           fontWeight:
                                                               FontWeight.w200,
                                                           color: AppColors
-                                                              .lightCoral),
+                                                              .lightCoral,),
                                                     ),
                                                   ],
                                                 ),
@@ -214,7 +219,7 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen> {
                         Navigator.pop(context);
                       },
                       child: Icon(CupertinoIcons.xmark,
-                          color: Theme.of(context).colorScheme.onPrimary),
+                          color: Theme.of(context).colorScheme.onPrimary,),
                     ),
                   ),
                 ],

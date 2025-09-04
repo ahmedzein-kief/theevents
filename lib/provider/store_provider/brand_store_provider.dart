@@ -1,8 +1,9 @@
-import 'dart:convert';
+import 'dart:developer';
 
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/provider/api_response_handler.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:logger/logger.dart';
 
 class StoreModel {
   StoreModel({required this.error, this.data, this.message});
@@ -84,9 +85,10 @@ class StoreProvider with ChangeNotifier {
     String slug,
     BuildContext context,
   ) async {
-    // final url = 'https://api.staging.theevents.ae/api/v1/stores/$slug';
+    // final url = 'https://apistaging.theevents.ae/api/v1/stores/$slug';
     const urlApi = ApiEndpoints.brandStore;
     final url = '$urlApi$slug';
+    log(url);
     isLoading = true;
     notifyListeners();
 
@@ -97,9 +99,12 @@ class StoreProvider with ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+        final data = response.data;
         storeModel = StoreModel.fromJson(data);
       } else {
+        // Handle error
+        Logger()
+            .e('Failed to load store ${response.statusCode} ${response.data}');
         throw Exception('Failed to load store');
       }
     } finally {

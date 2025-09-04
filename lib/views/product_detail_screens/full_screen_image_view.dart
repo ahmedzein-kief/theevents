@@ -1,9 +1,13 @@
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
 
+import '../../core/constants/app_strings.dart';
+
 class FullScreenImageView extends StatelessWidget {
   const FullScreenImageView({super.key, required this.imageUrl});
+
   final String? imageUrl;
 
   @override
@@ -13,7 +17,7 @@ class FullScreenImageView extends StatelessWidget {
           backgroundColor: Colors.black,
           leading: IconButton(
             icon: const Icon(CupertinoIcons.chevron_left_circle,
-                color: Colors.white),
+                color: Colors.white,),
             onPressed: () {
               Navigator.of(context).pop();
             },
@@ -29,10 +33,10 @@ class FullScreenImageView extends StatelessWidget {
                 animating: true,
               ),
             ),
-            errorBuilder: (context, error, stackTrace) => const Center(
+            errorBuilder: (context, error, stackTrace) => Center(
               child: Text(
-                'Failed to load image',
-                style: TextStyle(color: Colors.white),
+                AppStrings.failedToLoadImage.tr,
+                style: const TextStyle(color: Colors.white),
               ),
             ),
           ),

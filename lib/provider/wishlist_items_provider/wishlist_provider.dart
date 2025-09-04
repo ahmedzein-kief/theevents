@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/provider/api_response_handler.dart';
 import 'package:flutter/cupertino.dart';
@@ -37,7 +35,7 @@ class WishlistProvider with ChangeNotifier {
     );
 
     if (response.statusCode == 200) {
-      _wishlist = WishlistModel.fromJson(json.decode(response.body));
+      _wishlist = WishlistModel.fromJson(response.data);
       notifyListeners();
     } else {}
 
@@ -56,23 +54,26 @@ class WishlistProvider with ChangeNotifier {
     notifyListeners();
 
     final url = '${ApiEndpoints.wishList}$itemId';
-    final headers = {'Authorization': 'Bearer $token'};
+    final headers = {'Authorization': token};
 
-    final response =
-        await _apiResponseHandler.deleteRequest(url, headers: headers);
+    final response = await _apiResponseHandler.deleteRequest(url, headers: headers);
 
     if (response.statusCode == 200) {
-      final responseData = json.decode(response.body);
+      final responseData = response.data;
       final wishlistResponse = WishlistResponseModels.fromJson(responseData);
       if (wishlistResponse.error == null || wishlistResponse.error == false) {
         // Re-fetch the wishlist after deletion
         await fetchWishlist(token, context);
         CustomSnackbar.showSuccess(
-            context, wishlistResponse.message ?? 'Item deleted successfully.');
+          context,
+          wishlistResponse.message ?? 'Item deleted successfully.',
+        );
         notifyListeners();
       } else {
         CustomSnackbar.showError(
-            context, wishlistResponse.message ?? 'Failed to delete item.');
+          context,
+          wishlistResponse.message ?? 'Failed to delete item.',
+        );
       }
     } else {
       CustomSnackbar.showError(context, 'Failed to delete wishlist item.');

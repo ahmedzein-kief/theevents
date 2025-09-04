@@ -160,7 +160,7 @@ class Prices {
       {this.frontSalePrice,
       this.price,
       this.frontSalePriceWithTaxes,
-      this.priceWithTaxes});
+      this.priceWithTaxes,});
 
   Prices.fromJson(Map<String, dynamic> json) {
     frontSalePrice = json['front_sale_price'];

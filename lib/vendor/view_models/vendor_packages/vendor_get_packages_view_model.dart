@@ -55,7 +55,7 @@ class VendorGetPackagesViewModel with ChangeNotifier {
       if (_currentPage <= _lastPage) {
         setApiResponse = ApiResponse.loading();
         final VendorGetProductsModel response = await _myRepo.vendorGetPackages(
-            headers: headers, queryParams: queryParams);
+            headers: headers, queryParams: queryParams,);
         setLastPage(response);
         resetList(response);
         setApiResponse = ApiResponse.completed(response);

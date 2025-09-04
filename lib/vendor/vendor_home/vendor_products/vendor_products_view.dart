@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/helper/mixins/media_query_mixin.dart';
 import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/core/styles/app_sizes.dart';
@@ -20,7 +21,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/constants/vendor_app_strings.dart';
 import '../../components/generics/debouced_search.dart';
+import 'widgets/rejection_history_dialog.dart'; // Add this import
 
 class VendorProductsView extends StatefulWidget {
   const VendorProductsView({super.key});
@@ -29,8 +32,7 @@ class VendorProductsView extends StatefulWidget {
   State<VendorProductsView> createState() => _VendorProductsViewState();
 }
 
-class _VendorProductsViewState extends State<VendorProductsView>
-    with MediaQueryMixin {
+class _VendorProductsViewState extends State<VendorProductsView> with MediaQueryMixin {
   /// To show modal progress hud
   bool _isProcessing = false;
 
@@ -50,8 +52,7 @@ class _VendorProductsViewState extends State<VendorProductsView>
 
   Future _onRefresh() async {
     try {
-      final provider =
-          Provider.of<VendorGetProductsViewModel>(context, listen: false);
+      final provider = Provider.of<VendorGetProductsViewModel>(context, listen: false);
 
       /// clear list on refresh
       provider.clearList();
@@ -63,10 +64,8 @@ class _VendorProductsViewState extends State<VendorProductsView>
 
   Future<void> _loadMoreData() async {
     // Load more data here
-    if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent) {
-      final provider =
-          Provider.of<VendorGetProductsViewModel>(context, listen: false);
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent) {
+      final provider = Provider.of<VendorGetProductsViewModel>(context, listen: false);
       if (provider.apiResponse.status != ApiStatus.LOADING) {
         await provider.vendorGetProducts(search: _searchController.text);
       }
@@ -96,12 +95,13 @@ class _VendorProductsViewState extends State<VendorProductsView>
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        backgroundColor: AppColors.bgColor,
         body: Utils.modelProgressHud(
+          context: context,
           processing: _isProcessing,
           child: Utils.pageRefreshIndicator(
             onRefresh: _onRefresh,
             child: _buildUi(context),
+            context: context,
           ),
         ),
       );
@@ -131,10 +131,8 @@ class _VendorProductsViewState extends State<VendorProductsView>
                       VendorDataListBuilder(
                         scrollController: _scrollController,
                         listLength: provider.list.length,
-                        loadingMoreData:
-                            provider.apiResponse.status == ApiStatus.LOADING,
-                        contentBuilder: (context) =>
-                            _buildRecordsList(provider: provider),
+                        loadingMoreData: provider.apiResponse.status == ApiStatus.LOADING,
+                        contentBuilder: (context) => _buildRecordsList(provider: provider),
                       ),
                     ],
                   );
@@ -145,8 +143,7 @@ class _VendorProductsViewState extends State<VendorProductsView>
         ),
       );
 
-  Widget _buildRecordsList({required VendorGetProductsViewModel provider}) =>
-      ListView.builder(
+  Widget _buildRecordsList({required VendorGetProductsViewModel provider}) => ListView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         itemCount: provider.list.length,
@@ -155,12 +152,12 @@ class _VendorProductsViewState extends State<VendorProductsView>
           return Column(
             children: [
               CustomRecordListTile(
+                productId: product.id,
                 onTap: () => _onRowTap(rowData: product, context: context),
                 imageAddress: product.image.toString(),
                 multiplePrice: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
-                  mainAxisSize: MainAxisSize
-                      .min, // Prevents Column from taking full height
+                  mainAxisSize: MainAxisSize.min, // Prevents Column from taking full height
                   children: [
                     if ((product.price ?? 0) > (product.salePrice ?? 0)) ...{
                       Text(
@@ -169,9 +166,7 @@ class _VendorProductsViewState extends State<VendorProductsView>
                       ),
                       Text(
                         product.priceFormat?.toString() ?? '--',
-                        style: dataRowTextStyle()
-                            .copyWith(color: Colors.red)
-                            .copyWith(
+                        style: dataRowTextStyle().copyWith(color: Colors.red).copyWith(
                               decoration: TextDecoration.lineThrough,
                               decorationColor: Colors.red,
                             ),
@@ -186,10 +181,12 @@ class _VendorProductsViewState extends State<VendorProductsView>
                     },
                   ],
                 ),
-                status: '${product.status?.label.toString()}' ?? '',
+                status: product.status?.label,
                 statusTextStyle: TextStyle(
-                    color: AppColors.getProductPackageStatusColor(
-                        product.status?.value.toString())),
+                  color: AppColors.getProductPackageStatusColor(
+                    product.status?.value.toString(),
+                  ),
+                ),
                 title: product.id.toString(),
                 subtitle: product.name.toString(),
                 actionCell: VendorActionCell(
@@ -212,12 +209,73 @@ class _VendorProductsViewState extends State<VendorProductsView>
                     _onDeleteRecord(rowData: product);
                   },
                 ),
+                // Updated onRejectionHistoryTap to show the dialog
+                onRejectionHistoryTap: (productId) => _showRejectionHistoryDialog(
+                  productId: productId,
+                  productName: product.name ?? 'Unknown Product',
+                  provider: provider,
+                ),
               ),
               kSmallSpace,
             ],
           );
         },
       );
+
+  /// Method to show rejection history dialog
+  Future<void> _showRejectionHistoryDialog({
+    required String productId,
+    required String productName,
+    required VendorGetProductsViewModel provider,
+  }) async {
+    try {
+      // Set processing to true to show loading indicator
+      setProcessing(true);
+
+      // Load rejection history
+      await provider.loadRejectionHistory(productId);
+
+      // Set processing to false to hide loading indicator
+      setProcessing(false);
+
+      // Check for errors
+      if (provider.error != null) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error loading rejection history: ${provider.error}'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+        return;
+      }
+
+      // Show rejection history dialog
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (context) => RejectionHistoryDialog(
+            productName: productName,
+            rejectionHistory: provider.rejectionHistory,
+          ),
+        );
+      }
+    } catch (e) {
+      // Hide loading indicator
+      setProcessing(false);
+
+      // Show error message
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
 
   /// Tool Bar
   Widget _toolBar() => Column(
@@ -234,12 +292,10 @@ class _VendorProductsViewState extends State<VendorProductsView>
                     }
                   },
                   textEditingController: _searchController,
-                  onChanged: (value) =>
-                      debouncedSearch<VendorGetProductsViewModel>(
+                  onChanged: (value) => debouncedSearch<VendorGetProductsViewModel>(
                     context: context,
                     value: value,
-                    providerGetter: (context) =>
-                        context.read<VendorGetProductsViewModel>(),
+                    providerGetter: (context) => context.read<VendorGetProductsViewModel>(),
                     refreshFunction: _onRefresh,
                   ),
                 ),
@@ -261,7 +317,9 @@ class _VendorProductsViewState extends State<VendorProductsView>
                         ),
                       ),
                       padding: EdgeInsets.symmetric(
-                          horizontal: kPadding, vertical: kPadding),
+                        horizontal: kPadding,
+                        vertical: kPadding,
+                      ),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -279,11 +337,13 @@ class _VendorProductsViewState extends State<VendorProductsView>
                               GestureDetector(
                                 onTap: () {
                                   Navigator.pop(context);
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (context) =>
-                                          VendorCreatePhysicalProductView(
-                                              productType:
-                                                  VendorProductType.physical)));
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) => VendorCreatePhysicalProductView(
+                                        productType: VendorProductType.physical,
+                                      ),
+                                    ),
+                                  );
                                 },
                                 child: const Row(
                                   children: [
@@ -304,19 +364,20 @@ class _VendorProductsViewState extends State<VendorProductsView>
                                 ),
                               ),
                               const SizedBox(
-                                  height: 10), // Space before the divider
+                                height: 10,
+                              ), // Space before the divider
                               const Divider(color: Colors.grey, thickness: 1),
                               const SizedBox(
-                                  height: 10), // Space after the divider
+                                height: 10,
+                              ), // Space after the divider
                               GestureDetector(
                                 onTap: () {
                                   Navigator.pop(context);
                                   Navigator.of(context).push(
                                     MaterialPageRoute(
-                                      builder: (context) =>
-                                          VendorCreatePhysicalProductView(
-                                              productType:
-                                                  VendorProductType.digital),
+                                      builder: (context) => VendorCreatePhysicalProductView(
+                                        productType: VendorProductType.digital,
+                                      ),
                                     ),
                                   );
                                 },
@@ -350,36 +411,23 @@ class _VendorProductsViewState extends State<VendorProductsView>
               ),
             ],
           ),
-          // kSmallSpace,
-          // Wrap(
-          //   alignment: WrapAlignment.start,
-          //   spacing: kSmallPadding,
-          //   runSpacing: kSmallPadding,
-          //   children: [
-          //
-          //     // VendorToolbarWidgets.vendorReloadButton(
-          //     //   onTap: () async{
-          //     //     await _onRefresh();
-          //     //   },
-          //     //   isLoading: false,
-          //     // ),
-          //   ],
-          // ),
         ],
       );
 
-  void _onRowTap(
-      {required BuildContext context, required GetProductRecords rowData}) {
+  void _onRowTap({
+    required BuildContext context,
+    required GetProductRecords rowData,
+  }) {
     /// showing through bottom sheet
     showModalBottomSheet(
       context: context,
       builder: (context) => BottomSheet(
-        // dragHandleColor: AppColors.lightCoral,
         onClosing: () {},
         builder: (context) => Container(
           decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(kCardRadius)),
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(kCardRadius),
+          ),
           child: SafeArea(
             child: Padding(
               padding: EdgeInsets.all(kSmallPadding),
@@ -390,19 +438,23 @@ class _VendorProductsViewState extends State<VendorProductsView>
                     Container(
                       height: 200,
                       decoration: BoxDecoration(
-                          image: DecorationImage(
-                              image: NetworkImage(rowData.image.toString()))),
+                        image: DecorationImage(
+                          image: NetworkImage(rowData.image.toString()),
+                        ),
+                      ),
                     ),
-                    buildRow('ID', rowData.id?.toString()),
-                    buildRow('Name', rowData.name?.toString()),
+                    buildRow(VendorAppStrings.id.tr, rowData.id?.toString()),
+                    buildRow(
+                      VendorAppStrings.name.tr,
+                      rowData.name?.toString(),
+                    ),
                     Wrap(
                       spacing: 8.0, // Horizontal space between children
                       runSpacing: 4.0, // Vertical space between lines
                       children: [
-                        if ((rowData.price ?? 0) >
-                            (rowData.salePrice ?? 0)) ...{
+                        if ((rowData.price ?? 0) > (rowData.salePrice ?? 0)) ...{
                           buildRow(
-                            'Price',
+                            VendorAppStrings.price.tr,
                             rowData.salePriceFormat?.toString(),
                             valueWidget: Expanded(
                               child: Wrap(
@@ -414,11 +466,8 @@ class _VendorProductsViewState extends State<VendorProductsView>
                                   kMinorSpace,
                                   Text(
                                     rowData.priceFormat?.toString() ?? '',
-                                    style: detailsDescriptionStyle
-                                        .copyWith(color: Colors.red)
-                                        .copyWith(
-                                          decoration:
-                                              TextDecoration.lineThrough,
+                                    style: detailsDescriptionStyle.copyWith(color: Colors.red).copyWith(
+                                          decoration: TextDecoration.lineThrough,
                                           decorationColor: Colors.red,
                                         ),
                                   ),
@@ -427,22 +476,32 @@ class _VendorProductsViewState extends State<VendorProductsView>
                             ),
                           ),
                         } else ...{
-                          buildRow('Price', rowData.priceFormat?.toString()),
+                          buildRow(
+                            VendorAppStrings.price.tr,
+                            rowData.priceFormat?.toString(),
+                          ),
                         },
                       ],
                     ),
-                    buildRow('Quantity', rowData.quantity?.toString()),
-                    buildRow('SKU', rowData.sku?.toString()),
-                    buildRow('Order', rowData.order?.toString()),
-                    buildRow('Created At', rowData.createdAt?.toString()),
+                    buildRow(
+                      VendorAppStrings.quantity.tr,
+                      rowData.quantity?.toString(),
+                    ),
+                    buildRow(VendorAppStrings.sku.tr, rowData.sku?.toString()),
+                    buildRow(
+                      VendorAppStrings.order.tr,
+                      rowData.order?.toString(),
+                    ),
+                    buildRow(
+                      VendorAppStrings.createdAt.tr,
+                      rowData.createdAt?.toString(),
+                    ),
                     buildStatusRow(
                       label: 'Status',
                       buttonText: rowData.status?.label?.toString() ?? '',
-                      color: AppColors.getProductPackageStatusColor(rowData
-                          .status?.value
-                          ?.toString()
-                          .toLowerCase()
-                          .trim()),
+                      color: AppColors.getProductPackageStatusColor(
+                        rowData.status?.value?.toString().toLowerCase().trim(),
+                      ),
                     ),
                   ],
                 ),
@@ -460,8 +519,7 @@ class _VendorProductsViewState extends State<VendorProductsView>
       onDelete: () async {
         _setDeletionProcessing(rowData: rowData, processing: true);
         Navigator.pop(context);
-        final VendorGetProductsViewModel provider =
-            Provider.of<VendorGetProductsViewModel>(context, listen: false);
+        final VendorGetProductsViewModel provider = Provider.of<VendorGetProductsViewModel>(context, listen: false);
         final result = await context
             .read<VendorDeleteProductViewModel>()
             .vendorDeleteProduct(productID: rowData.id, context: context);
@@ -478,8 +536,10 @@ class _VendorProductsViewState extends State<VendorProductsView>
   }
 
   /// maintain the deletion indicator visibility by calling setState.
-  void _setDeletionProcessing(
-      {required GetProductRecords rowData, required bool processing}) {
+  void _setDeletionProcessing({
+    required GetProductRecords rowData,
+    required bool processing,
+  }) {
     setState(() {
       rowData.isDeleting = processing;
       // setProcessing(processing); /// To show model progress hud. toggle this if don't want to show progress hud.

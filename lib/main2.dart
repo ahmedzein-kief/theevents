@@ -23,7 +23,6 @@ import 'package:event_app/provider/information_icons_provider/gift_card_provider
 import 'package:event_app/provider/information_icons_provider/new_products_provider.dart';
 import 'package:event_app/provider/login_profile_provider/change_password.dart';
 import 'package:event_app/provider/login_profile_provider/profile_update.dart';
-import 'package:event_app/provider/navigation_service.dart';
 import 'package:event_app/provider/orders_provider/order_data_provider.dart';
 import 'package:event_app/provider/payment_address/create_address_provider.dart';
 import 'package:event_app/provider/payment_address/customer_address.dart';
@@ -98,7 +97,7 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider(create: (_) => FeaturedBrandsProvider()),
           ChangeNotifierProvider(create: (_) => FeaturedBrandsItemsProvider()),
           ChangeNotifierProvider(
-              create: (_) => FeaturedCategoriesDetailProvider()),
+              create: (_) => FeaturedCategoriesDetailProvider(),),
           ChangeNotifierProvider(create: (_) => HomePageProvider()),
           ChangeNotifierProvider(create: (_) => EventBazaarProvider()),
           ChangeNotifierProvider(create: (_) => FreshPicksProvider()),
@@ -121,7 +120,7 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider(create: (_) => StoreProvider()),
           ChangeNotifierProvider(create: (_) => AddressProvider()),
           ChangeNotifierProvider(
-              create: (_) => PaymentMethodProviderGiftCard()),
+              create: (_) => PaymentMethodProviderGiftCard(),),
           ChangeNotifierProvider(create: (_) => EventsBrandProvider()),
           ChangeNotifierProvider(create: (_) => EventsBrandProductProvider()),
           ChangeNotifierProvider(create: (_) => ChangePasswordProvider()),
@@ -133,7 +132,7 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider(create: (_) => UserOrderProvider()),
           ChangeNotifierProvider(create: (_) => CheckoutProvider()),
           ChangeNotifierProvider(
-              create: (_) => SubMitCheckoutInformationProvider()),
+              create: (_) => SubMitCheckoutInformationProvider(),),
           ChangeNotifierProvider(create: (_) => OrderDataProvider()),
           ChangeNotifierProvider(create: (_) => VendorSignUpProvider()),
 
@@ -150,9 +149,9 @@ class MyApp extends StatelessWidget {
           /// vendor orders
           ChangeNotifierProvider(create: (_) => VendorGetOrdersViewModel()),
           ChangeNotifierProvider(
-              create: (_) => VendorGetOrderDetailsViewModel()),
+              create: (_) => VendorGetOrderDetailsViewModel(),),
           ChangeNotifierProvider(
-              create: (_) => VendorGenerateOrderInvoiceViewModel()),
+              create: (_) => VendorGenerateOrderInvoiceViewModel(),),
           ChangeNotifierProvider(create: (_) => VendorOrderReturnsViewModel()),
           ChangeNotifierProvider(create: (_) => VendorWithdrawalsViewModel()),
           ChangeNotifierProvider(create: (_) => VendorReviewsViewModel()),
@@ -161,7 +160,6 @@ class MyApp extends StatelessWidget {
         ],
         child: Consumer<ThemeNotifier>(
           builder: (context, theme, child) {
-            NavigationService().setContext(context);
             return AnnotatedRegion<SystemUiOverlayStyle>(
               value: SystemUiOverlayStyle(
                 statusBarIconBrightness: Brightness.light,
@@ -213,7 +211,7 @@ ThemeData lightTheme = ThemeData(
       backgroundColor: AppColors.bgColor,
       elevation: 0.5,
       shadowColor: Colors.grey,
-      titleTextStyle: TextStyle(color: Colors.black)),
+      titleTextStyle: TextStyle(color: Colors.black),),
 );
 
 ThemeData darkTheme = ThemeData(
@@ -228,13 +226,13 @@ ThemeData darkTheme = ThemeData(
   textSelectionTheme: const TextSelectionThemeData(
       cursorColor: AppColors.peachyPink,
       selectionColor: AppColors.peachyPink,
-      selectionHandleColor: AppColors.peachyPink),
+      selectionHandleColor: AppColors.peachyPink,),
   bottomNavigationBarTheme: BottomNavigationBarThemeData(
-      backgroundColor: Colors.grey.withOpacity(0.5)),
+      backgroundColor: Colors.grey.withOpacity(0.5),),
   scaffoldBackgroundColor: Colors.black,
   appBarTheme: const AppBarTheme(
       backgroundColor: Colors.black,
       elevation: 0.5,
       shadowColor: AppColors.lightCoral,
-      titleTextStyle: TextStyle(color: Colors.white)),
+      titleTextStyle: TextStyle(color: Colors.white),),
 );

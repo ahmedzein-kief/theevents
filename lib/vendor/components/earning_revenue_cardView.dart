@@ -46,7 +46,7 @@ class EarningsRevenueCard extends StatelessWidget {
                   ],
                 ),
                 padding: const EdgeInsets.all(
-                    4), // Increased padding for better spacing
+                    4,), // Increased padding for better spacing
                 child: Row(
                   children: [
                     Icon(icon),

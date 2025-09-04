@@ -12,48 +12,50 @@ class AppCustomButton extends StatelessWidget {
     this.isLoading = false,
     this.isChecked = true,
     this.icon,
+    this.darkModeColor, // Optional custom color for dark mode
   });
+
   final String title;
   final VoidCallback onPressed;
   final IconData? icon;
   final bool isLoading;
   final bool isChecked;
+  final Color? darkModeColor; // Custom color for dark mode
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.sizeOf(context).width;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
     return GestureDetector(
-      onTap: isLoading
-          ? null
-          : isChecked
-              ? onPressed
-              : null,
+      onTap: isLoading || !isChecked ? null : onPressed,
       child: IntrinsicWidth(
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.02),
           alignment: Alignment.center,
           height: 45,
-          // Fixed height for the button
           constraints: BoxConstraints(minWidth: screenWidth * 0.4),
-          // Set a minimum width for the button
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [AppColors.darkGray, AppColors.darkAshBrown],
-            ),
-            color: Theme.of(context).colorScheme.onPrimary,
+            color: isDark ? darkModeColor ?? AppColors.lightCoral : null,
+            gradient: isDark
+                ? null
+                : const LinearGradient(
+                    colors: [AppColors.darkGray, AppColors.darkAshBrown],
+                  ),
+            borderRadius: BorderRadius.circular(8),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min, // Keep width as per content
+            mainAxisSize: MainAxisSize.min,
             children: [
               if (isLoading)
                 SizedBox(
-                  width: 20, // Size of the loader
+                  width: 20,
                   height: 20,
                   child: LoadingAnimationWidget.stretchedDots(
-                    color: Theme.of(context).colorScheme.primary,
+                    color: theme.colorScheme.primary,
                     size: 25,
                   ),
                 )
@@ -65,15 +67,17 @@ class AppCustomButton extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
                     softWrap: true,
-                    style: addToCartText(context),
+                    style: addToCartText(context).copyWith(
+                      color: isDark ? Colors.white : Colors.white, // Changed text color for dark mode
+                    ),
                   ),
                 ),
               if (icon != null && !isLoading) ...[
-                const SizedBox(width: 8), // Space between text and icon
+                const SizedBox(width: 8),
                 Icon(
                   icon,
-                  color: Colors.white,
-                  size: 18, // Adjust icon size as needed
+                  color: isDark ? Colors.white : Colors.white, // Changed icon color for dark mode
+                  size: 18,
                 ),
               ],
             ],

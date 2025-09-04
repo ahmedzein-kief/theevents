@@ -14,10 +14,11 @@ class CustomMultiselectDropdown extends StatelessWidget {
     this.onSelectionChanged,
     this.isSearchEnabled = false,
   });
+
   final dynamic dropdownItems;
   final dynamic dropdownController;
   final String hintText;
-  final Function(dynamic)? onSelectionChanged;
+  final void Function(List selectedItems)? onSelectionChanged;
   final bool isSearchEnabled;
 
   @override
@@ -47,12 +48,14 @@ class CustomMultiselectDropdown extends StatelessWidget {
           selectedTextColor: Colors.white,
         ),
         chipDecoration: ChipDecoration(
-            backgroundColor: AppColors.lightCoral,
-            borderRadius: BorderRadius.circular(3),
-            labelStyle: const TextStyle(color: Colors.white, fontSize: 15)),
+          backgroundColor: AppColors.lightCoral,
+          borderRadius: BorderRadius.circular(3),
+          labelStyle: const TextStyle(color: Colors.white, fontSize: 15),
+        ),
         searchDecoration: SearchFieldDecoration(
           border: InputBordersHub.getOutlinedInputBorder(
-              borderColor: AppColors.success),
+            borderColor: AppColors.success,
+          ),
           focusedBorder: InputBordersHub.getOutlinedInputBorder(),
         ),
         items: dropdownItems,

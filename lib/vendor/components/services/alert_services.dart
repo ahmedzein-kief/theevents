@@ -5,7 +5,7 @@ import '../../../core/styles/app_colors.dart';
 
 class AlertServices {
   static void showErrorSnackBar(
-      {required String message, required BuildContext context}) {
+      {required String message, required BuildContext context,}) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         backgroundColor: Colors.red,
@@ -23,7 +23,7 @@ class AlertServices {
   }
 
   static void showSuccessSnackBar(
-      {required String message, required BuildContext context}) {
+      {required String message, required BuildContext context,}) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         backgroundColor: AppColors.success,

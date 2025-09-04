@@ -2,15 +2,19 @@ import 'package:flutter/material.dart';
 
 import '../../../core/styles/app_colors.dart';
 
+@immutable
 class SimpleCard extends StatelessWidget {
-  SimpleCard(
+  const SimpleCard(
       {super.key,
       this.borderRadius,
       required this.expandedContent,
-      this.expandedContentPadding});
+      this.expandedContentPadding,
+      this.color,});
+
   final Widget expandedContent;
-  EdgeInsets? expandedContentPadding;
+  final EdgeInsets? expandedContentPadding;
   final double? borderRadius;
+  final Color? color;
 
   @override
   Widget build(BuildContext context) => SingleChildScrollView(
@@ -24,7 +28,7 @@ class SimpleCard extends StatelessWidget {
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(borderRadius ?? 8),
                 border: Border.all(color: const Color(0xffD9D9D9)),
-                color: Colors.white),
+                color: color ?? Colors.white,),
             child: expandedContent,
           ),
         ),

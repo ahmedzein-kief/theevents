@@ -1,3 +1,5 @@
+import 'package:event_app/core/constants/app_strings.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -25,7 +27,7 @@ class _OrderCancelScreenState extends State<OrderCancelScreen> {
             Padding(
               padding: EdgeInsets.symmetric(
                   horizontal: screenWidth * 0.02,
-                  vertical: screenHeight * 0.02),
+                  vertical: screenHeight * 0.02,),
               child: GestureDetector(
                 onTap: () {
                   Navigator.pop(context);
@@ -35,10 +37,10 @@ class _OrderCancelScreenState extends State<OrderCancelScreen> {
                   child: Row(
                     children: [
                       const Icon(Icons.arrow_back_ios),
-                      Text('Orders',
+                      Text(AppStrings.orders.tr,
                           style: GoogleFonts.inter(
                               color: Theme.of(context).colorScheme.onPrimary,
-                              fontWeight: FontWeight.w400))
+                              fontWeight: FontWeight.w400,),),
                     ],
                   ),
                 ),
@@ -62,15 +64,15 @@ class _OrderCancelScreenState extends State<OrderCancelScreen> {
                       height: 80,
                       width: 80,
                       decoration: const BoxDecoration(
-                          color: Colors.green, shape: BoxShape.circle),
+                          color: Colors.green, shape: BoxShape.circle,),
                       child: Icon(
                         Icons.check,
                         size: 55,
                         color: Theme.of(context).colorScheme.primary,
                       ),
                     ),
-                    Text('Orders Cancelled',
-                        style: productValueItemsStyle(context)),
+                    Text(AppStrings.ordersCancelled.tr,
+                        style: productValueItemsStyle(context),),
                     SizedBox(height: screenHeight * 0.04),
                     Container(
                       height: 1,
@@ -85,15 +87,15 @@ class _OrderCancelScreenState extends State<OrderCancelScreen> {
                       child: Padding(
                         padding: EdgeInsets.symmetric(
                             horizontal: screenWidth * 0.02,
-                            vertical: screenHeight * 0.02),
+                            vertical: screenHeight * 0.02,),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Align(
                                 alignment: Alignment.centerLeft,
-                                child: Text('1 Item is Cancelled',
-                                    style: productValueItemsStyle(context))),
+                                child: Text(AppStrings.oneItemCancelled.tr,
+                                    style: productValueItemsStyle(context),),),
                             SizedBox(height: screenHeight * 0.05),
                             Container(
                               color: AppColors.paleSkyBlue,
@@ -105,28 +107,28 @@ class _OrderCancelScreenState extends State<OrderCancelScreen> {
                                   Container(
                                       color: Colors.blue,
                                       height: 80,
-                                      width: 60),
+                                      width: 60,),
                                   SizedBox(width: screenWidth * 0.02),
                                   Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Text('Perfume',
+                                      Text(AppStrings.perfume.tr,
                                           style: GoogleFonts.inter(
                                               fontSize: 16,
                                               fontWeight: FontWeight.w800,
                                               color: Theme.of(context)
                                                   .colorScheme
-                                                  .onPrimary)),
+                                                  .onPrimary,),),
                                       Text(
-                                        'Product Description',
+                                        AppStrings.productDescription.tr,
                                         style: GoogleFonts.inter(
                                             fontSize: 16,
                                             fontWeight: FontWeight.w400,
                                             color: Theme.of(context)
                                                 .colorScheme
-                                                .onPrimary),
+                                                .onPrimary,),
                                       ),
                                     ],
                                   ),
@@ -143,10 +145,10 @@ class _OrderCancelScreenState extends State<OrderCancelScreen> {
                                   width: 22,
                                   decoration: BoxDecoration(
                                       shape: BoxShape.circle,
-                                      border: Border.all(color: Colors.green)),
+                                      border: Border.all(color: Colors.green),),
                                   child: const Center(
                                       child: Icon(Icons.check,
-                                          color: Colors.green, size: 16)),
+                                          color: Colors.green, size: 16,),),
                                 ),
                                 SizedBox(width: screenWidth * 0.02),
                                 Expanded(
@@ -156,18 +158,17 @@ class _OrderCancelScreenState extends State<OrderCancelScreen> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        'Refund Details',
+                                        AppStrings.refundDetails.tr,
                                         style: GoogleFonts.inter(
                                             fontSize: 16,
                                             fontWeight: FontWeight.w700,
                                             color: Theme.of(context)
                                                 .colorScheme
                                                 .onPrimary
-                                                .withOpacity(0.6)),
+                                                .withOpacity(0.6),),
                                       ),
                                       SizedBox(height: screenHeight * 0.01),
-                                      const Text(
-                                          'A refund is not applicable on this order as it is a Pay on delivery order'),
+                                      Text(AppStrings.refundNotApplicable.tr),
                                     ],
                                   ),
                                 ),
@@ -183,10 +184,10 @@ class _OrderCancelScreenState extends State<OrderCancelScreen> {
                                   width: 22,
                                   decoration: BoxDecoration(
                                       shape: BoxShape.circle,
-                                      border: Border.all(color: Colors.green)),
+                                      border: Border.all(color: Colors.green),),
                                   child: const Center(
                                       child: Icon(Icons.check,
-                                          color: Colors.green, size: 16)),
+                                          color: Colors.green, size: 16,),),
                                 ),
                                 SizedBox(width: screenHeight * 0.02),
                                 Expanded(
@@ -196,18 +197,16 @@ class _OrderCancelScreenState extends State<OrderCancelScreen> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        'Refund Details',
+                                        AppStrings.refundDetails.tr,
                                         style: GoogleFonts.inter(
                                             fontSize: 16,
                                             fontWeight: FontWeight.w700,
                                             color: Theme.of(context)
                                                 .colorScheme
                                                 .onPrimary
-                                                .withOpacity(0.6)),
+                                                .withOpacity(0.6),),
                                       ),
                                       SizedBox(height: screenHeight * 0.01),
-                                      const Text(
-                                          'A refund is not applicable on this order as it is a Pay on delivery order'),
                                     ],
                                   ),
                                 ),
@@ -225,9 +224,9 @@ class _OrderCancelScreenState extends State<OrderCancelScreen> {
                       color: AppColors.peachyPink,
                       child: Align(
                         alignment: Alignment.center,
-                        child: Text('Refund',
+                        child: Text(AppStrings.refund.tr,
                             style: GoogleFonts.inter(
-                                color: Theme.of(context).colorScheme.primary)),
+                                color: Theme.of(context).colorScheme.primary,),),
                       ),
                     ),
                   ],

@@ -34,7 +34,7 @@ class CustomerUploadProfilePicViewModel with ChangeNotifier {
   }
 
   Future<bool> customerUploadProfilePicture(
-      {required File file, required BuildContext context}) async {
+      {required File file, required BuildContext context,}) async {
     try {
       setLoading(true);
       setApiResponse = ApiResponse.loading();
@@ -46,14 +46,14 @@ class CustomerUploadProfilePicViewModel with ChangeNotifier {
 
       final FormData formData = FormData.fromMap({
         'avatar_file': await MultipartFile.fromFile(file.path,
-            filename: file.path.split('/').last),
+            filename: file.path.split('/').last,),
       });
 
       final CustomerUploadProfilePicModel response = await _myRepo
           .customerUploadProfilePicture(headers: headers, formData: formData);
       setApiResponse = ApiResponse.completed(response);
       CustomSnackbar.showSuccess(
-          context, apiResponse.data?.message?.toString() ?? 'Success');
+          context, apiResponse.data?.message?.toString() ?? 'Success',);
       setLoading(false);
       return true;
     } catch (error) {

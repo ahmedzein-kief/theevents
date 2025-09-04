@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/widgets/custom_app_views/search_bar.dart';
 import 'package:event_app/views/base_screens/base_app_bar.dart';
 import 'package:flutter/cupertino.dart';
@@ -9,11 +10,12 @@ import '../../../core/constants/app_strings.dart';
 import '../../../core/styles/app_colors.dart';
 import '../../../core/styles/custom_text_styles.dart';
 import '../../../provider/shortcode_fresh_picks_provider/fresh_picks_provider.dart';
-import '../../filters/items_sorting.dart';
+import '../../filters/items_sorting_drop_down.dart';
 import 'e_com_tags_screens.dart';
 
 class FreshPicksDetailScreen extends StatefulWidget {
   const FreshPicksDetailScreen({super.key, required this.data});
+
   final String data;
 
   @override
@@ -46,8 +48,7 @@ class _FreshPicksDetailScreenState extends State<FreshPicksDetailScreen> {
       setState(() {
         _isFetchingMore = true;
       });
-      await Provider.of<FreshPicksProvider>(context, listen: false)
-          .fetchEcomTags(
+      await Provider.of<FreshPicksProvider>(context, listen: false).fetchEcomTags(
         perPage: 20,
         page: _currentPage,
         sortBy: _selectedSortBy,
@@ -64,8 +65,7 @@ class _FreshPicksDetailScreenState extends State<FreshPicksDetailScreen> {
 
   void _onScroll() {
     if (_isFetchingMore) return;
-    if (_scrollController.offset >=
-            _scrollController.position.maxScrollExtent &&
+    if (_scrollController.offset >= _scrollController.position.maxScrollExtent &&
         !_scrollController.position.outOfRange) {
       _currentPage++;
       _isFetchingMore = true;
@@ -77,9 +77,7 @@ class _FreshPicksDetailScreenState extends State<FreshPicksDetailScreen> {
     setState(() {
       _selectedSortBy = newValue;
       _currentPage = 1;
-      Provider.of<FreshPicksProvider>(context, listen: false)
-          .recordsData
-          .clear(); // Clear existing products
+      Provider.of<FreshPicksProvider>(context, listen: false).recordsData.clear(); // Clear existing products
     });
     fetchCategories();
   }
@@ -89,11 +87,11 @@ class _FreshPicksDetailScreenState extends State<FreshPicksDetailScreen> {
     final double screenHeight = MediaQuery.sizeOf(context).height;
     final double screenWidth = MediaQuery.sizeOf(context).width;
     return BaseAppBar(
-      textBack: AppStrings.back,
+      textBack: AppStrings.back.tr,
       customBackIcon: const Icon(Icons.arrow_back_ios_sharp, size: 16),
-      firstRightIconPath: AppStrings.firstRightIconPath,
-      secondRightIconPath: AppStrings.secondRightIconPath,
-      thirdRightIconPath: AppStrings.thirdRightIconPath,
+      firstRightIconPath: AppStrings.firstRightIconPath.tr,
+      secondRightIconPath: AppStrings.secondRightIconPath.tr,
+      thirdRightIconPath: AppStrings.thirdRightIconPath.tr,
       body: Scaffold(
         body: SafeArea(
           child: Consumer<FreshPicksProvider>(
@@ -112,7 +110,9 @@ class _FreshPicksDetailScreenState extends State<FreshPicksDetailScreen> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    CustomSearchBar(hintText: 'Search ${widget.data}'),
+                    CustomSearchBar(
+                      hintText: AppStrings.searchEvents.tr,
+                    ),
                     Expanded(
                       child: SingleChildScrollView(
                         controller: _scrollController,
@@ -131,9 +131,7 @@ class _FreshPicksDetailScreenState extends State<FreshPicksDetailScreen> {
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(5),
                                   child: CachedNetworkImage(
-                                    imageUrl:
-                                        provider.tagsModel?.data?.coverImage ??
-                                            '',
+                                    imageUrl: provider.tagsModel?.data?.coverImage ?? '',
                                     fit: BoxFit.fill,
                                     errorListener: (object) {
                                       Image.asset(
@@ -141,29 +139,20 @@ class _FreshPicksDetailScreenState extends State<FreshPicksDetailScreen> {
                                         // Replace with your actual image path
                                         fit: BoxFit.cover,
                                         // Adjust fit if needed
-                                        height:
-                                            MediaQuery.sizeOf(context).height *
-                                                0.28,
+                                        height: MediaQuery.sizeOf(context).height * 0.28,
                                         width: double.infinity,
                                       );
                                     },
-                                    errorWidget: (context, object, error) =>
-                                        Image.asset(
+                                    errorWidget: (context, object, error) => Image.asset(
                                       'assets/placeholder.png',
                                       // Replace with your actual image path
                                       fit: BoxFit.cover,
                                       // Adjust fit if needed
-                                      height:
-                                          MediaQuery.sizeOf(context).height *
-                                              0.28,
+                                      height: MediaQuery.sizeOf(context).height * 0.28,
                                       width: double.infinity,
                                     ),
-                                    placeholder:
-                                        (BuildContext context, String url) =>
-                                            Container(
-                                      height:
-                                          MediaQuery.sizeOf(context).height *
-                                              0.28,
+                                    placeholder: (BuildContext context, String url) => Container(
+                                      height: MediaQuery.sizeOf(context).height * 0.28,
                                       width: double.infinity,
                                       color: Colors.blueGrey[300],
                                       // Background color
@@ -175,9 +164,7 @@ class _FreshPicksDetailScreenState extends State<FreshPicksDetailScreen> {
                                             // Replace with your actual image path
                                             fit: BoxFit.cover,
                                             // Adjust fit if needed
-                                            height: MediaQuery.sizeOf(context)
-                                                    .height *
-                                                0.28,
+                                            height: MediaQuery.sizeOf(context).height * 0.28,
                                             width: double.infinity,
                                           ),
                                           const CupertinoActivityIndicator(
@@ -199,8 +186,7 @@ class _FreshPicksDetailScreenState extends State<FreshPicksDetailScreen> {
                                 right: screenWidth * 0.04,
                               ),
                               child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 mainAxisSize: MainAxisSize.max,
                                 children: [
@@ -227,25 +213,20 @@ class _FreshPicksDetailScreenState extends State<FreshPicksDetailScreen> {
                                 shrinkWrap: true,
                                 physics: const BouncingScrollPhysics(),
                                 scrollDirection: Axis.vertical,
-                                gridDelegate:
-                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                                   crossAxisCount: 3,
                                   crossAxisSpacing: 8,
                                   mainAxisSpacing: 20,
                                   mainAxisExtent: screenHeight * 0.16,
                                 ),
-                                itemCount: provider.recordsData.length +
-                                    (_isFetchingMore ? 1 : 0),
+                                itemCount: provider.recordsData.length + (_isFetchingMore ? 1 : 0),
                                 itemBuilder: (context, index) {
-                                  if (_isFetchingMore &&
-                                      index == provider.recordsData.length) {
+                                  if (_isFetchingMore && index == provider.recordsData.length) {
                                     return const Align(
                                       alignment: Alignment.center,
                                       child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        crossAxisAlignment: CrossAxisAlignment.center,
                                         children: [
                                           Center(
                                             child: CircularProgressIndicator(
@@ -270,11 +251,9 @@ class _FreshPicksDetailScreenState extends State<FreshPicksDetailScreen> {
                                       );
                                     },
                                     child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
                                       mainAxisSize: MainAxisSize.max,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
+                                      mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
                                         Expanded(
                                           flex: 4,
@@ -293,24 +272,16 @@ class _FreshPicksDetailScreenState extends State<FreshPicksDetailScreen> {
                                                   // Replace with your actual image path
                                                   fit: BoxFit.cover,
                                                   // Adjust fit if needed
-                                                  height:
-                                                      MediaQuery.sizeOf(context)
-                                                              .height *
-                                                          0.28,
+                                                  height: MediaQuery.sizeOf(context).height * 0.28,
                                                   width: double.infinity,
                                                 );
                                               },
-                                              errorWidget:
-                                                  (context, object, error) =>
-                                                      Image.asset(
+                                              errorWidget: (context, object, error) => Image.asset(
                                                 'assets/placeholder.png',
                                                 // Replace with your actual image path
                                                 fit: BoxFit.cover,
                                                 // Adjust fit if needed
-                                                height:
-                                                    MediaQuery.sizeOf(context)
-                                                            .height *
-                                                        0.28,
+                                                height: MediaQuery.sizeOf(context).height * 0.28,
                                                 width: double.infinity,
                                               ),
                                               placeholder: (
@@ -318,10 +289,7 @@ class _FreshPicksDetailScreenState extends State<FreshPicksDetailScreen> {
                                                 String url,
                                               ) =>
                                                   Container(
-                                                height:
-                                                    MediaQuery.sizeOf(context)
-                                                            .height *
-                                                        0.28,
+                                                height: MediaQuery.sizeOf(context).height * 0.28,
                                                 width: double.infinity,
                                                 color: Colors.blueGrey[300],
                                                 // Background color

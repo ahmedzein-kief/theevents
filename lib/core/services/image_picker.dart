@@ -10,8 +10,7 @@ import '../styles/app_colors.dart';
 class ImagePickerHelper {
   final ImagePicker _picker = ImagePicker();
 
-  Future<File?> pickImage(BuildContext context) async =>
-      showModalBottomSheet<File?>(
+  Future<File?> pickImage(BuildContext context) async => showModalBottomSheet<File?>(
         context: context,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(
@@ -39,13 +38,17 @@ class ImagePickerHelper {
                 Column(
                   children: [
                     IconButton(
-                      icon: const Icon(CupertinoIcons.photo,
-                          size: 20, color: AppColors.peachyPink),
+                      icon: const Icon(
+                        CupertinoIcons.photo,
+                        size: 20,
+                        color: AppColors.peachyPink,
+                      ),
                       onPressed: () async {
                         final XFile? image = await _picker.pickImage(
-                            source: ImageSource.gallery, imageQuality: 50);
-                        Navigator.of(context)
-                            .pop(image != null ? File(image.path) : null);
+                          source: ImageSource.gallery,
+                          imageQuality: 50,
+                        );
+                        Navigator.of(context).pop(image != null ? File(image.path) : null);
                       },
                     ),
                     const Text('Gallery'),
@@ -61,13 +64,17 @@ class ImagePickerHelper {
                 Column(
                   children: [
                     IconButton(
-                      icon: const Icon(CupertinoIcons.camera,
-                          size: 20, color: AppColors.peachyPink),
+                      icon: const Icon(
+                        CupertinoIcons.camera,
+                        size: 20,
+                        color: AppColors.peachyPink,
+                      ),
                       onPressed: () async {
                         final XFile? image = await _picker.pickImage(
-                            source: ImageSource.camera, imageQuality: 50);
-                        Navigator.of(context)
-                            .pop(image != null ? File(image.path) : null);
+                          source: ImageSource.camera,
+                          imageQuality: 50,
+                        );
+                        Navigator.of(context).pop(image != null ? File(image.path) : null);
                       },
                     ),
                     const Text('Camera'),

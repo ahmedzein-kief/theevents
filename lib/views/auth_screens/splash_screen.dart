@@ -1,7 +1,9 @@
 import 'package:event_app/core/services/shared_preferences_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../core/constants/app_assets.dart';
 import '../../core/widgets/bottom_navigation_bar.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -15,8 +17,7 @@ class _SplashViewState extends State<SplashScreen> {
   Future<void> _checkLoginStatus() async {
     final prefs = await SharedPreferences.getInstance();
     final bool isFirstTime = prefs.getBool('isFirstTime') ?? true;
-    final bool isLoggedIn =
-        prefs.getBool(SecurePreferencesUtil.loggedInKey) ?? false;
+    final bool isLoggedIn = prefs.getBool(SecurePreferencesUtil.loggedInKey) ?? false;
 
     // Hold splash screen for 3 seconds
     await Future.delayed(const Duration(seconds: 3));
@@ -47,14 +48,18 @@ class _SplashViewState extends State<SplashScreen> {
   }
 
   @override
-  Widget build(BuildContext context) => const Scaffold(
-        body: Center(
-          child: Image(
-            height: 100,
-            width: 100,
-            filterQuality: FilterQuality.low,
-            image: AssetImage('assets/logoApp.png'),
-          ),
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    return Scaffold(
+      body: Center(
+        child: SvgPicture.asset(
+          isDark ? AppAssets.eventsDark : AppAssets.events,
+          height: 100,
+          width: 100,
         ),
-      );
+      ),
+    );
+  }
 }

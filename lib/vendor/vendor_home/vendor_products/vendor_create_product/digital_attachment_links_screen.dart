@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 
 class DigitalLinksScreen extends StatefulWidget {
   const DigitalLinksScreen({super.key, this.initialLinks});
+
   final List<DigitalLinksModel>? initialLinks;
 
   @override
@@ -23,7 +24,7 @@ class _DigitalLinksScreenState extends State<DigitalLinksScreen> {
     FileSizeConstants.KILO_BYTE,
     FileSizeConstants.MEGA_BYTE,
     FileSizeConstants.GIGA_BYTE,
-    FileSizeConstants.TERRA_BYTE
+    FileSizeConstants.TERRA_BYTE,
   ];
 
   @override
@@ -41,11 +42,9 @@ class _DigitalLinksScreenState extends State<DigitalLinksScreen> {
   }
 
   void removeInvalidLinks() {
-    _selectedLinks.removeWhere((link) =>
-        link.fileName.isEmpty ||
-        link.fileLink.isEmpty ||
-        link.size.isEmpty ||
-        link.unit.isEmpty);
+    _selectedLinks.removeWhere(
+      (link) => link.fileName.isEmpty || link.fileLink.isEmpty || link.size.isEmpty || link.unit.isEmpty,
+    );
   }
 
   void addLink() {
@@ -53,9 +52,6 @@ class _DigitalLinksScreenState extends State<DigitalLinksScreen> {
       _selectedLinks.add(
         DigitalLinksModel(
           unit: FileSizeConstants.BYTE,
-          fileLinkController: TextEditingController(),
-          fileNameController: TextEditingController(),
-          sizeController: TextEditingController(),
         ),
       );
     });
@@ -139,10 +135,10 @@ class _DigitalLinksScreenState extends State<DigitalLinksScreen> {
                           flex: 1,
                           child: GenericDropdown<String>(
                             textStyle: const TextStyle(
-                                color: Colors.grey, fontSize: 15),
-                            value: _selectedLinks[index].unit.contains('-')
-                                ? 'B'
-                                : _selectedLinks[index].unit,
+                              color: Colors.grey,
+                              fontSize: 15,
+                            ),
+                            value: _selectedLinks[index].unit.contains('-') ? 'B' : _selectedLinks[index].unit,
                             menuItemsList: units,
                             readOnly: _selectedLinks[index].isSaved,
                             displayItem: (String priceType) => priceType,

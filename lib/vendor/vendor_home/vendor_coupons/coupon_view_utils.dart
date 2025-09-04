@@ -1,3 +1,5 @@
+import 'package:event_app/core/constants/vendor_app_strings.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:flutter/material.dart';
 
 /// Enum for couponType
@@ -6,19 +8,19 @@ enum CouponType { amount, percentage, shipping }
 class CouponViewUtils {
   /// Label Text Style
   static TextStyle couponLabelTextStyle() => const TextStyle(
-      color: Colors.black, fontSize: 14, fontWeight: FontWeight.w700);
+      color: Colors.black, fontSize: 14, fontWeight: FontWeight.w700,);
 
   /// discount filed prefix and suffix
   static Widget discountFieldPrefixAndSuffix(
           {required CouponType couponType,
           required bool isPrefix,
-          required screenWidth}) =>
+          required screenWidth,}) =>
       Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Padding(
             padding: EdgeInsets.symmetric(
-                horizontal: screenWidth * 0.04, vertical: 0),
+                horizontal: screenWidth * 0.04, vertical: 0,),
             child: Text(
               isPrefix
                   ? getDiscountFieldPrefixText(couponType: couponType)
@@ -56,15 +58,18 @@ class CouponViewUtils {
 
   /// discount field prefix text style
   static TextStyle discountPrefixStyle() => const TextStyle(
-      color: Colors.grey, fontSize: 14, fontWeight: FontWeight.w700);
+      color: Colors.grey, fontSize: 14, fontWeight: FontWeight.w700,);
 
   static List<DropdownMenuItem> couponTypeMenuItems() => [
-        const DropdownMenuItem(
-            value: CouponType.amount, child: Text('Amount - Fixed')),
-        const DropdownMenuItem(
-            value: CouponType.percentage, child: Text('Discount %')),
-        const DropdownMenuItem(
-            value: CouponType.shipping, child: Text('Free Shipping')),
+        DropdownMenuItem(
+            value: CouponType.amount,
+            child: Text(VendorAppStrings.amountFixed.tr),),
+        DropdownMenuItem(
+            value: CouponType.percentage,
+            child: Text(VendorAppStrings.discountPercentage.tr),),
+        DropdownMenuItem(
+            value: CouponType.shipping,
+            child: Text(VendorAppStrings.freeShipping.tr),),
       ];
 
   static String getTypeOption(CouponType couponType) {

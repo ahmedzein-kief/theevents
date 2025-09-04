@@ -5,11 +5,11 @@ import 'dart:convert';
 /// message : null
 
 VendorGenerateCouponCodeModel vendorGenerateCouponCodeModelFromJson(
-        String str) =>
+        String str,) =>
     VendorGenerateCouponCodeModel.fromJson(json.decode(str));
 
 String vendorGenerateCouponCodeModelToJson(
-        VendorGenerateCouponCodeModel data) =>
+        VendorGenerateCouponCodeModel data,) =>
     json.encode(data.toJson());
 
 class VendorGenerateCouponCodeModel {

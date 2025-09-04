@@ -1,5 +1,5 @@
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/widgets/items_empty_view.dart';
-import 'package:event_app/views/filters/product_sorting.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -13,10 +13,12 @@ import '../../provider/shortcode_fresh_picks_provider/fresh_picks_provider.dart'
 import '../../provider/wishlist_items_provider/wishlist_provider.dart';
 import '../base_screens/base_app_bar.dart';
 import '../filters/product_filters_screen.dart';
+import '../filters/sort_an_filter_widget.dart';
 import '../product_detail_screens/product_detail_screen.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key, this.query});
+
   final dynamic query;
 
   @override
@@ -49,8 +51,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
   void _onScroll() {
     if (_isFetchingMore) return;
-    if (_scrollController.offset >=
-            _scrollController.position.maxScrollExtent &&
+    if (_scrollController.offset >= _scrollController.position.maxScrollExtent &&
         !_scrollController.position.outOfRange) {
       setState(() {
         _currentPage++;
@@ -65,8 +66,7 @@ class _SearchScreenState extends State<SearchScreen> {
       setState(() {
         _isFetchingMore = true;
       });
-      await Provider.of<SearchBarProvider>(context, listen: false)
-          .fetchProductsNew(
+      await Provider.of<SearchBarProvider>(context, listen: false).fetchProductsNew(
         query: widget.query,
         context,
         perPage: 12,
@@ -106,36 +106,36 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     final searchProvider = Provider.of<SearchBarProvider>(context);
-    final wishlistProvider =
-        Provider.of<WishlistProvider>(context, listen: true);
-    final freshListProvider =
-        Provider.of<FreshPicksProvider>(context, listen: true);
+    final wishlistProvider = Provider.of<WishlistProvider>(context, listen: true);
+    final freshListProvider = Provider.of<FreshPicksProvider>(context, listen: true);
     final cartProvider = Provider.of<CartProvider>(context, listen: true);
 
     return BaseAppBar(
-      textBack: AppStrings.back,
+      textBack: AppStrings.back.tr,
       customBackIcon: const Icon(Icons.arrow_back_ios_sharp, size: 16),
-      firstRightIconPath: AppStrings.firstRightIconPath,
-      secondRightIconPath: AppStrings.secondRightIconPath,
-      thirdRightIconPath: AppStrings.thirdRightIconPath,
+      firstRightIconPath: AppStrings.firstRightIconPath.tr,
+      secondRightIconPath: AppStrings.secondRightIconPath.tr,
+      thirdRightIconPath: AppStrings.thirdRightIconPath.tr,
       body: Scaffold(
         body: searchProvider.isLoading
             ? const Center(
                 child: CircularProgressIndicator(
-                    color: Colors.black, strokeWidth: 0.5))
+                  color: Colors.black,
+                  strokeWidth: 0.5,
+                ),
+              )
             : SafeArea(
                 child: Stack(
                   children: [
                     Padding(
-                      padding:
-                          const EdgeInsets.only(top: 1, left: 10, right: 10),
+                      padding: const EdgeInsets.only(top: 1, left: 10, right: 10),
                       child: SingleChildScrollView(
                         controller: _scrollController,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            SortAndFilterDropdown(
+                            SortAndFilterWidget(
                               selectedSortBy: _selectedSortBy,
                               onSortChanged: (newSortBy) {
                                 _onSortChanged(newSortBy);
@@ -146,18 +146,15 @@ class _SearchScreenState extends State<SearchScreen> {
                                   isScrollControlled: true,
                                   builder: (context) => FilterBottomSheet(
                                     filters: searchProvider.productFilters,
-                                    selectedIds:
-                                        selectedFilters, // Pass previously selected IDs
+                                    selectedIds: selectedFilters,
                                   ),
                                 ).then((result) {
                                   if (result != null) {
                                     setState(() {
                                       _currentPage = 1;
-                                      selectedFilters =
-                                          result; // Store the selected filter IDs
+                                      selectedFilters = result;
                                     });
                                     fetchNewProductsItems();
-                                    // You can use selectedFilters to fetch products or apply other logic
                                   }
                                 });
                               },
@@ -166,40 +163,31 @@ class _SearchScreenState extends State<SearchScreen> {
                               child: searchProvider.products.isEmpty
                                   ? const ItemsEmptyView()
                                   : GridView.builder(
-                                      gridDelegate:
-                                          const SliverGridDelegateWithFixedCrossAxisCount(
-                                              crossAxisCount: 2,
-                                              childAspectRatio: 0.6,
-                                              mainAxisSpacing: 10,
-                                              crossAxisSpacing: 10),
-                                      itemCount:
-                                          searchProvider.products.length +
-                                              (_isFetchingMore ? 1 : 0),
+                                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 2,
+                                        childAspectRatio: 0.6,
+                                        mainAxisSpacing: 10,
+                                        crossAxisSpacing: 10,
+                                      ),
+                                      itemCount: searchProvider.products.length + (_isFetchingMore ? 1 : 0),
                                       shrinkWrap: true,
-                                      physics:
-                                          const NeverScrollableScrollPhysics(),
+                                      physics: const NeverScrollableScrollPhysics(),
                                       itemBuilder: (context, index) {
-                                        if (_isFetchingMore &&
-                                            index ==
-                                                searchProvider
-                                                    .products.length) {
-                                          return const Align(
+                                        if (_isFetchingMore && index == searchProvider.products.length) {
+                                          return Align(
                                             alignment: Alignment.center,
                                             child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              crossAxisAlignment: CrossAxisAlignment.center,
                                               children: [
                                                 Text(
-                                                  'Loading...',
-                                                  style: TextStyle(
-                                                      color:
-                                                          AppColors.peachyPink),
+                                                  '${AppStrings.loading.tr}...',
+                                                  style: const TextStyle(
+                                                    color: AppColors.peachyPink,
+                                                  ),
                                                 ),
-                                                Center(
-                                                  child:
-                                                      CircularProgressIndicator(
+                                                const Center(
+                                                  child: CircularProgressIndicator(
                                                     color: Colors.black,
                                                     // strokeWidth: 0.5,
                                                   ),
@@ -209,40 +197,33 @@ class _SearchScreenState extends State<SearchScreen> {
                                           );
                                         }
 
-                                        final product =
-                                            searchProvider.products[index];
+                                        final product = searchProvider.products[index];
 
-                                        final wishlistProvider =
-                                            Provider.of<WishlistProvider>(
-                                                context,
-                                                listen: false);
-                                        final cartProvider =
-                                            Provider.of<CartProvider>(context,
-                                                listen: false);
-                                        final freshPicksProvider =
-                                            Provider.of<FreshPicksProvider>(
-                                                context,
-                                                listen: false);
+                                        final wishlistProvider = Provider.of<WishlistProvider>(
+                                          context,
+                                          listen: false,
+                                        );
+                                        final cartProvider = Provider.of<CartProvider>(
+                                          context,
+                                          listen: false,
+                                        );
+                                        final freshPicksProvider = Provider.of<FreshPicksProvider>(
+                                          context,
+                                          listen: false,
+                                        );
 
                                         /// Calculate the percentage off
                                         /// Check if both frontSalePrice and price are non-null and non-zero to avoid division by zero
-                                        final double? frontSalePrice = product
-                                            .prices?.frontSalePrice
-                                            ?.toDouble();
-                                        final double? price =
-                                            product.prices?.price?.toDouble();
+                                        final double? frontSalePrice = product.prices?.frontSalePrice?.toDouble();
+                                        final double? price = product.prices?.price?.toDouble();
                                         String offPercentage = '';
 
-                                        if (frontSalePrice != null &&
-                                            price != null &&
-                                            price > 0) {
+                                        if (frontSalePrice != null && price != null && price > 0) {
                                           // Calculate the discount percentage
-                                          final double discount = 100 -
-                                              ((frontSalePrice / price) * 100);
+                                          final double discount = 100 - ((frontSalePrice / price) * 100);
                                           // offPercentage = discount.toStringAsFixed(0);
                                           if (discount > 0) {
-                                            offPercentage =
-                                                discount.toStringAsFixed(0);
+                                            offPercentage = discount.toStringAsFixed(0);
                                           }
                                         }
 
@@ -251,82 +232,67 @@ class _SearchScreenState extends State<SearchScreen> {
                                             Navigator.push(
                                               context,
                                               MaterialPageRoute(
-                                                builder: (context) =>
-                                                    ProductDetailScreen(
+                                                builder: (context) => ProductDetailScreen(
                                                   key: ValueKey(
-                                                      product.slug.toString()),
+                                                    product.slug.toString(),
+                                                  ),
                                                   slug: product.slug.toString(),
                                                 ),
                                               ),
                                             );
                                           },
                                           child: ProductCard(
-                                            isOutOfStock:
-                                                product.outOfStock ?? false,
+                                            isOutOfStock: product.outOfStock ?? false,
                                             itemsId: product.id,
                                             imageUrl: product.image,
-                                            frontSalePriceWithTaxes:
-                                                product.review?.average ?? '0',
+                                            frontSalePriceWithTaxes: product.review?.average ?? '0',
                                             name: product.name,
-                                            storeName:
-                                                product.store!.name.toString(),
-                                            price: product.prices!.price
-                                                .toString(),
-                                            reviewsCount: product
-                                                .review!.reviewsCount!
-                                                .toInt(),
-                                            off: offPercentage.isNotEmpty
-                                                ? '$offPercentage%off'
-                                                : '',
+                                            storeName: product.store!.name.toString(),
+                                            price: product.prices!.price.toString(),
+                                            reviewsCount: product.review!.reviewsCount!.toInt(),
+                                            off: offPercentage.isNotEmpty ? '$offPercentage%off' : '',
                                             // Display the discount percentage
-                                            priceWithTaxes: (product.prices
-                                                            ?.frontSalePrice ??
-                                                        0) <
-                                                    (product.prices?.price ?? 0)
-                                                ? product.prices!.priceWithTaxes
-                                                : null,
+                                            priceWithTaxes:
+                                                (product.prices?.frontSalePrice ?? 0) < (product.prices?.price ?? 0)
+                                                    ? product.prices!.priceWithTaxes
+                                                    : null,
                                             optionalIcon: Icons.shopping_cart,
                                             onOptionalIconTap: () async {
-                                              final token =
-                                                  await SecurePreferencesUtil
-                                                      .getToken();
+                                              final token = await SecurePreferencesUtil.getToken();
                                               if (token != null) {
                                                 await cartProvider.addToCart(
-                                                    product.id, context, 1);
+                                                  product.id,
+                                                  context,
+                                                  1,
+                                                );
                                               }
                                             },
-                                            isHeartObscure: wishlistProvider
-                                                    .wishlist?.data?.products
-                                                    .any((wishlistProduct) =>
-                                                        wishlistProduct.id ==
-                                                        product.id) ??
+                                            isHeartObscure: wishlistProvider.wishlist?.data?.products.any(
+                                                  (wishlistProduct) => wishlistProduct.id == product.id,
+                                                ) ??
                                                 false,
                                             onHeartTap: () async {
-                                              final token =
-                                                  await SecurePreferencesUtil
-                                                      .getToken();
-                                              final bool isInWishlist =
-                                                  wishlistProvider.wishlist
-                                                          ?.data?.products
-                                                          .any((wishlistProduct) =>
-                                                              wishlistProduct
-                                                                  .id ==
-                                                              product.id) ??
-                                                      false;
+                                              final token = await SecurePreferencesUtil.getToken();
+                                              final bool isInWishlist = wishlistProvider.wishlist?.data?.products.any(
+                                                    (wishlistProduct) => wishlistProduct.id == product.id,
+                                                  ) ??
+                                                  false;
                                               if (isInWishlist) {
-                                                await wishlistProvider
-                                                    .deleteWishlistItem(
-                                                        product.id ?? 0,
-                                                        context,
-                                                        token ?? '');
+                                                await wishlistProvider.deleteWishlistItem(
+                                                  product.id ?? 0,
+                                                  context,
+                                                  token ?? '',
+                                                );
                                               } else {
-                                                await freshPicksProvider
-                                                    .handleHeartTap(context,
-                                                        product.id ?? 0);
+                                                await freshPicksProvider.handleHeartTap(
+                                                  context,
+                                                  product.id ?? 0,
+                                                );
                                               }
-                                              await wishlistProvider
-                                                  .fetchWishlist(
-                                                      token ?? '', context);
+                                              await wishlistProvider.fetchWishlist(
+                                                token ?? '',
+                                                context,
+                                              );
                                             },
                                           ),
                                         );
@@ -337,16 +303,15 @@ class _SearchScreenState extends State<SearchScreen> {
                         ),
                       ),
                     ),
-                    if (wishlistProvider.isLoading ||
-                        freshListProvider.isLoading ||
-                        cartProvider.isLoading)
+                    if (wishlistProvider.isLoading || freshListProvider.isLoading || cartProvider.isLoading)
                       Container(
-                        color: Colors.black
-                            .withOpacity(0.5), // Semi-transparent background
+                        /// Semi-transparent background
+                        color: Colors.black.withAlpha(128),
                         child: const Center(
                           child: CircularProgressIndicator(
                             valueColor: AlwaysStoppedAnimation<Color>(
-                                AppColors.peachyPink),
+                              AppColors.peachyPink,
+                            ),
                           ),
                         ),
                       ),

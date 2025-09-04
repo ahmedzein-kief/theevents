@@ -4,6 +4,7 @@ const baseIconsPath = '$baseAssetsPath/icons';
 const baseGifPath = '$baseAssetsPath/gif';
 const baseNavImagesPath = '$baseAssetsPath/nav';
 const baseAvatarPath = '$baseAssetsPath/images/avatars';
+const baseNavIconsPath = '$baseAssetsPath/nav';
 
 class AppAssets {
   ///   APP TOP BAR ICONS
@@ -20,4 +21,13 @@ class AppAssets {
   static const String profileName = '$baseAssetsPath/login/profileName.svg';
   static const String showEye = '$baseAssetsPath/login/showEye.svg';
   static const String hideEye = '$baseAssetsPath/login/hideEye.svg';
+
+  static const String account = '$baseNavIconsPath/acc.svg';
+  static const String brands = '$baseNavIconsPath/bra.svg';
+  static const String categories = '$baseNavIconsPath/cat.svg';
+  static const String logo = '$baseNavIconsPath/logo.svg';
+  static const String events = '$baseNavIconsPath/events.svg';
+  static const String eventsDark = '$baseNavIconsPath/events_dark.svg';
+  static const String celebrities = '$baseNavIconsPath/cele.svg';
+  static const String aboutBanner = '$baseAssetsPath/about_banner.png';
 }

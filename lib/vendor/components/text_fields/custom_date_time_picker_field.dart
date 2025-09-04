@@ -48,7 +48,7 @@ class CustomDateTimePickerField extends StatelessWidget {
                       ),
                     ),
                     SvgPicture.asset(
-                        'assets/vendor_assets/settings/choose_date.svg'),
+                        'assets/vendor_assets/settings/choose_date.svg',),
                   ],
                 ),
               ),

@@ -1,3 +1,4 @@
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/utils/custom_toast.dart';
 import 'package:event_app/views/base_screens/base_app_bar.dart';
 import 'package:event_app/views/home_screens_shortcode/shorcode_featured_brands/featured_brands_items_screen.dart';
@@ -13,6 +14,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/constants/app_strings.dart';
+import '../../core/helper/functions/functions.dart';
 import '../../core/styles/app_colors.dart';
 import '../../core/styles/custom_text_styles.dart';
 import '../../models/product_packages_models/product_attributes_model.dart';
@@ -24,7 +26,8 @@ import '../../provider/wishlist_items_provider/wishlist_provider.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   const ProductDetailScreen({super.key, required this.slug});
-  final slug;
+
+  final dynamic slug;
 
   @override
   State<ProductDetailScreen> createState() => _ProductDetailScreenState();
@@ -53,20 +56,17 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
   void initRequests() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final provider =
-          Provider.of<ProductItemsProvider>(context, listen: false);
+      final provider = Provider.of<ProductItemsProvider>(context, listen: false);
       provider.resetData();
       await fetchItems();
       await _isBrandFetched();
       await fetchBrandStoreData();
       fetchCustomerReviews();
       provider.addListener(() {
-        if (provider.apiResponse?.data?.record?.images != null &&
-            _selectedImageUrl == null) {
+        if (provider.apiResponse?.data?.record?.images != null && _selectedImageUrl == null) {
           WidgetsBinding.instance.addPostFrameCallback((callback) {
             setState(() {
-              _selectedImageUrl =
-                  provider.apiResponse?.data?.record?.images.first.small;
+              _selectedImageUrl = provider.apiResponse?.data?.record?.images.first.small;
             });
           });
         }
@@ -82,7 +82,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   Future<void> fetchCustomerReviews() async {
     final provider = Provider.of<ProductItemsProvider>(context, listen: false);
     await provider.fetchCustomerReviews(
-        provider.apiResponse?.data?.record?.id?.toString() ?? '', context);
+      provider.apiResponse?.data?.record?.id?.toString() ?? '',
+      context,
+    );
   }
 
   Future<void> fetchItems() async {
@@ -93,13 +95,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       if (record?.attributes?.isNotEmpty == true) {
         record?.attributes?.forEach(
           (newData) {
-            final childOption = newData.children
-                .firstWhere((childData) => childData.selected == true);
+            final childOption = newData.children.firstWhere((childData) => childData.selected == true);
 
             final attribute = selectedAttributes.firstWhere(
-              (data) =>
-                  data?['attribute_category_slug'].toString().toLowerCase() ==
-                  newData.slug.toLowerCase(),
+              (data) => data?['attribute_category_slug'].toString().toLowerCase() == newData.slug.toLowerCase(),
               orElse: () => null,
             );
             if (attribute != null) {
@@ -120,25 +119,26 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             }
           },
         );
-        final resultAttributes =
-            await updateProductAttributes(selectedAttributes);
+        final resultAttributes = await updateProductAttributes(selectedAttributes);
         if (resultAttributes != null) {
-          updateProductAttributePrice =
-              resultAttributes.data.price.toString() ?? '';
+          updateProductAttributePrice = resultAttributes.data.price.toString() ?? '';
           productVariationId = resultAttributes.data.id;
-          unavailableAttributes = resultAttributes.data.unavailableAttributeIds
-              .map((e) => int.tryParse(e.toString()) ?? 0)
-              .toList();
+          unavailableAttributes =
+              resultAttributes.data.unavailableAttributeIds.map((e) => int.tryParse(e.toString()) ?? 0).toList();
         }
       }
     }
   }
 
   Future<ProductVariationModel?> updateProductAttributes(
-      List<Map<String, dynamic>?> selectedAttributes) async {
+    List<Map<String, dynamic>?> selectedAttributes,
+  ) async {
     final provider = Provider.of<ProductItemsProvider>(context, listen: false);
     return provider.updateProductAttributes(
-        productID, context, selectedAttributes);
+      productID,
+      context,
+      selectedAttributes,
+    );
   }
 
   /// ------------------------- fetch the  view of the brands ----------------------------------------------------------------
@@ -151,29 +151,34 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.sizeOf(context).width;
-    final freshPicksProvider =
-        Provider.of<FreshPicksProvider>(context, listen: false);
-    final wishlistProvider =
-        Provider.of<WishlistProvider>(context, listen: true);
-    final mainProvider =
-        Provider.of<ProductItemsProvider>(context, listen: true);
+    final freshPicksProvider = Provider.of<FreshPicksProvider>(context, listen: false);
+    final wishlistProvider = Provider.of<WishlistProvider>(context, listen: true);
+    final mainProvider = Provider.of<ProductItemsProvider>(context, listen: true);
 
     final mainData = mainProvider.apiResponse?.data;
     final mainRecord = mainData?.record;
 
     print('Test 1 == ${mainRecord?.inWishList}');
 
+    final appBarIconColor = getOppositeColor(AppColors.productBackground);
+
     return BaseAppBar(
+      iconsColor: appBarIconColor,
+      leftTextStyle: TextStyle(color: appBarIconColor),
       color: AppColors.productBackground,
-      textBack: 'Back',
+      textBack: AppStrings.back.tr,
       onBackPressed: () {
         mainProvider.resetDetailData();
         Navigator.pop(context);
       },
-      customBackIcon: const Icon(Icons.arrow_back_ios_sharp, size: 16),
-      firstRightIconPath: AppStrings.firstRightIconPath,
-      secondRightIconPath: AppStrings.secondRightIconPath,
-      thirdRightIconPath: AppStrings.thirdRightIconPath,
+      customBackIcon: Icon(
+        Icons.arrow_back_ios_sharp,
+        size: 16,
+        color: appBarIconColor,
+      ),
+      firstRightIconPath: AppStrings.firstRightIconPath.tr,
+      secondRightIconPath: AppStrings.secondRightIconPath.tr,
+      thirdRightIconPath: AppStrings.thirdRightIconPath.tr,
       body: Scaffold(
         body: SafeArea(
           child: Stack(
@@ -201,27 +206,24 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       record?.attributes?.forEach(
                         (newData) {
                           final childOption = newData.children.firstWhere(
-                              (childData) => childData.selected == true,
-                              orElse: () => Child.defaultData());
+                            (childData) => childData.selected == true,
+                            orElse: () => Child.defaultData(),
+                          );
 
                           if (childOption.id != -1) {
                             final attribute = selectedAttributes.firstWhere(
                               (data) =>
-                                  data?['attribute_category_slug']
-                                      .toString()
-                                      .toLowerCase() ==
+                                  data?['attribute_category_slug'].toString().toLowerCase() ==
                                   newData.slug.toLowerCase(),
                               orElse: () => null,
                             );
                             if (attribute != null) {
                               attribute['attribute_key_name'] = newData.keyName;
-                              attribute['attribute_category_slug'] =
-                                  newData.slug;
+                              attribute['attribute_category_slug'] = newData.slug;
                               attribute['attribute_name'] = childOption.title;
                               attribute['attribute_slug'] = childOption.slug;
                               attribute['attribute_id'] = childOption.id;
-                              attribute['attribute_set_id'] =
-                                  childOption.attributeSetId;
+                              attribute['attribute_set_id'] = childOption.attributeSetId;
                             } else {
                               final newAttribute = {
                                 'attribute_key_name': newData.keyName,
@@ -241,18 +243,16 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     final images = record?.images;
 
                     if (record == null || images == null) {
-                      return const Center(child: Text('Loading...'));
+                      return Center(child: Text('${AppStrings.loading.tr}...'));
                     }
 
                     /// Calculate the percentage off
-                    final double? frontSalePrice =
-                        record.prices?.frontSalePrice?.toDouble();
+                    final double? frontSalePrice = record.prices?.frontSalePrice?.toDouble();
                     final double? price = record.prices?.price?.toDouble();
                     String offPercentage = '';
 
                     if (frontSalePrice != null && price != null && price > 0) {
-                      final double discount =
-                          100 - ((frontSalePrice / price) * 100);
+                      final double discount = 100 - ((frontSalePrice / price) * 100);
                       if (discount > 0) {
                         offPercentage = discount.toStringAsFixed(0);
                       }
@@ -290,11 +290,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.only(
-                                      top: 10, right: 20, left: 20),
+                                    top: 10,
+                                    right: 20,
+                                    left: 20,
+                                  ),
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Flexible(
                                         child: Image.asset(
@@ -317,60 +319,47 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                     screenWidth: screenWidth,
                                     attributes: record.attributes!,
                                     selectedAttributes: selectedAttributes,
-                                    unavailableAttributes:
-                                        unavailableAttributes,
-                                    onSelectedAttributes:
-                                        (selectedAttribute) async {
-                                      final result =
-                                          await updateProductAttributes(
-                                              selectedAttribute);
+                                    unavailableAttributes: unavailableAttributes,
+                                    onSelectedAttributes: (selectedAttribute) async {
+                                      final result = await updateProductAttributes(
+                                        selectedAttribute,
+                                      );
                                       if (result != null) {
-                                        if (result.data.successMessage ==
-                                            null) {
+                                        if (result.data.successMessage == null) {
                                           CustomSnackbar.showError(
-                                              context, 'Out of stock');
+                                            context,
+                                            'Out of stock',
+                                          );
                                         }
                                         // Update selected attributes
                                         for (final attr in selectedAttribute) {
-                                          final matchingSelected = result
-                                              .data.selectedAttributes
-                                              .firstWhere(
-                                            (selected) =>
-                                                selected.setId ==
-                                                attr?['attribute_set_id'],
+                                          final matchingSelected = result.data.selectedAttributes.firstWhere(
+                                            (selected) => selected.setId == attr?['attribute_set_id'],
                                             orElse: () => SelectedAttribute(
-                                                setSlug: '',
-                                                setId: -1,
-                                                id: -1,
-                                                slug: ''),
+                                              setSlug: '',
+                                              setId: -1,
+                                              id: -1,
+                                              slug: '',
+                                            ),
                                           );
 
                                           if (matchingSelected.setId != -1) {
-                                            attr?['attribute_name'] =
-                                                matchingSelected.slug
-                                                    .toUpperCase();
-                                            attr?['attribute_slug'] =
-                                                matchingSelected.slug;
-                                            attr?['attribute_id'] =
-                                                matchingSelected.id;
+                                            attr?['attribute_name'] = matchingSelected.slug.toUpperCase();
+                                            attr?['attribute_slug'] = matchingSelected.slug;
+                                            attr?['attribute_id'] = matchingSelected.id;
                                           }
                                         }
 
                                         // Update record attributes
                                         record.attributes?.forEach((newData) {
                                           // Reset selection for all children
-                                          for (final child
-                                              in newData.children) {
+                                          for (final child in newData.children) {
                                             child.selected = false;
                                           }
 
-                                          for (final updateAttr
-                                              in selectedAttribute) {
-                                            final matchingChild =
-                                                newData.children.firstWhere(
-                                              (childData) =>
-                                                  childData.id ==
-                                                  updateAttr?['attribute_id'],
+                                          for (final updateAttr in selectedAttribute) {
+                                            final matchingChild = newData.children.firstWhere(
+                                              (childData) => childData.id == updateAttr?['attribute_id'],
                                               orElse: () => Child.defaultData(),
                                             );
 
@@ -382,17 +371,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
                                         setState(() {
                                           isAttributesChanged = true;
-                                          updateProductAttributePrice =
-                                              result.data.price.toString();
-                                          unavailableAttributes = result
-                                              .data.unavailableAttributeIds
-                                              .map((e) =>
-                                                  int.tryParse(e.toString()) ??
-                                                  0)
+                                          updateProductAttributePrice = result.data.price.toString();
+                                          unavailableAttributes = result.data.unavailableAttributeIds
+                                              .map(
+                                                (e) => int.tryParse(e.toString()) ?? 0,
+                                              )
                                               .toList();
                                           productVariationId = result.data.id;
-                                          selectedAttributes =
-                                              selectedAttribute;
+                                          selectedAttributes = selectedAttribute;
                                         });
                                       }
                                     },
@@ -403,52 +389,59 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                     screenWidth: screenWidth,
                                     selectedOptions: selectedExtraOptions,
                                     extraOptionsError: extraOptionErrorData,
-                                    onSelectedOptions: (Map<String, dynamic>
-                                        selectedExtraOptions) {
+                                    onSelectedOptions: (
+                                      Map<String, dynamic> selectedExtraOptions,
+                                    ) {
                                       setState(() {
-                                        this.selectedExtraOptions =
-                                            selectedExtraOptions;
+                                        this.selectedExtraOptions = selectedExtraOptions;
                                       });
                                     },
                                   ),
                                 Padding(
                                   padding: const EdgeInsets.only(
-                                      top: 10, right: 20, left: 20),
+                                    top: 10,
+                                    right: 20,
+                                    left: 20,
+                                  ),
                                   child: Column(
                                     children: [
                                       if (record.content.isNotEmpty)
-                                        Text('Product Details',
-                                            style: productValueItemsStyle(
-                                                context)),
+                                        Text(
+                                          AppStrings.productDetails.tr,
+                                          style: productValueItemsStyle(
+                                            context,
+                                          ),
+                                        ),
                                       Padding(
                                         padding: const EdgeInsets.only(
-                                            top: 4, right: 4, left: 4),
+                                          top: 4,
+                                          right: 4,
+                                          left: 4,
+                                        ),
                                         child: Html(
                                           data: record.content,
                                           style: {
                                             'div': Style(
                                               margin: Margins.only(bottom: 4.0),
-                                              lineHeight:
-                                                  LineHeight.number(1.4),
+                                              lineHeight: LineHeight.number(1.4),
                                               whiteSpace: WhiteSpace.normal,
                                               padding: HtmlPaddings.zero,
                                             ),
                                             'p': Style(
                                               margin: Margins.only(bottom: 4.0),
-                                              lineHeight:
-                                                  LineHeight.number(1.4),
+                                              lineHeight: LineHeight.number(1.4),
                                               padding: HtmlPaddings.zero,
                                               whiteSpace: WhiteSpace.normal,
                                             ),
                                             'li': Style(
                                               margin: Margins.only(bottom: 4.0),
-                                              lineHeight:
-                                                  LineHeight.number(1.2),
+                                              lineHeight: LineHeight.number(1.2),
                                               padding: HtmlPaddings.zero,
                                               listStyleType: ListStyleType.disc,
                                             ),
                                             'strong': Style(
-                                                fontWeight: FontWeight.w600),
+                                              fontWeight: FontWeight.w600,
+                                            ),
                                           },
                                         ),
                                       ),
@@ -471,98 +464,98 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                   ),
                                 Padding(
                                   padding: const EdgeInsets.only(
-                                      top: 20, right: 20, left: 20),
+                                    top: 20,
+                                    right: 20,
+                                    left: 20,
+                                    bottom: 100,
+                                  ),
                                   child: Column(
                                     children: [
-                                      Text('Customer Reviews',
-                                          style:
-                                              productValueItemsStyle(context)),
+                                      Text(
+                                        AppStrings.customerReviews.tr,
+                                        style: productValueItemsStyle(context),
+                                      ),
                                       Padding(
-                                          padding:
-                                              const EdgeInsets.only(top: 10),
-                                          child: Container(
-                                              height: 0.5, color: Colors.grey)),
+                                        padding: const EdgeInsets.only(top: 10),
+                                        child: Container(
+                                          height: 0.5,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
                                       Padding(
                                         padding: const EdgeInsets.only(top: 10),
                                         child: Column(
                                           children: [
                                             if (provider.isReviewLoading) ...{
                                               Container(
-                                                color: Colors
-                                                    .transparent, // Semi-transparent background
+                                                color: Colors.transparent, // Semi-transparent background
                                                 child: const Center(
-                                                  child:
-                                                      CircularProgressIndicator(
-                                                    valueColor:
-                                                        AlwaysStoppedAnimation<
-                                                                Color>(
-                                                            AppColors
-                                                                .peachyPink),
+                                                  child: CircularProgressIndicator(
+                                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                                      AppColors.peachyPink,
+                                                    ),
                                                   ),
                                                 ),
                                               ),
                                             } else ...{
-                                              if (record.review != null &&
-                                                  provider.apiReviewsResponse !=
-                                                      null) ...{
+                                              if (record.review != null && provider.apiReviewsResponse != null) ...{
                                                 CustomerReviews(
                                                   review: record.review!,
-                                                  customerReviews: provider
-                                                          .apiReviewsResponse
-                                                          ?.data
-                                                          ?.records ??
-                                                      [],
+                                                  customerReviews: provider.apiReviewsResponse?.data?.records ?? [],
                                                 ),
                                                 Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            top: 20),
-                                                    child: Container(
-                                                        height: 0.5,
-                                                        color: Colors.grey)),
+                                                  padding: const EdgeInsets.only(
+                                                    top: 20,
+                                                  ),
+                                                  child: Container(
+                                                    height: 0.5,
+                                                    color: Colors.grey,
+                                                  ),
+                                                ),
                                               },
                                             },
                                             if (record.brand != null)
                                               Padding(
                                                 padding: const EdgeInsets.only(
-                                                    top: 20),
+                                                  top: 20,
+                                                ),
                                                 child: Column(
                                                   children: [
                                                     Text(
-                                                        'ProductCode - 202t86876',
-                                                        style:
-                                                            productsReviewDescription(
-                                                                context)),
+                                                      'ProductCode - 202t86876',
+                                                      style: productsReviewDescription(
+                                                        context,
+                                                      ),
+                                                    ),
                                                     Text(
-                                                        'Selling By ${record.brand!.name}',
-                                                        style:
-                                                            productsReviewDescription(
-                                                                context)),
+                                                      '${AppStrings.sellingBy.tr} ${record.brand!.name}',
+                                                      style: productsReviewDescription(
+                                                        context,
+                                                      ),
+                                                    ),
                                                     Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                              top: 10),
+                                                      padding: const EdgeInsets.only(
+                                                        top: 10,
+                                                      ),
                                                       child: GestureDetector(
                                                         onTap: () {
                                                           Navigator.push(
                                                             context,
                                                             MaterialPageRoute(
-                                                              builder: (context) =>
-                                                                  FeaturedBrandsItemsScreen(
-                                                                      slug: record
-                                                                              .brand
-                                                                              ?.slug ??
-                                                                          ''),
+                                                              builder: (context) => FeaturedBrandsItemsScreen(
+                                                                slug: record.brand?.slug ?? '',
+                                                              ),
                                                             ),
                                                           );
                                                         },
                                                         child: Column(
                                                           children: [
                                                             Text(
-                                                                'View ${record.brand!.name}->',
-                                                                style:
-                                                                    viewShopText(
-                                                                        context)),
+                                                              '${AppStrings.view.tr} ${record.brand!.name}->',
+                                                              style: viewShopText(
+                                                                context,
+                                                              ),
+                                                            ),
                                                           ],
                                                         ),
                                                       ),
@@ -596,9 +589,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             extraOptionErrorData = errorData;
                           });
                         },
-                        productVariationID: productVariationId != -1
-                            ? productVariationId
-                            : mainRecord?.id,
+                        productVariationID: productVariationId != -1 ? productVariationId : mainRecord?.id,
                         mainProductID: mainRecord?.id,
                         wishlistProvider: wishlistProvider,
                         freshPicksProvider: freshPicksProvider,
@@ -616,12 +607,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               ),
               if (mainProvider.isOtherLoading || actionLoading)
                 Container(
-                  color: Colors.black
-                      .withOpacity(0.5), // Semi-transparent background
+                  color: Colors.black.withOpacity(0.5), // Semi-transparent background
                   child: const Center(
                     child: CircularProgressIndicator(
-                      valueColor:
-                          AlwaysStoppedAnimation<Color>(AppColors.peachyPink),
+                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.peachyPink),
                     ),
                   ),
                 ),

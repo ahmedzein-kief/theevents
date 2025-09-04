@@ -1,6 +1,8 @@
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/models/product_packages_models/product_attributes_model.dart';
 import 'package:flutter/cupertino.dart';
 
+import '../../core/constants/app_strings.dart';
 import '../../core/styles/custom_text_styles.dart';
 import 'custom_size_container.dart';
 
@@ -13,16 +15,15 @@ class ProductAttributesScreen extends StatefulWidget {
     required this.selectedAttributes,
     required this.unavailableAttributes,
   });
-  final void Function(List<Map<String, dynamic>?> selectedMethod)
-      onSelectedAttributes;
+
+  final void Function(List<Map<String, dynamic>?> selectedMethod) onSelectedAttributes;
   final double screenWidth;
   final List<ProductAttributesModel> attributes;
   final List<Map<String, dynamic>?> selectedAttributes;
   final List<int> unavailableAttributes;
 
   @override
-  State<ProductAttributesScreen> createState() =>
-      _ProductAttributesScreenState();
+  State<ProductAttributesScreen> createState() => _ProductAttributesScreenState();
 }
 
 class _ProductAttributesScreenState extends State<ProductAttributesScreen> {
@@ -41,29 +42,27 @@ class _ProductAttributesScreenState extends State<ProductAttributesScreen> {
       child: Padding(
         padding: const EdgeInsets.only(top: 10),
         child: widget.attributes.isEmpty
-            ? const Center(child: Text('No attributes available'))
+            ? Center(child: Text(AppStrings.noAttributesAvailable.tr))
             : ListView.builder(
                 shrinkWrap: true, // Allow outer ListView to shrink
-                physics:
-                    const NeverScrollableScrollPhysics(), // Disable scrolling for the outer ListView
+                physics: const NeverScrollableScrollPhysics(), // Disable scrolling for the outer ListView
                 itemCount: widget.attributes.length,
                 itemBuilder: (context, attributeIndex) {
-                  final mainCategoryAttributes =
-                      widget.attributes[attributeIndex];
+                  final mainCategoryAttributes = widget.attributes[attributeIndex];
 
                   if (mainCategoryAttributes.children.isEmpty) {
                     return const SizedBox.shrink();
                   }
 
                   return Column(
-                    mainAxisSize: MainAxisSize
-                        .min, // Allow height to be determined by content
+                    mainAxisSize: MainAxisSize.min, // Allow height to be determined by content
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
                         padding: const EdgeInsets.symmetric(
-                            vertical: 8.0), // Add margin around the text
+                          vertical: 8.0,
+                        ), // Add margin around the text
                         child: Text(
                           mainCategoryAttributes.title,
                           style: productValueItemsStyle(context),
@@ -86,89 +85,60 @@ class _ProductAttributesScreenState extends State<ProductAttributesScreen> {
                             scrollDirection: Axis.horizontal,
                             child: Row(
                               // Use Row instead of ListView
-                              children: List.generate(
-                                  mainCategoryAttributes.children.length,
-                                  (index) {
-                                final isAvailable = !widget
-                                    .unavailableAttributes
-                                    .contains(mainCategoryAttributes
-                                        .children[index].id);
+                              children: List.generate(mainCategoryAttributes.children.length, (index) {
+                                final isAvailable = !widget.unavailableAttributes.contains(
+                                  mainCategoryAttributes.children[index].id,
+                                );
 
                                 return CustomSizeContainer(
-                                  title: mainCategoryAttributes
-                                      .children[index].title,
+                                  title: mainCategoryAttributes.children[index].title,
                                   onTap: () {
                                     setState(
                                       () {
                                         // Deselect all sizes in the list
-                                        for (final value
-                                            in mainCategoryAttributes
-                                                .children) {
+                                        for (final value in mainCategoryAttributes.children) {
                                           value.selected = false;
                                         }
 
                                         // Select the current size
-                                        mainCategoryAttributes
-                                            .children[index].selected = true;
+                                        mainCategoryAttributes.children[index].selected = true;
 
-                                        final childAttributeData =
-                                            mainCategoryAttributes
-                                                .children[index];
+                                        final childAttributeData = mainCategoryAttributes.children[index];
                                         if (childAttributeData.selected) {
-                                          final attribute =
-                                              attributesMap.firstWhere(
+                                          final attribute = attributesMap.firstWhere(
                                             (data) =>
-                                                data?['attribute_category_slug']
-                                                    .toString()
-                                                    .toLowerCase() ==
-                                                mainCategoryAttributes.slug
-                                                    .toLowerCase(),
+                                                data?['attribute_category_slug'].toString().toLowerCase() ==
+                                                mainCategoryAttributes.slug.toLowerCase(),
                                             orElse: () => null,
                                           );
 
                                           if (attribute != null) {
-                                            attribute['attribute_key_name'] =
-                                                mainCategoryAttributes.keyName;
-                                            attribute[
-                                                    'attribute_category_slug'] =
-                                                mainCategoryAttributes.slug;
-                                            attribute['attribute_name'] =
-                                                childAttributeData.title;
-                                            attribute['attribute_slug'] =
-                                                childAttributeData.slug;
-                                            attribute['attribute_id'] =
-                                                childAttributeData.id;
-                                            attribute['attribute_set_id'] =
-                                                childAttributeData
-                                                    .attributeSetId;
+                                            attribute['attribute_key_name'] = mainCategoryAttributes.keyName;
+                                            attribute['attribute_category_slug'] = mainCategoryAttributes.slug;
+                                            attribute['attribute_name'] = childAttributeData.title;
+                                            attribute['attribute_slug'] = childAttributeData.slug;
+                                            attribute['attribute_id'] = childAttributeData.id;
+                                            attribute['attribute_set_id'] = childAttributeData.attributeSetId;
                                           } else {
                                             final newAttribute = {
-                                              'attribute_key_name':
-                                                  mainCategoryAttributes
-                                                      .keyName,
-                                              'attribute_category_slug':
-                                                  mainCategoryAttributes.slug,
-                                              'attribute_name':
-                                                  childAttributeData.title,
-                                              'attribute_slug':
-                                                  childAttributeData.slug,
-                                              'attribute_id':
-                                                  childAttributeData.id,
-                                              'attribute_set_id':
-                                                  childAttributeData
-                                                      .attributeSetId,
+                                              'attribute_key_name': mainCategoryAttributes.keyName,
+                                              'attribute_category_slug': mainCategoryAttributes.slug,
+                                              'attribute_name': childAttributeData.title,
+                                              'attribute_slug': childAttributeData.slug,
+                                              'attribute_id': childAttributeData.id,
+                                              'attribute_set_id': childAttributeData.attributeSetId,
                                             };
                                             attributesMap.add(newAttribute);
                                           }
                                         }
 
                                         widget.onSelectedAttributes(
-                                            attributesMap);
+                                          attributesMap,
+                                        );
                                       },
                                     );
                                   },
-                                  selected: mainCategoryAttributes
-                                      .children[index].selected,
+                                  selected: mainCategoryAttributes.children[index].selected,
                                   isAvailable: isAvailable,
                                 );
                               }),

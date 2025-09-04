@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:event_app/provider/api_response_handler.dart';
 import 'package:flutter/cupertino.dart';
@@ -26,7 +25,7 @@ class EComBrandsProvider extends ChangeNotifier {
       {int perPage = 12,
       page = 1,
       String sortBy = 'default_sorting',
-      required int id}) async {
+      required int id,}) async {
     if (page == 1) {
       _records.clear();
       _isInitialLoad = true; // Reset for new fetch
@@ -45,7 +44,7 @@ class EComBrandsProvider extends ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        final jsonResponse = json.decode(response.body);
+        final jsonResponse = response.data;
         final brandsResponse = BrandsResponse.fromJson(jsonResponse);
         if (page == 1) {
           _records = brandsResponse.data.records;

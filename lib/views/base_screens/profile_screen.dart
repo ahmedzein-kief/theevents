@@ -1,3 +1,4 @@
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/views/cart_screens/cart_items_screen.dart';
 import 'package:event_app/views/profile_page_screens/privacy_policy_screen.dart';
 import 'package:event_app/views/profile_page_screens/terms_and_condtion_screen.dart';
@@ -5,11 +6,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/constants/app_strings.dart';
+import '../../core/services/shared_preferences_helper.dart';
 import '../../core/styles/custom_text_styles.dart';
 import '../../core/widgets/custom_profile_views/custom_profile_text.dart';
+import '../../core/widgets/language_dropdown_item.dart';
 import '../../provider/auth_provider/user_auth_provider.dart';
 import '../../vendor/components/vendor_stepper_screen.dart';
 import '../auth_screens/auth_page_view.dart';
@@ -28,8 +30,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool _isLoggedIn = false;
 
   Future<void> _checkLoginStatus() async {
-    final preferences = await SharedPreferences.getInstance();
-    final bool loginStatus = preferences.getBool('isLoggedInKey') ?? false;
+    // final preferences = await SharedPreferences.getInstance();
+    // final bool loginStatus = preferences.getBool('isLoggedInKey') ?? false;
+
+    final bool loginStatus = await SecurePreferencesUtil.isLoggedIn();
     setState(() {
       _isLoggedIn = loginStatus;
     });
@@ -62,7 +66,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     alignment: Alignment.center,
                     height: 70,
                     child: Text(
-                      AppStrings.profile,
+                      AppStrings.profile.tr,
                       maxLines: 1,
                       style: profileItems(context),
                     ),
@@ -97,7 +101,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 ),
                                 // Text('Signup / Login',
                                 Text(
-                                  AppStrings.loginSignUp,
+                                  AppStrings.loginSignUp.tr,
                                   style: withoutLoginTextStyle(),
                                 ),
                               ],
@@ -129,8 +133,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               children: [
                                 Container(
                                   decoration: BoxDecoration(
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
+                                    color: Theme.of(context).colorScheme.primary,
                                     borderRadius: BorderRadius.circular(4),
                                   ),
                                   child: Column(
@@ -138,15 +141,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       Column(
                                         children: [
                                           CustomProfileText(
-                                            title: AppStrings.cart,
-                                            imagePath:
-                                                AppStrings.thirdRightIconPath,
+                                            title: AppStrings.cart.tr,
+                                            imagePath: AppStrings.thirdRightIconPath.tr,
                                             onTap: () {
                                               Navigator.push(
                                                 context,
                                                 MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      const CartItemsScreen(),
+                                                  builder: (context) => const CartItemsScreen(),
                                                 ),
                                               );
                                             },
@@ -160,13 +161,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                               children: [
                                                 SvgPicture.asset(
                                                   'assets/notification.svg',
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .onPrimary,
+                                                  color: Theme.of(context).colorScheme.onPrimary,
                                                 ),
                                                 const SizedBox(width: 20),
                                                 Text(
-                                                  'Notification',
+                                                  AppStrings.notification.tr,
                                                   style: profileItems(
                                                     context,
                                                   ),
@@ -186,6 +185,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                               ],
                                             ),
                                           ),
+                                          // const Padding(
+                                          //   padding: EdgeInsets.symmetric(
+                                          //     horizontal: 10,
+                                          //     vertical: 10,
+                                          //   ),
+                                          //   child: ThemeToggleSwitch(),
+                                          // ),
                                           Padding(
                                             padding: const EdgeInsets.symmetric(
                                               horizontal: 10,
@@ -196,8 +202,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                 Navigator.push(
                                                   context,
                                                   MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        const VendorStepperScreen(),
+                                                    builder: (context) => const VendorStepperScreen(),
                                                   ),
                                                 );
                                                 // Navigator.pushNamed(context, AppRoutes.vendorLogin);
@@ -206,13 +211,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                 children: [
                                                   SvgPicture.asset(
                                                     'assets/Join_seller.svg',
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .onPrimary,
+                                                    color: Theme.of(context).colorScheme.onPrimary,
                                                   ),
                                                   const SizedBox(width: 16),
                                                   Text(
-                                                    AppStrings.joinAsSeller,
+                                                    AppStrings.joinAsSeller.tr,
                                                     style: profileItems(
                                                       context,
                                                     ),
@@ -251,58 +254,58 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 Container(
                                   decoration: BoxDecoration(
                                     // color: Colors.white,
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
+                                    color: Theme.of(context).colorScheme.primary,
                                     borderRadius: BorderRadius.circular(5),
                                   ),
                                   child: Column(
                                     children: [
                                       Column(
                                         children: [
+                                          // CustomProfileText(
+                                          //   title: AppStrings.switchLanguage.tr,
+                                          //   imagePath: 'assets/Language.svg',
+                                          //   // iconData: Icons.arrow_forward_ios_rounded,
+                                          //   onTap: () {},
+                                          // ),
+
+                                          /// Language Dropdown
+                                          const LanguageDropdownItem(),
+
                                           CustomProfileText(
-                                            title: AppStrings.switchLanguage,
-                                            imagePath: 'assets/Language.svg',
-                                            // iconData: Icons.arrow_forward_ios_rounded,
-                                            onTap: () {},
-                                          ),
-                                          CustomProfileText(
-                                            title: AppStrings.privacyPolicy,
+                                            title: AppStrings.privacyPolicy.tr,
                                             imagePath: 'assets/Privacy.svg',
                                             // iconData: Icons.arrow_forward_ios_rounded,
                                             onTap: () {
                                               Navigator.push(
                                                 context,
                                                 CupertinoPageRoute(
-                                                  builder: (context) =>
-                                                      const PrivacyPolicyScreen(),
+                                                  builder: (context) => const PrivacyPolicyScreen(),
                                                 ),
                                               );
                                             },
                                           ),
                                           CustomProfileText(
-                                            title: AppStrings.aboutUs,
+                                            title: AppStrings.aboutUs.tr,
                                             imagePath: 'assets/Info.svg',
                                             // iconData: Icons.arrow_forward_ios_rounded,
                                             onTap: () {
                                               Navigator.push(
                                                 context,
                                                 CupertinoPageRoute(
-                                                  builder: (context) =>
-                                                      const AboutUsScreen(),
+                                                  builder: (context) => const AboutUsScreen(),
                                                 ),
                                               );
                                             },
                                           ),
                                           CustomProfileText(
-                                            title: 'Terms & Condition',
+                                            title: AppStrings.termsAndConditions.tr,
                                             imagePath: 'assets/termsandcon.svg',
                                             // iconData: Icons.arrow_forward_ios_rounded,
                                             onTap: () {
                                               Navigator.push(
                                                 context,
                                                 CupertinoPageRoute(
-                                                  builder: (context) =>
-                                                      const TermsAndCondtionScreen(),
+                                                  builder: (context) => const TermsAndCondtionScreen(),
                                                 ),
                                               );
                                             },

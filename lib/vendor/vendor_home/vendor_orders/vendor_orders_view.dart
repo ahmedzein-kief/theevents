@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/helper/mixins/media_query_mixin.dart';
 import 'package:event_app/core/styles/app_sizes.dart';
 import 'package:event_app/data/vendor/data/response/apis_status.dart';
@@ -14,6 +15,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/constants/vendor_app_strings.dart';
 import '../../../core/styles/app_colors.dart';
 import '../../../models/vendor_models/vendor_order_models/vendor_get_orders_model.dart';
 import '../../Components/utils/utils.dart';
@@ -28,8 +30,7 @@ class VendorOrdersView extends StatefulWidget {
   State<VendorOrdersView> createState() => _VendorOrdersViewState();
 }
 
-class _VendorOrdersViewState extends State<VendorOrdersView>
-    with MediaQueryMixin {
+class _VendorOrdersViewState extends State<VendorOrdersView> with MediaQueryMixin {
   /// To show modal progress hud
   bool _isProcessing = false;
 
@@ -47,8 +48,7 @@ class _VendorOrdersViewState extends State<VendorOrdersView>
 
   Future _onRefresh() async {
     try {
-      final provider =
-          Provider.of<VendorGetOrdersViewModel>(context, listen: false);
+      final provider = Provider.of<VendorGetOrdersViewModel>(context, listen: false);
 
       /// Clear list before fetching new data
       provider.clearList();
@@ -60,10 +60,8 @@ class _VendorOrdersViewState extends State<VendorOrdersView>
 
   Future<void> _loadMoreData() async {
     // Load more data here
-    if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent) {
-      final provider =
-          Provider.of<VendorGetOrdersViewModel>(context, listen: false);
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent) {
+      final provider = Provider.of<VendorGetOrdersViewModel>(context, listen: false);
       if (provider.apiResponse.status != ApiStatus.LOADING) {
         await provider.vendorGetOrders(search: _searchController.text);
       }
@@ -93,11 +91,15 @@ class _VendorOrdersViewState extends State<VendorOrdersView>
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        backgroundColor: AppColors.bgColor,
         body: Utils.modelProgressHud(
-            processing: _isProcessing,
-            child: Utils.pageRefreshIndicator(
-                onRefresh: _onRefresh, child: _buildUi(context))),
+          context: context,
+          processing: _isProcessing,
+          child: Utils.pageRefreshIndicator(
+            context: context,
+            onRefresh: _onRefresh,
+            child: _buildUi(context),
+          ),
+        ),
       );
 
   Widget _buildUi(BuildContext context) => Padding(
@@ -119,18 +121,17 @@ class _VendorOrdersViewState extends State<VendorOrdersView>
                   }
                   if (apiStatus == ApiStatus.ERROR) {
                     return ListView(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        children: [Utils.somethingWentWrong()]);
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      children: [Utils.somethingWentWrong()],
+                    );
                   }
                   return Column(
                     children: [
                       VendorDataListBuilder(
                         scrollController: _scrollController,
                         listLength: provider.list.length,
-                        loadingMoreData:
-                            provider.apiResponse.status == ApiStatus.LOADING,
-                        contentBuilder: (context) =>
-                            _buildRecordsList(provider: provider),
+                        loadingMoreData: provider.apiResponse.status == ApiStatus.LOADING,
+                        contentBuilder: (context) => _buildRecordsList(provider: provider),
                       ),
                     ],
                   );
@@ -141,8 +142,7 @@ class _VendorOrdersViewState extends State<VendorOrdersView>
         ),
       );
 
-  Widget _buildRecordsList({required VendorGetOrdersViewModel provider}) =>
-      ListView.builder(
+  Widget _buildRecordsList({required VendorGetOrdersViewModel provider}) => ListView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         itemCount: provider.list.length,
@@ -156,7 +156,8 @@ class _VendorOrdersViewState extends State<VendorOrdersView>
                 status: record.status?.label?.toString() ?? '--',
                 statusTextStyle: TextStyle(
                   color: AppColors.getOrderStatusColor(
-                      record.status?.value?.toString()),
+                    record.status?.value?.toString(),
+                  ),
                 ),
                 title: record.customerName?.toString() ?? '--',
                 leading: Text(
@@ -194,12 +195,10 @@ class _VendorOrdersViewState extends State<VendorOrdersView>
                     }
                   },
                   textEditingController: _searchController,
-                  onChanged: (value) =>
-                      debouncedSearch<VendorGetOrdersViewModel>(
+                  onChanged: (value) => debouncedSearch<VendorGetOrdersViewModel>(
                     context: context,
                     value: value,
-                    providerGetter: (context) =>
-                        context.read<VendorGetOrdersViewModel>(),
+                    providerGetter: (context) => context.read<VendorGetOrdersViewModel>(),
                     refreshFunction: _onRefresh,
                   ),
                 ),
@@ -209,8 +208,10 @@ class _VendorOrdersViewState extends State<VendorOrdersView>
         ],
       );
 
-  void _onRowTap(
-      {required BuildContext context, required OrderRecords rowData}) {
+  void _onRowTap({
+    required BuildContext context,
+    required OrderRecords rowData,
+  }) {
     /// showing through bottom sheet
     showModalBottomSheet(
       context: context,
@@ -219,8 +220,9 @@ class _VendorOrdersViewState extends State<VendorOrdersView>
         onClosing: () {},
         builder: (context) => Container(
           decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(kCardRadius)),
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(kCardRadius),
+          ),
           child: SafeArea(
             child: Padding(
               padding: EdgeInsets.all(kSmallPadding),
@@ -228,37 +230,49 @@ class _VendorOrdersViewState extends State<VendorOrdersView>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    buildRow('ID', rowData.id?.toString()),
-                    buildRow('Customer', rowData.customerName?.toString()),
-                    buildRow('Amount', rowData.amountFormat.toString()),
-                    buildRow('Tax Amount', rowData.taxAmountFormat.toString()),
-                    buildRow('Shipping Amount',
-                        rowData.shippingAmountFormat.toString()),
+                    buildRow(VendorAppStrings.id.tr, rowData.id?.toString()),
                     buildRow(
-                        'Payment Method',
-                        (rowData.paymentMethod?.value == null)
-                            ? '--'
-                            : rowData.paymentMethod?.label?.toString()),
+                      VendorAppStrings.customer.tr,
+                      rowData.customerName?.toString(),
+                    ),
+                    buildRow(
+                      VendorAppStrings.amount.tr,
+                      rowData.amountFormat.toString(),
+                    ),
+                    buildRow(
+                      VendorAppStrings.taxAmount.tr,
+                      rowData.taxAmountFormat.toString(),
+                    ),
+                    buildRow(
+                      VendorAppStrings.shippingAmount.tr,
+                      rowData.shippingAmountFormat.toString(),
+                    ),
+                    buildRow(
+                      'Payment Method',
+                      (rowData.paymentMethod?.value == null) ? '--' : rowData.paymentMethod?.label?.toString(),
+                    ),
                     buildStatusRow(
                       label: 'Payment Status',
-                      buttonText: (rowData.paymentStatus?.value == null)
-                          ? '--'
-                          : rowData.paymentStatus!.label!,
+                      buttonText: (rowData.paymentStatus?.value == null) ? '--' : rowData.paymentStatus!.label!,
                       color: AppColors.getPaymentStatusColor(
-                          rowData.paymentStatus?.value),
-                      textColor: (rowData.paymentStatus?.value == null)
-                          ? AppColors.stoneGray
-                          : Colors.white,
+                        rowData.paymentStatus?.value,
+                      ),
+                      textColor: (rowData.paymentStatus?.value == null) ? AppColors.stoneGray : Colors.white,
                     ),
                     const Divider(
                       thickness: 0.1,
                     ),
-                    buildRow('Created At', rowData.createdAt.toString() ?? ''),
+                    buildRow(
+                      VendorAppStrings.createdAt.tr,
+                      rowData.createdAt.toString() ?? '',
+                    ),
                     buildStatusRow(
-                        label: 'Status',
-                        buttonText: rowData.status?.label?.toString() ?? '',
-                        color: AppColors.getOrderStatusColor(
-                            rowData.status?.value)),
+                      label: 'Status',
+                      buttonText: rowData.status?.label?.toString() ?? '',
+                      color: AppColors.getOrderStatusColor(
+                        rowData.status?.value,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -275,13 +289,13 @@ class _VendorOrdersViewState extends State<VendorOrdersView>
       onDelete: () async {
         _setDeletionProcessing(rowData: rowData, processing: true);
         Navigator.of(context).pop();
-        final VendorGetOrdersViewModel provider =
-            context.read<VendorGetOrdersViewModel>();
-        final VendorDeleteOrderViewModel deleteOrderProvider =
-            context.read<VendorDeleteOrderViewModel>();
+        final VendorGetOrdersViewModel provider = context.read<VendorGetOrdersViewModel>();
+        final VendorDeleteOrderViewModel deleteOrderProvider = context.read<VendorDeleteOrderViewModel>();
 
         final bool result = await deleteOrderProvider.vendorDeleteOrder(
-            orderID: rowData.id.toString(), context: context);
+          orderID: rowData.id.toString(),
+          context: context,
+        );
 
         /// Fetch the viewmodel for deleting the record
         if (result) {
@@ -295,14 +309,18 @@ class _VendorOrdersViewState extends State<VendorOrdersView>
 
   Future<void> _onEditRecord({required OrderRecords rowData}) async {
     /// Move to Edit Order View
-    Navigator.of(context).push(CupertinoPageRoute(
-        builder: (context) =>
-            VendorEditOrderView(orderID: rowData.id.toString())));
+    Navigator.of(context).push(
+      CupertinoPageRoute(
+        builder: (context) => VendorEditOrderView(orderID: rowData.id.toString()),
+      ),
+    );
   }
 
   /// maintain the deletion indicator visibility by calling setState.
-  void _setDeletionProcessing(
-      {required OrderRecords rowData, required bool processing}) {
+  void _setDeletionProcessing({
+    required OrderRecords rowData,
+    required bool processing,
+  }) {
     setState(() {
       rowData.isDeleting = processing;
       // setProcessing(processing); /// To show model progress hud. toggle this if don't want to show progress hud.

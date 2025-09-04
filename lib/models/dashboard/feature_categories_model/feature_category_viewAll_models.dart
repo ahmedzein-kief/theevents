@@ -34,7 +34,7 @@ class Pagination {
       {required this.total,
       required this.lastPage,
       required this.currentPage,
-      required this.perPage});
+      required this.perPage,});
 
   factory Pagination.fromJson(Map<String, dynamic> json) => Pagination(
         total: json['total'],

@@ -71,7 +71,7 @@ class Data {
         salePercentage: json['sale_percentage'],
         selectedAttributes: List<SelectedAttribute>.from(
             json['selected_attributes']
-                .map((x) => SelectedAttribute.fromJson(x))),
+                .map((x) => SelectedAttribute.fromJson(x)),),
         stockStatusLabel: json['stock_status_label'],
         stockStatusHtml: json['stock_status_html'],
         successMessage: json['success_message'],

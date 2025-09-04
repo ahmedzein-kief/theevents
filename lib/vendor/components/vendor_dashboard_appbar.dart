@@ -72,7 +72,7 @@ class CustomAppBarVendor extends StatelessWidget implements PreferredSizeWidget 
                       children: [
                         Icon(Icons.file_download_outlined, color: Theme.of(context).colorScheme.onPrimary),
                         const SizedBox(width: 2),
-                        Text(AppStrings.vendor_agreement, style: profileItems(context)),
+                        Text(AppStrings.vendor_agreement.tr, style: profileItems(context)),
 
                         // Icon(iconData, color: iconColor, size: iconSize,),
                       ],
@@ -103,14 +103,13 @@ class CustomAppBarVendor extends StatelessWidget implements PreferredSizeWidget 
 }
 */
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:event_app/core/styles/app_colors.dart';
-import 'package:event_app/core/styles/custom_text_styles.dart';
-import 'package:event_app/vendor/components/vendor_text_style.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class CustomAppBarVendor extends StatelessWidget
-    implements PreferredSizeWidget {
+import '../../core/styles/custom_text_styles.dart';
+import '../Components/vendor_text_style.dart';
+
+class CustomAppBarVendor extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppBarVendor({
     super.key,
     this.isShowBack = false,
@@ -119,6 +118,7 @@ class CustomAppBarVendor extends StatelessWidget
     this.subtitleText,
     this.onSubtitleTap,
   });
+
   final String? imageUrl;
   final String? titleText;
   final String? subtitleText;
@@ -128,79 +128,115 @@ class CustomAppBarVendor extends StatelessWidget
   @override
   Widget build(BuildContext context) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Column(
           children: [
-            // Profile Image
-            SizedBox(
-              width: 50,
-              height: 50,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(35),
-                child: CachedNetworkImage(
-                  imageUrl: imageUrl ?? '',
-                  fit: BoxFit.cover,
-                  errorWidget: (context, url, error) => Image.asset(
-                    'assets/boy.png',
-                    width: 40,
-                    height: 50,
-                    fit: BoxFit.contain,
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(width: 10),
-
-            // Title & Subtitle
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (titleText != null)
-                    Text(
-                      titleText!,
-                      style: vendorName(context)
-                          .copyWith(color: AppColors.semiTransparentBlack),
-                    ),
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  if (subtitleText != null)
-                    GestureDetector(
-                      onTap: onSubtitleTap,
-                      child: Row(
-                        children: [
-                          Icon(Icons.file_download_outlined,
-                              color: Theme.of(context).colorScheme.onPrimary),
-                          const SizedBox(width: 2),
-                          Text(
-                            subtitleText!,
-                            style: profileItems(context).copyWith(
-                              decoration: TextDecoration.underline,
-                            ),
-                          ),
-                        ],
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // Profile Image
+                SizedBox(
+                  width: 50,
+                  height: 50,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(35),
+                    child: CachedNetworkImage(
+                      imageUrl: imageUrl ?? '',
+                      fit: BoxFit.cover,
+                      errorWidget: (context, url, error) => Image.asset(
+                        'assets/boy.png',
+                        width: 40,
+                        height: 50,
+                        fit: BoxFit.contain,
                       ),
                     ),
-                ],
-              ),
-            ),
-
-            // Fixed Clear Button on Right
-            if (isShowBack)
-              GestureDetector(
-                onTap: () {
-                  Navigator.pop(context);
-                },
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 4),
-                  child: Icon(
-                    CupertinoIcons.clear_thick,
-                    size: 20,
-                    color: Theme.of(context).colorScheme.onPrimary,
                   ),
                 ),
-              ),
+                const SizedBox(width: 10),
+
+                // Title & Subtitle
+                // Expanded(
+                //   child: Column(
+                //     crossAxisAlignment: CrossAxisAlignment.start,
+                //     children: [
+                //       if (titleText != null)
+                //         Text(
+                //           titleText!,
+                //           style: vendorName(context).copyWith(color: AppColors.semiTransparentBlack),
+                //         ),
+                //       const SizedBox(
+                //         height: 8,
+                //       ),
+                //       if (subtitleText != null)
+                //         GestureDetector(
+                //           onTap: onSubtitleTap,
+                //           child: Row(
+                //             children: [
+                //               Icon(Icons.file_download_outlined, color: Theme.of(context).colorScheme.onPrimary),
+                //               const SizedBox(width: 2),
+                //               Text(
+                //                 subtitleText!,
+                //                 style: profileItems(context).copyWith(
+                //                   decoration: TextDecoration.underline,
+                //                 ),
+                //               ),
+                //             ],
+                //           ),
+                //         ),
+                //     ],
+                //   ),
+                // ),
+
+                // Fixed Clear Button on Right
+                if (isShowBack)
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 4),
+                      child: Icon(
+                        CupertinoIcons.clear_thick,
+                        size: 20,
+                        color: Theme.of(context).colorScheme.onPrimary,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (titleText != null)
+                  Text(
+                    titleText!,
+                    style: vendorName(context),
+                  ),
+                const SizedBox(
+                  height: 8,
+                ),
+                if (subtitleText != null)
+                  GestureDetector(
+                    onTap: onSubtitleTap,
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.file_download_outlined,
+                          color: Theme.of(context).colorScheme.onPrimary,
+                        ),
+                        const SizedBox(width: 2),
+                        Text(
+                          subtitleText!,
+                          style: profileItems(context).copyWith(
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
           ],
         ),
       );

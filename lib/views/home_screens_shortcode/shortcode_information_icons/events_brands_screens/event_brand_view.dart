@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/views/base_screens/base_app_bar.dart';
 import 'package:event_app/views/product_detail_screens/product_detail_screen.dart';
 import 'package:flutter/cupertino.dart';
@@ -18,7 +19,7 @@ import '../../../../provider/home_information_icon_events_brands/product_package
 import '../../../../provider/shortcode_fresh_picks_provider/fresh_picks_provider.dart';
 import '../../../../provider/wishlist_items_provider/wishlist_provider.dart';
 import '../../../filters/product_filters_screen.dart';
-import '../../../filters/product_sorting.dart';
+import '../../../filters/sort_an_filter_widget.dart';
 
 class EventBrandScreen extends StatefulWidget {
   const EventBrandScreen({super.key});
@@ -65,8 +66,7 @@ class _EventBrandScreenState extends State<EventBrandScreen> {
 
   void _onScrollPackages() {
     if (_isFetchingMorePackages) return;
-    if (_scrollController.offset >=
-            _scrollController.position.maxScrollExtent &&
+    if (_scrollController.offset >= _scrollController.position.maxScrollExtent &&
         !_scrollController.position.outOfRange) {
       _currentPagePackages++;
       _isFetchingMorePackages = true;
@@ -81,8 +81,7 @@ class _EventBrandScreenState extends State<EventBrandScreen> {
       setState(() {
         _isFetchingMorePackages = true;
       });
-      await Provider.of<EventsBrandProductProvider>(context, listen: false)
-          .fetchBrandsPackages(
+      await Provider.of<EventsBrandProductProvider>(context, listen: false).fetchBrandsPackages(
         perPage: 12,
         page: _currentPagePackages,
         sortBy: _selectedSortBy,
@@ -138,9 +137,7 @@ class _EventBrandScreenState extends State<EventBrandScreen> {
         _currentPageProducts = 1;
 
         /// Reset to the first page
-        Provider.of<EventsBrandProductProvider>(context, listen: false)
-            .records
-            .clear(); //
+        Provider.of<EventsBrandProductProvider>(context, listen: false).records.clear(); //
       });
     }
     fetchBrandProductItemsData();
@@ -149,8 +146,7 @@ class _EventBrandScreenState extends State<EventBrandScreen> {
   /// ------------   PRODUCTS SCROLLING FUNCTION   ------------
   void _onScroll() {
     if (_isFetchingMoreProducts) return;
-    if (_scrollController.offset >=
-            _scrollController.position.maxScrollExtent &&
+    if (_scrollController.offset >= _scrollController.position.maxScrollExtent &&
         !_scrollController.position.outOfRange) {
       if (mounted) {
         setState(() {
@@ -166,8 +162,7 @@ class _EventBrandScreenState extends State<EventBrandScreen> {
 
   Future<void> fetchBrandProductItemsData() async {
     try {
-      await Provider.of<EventsBrandProductProvider>(context, listen: false)
-          .fetchBrandsProducts(
+      await Provider.of<EventsBrandProductProvider>(context, listen: false).fetchBrandsProducts(
         perPage: 12,
         page: _currentPageProducts,
         sortBy: _selectedSortBy,
@@ -192,25 +187,27 @@ class _EventBrandScreenState extends State<EventBrandScreen> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.sizeOf(context).width;
     final screenHeight = MediaQuery.sizeOf(context).height;
-    final wishlistProvider =
-        Provider.of<WishlistProvider>(context, listen: true);
-    final freshListProvider =
-        Provider.of<FreshPicksProvider>(context, listen: true);
+    final wishlistProvider = Provider.of<WishlistProvider>(context, listen: true);
+    final freshListProvider = Provider.of<FreshPicksProvider>(context, listen: true);
     final cartProvider = Provider.of<CartProvider>(context, listen: true);
     return BaseAppBar(
-      textBack: AppStrings.back,
+      textBack: AppStrings.back.tr,
       customBackIcon: const Icon(Icons.arrow_back_ios_sharp, size: 16),
-      firstRightIconPath: AppStrings.firstRightIconPath,
-      secondRightIconPath: AppStrings.secondRightIconPath,
-      thirdRightIconPath: AppStrings.thirdRightIconPath,
+      firstRightIconPath: AppStrings.firstRightIconPath.tr,
+      secondRightIconPath: AppStrings.secondRightIconPath.tr,
+      thirdRightIconPath: AppStrings.thirdRightIconPath.tr,
       body: Scaffold(
         body: SafeArea(
           child: Stack(
             children: [
               Consumer<EventsBrandProvider>(
-                builder: (BuildContext context, EventsBrandProvider provider,
-                    Widget? child) {
+                builder: (
+                  BuildContext context,
+                  EventsBrandProvider provider,
+                  Widget? child,
+                ) {
                   final event = provider.eventsBrand?.data;
+
                   if (provider.isLoading) {
                     return const Center(
                       child: CircularProgressIndicator(
@@ -232,8 +229,9 @@ class _EventBrandScreenState extends State<EventBrandScreen> {
                           controller: _scrollController,
                           child: Padding(
                             padding: EdgeInsets.symmetric(
-                                horizontal: screenWidth * 0.02,
-                                vertical: screenHeight * 0.02),
+                              horizontal: screenWidth * 0.02,
+                              vertical: screenHeight * 0.02,
+                            ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.start,
@@ -246,30 +244,21 @@ class _EventBrandScreenState extends State<EventBrandScreen> {
                                     height: 100,
                                     fit: BoxFit.cover,
                                     width: double.infinity,
-                                    placeholder:
-                                        (BuildContext context, String url) =>
-                                            Container(
-                                      height:
-                                          MediaQuery.sizeOf(context).height *
-                                              0.28,
+                                    placeholder: (BuildContext context, String url) => Container(
+                                      height: MediaQuery.sizeOf(context).height * 0.28,
                                       width: double.infinity,
-                                      color: Colors
-                                          .blueGrey[300], // Background color
+                                      color: Colors.blueGrey[300], // Background color
                                       child: Stack(
                                         alignment: Alignment.center,
                                         children: [
                                           Image.asset(
                                             'assets/placeholder.png', // Replace with your actual image path
-                                            fit: BoxFit
-                                                .cover, // Adjust fit if needed
-                                            height: MediaQuery.sizeOf(context)
-                                                    .height *
-                                                0.28,
+                                            fit: BoxFit.cover, // Adjust fit if needed
+                                            height: MediaQuery.sizeOf(context).height * 0.28,
                                             width: double.infinity,
                                           ),
                                           const CupertinoActivityIndicator(
-                                            radius:
-                                                16, // Adjust size of the loader
+                                            radius: 16, // Adjust size of the loader
                                             animating: true,
                                           ),
                                         ],
@@ -287,10 +276,8 @@ class _EventBrandScreenState extends State<EventBrandScreen> {
                                     Padding(
                                       padding: const EdgeInsets.only(top: 20),
                                       child: Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        mainAxisAlignment: MainAxisAlignment.start,
                                         children: <Widget>[
                                           GestureDetector(
                                             onTap: () {
@@ -302,32 +289,28 @@ class _EventBrandScreenState extends State<EventBrandScreen> {
                                               // padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
                                               decoration: BoxDecoration(
                                                 border: Border.all(
-                                                    color: _currentTab ==
-                                                            'Products'
-                                                        ? Colors.grey
-                                                        : Colors.transparent),
-                                                borderRadius:
-                                                    const BorderRadius.only(
-                                                        topRight:
-                                                            Radius.circular(10),
-                                                        topLeft:
-                                                            Radius.circular(
-                                                                10)),
+                                                  color: _currentTab == 'Products' ? Colors.grey : Colors.transparent,
+                                                ),
+                                                borderRadius: const BorderRadius.only(
+                                                  topRight: Radius.circular(10),
+                                                  topLeft: Radius.circular(
+                                                    10,
+                                                  ),
+                                                ),
                                               ),
                                               child: Column(
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: [
                                                   Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(4),
+                                                    padding: const EdgeInsets.all(4),
                                                     child: Text(
-                                                      'Products',
+                                                      AppStrings.products.tr,
                                                       style: topTabBarStyle(
-                                                          context),
+                                                        context,
+                                                      ),
                                                     ),
                                                   ),
-                                                  if (_currentTab == 'Products')
-                                                    Container(),
+                                                  if (_currentTab == 'Products') Container(),
                                                 ],
                                               ),
                                             ),
@@ -342,13 +325,9 @@ class _EventBrandScreenState extends State<EventBrandScreen> {
                                               // padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                                               decoration: BoxDecoration(
                                                 border: Border.all(
-                                                  color:
-                                                      _currentTab == 'Packages'
-                                                          ? Colors.grey
-                                                          : Colors.transparent,
+                                                  color: _currentTab == 'Packages' ? Colors.grey : Colors.transparent,
                                                 ),
-                                                borderRadius:
-                                                    const BorderRadius.only(
+                                                borderRadius: const BorderRadius.only(
                                                   topRight: Radius.circular(10),
                                                   topLeft: Radius.circular(10),
                                                 ),
@@ -357,16 +336,15 @@ class _EventBrandScreenState extends State<EventBrandScreen> {
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: [
                                                   Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(4),
+                                                    padding: const EdgeInsets.all(4),
                                                     child: Text(
-                                                      'Packages',
+                                                      AppStrings.packages.tr,
                                                       style: topTabBarStyle(
-                                                          context),
+                                                        context,
+                                                      ),
                                                     ),
                                                   ),
-                                                  if (_currentTab == 'Packages')
-                                                    const SizedBox.shrink(),
+                                                  if (_currentTab == 'Packages') const SizedBox.shrink(),
                                                 ],
                                               ),
                                             ),
@@ -387,10 +365,7 @@ class _EventBrandScreenState extends State<EventBrandScreen> {
                                 ),
 
                                 ///======  TAB PAGES VIEW =================================
-                                if (_currentTab == 'Products')
-                                  _ProductsView()
-                                else
-                                  _PackagesView(),
+                                if (_currentTab == 'Products') _ProductsView() else _PackagesView(),
                               ],
                             ),
                           ),
@@ -400,16 +375,12 @@ class _EventBrandScreenState extends State<EventBrandScreen> {
                   );
                 },
               ),
-              if (wishlistProvider.isLoading ||
-                  freshListProvider.isLoading ||
-                  cartProvider.isLoading)
+              if (wishlistProvider.isLoading || freshListProvider.isLoading || cartProvider.isLoading)
                 Container(
-                  color: Colors.black
-                      .withOpacity(0.5), // Semi-transparent background
+                  color: Colors.black.withOpacity(0.5), // Semi-transparent background
                   child: const Center(
                     child: CircularProgressIndicator(
-                      valueColor:
-                          AlwaysStoppedAnimation<Color>(AppColors.peachyPink),
+                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.peachyPink),
                     ),
                   ),
                 ),
@@ -424,10 +395,8 @@ class _EventBrandScreenState extends State<EventBrandScreen> {
   Widget _ProductsView() {
     final double screenHeight = MediaQuery.sizeOf(context).height;
     final double screenWidth = MediaQuery.sizeOf(context).width;
-    final freshPicksProvider =
-        Provider.of<FreshPicksProvider>(context, listen: false);
-    final wishlistProvider =
-        Provider.of<WishlistProvider>(context, listen: false);
+    final freshPicksProvider = Provider.of<FreshPicksProvider>(context, listen: false);
+    final wishlistProvider = Provider.of<WishlistProvider>(context, listen: false);
     final cartProvider = Provider.of<CartProvider>(context, listen: false);
     return Column(
       mainAxisSize: MainAxisSize.max,
@@ -438,18 +407,22 @@ class _EventBrandScreenState extends State<EventBrandScreen> {
           builder: (context, provider, child) {
             if (provider.isLoadingProducts && _currentPageProducts == 1) {
               return const Center(
-                  child: CircularProgressIndicator(
-                      color: Colors.black, strokeWidth: 0.5));
+                child: CircularProgressIndicator(
+                  color: Colors.black,
+                  strokeWidth: 0.5,
+                ),
+              );
             } else {
               return Padding(
                 padding: EdgeInsets.symmetric(
-                    horizontal: screenWidth * 0.0,
-                    vertical: screenHeight * 0.01),
+                  horizontal: screenWidth * 0.0,
+                  vertical: screenHeight * 0.01,
+                ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    SortAndFilterDropdown(
+                    SortAndFilterWidget(
                       selectedSortBy: _selectedSortBy,
                       onSortChanged: (newSortBy) {
                         _onSortChanged(newSortBy);
@@ -461,14 +434,15 @@ class _EventBrandScreenState extends State<EventBrandScreen> {
                           builder: (context) => FilterBottomSheet(
                             filters: provider.productFilters,
                             selectedIds: selectedFilters,
-                          ), // Show the filter bottom sheet
+                          ),
                         ).then((result) {
-                          setState(() {
-                            _currentPageProducts = 1;
-                            selectedFilters =
-                                result; // Store the selected filter IDs
-                          });
-                          fetchBrandProductItemsData();
+                          if (result != null) {
+                            setState(() {
+                              _currentPageProducts = 1;
+                              selectedFilters = result;
+                            });
+                            fetchBrandProductItemsData();
+                          }
                         });
                       },
                     ),
@@ -476,19 +450,17 @@ class _EventBrandScreenState extends State<EventBrandScreen> {
                       const ItemsEmptyView()
                     else
                       GridView.builder(
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                                childAspectRatio: 0.6,
-                                mainAxisSpacing: 10,
-                                crossAxisSpacing: 10),
-                        itemCount: provider.records.length +
-                            (_isFetchingMoreProducts ? 1 : 0),
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 0.6,
+                          mainAxisSpacing: 10,
+                          crossAxisSpacing: 10,
+                        ),
+                        itemCount: provider.records.length + (_isFetchingMoreProducts ? 1 : 0),
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
                         itemBuilder: (context, index) {
-                          if (_isFetchingMoreProducts &&
-                              index == provider.records.length) {
+                          if (_isFetchingMoreProducts && index == provider.records.length) {
                             return const Align(
                               alignment: Alignment.center,
                               child: Column(
@@ -513,17 +485,13 @@ class _EventBrandScreenState extends State<EventBrandScreen> {
 
                           /// Calculate the percentage off
                           /// Check if both frontSalePrice and price are non-null and non-zero to avoid division by zero
-                          final dynamic frontSalePrice =
-                              product.prices?.frontSalePrice;
+                          final dynamic frontSalePrice = product.prices?.frontSalePrice;
                           final dynamic price = product.prices?.price;
                           String offPercentage = '';
 
-                          if (frontSalePrice != null &&
-                              price != null &&
-                              price > 0) {
+                          if (frontSalePrice != null && price != null && price > 0) {
                             // Calculate the discount percentage
-                            final dynamic discount =
-                                100 - ((frontSalePrice / price) * 100);
+                            final dynamic discount = 100 - ((frontSalePrice / price) * 100);
                             // offPercentage = discount.toStringAsFixed(0);
                             if (discount > 0) {
                               offPercentage = discount.toStringAsFixed(0);
@@ -544,57 +512,56 @@ class _EventBrandScreenState extends State<EventBrandScreen> {
                             },
                             child: ProductCard(
                               isOutOfStock: product.outOfStock ?? false,
-                              off: offPercentage.isNotEmpty
-                                  ? '$offPercentage%off'
-                                  : '',
+                              off: offPercentage.isNotEmpty ? '$offPercentage%off' : '',
                               // Display the discount percentage
-                              priceWithTaxes:
-                                  (product.prices?.frontSalePrice ?? 0) <
-                                          (product.prices?.price ?? 0)
-                                      ? product.prices!.priceWithTaxes
-                                      : null,
+                              priceWithTaxes: (product.prices?.frontSalePrice ?? 0) < (product.prices?.price ?? 0)
+                                  ? product.prices!.priceWithTaxes
+                                  : null,
                               itemsId: 0,
                               imageUrl: product.image,
-                              frontSalePriceWithTaxes:
-                                  product.review?.rating?.toString() ?? '0',
+                              frontSalePriceWithTaxes: product.review?.rating?.toString() ?? '0',
                               name: product.name,
                               storeName: product.store?.name.toString(),
                               price: product.prices?.price.toString(),
-                              optionalIcon:
-                                  Icons.shopping_cart_checkout_rounded,
-                              reviewsCount:
-                                  product.review?.reviewsCount?.toInt(),
+                              optionalIcon: Icons.shopping_cart_checkout_rounded,
+                              reviewsCount: product.review?.reviewsCount?.toInt(),
                               onOptionalIconTap: () async {
-                                final token =
-                                    await SecurePreferencesUtil.getToken();
+                                final token = await SecurePreferencesUtil.getToken();
                                 if (token != null) {
                                   await cartProvider.addToCart(
-                                      product.id, context, 1);
+                                    product.id,
+                                    context,
+                                    1,
+                                  );
                                 }
                               },
-                              isHeartObscure: wishlistProvider
-                                      .wishlist?.data?.products
-                                      .any((wishlistProduct) =>
-                                          wishlistProduct.id == product.id) ??
+                              isHeartObscure: wishlistProvider.wishlist?.data?.products.any(
+                                    (wishlistProduct) => wishlistProduct.id == product.id,
+                                  ) ??
                                   false,
                               // isHeartObscure: wishlistProvider.wishlist?.data?.products.any((wishlistProduct) => wishlistProduct.id == product.id) ?? false,
                               onHeartTap: () async {
-                                final token =
-                                    await SecurePreferencesUtil.getToken();
-                                final bool isInWishlist = wishlistProvider
-                                        .wishlist?.data?.products
-                                        .any((wishlistProduct) =>
-                                            wishlistProduct.id == product.id) ??
+                                final token = await SecurePreferencesUtil.getToken();
+                                final bool isInWishlist = wishlistProvider.wishlist?.data?.products.any(
+                                      (wishlistProduct) => wishlistProduct.id == product.id,
+                                    ) ??
                                     false;
                                 if (isInWishlist) {
                                   await wishlistProvider.deleteWishlistItem(
-                                      product.id ?? 0, context, token ?? '');
+                                    product.id ?? 0,
+                                    context,
+                                    token ?? '',
+                                  );
                                 } else {
                                   await freshPicksProvider.handleHeartTap(
-                                      context, product.id ?? 0);
+                                    context,
+                                    product.id ?? 0,
+                                  );
                                 }
                                 await wishlistProvider.fetchWishlist(
-                                    token ?? '', context);
+                                  token ?? '',
+                                  context,
+                                );
                               },
                             ),
                           );
@@ -615,29 +582,33 @@ class _EventBrandScreenState extends State<EventBrandScreen> {
     final dynamic screenHeight = MediaQuery.sizeOf(context).height;
     final freshPicksProvider = Provider.of<FreshPicksProvider>(context);
     final cartProvider = Provider.of<CartProvider>(context, listen: false);
-    final wishlistProvider =
-        Provider.of<WishlistProvider>(context, listen: false);
+    final wishlistProvider = Provider.of<WishlistProvider>(context, listen: false);
 
     return Center(
       child: Consumer<EventsBrandProductProvider>(
         builder: (context, provider, child) {
           if (provider.isLoadingPackages && _currentPagePackages == 1) {
             return const Center(
-                child: CircularProgressIndicator(
-                    color: Colors.black, strokeWidth: 0.5));
+              child: CircularProgressIndicator(
+                color: Colors.black,
+                strokeWidth: 0.5,
+              ),
+            );
           } else if (provider.recordsPackages.isEmpty) {
             return Padding(
               padding: EdgeInsets.only(
-                  top: screenHeight * 0.04,
-                  left: screenWidth * 0.02,
-                  right: screenWidth * 0.02),
+                top: screenHeight * 0.04,
+                left: screenWidth * 0.02,
+                right: screenWidth * 0.02,
+              ),
               child: Container(
                 width: screenWidth,
                 height: 50,
                 decoration: const BoxDecoration(color: AppColors.lightCoral),
-                child: const Align(
-                    alignment: Alignment.center,
-                    child: Text('No records found!')),
+                child: Align(
+                  alignment: Alignment.center,
+                  child: Text(AppStrings.noRecordsFound.tr),
+                ),
               ),
             );
           } else {
@@ -656,39 +627,68 @@ class _EventBrandScreenState extends State<EventBrandScreen> {
                     },
                     items: [
                       DropdownMenuItem(
-                          value: 'default_sorting',
-                          child: Text('Default Sorting',
-                              style: sortingStyle(context))),
+                        value: 'default_sorting',
+                        child: Text(
+                          AppStrings.sortByDefault.tr,
+                          style: sortingStyle(context),
+                        ),
+                      ),
                       DropdownMenuItem(
-                          value: 'date_asc',
-                          child: Text('Oldest', style: sortingStyle(context))),
+                        value: 'date_asc',
+                        child: Text(
+                          AppStrings.sortByOldest.tr,
+                          style: sortingStyle(context),
+                        ),
+                      ),
                       DropdownMenuItem(
-                          value: 'date_desc',
-                          child: Text('Newest', style: sortingStyle(context))),
+                        value: 'date_desc',
+                        child: Text(
+                          AppStrings.sortByNewest.tr,
+                          style: sortingStyle(context),
+                        ),
+                      ),
                       DropdownMenuItem(
-                          value: 'name_asc',
-                          child:
-                              Text('Name: A-Z', style: sortingStyle(context))),
+                        value: 'name_asc',
+                        child: Text(
+                          AppStrings.sortByNameAz.tr,
+                          style: sortingStyle(context),
+                        ),
+                      ),
                       DropdownMenuItem(
-                          value: 'name_desc',
-                          child:
-                              Text('Name: Z-A', style: sortingStyle(context))),
+                        value: 'name_desc',
+                        child: Text(
+                          AppStrings.sortByNameZa.tr,
+                          style: sortingStyle(context),
+                        ),
+                      ),
                       DropdownMenuItem(
-                          value: 'price_asc',
-                          child: Text('Price: low to high',
-                              style: sortingStyle(context))),
+                        value: 'price_asc',
+                        child: Text(
+                          AppStrings.sortByPriceLowToHigh.tr,
+                          style: sortingStyle(context),
+                        ),
+                      ),
                       DropdownMenuItem(
-                          value: 'price_desc',
-                          child: Text('Price: high to low',
-                              style: sortingStyle(context))),
+                        value: 'price_desc',
+                        child: Text(
+                          AppStrings.sortByPriceHighToLow.tr,
+                          style: sortingStyle(context),
+                        ),
+                      ),
                       DropdownMenuItem(
-                          value: 'rating_asc',
-                          child: Text('Rating: low to high',
-                              style: sortingStyle(context))),
+                        value: 'rating_asc',
+                        child: Text(
+                          AppStrings.sortByRatingLowToHigh.tr,
+                          style: sortingStyle(context),
+                        ),
+                      ),
                       DropdownMenuItem(
-                          value: 'rating_desc',
-                          child: Text('Rating: high to low',
-                              style: sortingStyle(context))),
+                        value: 'rating_desc',
+                        child: Text(
+                          AppStrings.sortByRatingHighToLow.tr,
+                          style: sortingStyle(context),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -699,27 +699,23 @@ class _EventBrandScreenState extends State<EventBrandScreen> {
                       Column(
                         children: [
                           GridView.builder(
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 2,
-                                    childAspectRatio: 0.6,
-                                    mainAxisSpacing: 10,
-                                    crossAxisSpacing: 10),
+                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              childAspectRatio: 0.6,
+                              mainAxisSpacing: 10,
+                              crossAxisSpacing: 10,
+                            ),
                             itemCount: provider.recordsPackages.length,
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
                             itemBuilder: (context, index) {
                               final product = provider.recordsPackages[index];
-                              final dynamic frontSalePrice =
-                                  product.prices?.frontSalePrice;
+                              final dynamic frontSalePrice = product.prices?.frontSalePrice;
                               final dynamic price = product.prices?.price;
                               String offPercentage = '';
 
-                              if (frontSalePrice != null &&
-                                  price != null &&
-                                  price > 0) {
-                                final dynamic discount =
-                                    100 - ((frontSalePrice / price) * 100);
+                              if (frontSalePrice != null && price != null && price > 0) {
+                                final dynamic discount = 100 - ((frontSalePrice / price) * 100);
                                 // offPercentage = discount.toStringAsFixed(0);
                                 if (discount > 0) {
                                   offPercentage = discount.toStringAsFixed(0);
@@ -740,61 +736,56 @@ class _EventBrandScreenState extends State<EventBrandScreen> {
                                 },
                                 child: ProductCard(
                                   isOutOfStock: product.outOfStock ?? false,
-                                  off: offPercentage.isNotEmpty
-                                      ? '$offPercentage%off'
-                                      : '',
+                                  off: offPercentage.isNotEmpty ? '$offPercentage%off' : '',
                                   // Display the discount percentage
-                                  priceWithTaxes:
-                                      (product.prices?.frontSalePrice ?? 0) <
-                                              (product.prices?.price ?? 0)
-                                          ? product.prices!.priceWithTaxes
-                                          : null,
+                                  priceWithTaxes: (product.prices?.frontSalePrice ?? 0) < (product.prices?.price ?? 0)
+                                      ? product.prices!.priceWithTaxes
+                                      : null,
                                   itemsId: 0,
                                   imageUrl: product.image,
-                                  frontSalePriceWithTaxes:
-                                      product.review?.rating?.toString() ?? '0',
+                                  frontSalePriceWithTaxes: product.review?.rating?.toString() ?? '0',
                                   name: product.name,
                                   storeName: product.store?.name.toString(),
                                   price: product.prices?.price.toString(),
-                                  optionalIcon:
-                                      Icons.shopping_cart_checkout_rounded,
-                                  reviewsCount:
-                                      product.review?.reviewsCount?.toInt(),
+                                  optionalIcon: Icons.shopping_cart_checkout_rounded,
+                                  reviewsCount: product.review?.reviewsCount?.toInt(),
                                   onOptionalIconTap: () async {
-                                    final token =
-                                        await SecurePreferencesUtil.getToken();
+                                    final token = await SecurePreferencesUtil.getToken();
                                     if (token != null) {
                                       await cartProvider.addToCart(
-                                          product.id, context, 1);
+                                        product.id,
+                                        context,
+                                        1,
+                                      );
                                     }
                                   },
-                                  isHeartObscure: wishlistProvider
-                                          .wishlist?.data?.products
-                                          .any((wishlistProduct) =>
-                                              wishlistProduct.id ==
-                                              product.id) ??
+                                  isHeartObscure: wishlistProvider.wishlist?.data?.products.any(
+                                        (wishlistProduct) => wishlistProduct.id == product.id,
+                                      ) ??
                                       false,
                                   // isHeartObscure: wishlistProvider.wishlist?.data?.products.any((wishlistProduct) => wishlistProduct.id == product.id) ?? false,
                                   onHeartTap: () async {
-                                    final token =
-                                        await SecurePreferencesUtil.getToken();
-                                    final bool isInWishlist = wishlistProvider
-                                            .wishlist?.data?.products
-                                            .any((wishlistProduct) =>
-                                                wishlistProduct.id ==
-                                                product.id) ??
+                                    final token = await SecurePreferencesUtil.getToken();
+                                    final bool isInWishlist = wishlistProvider.wishlist?.data?.products.any(
+                                          (wishlistProduct) => wishlistProduct.id == product.id,
+                                        ) ??
                                         false;
                                     if (isInWishlist) {
                                       await wishlistProvider.deleteWishlistItem(
-                                          product.id ?? 0,
-                                          context,
-                                          token ?? '');
+                                        product.id ?? 0,
+                                        context,
+                                        token ?? '',
+                                      );
                                     } else {
                                       await freshPicksProvider.handleHeartTap(
-                                          context, product.id ?? 0);
+                                        context,
+                                        product.id ?? 0,
+                                      );
                                     }
                                     await wishlistProvider.fetchWishlist(
-                                        token ?? '', context);
+                                      token ?? '',
+                                      context,
+                                    );
                                   },
                                 ),
                               );

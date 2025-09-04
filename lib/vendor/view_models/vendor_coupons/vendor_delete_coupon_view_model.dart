@@ -34,7 +34,7 @@ class VendorDeleteCouponViewModel with ChangeNotifier {
   }
 
   Future<bool> vendorDeleteCoupon(
-      {couponId, required BuildContext context}) async {
+      {couponId, required BuildContext context,}) async {
     try {
       setLoading(true);
       setApiResponse = ApiResponse.loading();
@@ -45,16 +45,16 @@ class VendorDeleteCouponViewModel with ChangeNotifier {
       };
 
       final VendorDeleteCouponModel response = await _myRepo.vendorDeleteCoupon(
-          headers: headers, couponId: couponId);
+          headers: headers, couponId: couponId,);
       setApiResponse = ApiResponse.completed(response);
       AlertServices.showSuccessSnackBar(
-          message: response.message.toString(), context: context);
+          message: response.message.toString(), context: context,);
       setLoading(false);
       return true;
     } catch (error) {
       setApiResponse = ApiResponse.error(error.toString());
       AlertServices.showErrorSnackBar(
-          message: error.toString(), context: context);
+          message: error.toString(), context: context,);
       setLoading(false);
       return false;
     }

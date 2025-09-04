@@ -23,6 +23,7 @@ class ProductCartItems extends StatelessWidget {
     required this.attributes,
     required this.ceoData,
   });
+
   final String brandName;
   final String brandDescription;
   final String actualPrice;
@@ -50,13 +51,13 @@ class ProductCartItems extends StatelessWidget {
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(5),
-                color: AppColors.itemContainerBack,
+                color: Theme.of(context).cardColor, // <-- updated
                 boxShadow: [
                   BoxShadow(
                     offset: const Offset(0, 1),
                     blurRadius: 0.5,
                     spreadRadius: 0.5,
-                    color: Colors.white.withOpacity(0.3),
+                    color: Theme.of(context).shadowColor.withOpacity(0.1), // theme-aware shadow
                   ),
                 ],
               ),
@@ -80,29 +81,25 @@ class ProductCartItems extends StatelessWidget {
                                 fit: BoxFit.contain,
                                 width: screenWidth * 0.3,
                                 height: screenHeight * 0.1,
-                                placeholder:
-                                    (BuildContext context, String url) =>
-                                        Container(
-                                  height:
-                                      MediaQuery.sizeOf(context).height * 0.28,
+                                placeholder: (BuildContext context, String url) => Container(
+                                  height: MediaQuery.sizeOf(context).height * 0.28,
                                   width: double.infinity,
-                                  color:
-                                      Colors.blueGrey[300], // Background color
+                                  color: Theme.of(context).colorScheme.surfaceContainerHighest, // theme-aware
                                   child: Stack(
                                     alignment: Alignment.center,
                                     children: [
                                       Image.asset(
-                                        'assets/placeholder.png', // Replace with your actual image path
-                                        fit: BoxFit
-                                            .cover, // Adjust fit if needed
-                                        height:
-                                            MediaQuery.sizeOf(context).height *
-                                                0.28,
+                                        'assets/placeholder.png',
+                                        fit: BoxFit.cover,
+                                        height: MediaQuery.sizeOf(context).height * 0.28,
                                         width: double.infinity,
+                                        color: Theme.of(context).brightness == Brightness.dark
+                                            ? Colors.white.withOpacity(0.2)
+                                            : null,
+                                        colorBlendMode: BlendMode.modulate,
                                       ),
                                       const CupertinoActivityIndicator(
-                                        radius: 16, // Adjust size of the loader
-                                        animating: true,
+                                        radius: 16,
                                       ),
                                     ],
                                   ),
@@ -134,13 +131,11 @@ class ProductCartItems extends StatelessWidget {
                               Expanded(
                                 child: SingleChildScrollView(
                                   child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: ceoData?.optionCartValue?.entries
                                             .map(
                                               (entry) => Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
+                                                crossAxisAlignment: CrossAxisAlignment.start,
                                                 children: [
                                                   ...entry.value.map(
                                                     (option) => Row(
@@ -148,13 +143,14 @@ class ProductCartItems extends StatelessWidget {
                                                         Text(
                                                           '${ceoData?.optionInfo?[entry.key]}: ',
                                                           style: optionTitle(
-                                                              context),
+                                                            context,
+                                                          ),
                                                         ),
                                                         Text(
                                                           '${option.optionValue}',
-                                                          style:
-                                                              const TextStyle(
-                                                                  fontSize: 12),
+                                                          style: const TextStyle(
+                                                            fontSize: 12,
+                                                          ),
                                                         ),
                                                       ],
                                                     ),
@@ -175,16 +171,19 @@ class ProductCartItems extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Expanded(
-                                  child: Text(actualPrice,
-                                      style: wishTopItemStyle(context)),
+                                  child: Text(
+                                    actualPrice,
+                                    style: wishTopItemStyle(context),
+                                  ),
                                 ),
                                 Expanded(
-                                  child: Text(standardPrice,
-                                      style: wishItemSalePrice(context)),
+                                  child: Text(
+                                    standardPrice,
+                                    style: wishItemSalePrice(context),
+                                  ),
                                 ),
                                 Expanded(
-                                  child:
-                                      Text(offPrice, style: wishItemSaleOff()),
+                                  child: Text(offPrice, style: wishItemSaleOff()),
                                 ),
                               ],
                             ),
@@ -203,35 +202,41 @@ class ProductCartItems extends StatelessWidget {
                               child: InkResponse(
                                 onTap: onAddPressed,
                                 child: Container(
-                                  height: 20,
-                                  width: 20,
+                                  height: 22,
+                                  width: 22,
                                   decoration: BoxDecoration(
                                     border: Border.all(
-                                        color: AppColors.semiTransparentBlack,
-                                        width: 0.2),
+                                      color: Theme.of(context).dividerColor,
+                                      width: 0.2,
+                                    ),
                                   ),
                                   child: const Icon(Icons.add, size: 15),
                                 ),
                               ),
                             ),
                             Padding(
-                                padding: EdgeInsets.symmetric(
-                                    vertical: screenHeight * 0.002),
-                                child: Text(itemS)),
+                              padding: EdgeInsets.symmetric(
+                                vertical: screenHeight * 0.002,
+                              ),
+                              child: Text(itemS, style: cartItemQty(context)),
+                            ),
                             Material(
                               color: Colors.transparent,
                               child: InkResponse(
                                 onTap: onSubtractPressed,
                                 child: Container(
-                                  height: 20,
-                                  width: 20,
+                                  height: 22,
+                                  width: 22,
                                   decoration: BoxDecoration(
                                     border: Border.all(
-                                        color: AppColors.semiTransparentBlack,
-                                        width: 0.2),
+                                      color: Theme.of(context).dividerColor,
+                                      width: 0.2,
+                                    ),
                                   ),
-                                  child: const Icon(CupertinoIcons.minus,
-                                      size: 15),
+                                  child: const Icon(
+                                    CupertinoIcons.minus,
+                                    size: 15,
+                                  ),
                                 ),
                               ),
                             ),
@@ -239,12 +244,11 @@ class ProductCartItems extends StatelessWidget {
                             GestureDetector(
                               onTap: onDeletePressed,
                               child: Padding(
-                                padding:
-                                    EdgeInsets.only(top: screenHeight * 0.01),
+                                padding: EdgeInsets.only(top: screenHeight * 0.01),
                                 child: const Icon(
                                   CupertinoIcons.delete,
                                   color: AppColors.peachyPink,
-                                  size: 20,
+                                  size: 24,
                                 ),
                               ),
                             ),

@@ -29,6 +29,7 @@ class GenericDropdown<T> extends StatefulWidget {
     this.contentPadding,
     required this.displayItem,
   });
+
   final Widget? prefix;
   final Widget? suffix;
   final List<T> menuItemsList;
@@ -45,7 +46,7 @@ class GenericDropdown<T> extends StatefulWidget {
   bool isOutlinedBorder;
   double? borderWidth;
   Color? borderColor;
-  String? Function(dynamic)? validator;
+  String? Function(T?)? validator;
   TextStyle? textStyle;
   EdgeInsetsGeometry? contentPadding;
   final String Function(T item) displayItem;
@@ -54,8 +55,7 @@ class GenericDropdown<T> extends StatefulWidget {
   State<GenericDropdown<T>> createState() => _GenericDropdownState<T>();
 }
 
-class _GenericDropdownState<T> extends State<GenericDropdown<T>>
-    with MediaQueryMixin<GenericDropdown<T>> {
+class _GenericDropdownState<T> extends State<GenericDropdown<T>> with MediaQueryMixin<GenericDropdown<T>> {
   String? selectedValue;
   final TextEditingController textEditingController = TextEditingController();
 
@@ -71,11 +71,13 @@ class _GenericDropdownState<T> extends State<GenericDropdown<T>>
         ? InputBordersHub.getOutlinedInputBorder(
             borderColor: widget.borderColor,
             borderWidth: widget.borderWidth,
-            borderRadius: widget.borderRadius)
+            borderRadius: widget.borderRadius,
+          )
         : InputBordersHub.getUnderlinedInputBorder(
             borderColor: widget.borderColor,
             borderWidth: widget.borderWidth,
-            borderRadius: widget.borderRadius);
+            borderRadius: widget.borderRadius,
+          );
 
     return IgnorePointer(
       ignoring: widget.readOnly ?? false,
@@ -104,8 +106,7 @@ class _GenericDropdownState<T> extends State<GenericDropdown<T>>
           errorText: widget.errorText,
           errorMaxLines: 5,
           isDense: true,
-          contentPadding: widget.contentPadding ??
-              const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+          contentPadding: widget.contentPadding ?? const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
           prefixIcon: widget.prefix,
           prefixIconConstraints: const BoxConstraints(
             minWidth: 30,
@@ -114,9 +115,10 @@ class _GenericDropdownState<T> extends State<GenericDropdown<T>>
           hintText: widget.hintText,
           hintFadeDuration: const Duration(milliseconds: 500),
           hintStyle: const TextStyle(
-              color: AppColors.softBlueGrey,
-              fontSize: 14,
-              fontWeight: FontWeight.w500),
+            color: AppColors.softBlueGrey,
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+          ),
           border: border,
           focusedBorder: border,
           enabledBorder: border,
@@ -128,17 +130,19 @@ class _GenericDropdownState<T> extends State<GenericDropdown<T>>
         // cursorColor: AppColors.darkGrey,
         style: widget.textStyle ??
             TextStyle(
-                color: widget.textColor ?? AppColors.softBlueGrey,
-                overflow: TextOverflow.ellipsis),
+              color: widget.textColor ?? AppColors.softBlueGrey,
+              overflow: TextOverflow.ellipsis,
+            ),
         // padding: EdgeInsets.zero,
         hint: Text(
           widget.hintText ?? 'Select',
           style: widget.textStyle ??
               TextStyle(
-                  color: widget.textColor ?? AppColors.softBlueGrey,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  overflow: TextOverflow.ellipsis),
+                color: widget.textColor ?? AppColors.softBlueGrey,
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                overflow: TextOverflow.ellipsis,
+              ),
           overflow: TextOverflow.ellipsis,
         ),
         iconStyleData: const IconStyleData(
@@ -154,7 +158,8 @@ class _GenericDropdownState<T> extends State<GenericDropdown<T>>
           // iconSize: 20
         ),
         menuItemStyleData: const MenuItemStyleData(
-            padding: EdgeInsets.symmetric(horizontal: 0)),
+          padding: EdgeInsets.symmetric(horizontal: 0),
+        ),
         dropdownStyleData: DropdownStyleData(
           useSafeArea: true,
           width: null,

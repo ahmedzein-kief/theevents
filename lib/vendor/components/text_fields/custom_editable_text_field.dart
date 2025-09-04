@@ -11,7 +11,7 @@ class CustomEditableTextField extends StatefulWidget {
       required this.quillController,
       this.borderRadius,
       this.showToolBar = true,
-      this.fieldHeight = 500});
+      this.fieldHeight = 500,});
   final QuillController quillController;
   final String placeholder;
   final double? borderRadius;
@@ -30,7 +30,7 @@ class _CustomEditableTextFieldState extends State<CustomEditableTextField> {
         child: Container(
           decoration: BoxDecoration(
               border: Border.all(color: Colors.grey, width: 0.5),
-              borderRadius: BorderRadius.circular(widget.borderRadius ?? 10)),
+              borderRadius: BorderRadius.circular(widget.borderRadius ?? 10),),
           child: Column(
             children: [
               if (widget.showToolBar == true)
@@ -48,7 +48,7 @@ class _CustomEditableTextFieldState extends State<CustomEditableTextField> {
                         decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             border:
-                                Border(top: BorderSide(color: Colors.black))),
+                                Border(top: BorderSide(color: Colors.black)),),
                         showClipboardCopy: false,
                         showClipboardPaste: false,
                       ),

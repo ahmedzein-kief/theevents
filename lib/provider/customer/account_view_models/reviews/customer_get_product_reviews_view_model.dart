@@ -60,7 +60,7 @@ class CustomerGetProductReviewsViewModel with ChangeNotifier {
         setApiResponse = ApiResponse.loading();
         final CustomerGetProductReviewsModel response =
             await _myRepo.customerGetProductReviews(
-                headers: headers, queryParams: queryParams);
+                headers: headers, queryParams: queryParams,);
         setLastPage(response);
         resetList(response);
         setApiResponse = ApiResponse.completed(response);

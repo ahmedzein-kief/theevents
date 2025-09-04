@@ -1,3 +1,4 @@
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/helper/mixins/media_query_mixin.dart';
 import 'package:event_app/core/helper/validators/validator.dart';
 import 'package:event_app/core/styles/app_colors.dart';
@@ -24,6 +25,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/constants/vendor_app_strings.dart';
 import '../../../models/vendor_models/vendor_withdrawals_model/vendor_show_withdrawal_model.dart';
 
 class VendorCreateUpdateWithdrawalView extends StatefulWidget {
@@ -31,6 +33,7 @@ class VendorCreateUpdateWithdrawalView extends StatefulWidget {
     super.key,
     this.withdrawalID,
   });
+
   String? withdrawalID;
 
   @override
@@ -83,7 +86,7 @@ class _VendorCreateUpdateWithdrawalViewState
             context.read<VendorShowWithdrawalViewModel>();
 
         await showWithdrawalProvider.vendorShowWithdrawal(
-            withdrawalID: widget.withdrawalID!);
+            withdrawalID: widget.withdrawalID!,);
 
         if (showWithdrawalProvider.apiResponse.status == ApiStatus.COMPLETED) {
           final withdrawal = showWithdrawalProvider.apiResponse.data?.data;
@@ -118,8 +121,9 @@ class _VendorCreateUpdateWithdrawalViewState
         appBar: VendorCommonAppBar(
             title: widget.withdrawalID == null
                 ? 'Create Withdrawal'
-                : 'Withdrawal #${widget.withdrawalID}'),
+                : 'Withdrawal #${widget.withdrawalID}',),
         body: Utils.modelProgressHud(
+          context: context,
           processing: _isProcessing,
           child: _buildUi(context),
         ),
@@ -160,7 +164,7 @@ class _VendorCreateUpdateWithdrawalViewState
                           Padding(
                             padding: EdgeInsets.symmetric(
                                 horizontal: kMediumPadding,
-                                vertical: kMediumPadding),
+                                vertical: kMediumPadding,),
                             child: Row(
                               mainAxisSize: MainAxisSize.max,
                               mainAxisAlignment: MainAxisAlignment.end,
@@ -176,7 +180,7 @@ class _VendorCreateUpdateWithdrawalViewState
                                 showStatusBox(
                                     statusText: status?.label ?? '',
                                     color: AppColors.getWithdrawalStatusColor(
-                                        status?.value)),
+                                        status?.value,),),
                               ],
                             ),
                           ),
@@ -256,7 +260,7 @@ class _VendorCreateUpdateWithdrawalViewState
                                                 'You will receive money as per ',
                                             style: TextStyle(
                                                 color: Colors.black,
-                                                fontSize: 13),
+                                                fontSize: 13,),
                                           ),
                                           TextSpan(
                                             recognizer: TapGestureRecognizer()
@@ -339,13 +343,13 @@ class _VendorCreateUpdateWithdrawalViewState
                           style: TextStyle(
                               color: Colors.black,
                               fontSize: 12,
-                              fontWeight: FontWeight.w500)),
+                              fontWeight: FontWeight.w500,),),
                     ),
                     kMinorSpace,
                     Container(
                       padding: EdgeInsets.symmetric(
                           vertical: kExtraSmallPadding,
-                          horizontal: kSmallPadding),
+                          horizontal: kSmallPadding,),
                       decoration: BoxDecoration(
                         border: Border.all(color: Colors.grey.shade400),
                         borderRadius: BorderRadius.circular(kButtonRadius),
@@ -353,23 +357,31 @@ class _VendorCreateUpdateWithdrawalViewState
                       child: Column(
                         children: [
                           if (details?.name != null)
-                            buildRow('Bank Name', details?.name),
+                            buildRow(
+                                VendorAppStrings.bankName.tr, details?.name,),
                           if (details?.code != null)
-                            buildRow('Bank Code/IFSC', details?.code),
+                            buildRow(VendorAppStrings.bankCodeIfscHeader.tr,
+                                details?.code,),
                           if (details?.fullName != null)
-                            buildRow('Account Holder Name', details?.fullName),
+                            buildRow(
+                                VendorAppStrings.accountHolderNameHeader.tr,
+                                details?.fullName,),
                           if (details?.number != null)
-                            buildRow('Account Number', details?.number),
+                            buildRow(VendorAppStrings.accountNumberHeader.tr,
+                                details?.number,),
                           if (details?.paypalId != null)
-                            buildRow('Paypal ID', details?.paypalId,
+                            buildRow(VendorAppStrings.paypalIdHeader.tr,
+                                details?.paypalId,
                                 isLastRow: paymentChannel ==
-                                    PaymentChannelConstants.PAYPAL),
+                                    PaymentChannelConstants.PAYPAL,),
                           if (details?.upiId != null)
-                            buildRow('Upi ID', details?.upiId),
+                            buildRow(VendorAppStrings.upiIdHeader.tr,
+                                details?.upiId,),
                           if (details?.description != null)
-                            buildRow('Description', details?.description,
+                            buildRow(VendorAppStrings.descriptionHeader.tr,
+                                details?.description,
                                 isLastRow: paymentChannel ==
-                                    PaymentChannelConstants.BANK_TRANSFER),
+                                    PaymentChannelConstants.BANK_TRANSFER,),
                         ],
                       ),
                     ),
@@ -385,7 +397,7 @@ class _VendorCreateUpdateWithdrawalViewState
           children: [
             Padding(
               padding: EdgeInsets.symmetric(
-                  horizontal: kMediumPadding, vertical: kMediumPadding),
+                  horizontal: kMediumPadding, vertical: kMediumPadding,),
               child: const Text(
                 'Do you want to cancel this withdrawal?',
                 style: TextStyle(
@@ -412,7 +424,7 @@ class _VendorCreateUpdateWithdrawalViewState
             ),
             Padding(
               padding: EdgeInsets.only(
-                  left: kSmallPadding, right: kSmallPadding, bottom: kPadding),
+                  left: kSmallPadding, right: kSmallPadding, bottom: kPadding,),
               child: const Text(
                 'After cancel amount and fee will be refunded back in your balance.',
                 style: TextStyle(fontSize: 12, color: AppColors.darkGrey),
@@ -429,7 +441,7 @@ class _VendorCreateUpdateWithdrawalViewState
           children: [
             Padding(
               padding: EdgeInsets.symmetric(
-                  horizontal: kMediumPadding, vertical: kMediumPadding),
+                  horizontal: kMediumPadding, vertical: kMediumPadding,),
               child: const Text(
                 'Publish',
                 style: TextStyle(fontWeight: FontWeight.w500),
@@ -470,7 +482,7 @@ class _VendorCreateUpdateWithdrawalViewState
                                 await provider.vendorCreateUpdateWithdrawal(
                                     requestType: RequestType.CREATE,
                                     form: form,
-                                    context: context);
+                                    context: context,);
                             if (result) {
                               _descriptionController.clear();
                               _amountController.clear();
@@ -485,7 +497,7 @@ class _VendorCreateUpdateWithdrawalViewState
                                 requestType: RequestType.UPDATE,
                                 withdrawalID: widget.withdrawalID,
                                 form: form,
-                                context: context);
+                                context: context,);
                             context
                                 .read<VendorWithdrawalsViewModel>()
                                 .clearList();

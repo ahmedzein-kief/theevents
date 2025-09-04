@@ -33,7 +33,7 @@ class VendorDeletePackageViewModel with ChangeNotifier {
   }
 
   Future<bool> vendorDeletePackage(
-      {required packageID, required BuildContext context}) async {
+      {required packageID, required BuildContext context,}) async {
     try {
       setLoading(true);
       setApiResponse = ApiResponse.loading();
@@ -44,17 +44,17 @@ class VendorDeletePackageViewModel with ChangeNotifier {
       };
 
       final CommonPostRequestModel response = await _myRepo.vendorDeletePackage(
-          headers: headers, packageID: packageID.toString());
+          headers: headers, packageID: packageID.toString(),);
       setApiResponse = ApiResponse.completed(response);
       AlertServices.showSuccessSnackBar(
           message: apiResponse.data?.message?.toString() ?? '',
-          context: context);
+          context: context,);
       setLoading(false);
       return true;
     } catch (error) {
       setApiResponse = ApiResponse.error(error.toString());
       AlertServices.showErrorSnackBar(
-          message: error.toString() ?? '', context: context);
+          message: error.toString() ?? '', context: context,);
       setLoading(false);
       return false;
     }

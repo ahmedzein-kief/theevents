@@ -1,5 +1,7 @@
 import 'dart:convert'; // For JSON decoding
 
+import 'package:event_app/core/constants/app_strings.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/styles/custom_text_styles.dart'; // Assuming sortingStyle is defined here
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // For loading the JSON file
@@ -13,6 +15,7 @@ class SortAndFilterDropdown extends StatefulWidget {
     required this.onSortChanged,
     required this.onFilterPressed, // Required for filter button
   });
+
   final String selectedSortBy;
   final Function(String) onSortChanged;
   final VoidCallback onFilterPressed;
@@ -74,7 +77,7 @@ class _SortAndFilterDropdownState extends State<SortAndFilterDropdown> {
               height: height * 0.05, // 5% of the screen height
               width: width * 0.1, // 10% of the screen width
               child: Tooltip(
-                message: 'Filter Options',
+                message: AppStrings.filterOptions.tr,
                 child: InkWell(
                   onTap: widget.onFilterPressed,
                   child: const Row(
@@ -90,7 +93,7 @@ class _SortAndFilterDropdownState extends State<SortAndFilterDropdown> {
               children: [
                 DropdownButtonHideUnderline(
                   child: Tooltip(
-                    message: 'Sort option',
+                    message: AppStrings.sortOption.tr,
                     child: DropdownButton<String>(
                       value: _selectedSortBy,
                       icon: const Icon(Icons.keyboard_arrow_down_rounded),
@@ -107,7 +110,7 @@ class _SortAndFilterDropdownState extends State<SortAndFilterDropdown> {
                             (option) => DropdownMenuItem<String>(
                               value: option['value'],
                               child: Text(option['label']!,
-                                  style: sortingStyle(context)),
+                                  style: sortingStyle(context),),
                             ),
                           )
                           .toList(),

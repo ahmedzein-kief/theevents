@@ -1,4 +1,3 @@
-import 'package:custom_date_range_picker/custom_date_range_picker.dart';
 import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/core/styles/app_sizes.dart';
 import 'package:event_app/data/vendor/data/response/apis_status.dart';
@@ -18,6 +17,7 @@ class VendorDashBoardScreen extends StatefulWidget {
     super.key,
     required this.onIndexUpdate,
   });
+
   final void Function(int index) onIndexUpdate;
 
   @override
@@ -31,8 +31,7 @@ class _VendorDashBoardScreenState extends State<VendorDashBoardScreen> {
   DateTime? startDate = DateTime(DateTime.now().year, DateTime.now().month, 1);
   DateTime? endDate = DateTime.now();
   String formatEndDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
-  String formatStartDate = DateFormat('yyyy-MM-dd')
-      .format(DateTime(DateTime.now().year, DateTime.now().month, 1));
+  String formatStartDate = DateFormat('yyyy-MM-dd').format(DateTime(DateTime.now().year, DateTime.now().month, 1));
 
   void setProcessing(bool value) {
     setState(() {
@@ -45,8 +44,7 @@ class _VendorDashBoardScreenState extends State<VendorDashBoardScreen> {
       setProcessing(true);
       WidgetsBinding.instance.addPostFrameCallback((callback) async {
         formatDates();
-        final provider =
-            Provider.of<VendorDashboardViewModel>(context, listen: false);
+        final provider = Provider.of<VendorDashboardViewModel>(context, listen: false);
         await provider.getDashboardData(formatStartDate, formatEndDate);
         setProcessing(false);
         setState(() {});
@@ -66,11 +64,12 @@ class _VendorDashBoardScreenState extends State<VendorDashBoardScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        backgroundColor: VendorColors.vendorAppBackground,
         key: _scaffoldKey,
         body: Utils.modelProgressDashboardHud(
+          context: context,
           processing: _isProcessing,
           child: Utils.pageRefreshIndicator(
+            context: context,
             onRefresh: _onRefresh,
             child: _buildUi(context),
           ),
@@ -87,6 +86,477 @@ class _VendorDashBoardScreenState extends State<VendorDashBoardScreen> {
     }
   }
 
+  // Custom Calendar Date Range Picker
+// Replace your existing _showCustomDateRangePicker method with this fixed version
+
+  Future<void> _showCustomDateRangePicker() async {
+    DateTime? tempStartDate = startDate;
+    DateTime? tempEndDate = endDate;
+    DateTime displayMonth = startDate ?? DateTime.now();
+    bool isSelectingStartDate = true; // Add this flag to track which date we're selecting
+
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) => StatefulBuilder(
+        builder: (context, setDialogState) => Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.symmetric(horizontal: 25),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primary,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Date Selection Header
+                Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primary,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      // From Section
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            setDialogState(() {
+                              isSelectingStartDate = true;
+                            });
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                              color: isSelectingStartDate ? AppColors.peachyPink.withOpacity(0.1) : Colors.transparent,
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(20),
+                              ),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'From',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: isSelectingStartDate
+                                        ? AppColors.peachyPink
+                                        : Theme.of(context).colorScheme.onPrimary,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  tempStartDate != null
+                                      ? DateFormat('EEE, dd MMM').format(tempStartDate!)
+                                      : 'Select date',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: isSelectingStartDate
+                                        ? AppColors.peachyPink
+                                        : Theme.of(context).colorScheme.onPrimary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      // Divider
+                      Container(
+                        width: 1,
+                        height: 60,
+                        color: Colors.grey.shade300,
+                      ),
+
+                      // To Section
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            setDialogState(() {
+                              isSelectingStartDate = false;
+                            });
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                              color: !isSelectingStartDate ? AppColors.peachyPink.withOpacity(0.1) : Colors.transparent,
+                              borderRadius: const BorderRadius.only(
+                                topRight: Radius.circular(20),
+                              ),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'To',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: !isSelectingStartDate
+                                        ? AppColors.peachyPink
+                                        : Theme.of(context).colorScheme.onPrimary,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  tempEndDate != null ? DateFormat('EEE, dd MMM').format(tempEndDate!) : 'Select date',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: !isSelectingStartDate
+                                        ? AppColors.peachyPink
+                                        : Theme.of(context).colorScheme.onPrimary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+                // Calendar Section
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    children: [
+                      // Month Navigation
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              setDialogState(() {
+                                displayMonth = DateTime(
+                                  displayMonth.year,
+                                  displayMonth.month - 1,
+                                );
+                              });
+                            },
+                            child: Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(color: Colors.grey.shade300),
+                              ),
+                              child: Icon(
+                                Icons.chevron_left,
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                          ),
+                          Text(
+                            DateFormat('MMMM, yyyy').format(displayMonth),
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              setDialogState(() {
+                                displayMonth = DateTime(
+                                  displayMonth.year,
+                                  displayMonth.month + 1,
+                                );
+                              });
+                            },
+                            child: Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(color: Colors.grey.shade300),
+                              ),
+                              child: Icon(
+                                Icons.chevron_right,
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      // Weekday Headers
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          'Mon',
+                          'Tue',
+                          'Wed',
+                          'Thu',
+                          'Fri',
+                          'Sat',
+                          'Sun',
+                        ]
+                            .map(
+                              (day) => Container(
+                                width: 35,
+                                height: 35,
+                                alignment: Alignment.center,
+                                child: Text(
+                                  day,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: AppColors.peachyPink.withOpacity(0.7),
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            )
+                            .toList(),
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      // Calendar Grid with fixed logic
+                      _buildCalendarGrid(displayMonth, tempStartDate, tempEndDate, setDialogState, (selectedDate) {
+                        setDialogState(() {
+                          if (isSelectingStartDate) {
+                            // User is selecting start date
+                            tempStartDate = selectedDate;
+                            // If end date exists and is before new start date, clear it
+                            if (tempEndDate != null && selectedDate.isAfter(tempEndDate!)) {
+                              tempEndDate = null;
+                            }
+                            // Auto switch to selecting end date after start is selected
+                            isSelectingStartDate = false;
+                          } else {
+                            // User is selecting end date
+                            if (tempStartDate != null && selectedDate.isBefore(tempStartDate!)) {
+                              // If selected date is before start date, make it the new start date
+                              tempEndDate = tempStartDate;
+                              tempStartDate = selectedDate;
+                            } else {
+                              // Normal end date selection
+                              tempEndDate = selectedDate;
+                            }
+                          }
+                        });
+                      }),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 8),
+                // Action Buttons
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () => Navigator.of(context).pop(),
+                          child: Container(
+                            height: 50,
+                            decoration: BoxDecoration(
+                              color: AppColors.peachyPink.withOpacity(0.8),
+                              borderRadius: BorderRadius.circular(25),
+                            ),
+                            child: const Center(
+                              child: Text(
+                                'Cancel',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () async {
+                            if (tempStartDate != null && tempEndDate != null) {
+                              setState(() {
+                                startDate = tempStartDate;
+                                endDate = tempEndDate;
+                              });
+                              Navigator.of(context).pop();
+                              await _onRefresh();
+                            }
+                          },
+                          child: Container(
+                            height: 50,
+                            decoration: BoxDecoration(
+                              color: AppColors.peachyPink,
+                              borderRadius: BorderRadius.circular(25),
+                            ),
+                            child: const Center(
+                              child: Text(
+                                'Apply',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCalendarGrid(
+    DateTime displayMonth,
+    DateTime? startDate,
+    DateTime? endDate,
+    StateSetter setState,
+    Function(DateTime) onDateSelected,
+  ) {
+    // Get first day of the month and calculate padding
+    final DateTime firstDayOfMonth = DateTime(displayMonth.year, displayMonth.month, 1);
+    final int firstWeekday = firstDayOfMonth.weekday; // Monday = 1, Sunday = 7
+    final int daysInMonth = DateTime(displayMonth.year, displayMonth.month + 1, 0).day;
+
+    // Calculate previous month days to show
+    final DateTime prevMonth = DateTime(displayMonth.year, displayMonth.month - 1);
+    final int daysInPrevMonth = DateTime(prevMonth.year, prevMonth.month + 1, 0).day;
+
+    final List<Widget> calendarDays = [];
+
+    // Add previous month days (greyed out)
+    for (int i = firstWeekday - 1; i > 0; i--) {
+      final int prevDay = daysInPrevMonth - i + 1;
+      calendarDays.add(
+        _buildCalendarDay(
+          day: prevDay,
+          isCurrentMonth: false,
+          date: DateTime(prevMonth.year, prevMonth.month, prevDay),
+          startDate: startDate,
+          endDate: endDate,
+          onTap: onDateSelected,
+        ),
+      );
+    }
+
+    // Add current month days
+    for (int day = 1; day <= daysInMonth; day++) {
+      final DateTime currentDate = DateTime(displayMonth.year, displayMonth.month, day);
+      calendarDays.add(
+        _buildCalendarDay(
+          day: day,
+          isCurrentMonth: true,
+          date: currentDate,
+          startDate: startDate,
+          endDate: endDate,
+          onTap: onDateSelected,
+        ),
+      );
+    }
+
+    // Add next month days to complete the grid
+    final int remainingCells = 42 - calendarDays.length; // 6 weeks * 7 days
+    final DateTime nextMonth = DateTime(displayMonth.year, displayMonth.month + 1);
+    for (int day = 1; day <= remainingCells && calendarDays.length < 42; day++) {
+      calendarDays.add(
+        _buildCalendarDay(
+          day: day,
+          isCurrentMonth: false,
+          date: DateTime(nextMonth.year, nextMonth.month, day),
+          startDate: startDate,
+          endDate: endDate,
+          onTap: onDateSelected,
+        ),
+      );
+    }
+
+    return Column(
+      children: [
+        for (int week = 0; week < 6; week++)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 2),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: calendarDays.skip(week * 7).take(7).toList(),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildCalendarDay({
+    required int day,
+    required bool isCurrentMonth,
+    required DateTime date,
+    required DateTime? startDate,
+    required DateTime? endDate,
+    required Function(DateTime) onTap,
+  }) {
+    final bool isSelected =
+        (startDate != null && _isSameDay(date, startDate)) || (endDate != null && _isSameDay(date, endDate));
+    final bool isInRange = startDate != null &&
+        endDate != null &&
+        date.isAfter(startDate.subtract(const Duration(days: 1))) &&
+        date.isBefore(endDate.add(const Duration(days: 1)));
+    final bool isToday = _isSameDay(date, DateTime.now());
+    final bool isDisabled = date.isAfter(DateTime.now());
+
+    return GestureDetector(
+      onTap: isDisabled ? null : () => onTap(date),
+      child: Container(
+        width: 35,
+        height: 35,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: isSelected
+              ? AppColors.peachyPink
+              : isInRange
+                  ? AppColors.peachyPink.withOpacity(0.2)
+                  : Colors.transparent,
+        ),
+        child: Center(
+          child: Text(
+            day.toString(),
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: isSelected || isToday ? FontWeight.w600 : FontWeight.w400,
+              color: isDisabled
+                  ? Colors.grey.shade400
+                  : isSelected
+                      ? Colors.white
+                      : isCurrentMonth
+                          ? isInRange
+                              ? AppColors.peachyPink
+                              : Colors.black87
+                          : Colors.grey.shade400,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  bool _isSameDay(DateTime date1, DateTime date2) =>
+      date1.year == date2.year && date1.month == date2.month && date1.day == date2.day;
+
   Widget _buildUi(BuildContext context) {
     final double screenWidth = MediaQuery.sizeOf(context).width;
     final double screenHeight = MediaQuery.sizeOf(context).height;
@@ -99,9 +569,6 @@ class _VendorDashBoardScreenState extends State<VendorDashBoardScreen> {
         Consumer<VendorDashboardViewModel>(
           builder: (context, provider, _) {
             final ApiStatus? apiStatus = provider.apiResponse.status;
-            // if (apiStatus == ApiStatus.LOADING) {
-            //   return Utils.pageLoadingIndicator(context: context);
-            // }
             if (apiStatus == ApiStatus.ERROR) {
               return ListView(
                 shrinkWrap: true,
@@ -119,37 +586,13 @@ class _VendorDashBoardScreenState extends State<VendorDashBoardScreen> {
                     alignment: Alignment.centerRight,
                     child: Container(
                       height: 40,
-                      padding:
-                          EdgeInsets.symmetric(horizontal: screenWidth * 0.02),
+                      padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.02),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(3),
                         border: Border.all(color: AppColors.peachyPink),
                       ),
                       child: GestureDetector(
-                        onTap: () {
-                          showCustomDateRangePicker(
-                            context,
-                            dismissible: true,
-                            minimumDate: DateTime(1900),
-                            // Allows any past date
-                            maximumDate: DateTime.now(),
-                            // Restricts selection up to today
-                            endDate: endDate,
-                            startDate: startDate,
-                            backgroundColor: Colors.white,
-                            primaryColor: AppColors.peachyPink,
-                            onApplyClick: (start, end) async {
-                              setState(() {
-                                endDate = end;
-                                startDate = start;
-                              });
-                              await _onRefresh();
-                            },
-                            onCancelClick: () {
-                              setState(() {});
-                            },
-                          );
-                        },
+                        onTap: _showCustomDateRangePicker,
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -159,8 +602,10 @@ class _VendorDashBoardScreenState extends State<VendorDashBoardScreen> {
                               size: 18,
                             ),
                             SizedBox(width: screenWidth * 0.02),
-                            Text('From $formatStartDate to $formatEndDate',
-                                style: vendorDate(context)),
+                            Text(
+                              'From $formatStartDate to $formatEndDate',
+                              // style: vendorDate(context),
+                            ),
                           ],
                         ),
                       ),
@@ -186,8 +631,7 @@ class _VendorDashBoardScreenState extends State<VendorDashBoardScreen> {
     );
   }
 
-  Widget _buildOrdersAndProducts(DashboardDataResponse? dataResponse) =>
-      Padding(
+  Widget _buildOrdersAndProducts(DashboardDataResponse? dataResponse) => Padding(
         padding: EdgeInsets.symmetric(horizontal: kExtraSmallPadding),
         child: Column(
           children: [
@@ -220,8 +664,11 @@ class _VendorDashBoardScreenState extends State<VendorDashBoardScreen> {
         ),
       );
 
-  Widget _buildSection(
-          {required String title, required String actionText, onTapViewAll}) =>
+  Widget _buildSection({
+    required String title,
+    required String actionText,
+    onTapViewAll,
+  }) =>
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -266,11 +713,9 @@ class _VendorDashBoardScreenState extends State<VendorDashBoardScreen> {
               style: dataRowTextStyle(),
             ),
             status: status,
-            statusTextStyle:
-                TextStyle(color: AppColors.getOrderStatusColor(status)),
+            statusTextStyle: TextStyle(color: AppColors.getOrderStatusColor(status)),
             title: record?.name?.toString() ?? '',
-            subtitle:
-                record?.amount?.toString().replaceAll('AED', 'AED ') ?? '',
+            subtitle: record?.amount?.toString().replaceAll('AED', 'AED ') ?? '',
           ),
           kSmallSpace,
         ],

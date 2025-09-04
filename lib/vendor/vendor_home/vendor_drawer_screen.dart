@@ -1,3 +1,5 @@
+import 'package:event_app/core/constants/vendor_app_strings.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/models/auth_models/get_user_models.dart';
 import 'package:event_app/provider/auth_provider/get_user_provider.dart';
@@ -14,13 +16,15 @@ import 'package:event_app/vendor/vendor_home/vendor_revenue/vendor_revenues_view
 import 'package:event_app/vendor/vendor_home/vendor_reviews/vendor_reviews_view.dart';
 import 'package:event_app/vendor/vendor_home/vendor_settings/vendor_profile_settings_view.dart';
 import 'package:event_app/vendor/vendor_home/vendor_withdrawals/vendor_withdrawals_view.dart';
-import 'package:event_app/views/home_screens_shortcode/shortcode_information_icons/order_pages_screens/pdf_downloader.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../../models/dashboard/vendor_permissions.dart';
+
 class VendorDrawerScreen extends StatefulWidget {
   VendorDrawerScreen({super.key, this.selectedIndex});
+
   int? selectedIndex;
 
   @override
@@ -30,10 +34,15 @@ class VendorDrawerScreen extends StatefulWidget {
 class _VendorDrawerScreenState extends State<VendorDrawerScreen> {
   int _selectedIndex = 0;
   UserModel? userModel;
+  VendorPermissions vendorPermissions = const VendorPermissions();
 
   Future<UserModel?> getProfileData() async {
     final provider = Provider.of<VendorSignUpProvider>(context, listen: false);
+
     final result = await provider.fetchUserData(context);
+
+    vendorPermissions = await provider.getAllVendorPermissions(result!.id);
+
     setState(() {
       userModel = result;
     });
@@ -46,22 +55,17 @@ class _VendorDrawerScreenState extends State<VendorDrawerScreen> {
     if (context == null) return;
     try {
       final provider = Provider.of<UserProvider>(context, listen: false);
-      final binaryData = await provider.downloadAgreement(context);
-      final filename = invoice;
+      await provider.downloadAgreement(context, userModel!.id);
 
-      // Save binary data as a PD
-      final result = await PDFDownloader()
-          .saveFileInDownloadsUint(context, binaryData, filename);
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('$result'),
-        ),
-      );
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(
+      //     content: Text('$result'),
+      //   ),
+      // );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error: ${e.toString()}'),
+          content: Text('${VendorAppStrings.error.tr}${e.toString()}'),
         ),
       );
     } finally {}
@@ -99,16 +103,16 @@ class _VendorDrawerScreenState extends State<VendorDrawerScreen> {
   }
 
   final List<String> _titles = [
-    'Dashboard',
-    'Products',
-    'Packages',
-    'Orders',
-    'Order Returns',
-    'Coupons',
-    'Withdrawals',
-    'Reviews',
-    'Revenues',
-    'Settings',
+    VendorAppStrings.dashboard.tr,
+    VendorAppStrings.products.tr,
+    VendorAppStrings.packages.tr,
+    VendorAppStrings.orders.tr,
+    VendorAppStrings.orderReturns.tr,
+    VendorAppStrings.coupons.tr,
+    VendorAppStrings.withdrawals.tr,
+    VendorAppStrings.reviews.tr,
+    VendorAppStrings.revenues.tr,
+    VendorAppStrings.settings.tr,
     // Add more titles as needed
   ];
 
@@ -123,11 +127,10 @@ class _VendorDrawerScreenState extends State<VendorDrawerScreen> {
   Widget build(BuildContext context) => PopScope(
         canPop: false,
         child: Consumer<UserProvider>(
-          builder:
-              (BuildContext context, UserProvider provider, Widget? child) =>
-                  Stack(
+          builder: (BuildContext context, UserProvider provider, Widget? child) => Stack(
             children: [
               Scaffold(
+                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                 appBar: AppBar(
                   automaticallyImplyLeading: false,
                   centerTitle: false,
@@ -139,14 +142,13 @@ class _VendorDrawerScreenState extends State<VendorDrawerScreen> {
                 body: _screens[_selectedIndex],
                 endDrawer: VendorDrawerView(
                   selectedIndex: _selectedIndex,
+                  vendorPermissions: vendorPermissions,
                   onItemTapped: _onItemTapped,
-                  userModel: userModel, // Use userModel from provider
+                  userModel: userModel,
+                  // Use userModel from provider
                   onSubtitleTap: () async {
                     Navigator.pop(context);
-                    final String formattedDate =
-                        DateFormat('yyyy-MM-dd HH:mm:ss')
-                            .format(DateTime.now());
-                    print(formattedDate); // Example: 2025-02-25 14:30:00
+                    final String formattedDate = DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now());
                     final invoice = 'Vendor_Agreement_$formattedDate';
                     await generateAgreement(context, invoice);
                   },
@@ -154,12 +156,10 @@ class _VendorDrawerScreenState extends State<VendorDrawerScreen> {
               ),
               if (provider.isLoading) // Show loading indicator in center
                 Container(
-                  color:
-                      Colors.black.withOpacity(0.5), // Optional dim background
+                  color: Colors.black.withOpacity(0.5), // Optional dim background
                   child: const Center(
                     child: CircularProgressIndicator(
-                      valueColor:
-                          AlwaysStoppedAnimation<Color>(AppColors.peachyPink),
+                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.peachyPink),
                     ), // Loading spinner
                   ),
                 ),

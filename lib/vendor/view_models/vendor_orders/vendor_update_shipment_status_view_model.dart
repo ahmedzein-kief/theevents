@@ -36,7 +36,7 @@ class VendorUpdateShipmentStatusViewModel with ChangeNotifier {
   Future<bool> vendorUpdateShipmentStatus(
       {required shipmentID,
       required String shipmentStatus,
-      required BuildContext context}) async {
+      required BuildContext context,}) async {
     try {
       setLoading(true);
       setApiResponse = ApiResponse.loading();
@@ -50,17 +50,17 @@ class VendorUpdateShipmentStatusViewModel with ChangeNotifier {
 
       final VendorUpdateShipmentStatusModel response =
           await _myRepo.vendorUpdateShipmentStatus(
-              headers: headers, shipmentID: shipmentID.toString(), body: body);
+              headers: headers, shipmentID: shipmentID.toString(), body: body,);
       setApiResponse = ApiResponse.completed(response);
       AlertServices.showSuccessSnackBar(
           message: apiResponse.data?.message?.toString() ?? '',
-          context: context);
+          context: context,);
       setLoading(false);
       return true;
     } catch (error) {
       setApiResponse = ApiResponse.error(error.toString());
       AlertServices.showErrorSnackBar(
-          message: error.toString() ?? '', context: context);
+          message: error.toString() ?? '', context: context,);
       setLoading(false);
       return false;
     }

@@ -17,6 +17,7 @@ class CustomUserByTypeBox extends StatelessWidget {
     required this.onTap,
     required this.onSeeAllTap,
   });
+
   final Future<void> Function(BuildContext context) fetchData;
   final bool isLoading;
   final List<Records> items;
@@ -36,7 +37,10 @@ class CustomUserByTypeBox extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.only(top: 8),
             child: CustomTextRow(
-                title: title, seeAll: seeAllText, onTap: onSeeAllTap),
+              title: title,
+              seeAll: seeAllText,
+              onTap: onSeeAllTap,
+            ),
           ),
         ),
         Padding(
@@ -45,7 +49,7 @@ class CustomUserByTypeBox extends StatelessWidget {
             itemCount: items.length,
             physics: const NeverScrollableScrollPhysics(),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 4,
+              crossAxisCount: 3,
               mainAxisSpacing: 8,
               mainAxisExtent: screenHeight * 0.15,
               crossAxisSpacing: 5,
@@ -82,32 +86,26 @@ class CustomUserByTypeBox extends StatelessWidget {
                             width: screenWidth * 0.23,
                             child: ClipRRect(
                               borderRadius: const BorderRadius.only(
-                                  topRight: Radius.circular(5),
-                                  topLeft: Radius.circular(5)),
+                                topRight: Radius.circular(5),
+                                topLeft: Radius.circular(5),
+                              ),
                               child: CachedNetworkImage(
-                                imageUrl:
-                                    item.avatar ?? 'assets/Background.png',
+                                imageUrl: item.avatar ?? 'assets/Background.png',
                                 fit: BoxFit.cover,
                                 height: screenHeight * 0.12,
                                 width: screenWidth * 0.23,
-                                placeholder:
-                                    (BuildContext context, String url) =>
-                                        Container(
-                                  height:
-                                      MediaQuery.sizeOf(context).height * 0.28,
+                                placeholder: (BuildContext context, String url) => Container(
+                                  height: MediaQuery.sizeOf(context).height * 0.28,
                                   width: double.infinity,
-                                  color:
-                                      Colors.blueGrey[300], // Background color
+                                  color: Colors.blueGrey[300], // Background color
                                   child: Stack(
                                     alignment: Alignment.center,
                                     children: [
                                       Image.asset(
-                                        'assets/placeholder.png', // Replace with your actual image path
-                                        fit: BoxFit
-                                            .cover, // Adjust fit if needed
-                                        height:
-                                            MediaQuery.sizeOf(context).height *
-                                                0.28,
+                                        'assets/placeholder.png',
+                                        // Replace with your actual image path
+                                        fit: BoxFit.cover, // Adjust fit if needed
+                                        height: MediaQuery.sizeOf(context).height * 0.28,
                                         width: double.infinity,
                                       ),
                                       const CupertinoActivityIndicator(
@@ -122,10 +120,12 @@ class CustomUserByTypeBox extends StatelessWidget {
                           ),
                           Padding(
                             padding: const EdgeInsets.only(top: 5),
-                            child: Text(item.name ?? '',
-                                textAlign: TextAlign.center,
-                                overflow: TextOverflow.ellipsis,
-                                style: homeItemsStyle(context)),
+                            child: Text(
+                              item.name ?? '',
+                              textAlign: TextAlign.center,
+                              overflow: TextOverflow.ellipsis,
+                              style: homeItemsStyle(context),
+                            ),
                           ),
                         ],
                       ),
@@ -145,16 +145,16 @@ class CustomUserByTypeBox extends StatelessWidget {
 
 //  SUPERTYPE  APIS BOTTOM BANNER
 
-//    https://api.staging.theevents.ae/api/v1/vendor-data/62
+//    https://apistaging.theevents.ae/api/v1/vendor-data/62
 
-//     https://api.staging.theevents.ae/api/v1/vendor-data/64
+//     https://apistaging.theevents.ae/api/v1/vendor-data/64
 
 //   THIS IS FOR PACKAGES
 
 // THIS IS PRODUCT AND PACKAGES LIST COMES IN THE API UPPER URL
 
-// https://api.staging.theevents.ae/api/v1/packages?per-page=12&page=1&sort-by=default_sorting&store_id=39
+// https://apistaging.theevents.ae/api/v1/packages?per-page=12&page=1&sort-by=default_sorting&store_id=39
 
 //  THIS IS FOR PRODUCTS
 
-// https://api.staging.theevents.ae/api/v1/products?per-page=12&page=1&sort-by=default_sorting&store_id=39
+// https://apistaging.theevents.ae/api/v1/products?per-page=12&page=1&sort-by=default_sorting&store_id=39

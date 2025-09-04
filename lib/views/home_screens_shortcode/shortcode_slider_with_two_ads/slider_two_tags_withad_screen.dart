@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider_plus/carousel_slider_plus.dart';
 import 'package:event_app/core/constants/app_strings.dart';
-import 'package:event_app/core/styles/app_colors.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/widgets/custom_home_views/custom_home_text_row.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +15,7 @@ import '../shortcode_fresh_picks/fresh_picks_detail_screen.dart';
 
 class SliderTwoTagsWithAdScreen extends StatefulWidget {
   const SliderTwoTagsWithAdScreen({super.key, required this.data});
+
   final dynamic data;
 
   @override
@@ -40,12 +41,10 @@ class _SimpleSliderState extends State<SliderTwoTagsWithAdScreen> {
     }
   }
 
-  List<int> extractSlotIds(String slotString) =>
-      slotString.split(',').map((e) => int.parse(e.trim())).toList();
+  List<int> extractSlotIds(String slotString) => slotString.split(',').map((e) => int.parse(e.trim())).toList();
 
   Future<void> fetchSliderData() async {
-    await Provider.of<BottomSliderProvider>(context, listen: false)
-        .fetchSliders(data: widget.data, context);
+    await Provider.of<BottomSliderProvider>(context, listen: false).fetchSliders(data: widget.data, context);
   }
 
   @override
@@ -63,13 +62,16 @@ class _SimpleSliderState extends State<SliderTwoTagsWithAdScreen> {
           padding: const EdgeInsets.only(top: 16, bottom: 8),
           child: CustomTextRow(
             title: widget.data['attributes']['title'],
-            seeAll: AppStrings.viewAll,
+            seeAll: AppStrings.viewAll.tr,
             onTap: () {
               Navigator.push(
-                  context,
-                  CupertinoPageRoute(
-                      builder: (context) => FreshPicksDetailScreen(
-                          data: widget.data['attributes']['title'])));
+                context,
+                CupertinoPageRoute(
+                  builder: (context) => FreshPicksDetailScreen(
+                    data: widget.data['attributes']['title'],
+                  ),
+                ),
+              );
             },
           ),
         ),
@@ -92,35 +94,33 @@ class _SimpleSliderState extends State<SliderTwoTagsWithAdScreen> {
                           fit: BoxFit.fill,
                           errorListener: (object) {
                             Image.asset(
-                              'assets/placeholder.png', // Replace with your actual image path
-                              fit: BoxFit.cover, // Adjust fit if needed
+                              'assets/placeholder.png',
+                              fit: BoxFit.cover,
                               height: MediaQuery.sizeOf(context).height * 0.28,
                               width: double.infinity,
                             );
                           },
                           errorWidget: (context, object, error) => Image.asset(
-                            'assets/placeholder.png', // Replace with your actual image path
-                            fit: BoxFit.cover, // Adjust fit if needed
+                            'assets/placeholder.png',
+                            fit: BoxFit.cover,
                             height: MediaQuery.sizeOf(context).height * 0.28,
                             width: double.infinity,
                           ),
-                          placeholder: (BuildContext context, String url) =>
-                              Container(
+                          placeholder: (BuildContext context, String url) => Container(
                             height: MediaQuery.sizeOf(context).height * 0.28,
                             width: double.infinity,
-                            color: Colors.blueGrey[300], // Background color
+                            color: Colors.blueGrey[300],
                             child: Stack(
                               alignment: Alignment.center,
                               children: [
                                 Image.asset(
-                                  'assets/placeholder.png', // Replace with your actual image path
-                                  fit: BoxFit.cover, // Adjust fit if needed
-                                  height:
-                                      MediaQuery.sizeOf(context).height * 0.28,
+                                  'assets/placeholder.png',
+                                  fit: BoxFit.cover,
+                                  height: MediaQuery.sizeOf(context).height * 0.28,
                                   width: double.infinity,
                                 ),
                                 const CupertinoActivityIndicator(
-                                  radius: 16, // Adjust size of the loader
+                                  radius: 16,
                                   animating: true,
                                 ),
                               ],
@@ -135,35 +135,33 @@ class _SimpleSliderState extends State<SliderTwoTagsWithAdScreen> {
                           width: screenWidth,
                           errorListener: (object) {
                             Image.asset(
-                              'assets/placeholder.png', // Replace with your actual image path
-                              fit: BoxFit.cover, // Adjust fit if needed
+                              'assets/placeholder.png',
+                              fit: BoxFit.cover,
                               height: MediaQuery.sizeOf(context).height * 0.28,
                               width: double.infinity,
                             );
                           },
                           errorWidget: (context, object, error) => Image.asset(
-                            'assets/placeholder.png', // Replace with your actual image path
-                            fit: BoxFit.cover, // Adjust fit if needed
+                            'assets/placeholder.png',
+                            fit: BoxFit.cover,
                             height: MediaQuery.sizeOf(context).height * 0.28,
                             width: double.infinity,
                           ),
-                          placeholder: (BuildContext context, String url) =>
-                              Container(
+                          placeholder: (BuildContext context, String url) => Container(
                             height: MediaQuery.sizeOf(context).height * 0.28,
                             width: double.infinity,
-                            color: Colors.blueGrey[300], // Background color
+                            color: Colors.blueGrey[300],
                             child: Stack(
                               alignment: Alignment.center,
                               children: [
                                 Image.asset(
-                                  'assets/placeholder.png', // Replace with your actual image path
-                                  fit: BoxFit.cover, // Adjust fit if needed
-                                  height:
-                                      MediaQuery.sizeOf(context).height * 0.28,
+                                  'assets/placeholder.png',
+                                  fit: BoxFit.cover,
+                                  height: MediaQuery.sizeOf(context).height * 0.28,
                                   width: double.infinity,
                                 ),
                                 const CupertinoActivityIndicator(
-                                  radius: 16, // Adjust size of the loader
+                                  radius: 16,
                                   animating: true,
                                 ),
                               ],
@@ -172,11 +170,9 @@ class _SimpleSliderState extends State<SliderTwoTagsWithAdScreen> {
                         );
                       }
                     }).toList(),
-                    // carouselController: carouselController,
                     options: CarouselOptions(
                       scrollPhysics: const BouncingScrollPhysics(),
                       autoPlay: true,
-                      // aspectRatio: 1.9,
                       aspectRatio: screenWidth / (screenHeight / 6),
                       viewportFraction: 1,
                       onPageChanged: (index, reason) {
@@ -207,11 +203,10 @@ class _SimpleSliderState extends State<SliderTwoTagsWithAdScreen> {
                     decoration: BoxDecoration(
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.3), // Shadow color
-                          spreadRadius: 1, // Spread radius
-                          blurRadius: 2, // Blur radius
-                          offset:
-                              const Offset(0, 01), // Offset for shadow position
+                          color: Colors.black.withOpacity(0.3),
+                          spreadRadius: 1,
+                          blurRadius: 2,
+                          offset: const Offset(0, 01),
                         ),
                       ],
                       borderRadius: BorderRadius.circular(14),
@@ -224,7 +219,6 @@ class _SimpleSliderState extends State<SliderTwoTagsWithAdScreen> {
                 .toList(),
           ),
         ),
-        // _brandsItems(context)
         BrandsSlots(slotIds: slotIds1),
         if (slotIds2 != null) BrandsSlots(slotIds: slotIds2!),
       ],
@@ -234,16 +228,16 @@ class _SimpleSliderState extends State<SliderTwoTagsWithAdScreen> {
 
 class BrandsSlots extends StatefulWidget {
   const BrandsSlots({super.key, required this.slotIds});
+
   final List<int> slotIds;
 
   @override
-  State<BrandsSlots> createState() => _BrandsSliderState();
+  State<BrandsSlots> createState() => _BrandsSlotsState();
 }
 
-class _BrandsSliderState extends State<BrandsSlots> {
+class _BrandsSlotsState extends State<BrandsSlots> {
   Future<void> fetchBrandsSliderData() async {
-    await Provider.of<FeaturedBrandsItemsProvider>(context, listen: false)
-        .fetchHomeBrands(widget.slotIds, context);
+    await Provider.of<FeaturedBrandsItemsProvider>(context, listen: false).fetchHomeBrands(widget.slotIds, context);
   }
 
   @override
@@ -254,136 +248,141 @@ class _BrandsSliderState extends State<BrandsSlots> {
     });
   }
 
+  final List<LinearGradient> cardGradients = [
+    const LinearGradient(
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
+      colors: [Color(0xFF3A4042), Color(0xFF1F2223)], // dark grey
+    ),
+    const LinearGradient(
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
+      colors: [Color(0xFFE9A676), Color(0xFF6A3B28)], // peach/brown
+    ),
+    const LinearGradient(
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
+      colors: [Color(0xFFB06060), Color(0xFF3D1F1F)], // pink/maroon
+    ),
+    const LinearGradient(
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
+      colors: [Color(0xFF3B1F5E), Color(0xFF1A0D2E)], // purple
+    ),
+  ];
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
+
     return Consumer<FeaturedBrandsItemsProvider>(
       builder: (context, provider, child) {
         if (provider.isLoading) {
           return const Center(
-              child: CircularProgressIndicator(
-                  color: Colors.black, strokeWidth: 0.5));
+            child: CircularProgressIndicator(
+              color: Colors.black,
+              strokeWidth: 0.5,
+            ),
+          );
         } else if (provider.hasError) {
           return Center(
-              child: Text('Error fetching data: ${provider.hasError}'));
+            child: Text(
+              '${AppStrings.errorFetchingData.tr}: ${provider.hasError}',
+            ),
+          );
         } else if (provider.homeBrandsTypes != null) {
+          // Fixed calculation to show exactly 4 complete items
+          const double screenHorizontalPadding = 16.0;
+          const double itemMargin = 4.0;
+          const double totalItemMargins = itemMargin * 8; // 4 items × 2 margins
+
+          final double availableWidth = screenWidth - (screenHorizontalPadding * 2) - totalItemMargins;
+          final double exactItemWidth = availableWidth / 4;
+
           return Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
                 padding: EdgeInsets.only(top: screenHeight * 0.02),
-                child: Container(
-                  height: screenHeight * 0.16,
-                  padding: EdgeInsets.only(
-                    // left: screenWidth * 0.04, // 4% of screen width
-                    top: screenHeight * 0.0,
-                    // bottom: screenHeight * 0.04
-                  ),
-                  decoration: const BoxDecoration(
-                    color: AppColors.infoBackGround,
-                  ),
-                  child: AutoScrollingSlider(
-                    itemWidth: 114,
-                    children: provider.homeBrandsTypes!.data!.records!
-                        .asMap()
-                        .entries
-                        .map((entry) {
-                      final int index = entry.key;
-                      final record = entry.value;
-                      return GestureDetector(
-                        onTap: () {
-                          Navigator.push(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: SizedBox(
+                    height: 100,
+                    child: SimpleBazaarAutoSlider(
+                      itemWidth: exactItemWidth + (itemMargin * 2),
+                      snapToItems: true,
+                      items: provider.homeBrandsTypes!.data!.records!.map((record) {
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) =>
-                                      EComTagsScreens(slug: record.slug)));
-                        },
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Container(
-                              padding: EdgeInsets.only(
-                                  bottom: screenHeight * 0.01,
-                                  top: screenHeight * 0.01),
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.primary,
+                                builder: (context) => EComTagsScreens(slug: record.slug),
                               ),
-                              margin: const EdgeInsets.symmetric(horizontal: 4),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(6),
-                                child: Center(
-                                  child: CachedNetworkImage(
-                                    imageUrl: record.image ?? '',
-                                    width: 110,
-                                    height: 80,
-                                    fit: BoxFit.contain,
-                                    errorListener: (object) {
-                                      Image.asset(
-                                        'assets/placeholder.png', // Replace with your actual image path
-                                        fit: BoxFit
-                                            .cover, // Adjust fit if needed
-                                        height:
-                                            MediaQuery.sizeOf(context).height *
-                                                0.28,
-                                        width: double.infinity,
-                                      );
-                                    },
-                                    errorWidget: (context, object, error) =>
-                                        Image.asset(
-                                      'assets/placeholder.png', // Replace with your actual image path
-                                      fit: BoxFit.cover, // Adjust fit if needed
-                                      height:
-                                          MediaQuery.sizeOf(context).height *
-                                              0.28,
-                                      width: double.infinity,
-                                    ),
-                                    placeholder:
-                                        (BuildContext context, String url) =>
-                                            Container(
-                                      height:
-                                          MediaQuery.sizeOf(context).height *
-                                              0.28,
-                                      width: double.infinity,
-                                      color: Colors
-                                          .blueGrey[300], // Background color
-                                      child: Stack(
-                                        alignment: Alignment.center,
-                                        children: [
-                                          Image.asset(
-                                            'assets/placeholder.png', // Replace with your actual image path
-                                            fit: BoxFit
-                                                .cover, // Adjust fit if needed
-                                            height: MediaQuery.sizeOf(context)
-                                                    .height *
-                                                0.28,
-                                            width: double.infinity,
-                                          ),
-                                          const CupertinoActivityIndicator(
-                                            radius:
-                                                16, // Adjust size of the loader
-                                            animating: true,
-                                          ),
-                                        ],
+                            );
+                          },
+                          child: Container(
+                            width: exactItemWidth,
+                            margin: const EdgeInsets.symmetric(horizontal: itemMargin),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16),
+                              gradient: cardGradients[(record.id ?? 0) % cardGradients.length],
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 4,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                  flex: 3,
+                                  child: Center(
+                                    child: CachedNetworkImage(
+                                      imageUrl: record.image ?? '',
+                                      fit: BoxFit.contain,
+                                      errorWidget: (context, object, error) => Image.asset(
+                                        'assets/placeholder.png',
+                                        fit: BoxFit.contain,
+                                      ),
+                                      placeholder: (context, url) => Container(
+                                        color: Colors.transparent,
+                                        child: const CupertinoActivityIndicator(),
                                       ),
                                     ),
                                   ),
                                 ),
-                              ),
+                                const SizedBox(height: 6),
+                                Expanded(
+                                  flex: 1,
+                                  child: Text(
+                                    record.name ?? '',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      );
-                    }).toList(),
+                          ),
+                        );
+                      }).toList(),
+                    ),
                   ),
                 ),
               ),
             ],
           );
         } else {
-          return const Center(child: Text('Load...'));
+          return Center(child: Text('${AppStrings.loading.tr}...'));
         }
       },
     );

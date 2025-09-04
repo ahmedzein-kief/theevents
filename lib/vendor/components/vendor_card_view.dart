@@ -75,9 +75,9 @@ class VendorCard extends StatelessWidget {
                         style: GoogleFonts.inter(
                             fontSize: 15,
                             textStyle: const TextStyle(
-                                overflow: TextOverflow.ellipsis),
+                                overflow: TextOverflow.ellipsis,),
                             color: Colors.green,
-                            fontWeight: FontWeight.w600),
+                            fontWeight: FontWeight.w600,),
                       ),
                     ),
                   ],

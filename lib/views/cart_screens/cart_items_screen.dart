@@ -1,20 +1,18 @@
-import 'dart:io';
-
 import 'package:event_app/core/constants/app_strings.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/models/cart_items_models/cart_items_models.dart';
 import 'package:event_app/views/base_screens/base_app_bar.dart';
 import 'package:event_app/views/cart_screens/save_address_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 
-import '../../core/services/image_picker.dart';
 import '../../core/services/shared_preferences_helper.dart';
 import '../../core/styles/app_colors.dart';
 import '../../core/styles/custom_text_styles.dart';
 import '../../core/widgets/custom_auth_views/app_custom_button.dart';
 import '../../core/widgets/custom_items_views/custom_product_cart_items.dart';
+import '../../provider/auth_provider/get_user_provider.dart';
 import '../../provider/cart_item_provider/cart_item_provider.dart';
 import '../product_detail_screens/product_detail_screen.dart';
 import 'empty_cart_screen.dart';
@@ -32,23 +30,28 @@ class _CartItemsScreensState extends State<CartItemsScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       fetchCartData(context);
-      _loadImage();
+      final user = Provider.of<UserProvider>(context, listen: false).user;
+      avatarImage = user?.avatar ?? '';
+
+      // _loadImage();
     });
   }
 
-  File? _selectedImage;
+  String avatarImage = '';
 
-  final ImagePickerHelper _imagePickerHelper = ImagePickerHelper();
+  // File? _selectedImage;
 
-  // Load the saved image from SharedPreferences
-  Future<void> _loadImage() async {
-    final String? imagePath = await _imagePickerHelper.getSavedImage();
-    if (imagePath != null) {
-      setState(() {
-        _selectedImage = File(imagePath);
-      });
-    }
-  }
+  // final ImagePickerHelper _imagePickerHelper = ImagePickerHelper();
+  //
+  // // Load the saved image from SharedPreferences
+  // Future<void> _loadImage() async {
+  //   final String? imagePath = await _imagePickerHelper.getSavedImage();
+  //   if (imagePath != null) {
+  //     setState(() {
+  //       _selectedImage = File(imagePath);
+  //     });
+  //   }
+  // }
 
   Future<void> fetchCartData(BuildContext? context) async {
     final token = await SecurePreferencesUtil.getToken();
@@ -57,8 +60,10 @@ class _CartItemsScreensState extends State<CartItemsScreen> {
     await provider.fetchCartData(token ?? '', context);
   }
 
-  Future<Response?> fetchCheckoutData(
-      BuildContext? context, String checkoutToken) async {
+  Future<dynamic> fetchCheckoutData(
+    BuildContext? context,
+    String checkoutToken,
+  ) async {
     final token = await SecurePreferencesUtil.getToken();
     if (!mounted) return null;
     final provider = Provider.of<CartProvider>(context!, listen: false);
@@ -77,20 +82,28 @@ class _CartItemsScreensState extends State<CartItemsScreen> {
     if (token == null) return;
     final provider = Provider.of<CartProvider>(context, listen: false);
 
-    final Map<String, String> items = {};
+    // Create the request body in the required JSON format
+    final List<Map<String, dynamic>> items = [];
 
     if (products != null) {
       for (final entry in products) {
         final cartRowId = entry.cartItem.rowId;
-        final quantity =
-            cartRowId == rowId ? qty.toString() : entry.cartItem.qty.toString();
+        final quantity = cartRowId == rowId ? qty : int.parse(entry.cartItem.qty.toString());
 
-        items['items[$cartRowId][rowId]'] = cartRowId;
-        items['items[$cartRowId][values][qty]'] = quantity;
+        items.add({
+          'rowId': cartRowId,
+          'values': {
+            'qty': quantity,
+          }
+        });
       }
     }
 
-    await provider.updateCart(token, context, items);
+    final Map<String, dynamic> requestBody = {
+      'items': items,
+    };
+
+    await provider.updateCart(token, context, requestBody);
   }
 
   @override
@@ -98,19 +111,17 @@ class _CartItemsScreensState extends State<CartItemsScreen> {
     final screenHeight = MediaQuery.sizeOf(context).height;
     final screenWidth = MediaQuery.sizeOf(context).width;
     return BaseAppBar(
-      textBack: AppStrings.back,
+      textBack: AppStrings.back.tr,
       customBackIcon: const Icon(Icons.arrow_back_ios_sharp, size: 16),
-      firstRightIconPath: AppStrings.firstRightIconPath,
-      secondRightIconPath: AppStrings.secondRightIconPath,
+      firstRightIconPath: AppStrings.firstRightIconPath.tr,
+      secondRightIconPath: AppStrings.secondRightIconPath.tr,
       body: Scaffold(
         backgroundColor: Theme.of(context).colorScheme.surface,
         body: Consumer<CartProvider>(
           builder: (context, provider, child) {
-            if (provider.checkoutResponse != null &&
-                provider.checkoutResponse?.statusCode == 200) {}
+            if (provider.checkoutResponse != null && provider.checkoutResponse?.statusCode == 200) {}
 
-            if (provider.cartResponse == null ||
-                provider.cartResponse!.data.products.isEmpty) {
+            if (provider.cartResponse == null || provider.cartResponse!.data.products.isEmpty) {
               return const EmptyCartScreen();
             }
 
@@ -121,9 +132,10 @@ class _CartItemsScreensState extends State<CartItemsScreen> {
                 children: [
                   Padding(
                     padding: EdgeInsets.only(
-                        left: screenWidth * 0.02,
-                        right: screenWidth * 0.02,
-                        top: screenHeight * 0.02),
+                      left: screenWidth * 0.02,
+                      right: screenWidth * 0.02,
+                      top: screenHeight * 0.02,
+                    ),
                     child: Padding(
                       padding: EdgeInsets.only(bottom: screenWidth * 0.03),
                       child: Row(
@@ -131,16 +143,17 @@ class _CartItemsScreensState extends State<CartItemsScreen> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Text(
-                            AppStrings.myCart,
+                            AppStrings.myCart.tr,
                             softWrap: true,
                             style: wishListText(context),
                           ),
                           CircleAvatar(
                             radius: 16.5,
-                            backgroundImage: _selectedImage != null
-                                ? FileImage(_selectedImage!)
-                                : const AssetImage('assets/boy.png')
-                                    as ImageProvider,
+                            backgroundImage: (avatarImage.isNotEmpty && !avatarImage.startsWith('data:image'))
+                                ? NetworkImage(avatarImage)
+                                : const AssetImage('assets/boy.png'),
+                            backgroundColor:
+                                Theme.of(context).brightness == Brightness.dark ? Colors.grey[800] : Colors.grey[200],
                           ),
                         ],
                       ),
@@ -150,31 +163,27 @@ class _CartItemsScreensState extends State<CartItemsScreen> {
                     child: provider.cartLoading
                         ? const Center(
                             child: CircularProgressIndicator(
-                                color: Colors.black, strokeWidth: 0.5))
+                              color: Colors.black,
+                              strokeWidth: 0.5,
+                            ),
+                          )
                         : ListView.builder(
                             scrollDirection: Axis.vertical,
                             itemCount: cartData?.products.length,
                             physics: const AlwaysScrollableScrollPhysics(),
                             shrinkWrap: true,
                             itemBuilder: (context, index) {
-                              final productCart =
-                                  provider.cartResponse?.data.products[index];
-                              final cartItem =
-                                  provider.cartResponse?.data.content[index];
+                              final productCart = provider.cartResponse?.data.products[index];
+                              final cartItem = provider.cartResponse?.data.content[index];
 
                               /// Calculate the percentage off
 
-                              final dynamic frontSalePrice =
-                                  productCart?.product.prices.frontSalePrice;
-                              final dynamic price =
-                                  productCart?.product.prices.price;
+                              final dynamic frontSalePrice = productCart?.product.prices.frontSalePrice;
+                              final dynamic price = productCart?.product.prices.price;
                               String offPercentage = '';
 
-                              if (frontSalePrice != null &&
-                                  price != null &&
-                                  price > 0) {
-                                final dynamic discount =
-                                    100 - ((frontSalePrice / price) * 100);
+                              if (frontSalePrice != null && price != null && price > 0) {
+                                final dynamic discount = 100 - ((frontSalePrice / price) * 100);
                                 // offPercentage = discount.toStringAsFixed(0);
                                 if (discount > 0) {
                                   offPercentage = discount.toStringAsFixed(0);
@@ -186,8 +195,7 @@ class _CartItemsScreensState extends State<CartItemsScreen> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => ProductDetailScreen(
-                                        key:
-                                            ValueKey(productCart?.product.slug),
+                                        key: ValueKey(productCart?.product.slug),
                                         slug: productCart?.product.slug,
                                       ),
                                     ),
@@ -197,49 +205,41 @@ class _CartItemsScreensState extends State<CartItemsScreen> {
                                   brandName: productCart?.product.name ?? 'ih',
                                   imageUrl: productCart?.product.image,
                                   itemS: '${productCart?.cartItem.qty}',
-                                  quantity:
-                                      'Quantity: ${productCart?.cartItem.qty}',
-                                  brandDescription:
-                                      'Sold By ${productCart?.product.store?.name}',
-                                  attributes: productCart
-                                          ?.cartItem.options.attributes ??
-                                      '',
-                                  ceoData:
-                                      productCart?.cartItem.options.options,
-                                  offPrice: offPercentage.isNotEmpty
-                                      ? '$offPercentage%off'
-                                      : '',
-                                  actualPrice:
-                                      'AED ${productCart?.cartItem.price}',
-                                  standardPrice: (productCart?.product.prices
-                                                  .frontSalePrice ??
-                                              0) <
-                                          (productCart?.product.prices.price ??
-                                              0)
-                                      ? (productCart
-                                              ?.product.prices.priceWithTaxes ??
-                                          '')
+                                  quantity: '${AppStrings.quantity.tr} ${productCart?.cartItem.qty}',
+                                  brandDescription: '${AppStrings.soldBy.tr} ${productCart?.product.store?.name}',
+                                  attributes: productCart?.cartItem.options.attributes ?? '',
+                                  ceoData: productCart?.cartItem.options.options,
+                                  offPrice: offPercentage.isNotEmpty ? '$offPercentage${AppStrings.percentOff.tr}' : '',
+                                  actualPrice: '${AppStrings.aed.tr} ${productCart?.cartItem.price}',
+                                  standardPrice: (productCart?.product.prices.frontSalePrice ?? 0) <
+                                          (productCart?.product.prices.price ?? 0)
+                                      ? (productCart?.product.prices.priceWithTaxes ?? '')
                                       : '',
                                   onSubtractPressed: () async {
-                                    final products =
-                                        provider.cartResponse?.data.products;
+                                    final products = provider.cartResponse?.data.products;
                                     var qty = productCart?.cartItem.qty;
 
                                     if ((qty ?? 0) > 0) {
                                       qty = qty! - 1;
-                                      await update(productCart!.cartItem.rowId,
-                                          qty, products);
+                                      await update(
+                                        productCart!.cartItem.rowId,
+                                        qty,
+                                        products,
+                                      );
                                     }
                                   },
                                   onAddPressed: () async {
-                                    final products =
-                                        provider.cartResponse?.data.products;
-                                    await update(productCart!.cartItem.rowId,
-                                        productCart.cartItem.qty + 1, products);
+                                    final products = provider.cartResponse?.data.products;
+                                    await update(
+                                      productCart!.cartItem.rowId,
+                                      productCart.cartItem.qty + 1,
+                                      products,
+                                    );
                                   },
                                   onDeletePressed: () async {
                                     await handleDelete(
-                                        productCart?.cartItem.rowId ?? '');
+                                      productCart?.cartItem.rowId ?? '',
+                                    );
                                   },
                                 ),
                               );
@@ -256,7 +256,8 @@ class _CartItemsScreensState extends State<CartItemsScreen> {
                         topLeft: Radius.circular(8),
                         // Radius for the top-left corner
                         topRight: Radius.circular(
-                            8), // Radius for the top-right corner
+                          8,
+                        ), // Radius for the top-right corner
                       ),
                       boxShadow: const [
                         BoxShadow(
@@ -269,9 +270,11 @@ class _CartItemsScreensState extends State<CartItemsScreen> {
                     ),
                     child: Padding(
                       padding: EdgeInsets.only(
-                          right: screenWidth * 0.06,
-                          top: screenHeight * 0.02,
-                          bottom: screenHeight * 0.01),
+                        right: screenWidth * 0.06,
+                        left: screenWidth * 0.06,
+                        top: screenHeight * 0.02,
+                        bottom: screenHeight * 0.01,
+                      ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         mainAxisSize: MainAxisSize.min,
@@ -285,59 +288,68 @@ class _CartItemsScreensState extends State<CartItemsScreen> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text(
-                                    '${AppStrings.subTotal}${provider.cartResponse?.data.totalPrice}',
-                                    style: cartSubtotal(context)),
+                                  '${AppStrings.subTotalColon.tr}${provider.cartResponse?.data.totalPrice}',
+                                  style: cartSubtotal(context),
+                                ),
                                 Padding(
                                   padding: EdgeInsets.symmetric(
-                                      vertical: screenHeight * 0.02),
+                                    vertical: screenHeight * 0.02,
+                                  ),
                                   child: Text(
-                                      "${AppStrings.tax}${provider.cartResponse?.data.formattedRawTax ?? ''}",
-                                      style: cartSubtotal(context)),
+                                    "${AppStrings.taxColon.tr}${provider.cartResponse?.data.formattedRawTax ?? ''}",
+                                    style: cartSubtotal(context),
+                                  ),
                                 ),
                                 Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
+                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   mainAxisSize: MainAxisSize.max,
                                   children: [
                                     Text(
-                                        '${AppStrings.total}${provider.cartResponse?.data.formattedFinalTotal}',
-                                        style: cartTotal(context)),
+                                      '${AppStrings.totalColon.tr}${provider.cartResponse?.data.formattedFinalTotal}',
+                                      style: cartTotal(context),
+                                    ),
                                   ],
                                 ),
                                 Align(
                                   alignment: Alignment.centerRight,
-                                  child: Text(AppStrings.shippingFees,
-                                      textAlign: TextAlign.start,
-                                      style: shippingFeesText(context)),
+                                  child: Text(
+                                    AppStrings.shippingFees.tr,
+                                    textAlign: TextAlign.start,
+                                    style: shippingFeesText(context),
+                                  ),
                                 ),
                               ],
                             ),
                           ),
                           Padding(
                             padding: EdgeInsets.only(
-                                top: screenHeight * 0.02,
-                                bottom: screenHeight * 0.01),
+                              top: screenHeight * 0.02,
+                              bottom: screenHeight * 0.01,
+                            ),
                             child: CustomAppButton(
-                              buttonText: AppStrings.proceedToCheckOut,
+                              buttonText: AppStrings.proceedToCheckOut.tr,
                               buttonColor: AppColors.lightCoral,
                               suffixIcon: CupertinoIcons.forward,
                               isLoading: provider.checkoutLoading,
                               onTap: () async {
-                                final checkoutToken = provider
-                                    .cartResponse?.data.tracked_start_checkout;
+                                final checkoutToken = provider.cartResponse?.data.tracked_start_checkout;
 
                                 if (checkoutToken != null) {
                                   final response = await fetchCheckoutData(
-                                      context, checkoutToken);
+                                    context,
+                                    checkoutToken,
+                                  );
 
                                   if (response?.statusCode == 200) {
                                     Navigator.push(
                                       context,
                                       CupertinoPageRoute(
-                                        builder: (builder) => SaveAddressScreen(
-                                          tracked_start_checkout: checkoutToken,
-                                        ),
+                                        builder: (builder) {
+                                          return SaveAddressScreen(
+                                            tracked_start_checkout: checkoutToken,
+                                          );
+                                        },
                                       ),
                                     );
                                   }

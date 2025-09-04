@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/models/product_packages_models/product_filters_model.dart';
@@ -80,9 +79,9 @@ class ProductProvider with ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+        final data = response.data;
 
-        final Map<String, dynamic> jsonResponse = json.decode(response.body);
+        final Map<String, dynamic> jsonResponse = response.data;
         final ProductModels products = ProductModels.fromJson(jsonResponse);
 
         if (page == 1) {
@@ -141,9 +140,9 @@ class ProductProvider with ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+        final data = response.data;
 
-        final Map<String, dynamic> jsonResponse = json.decode(response.body);
+        final Map<String, dynamic> jsonResponse = response.data;
         final TopBrandsProducts apiResponse =
             TopBrandsProducts.fromJson(jsonResponse);
 
@@ -163,4 +162,4 @@ class ProductProvider with ChangeNotifier {
   }
 }
 
-//    https://api.staging.theevents.ae/api/v1/vendor-data/102
+//    https://apistaging.theevents.ae/api/v1/vendor-data/102

@@ -6,7 +6,7 @@ class CustomVendorAuthButton extends StatelessWidget {
       {super.key,
       required this.title,
       this.isLoading = false,
-      required this.onPressed});
+      required this.onPressed,});
   final String title;
   final bool isLoading;
   final Function() onPressed;

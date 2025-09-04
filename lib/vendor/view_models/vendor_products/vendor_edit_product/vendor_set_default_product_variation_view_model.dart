@@ -33,7 +33,7 @@ class VendorSetDefaultProductVariationViewModel with ChangeNotifier {
   }
 
   Future<bool> vendorSetDefaultProductVariation(
-      {required productVariationID, required BuildContext context}) async {
+      {required productVariationID, required BuildContext context,}) async {
     try {
       setLoading(true);
       setApiResponse = ApiResponse.loading();
@@ -46,17 +46,17 @@ class VendorSetDefaultProductVariationViewModel with ChangeNotifier {
       final CommonPostRequestModel response =
           await _myRepo.vendorSetDefaultProductVariation(
               headers: headers,
-              productVariationID: productVariationID.toString());
+              productVariationID: productVariationID.toString(),);
       setApiResponse = ApiResponse.completed(response);
       AlertServices.showSuccessSnackBar(
           message: apiResponse.data?.message?.toString() ?? '',
-          context: context);
+          context: context,);
       setLoading(false);
       return true;
     } catch (error) {
       setApiResponse = ApiResponse.error(error.toString());
       AlertServices.showErrorSnackBar(
-          message: error.toString() ?? '', context: context);
+          message: error.toString() ?? '', context: context,);
       setLoading(false);
       return false;
     }

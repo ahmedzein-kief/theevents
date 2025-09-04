@@ -1,4 +1,5 @@
 import 'package:event_app/core/constants/app_strings.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/views/base_screens/base_app_bar.dart';
 import 'package:event_app/views/home_screens_shortcode/shortcode_information_icons/gift_card/gift_card_form.dart';
 import 'package:event_app/views/home_screens_shortcode/shortcode_information_icons/gift_card/gift_card_header.dart';
@@ -35,11 +36,11 @@ class _GiftCardInnerScreenState extends State<GiftCardScreen> {
     final double screenWidth = MediaQuery.sizeOf(context).width;
     final double screenHeight = MediaQuery.sizeOf(context).height;
     return BaseAppBar(
-      textBack: AppStrings.back,
+      textBack: AppStrings.back.tr,
       customBackIcon: const Icon(Icons.arrow_back_ios_sharp, size: 16),
-      firstRightIconPath: AppStrings.firstRightIconPath,
-      secondRightIconPath: AppStrings.secondRightIconPath,
-      thirdRightIconPath: AppStrings.thirdRightIconPath,
+      firstRightIconPath: AppStrings.firstRightIconPath.tr,
+      secondRightIconPath: AppStrings.secondRightIconPath.tr,
+      thirdRightIconPath: AppStrings.thirdRightIconPath.tr,
       body: Scaffold(
         body: SafeArea(
           child: Consumer<GiftCardInnerProvider>(
@@ -60,7 +61,7 @@ class _GiftCardInnerScreenState extends State<GiftCardScreen> {
               final data = giftCardProvider.apiResponse?.data;
 
               if (data == null) {
-                return const Center(child: Text('No data available'));
+                return Center(child: Text(AppStrings.noDataAvailable.tr));
               }
 
               return Column(
@@ -75,7 +76,7 @@ class _GiftCardInnerScreenState extends State<GiftCardScreen> {
                       child: Padding(
                         padding: EdgeInsets.symmetric(
                             horizontal: screenWidth * 0.04,
-                            vertical: screenHeight * 0.02),
+                            vertical: screenHeight * 0.02,),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,

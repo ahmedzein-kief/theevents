@@ -1,6 +1,6 @@
 class AddToCartResponse {
   AddToCartResponse(
-      {required this.error, required this.data, required this.message});
+      {required this.error, required this.data, required this.message,});
 
   factory AddToCartResponse.fromJson(Map<String, dynamic> json) =>
       AddToCartResponse(

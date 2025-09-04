@@ -2,80 +2,153 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 
-class AutoScrollingSlider extends StatefulWidget {
-  const AutoScrollingSlider({
+class SimpleBazaarAutoSlider extends StatefulWidget {
+  const SimpleBazaarAutoSlider({
     super.key,
-    required this.children,
-    this.scrollDuration = const Duration(seconds: 1),
+    required this.items,
+    this.scrollDuration = const Duration(milliseconds: 800),
     this.scrollInterval = const Duration(seconds: 3),
-    required this.itemWidth,
+    this.itemWidth = 118.0,
+    this.snapToItems = false,
   });
-  final List<Widget> children;
+
+  final List<Widget> items;
   final Duration scrollDuration;
   final Duration scrollInterval;
   final double itemWidth;
+  final bool snapToItems;
 
   @override
-  _AutoScrollingSliderState createState() => _AutoScrollingSliderState();
+  _SimpleBazaarAutoSliderState createState() => _SimpleBazaarAutoSliderState();
 }
 
-class _AutoScrollingSliderState extends State<AutoScrollingSlider> {
+class _SimpleBazaarAutoSliderState extends State<SimpleBazaarAutoSlider> {
   late ScrollController _scrollController;
-  late Timer _timer;
+  Timer? _timer;
+  Timer? _snapTimer;
+  int _currentIndex = 0;
+  bool _isUserScrolling = false;
 
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController();
-    _startAutoScroll();
+
+    // Add scroll listener for manual scrolling detection
+    if (widget.snapToItems) {
+      _scrollController.addListener(_onScroll);
+    }
+
+    // Start scrolling after widget is fully built
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Future.delayed(const Duration(seconds: 1), () {
+        if (mounted && widget.items.length > 3) {
+          _startAutoScroll();
+        }
+      });
+    });
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.isScrollingNotifier.value) {
+      _isUserScrolling = true;
+      _timer?.cancel(); // Stop auto scroll when user is scrolling
+
+      // Cancel previous snap timer
+      _snapTimer?.cancel();
+
+      // Start new snap timer
+      _snapTimer = Timer(const Duration(milliseconds: 150), () {
+        if (mounted && _isUserScrolling) {
+          _snapToNearestItem();
+          _isUserScrolling = false;
+          // Restart auto scroll after snapping
+          Future.delayed(const Duration(milliseconds: 500), () {
+            if (mounted && widget.items.length > 3) {
+              _startAutoScroll();
+            }
+          });
+        }
+      });
+    }
+  }
+
+  void _snapToNearestItem() {
+    if (!_scrollController.hasClients) return;
+
+    final double currentScroll = _scrollController.position.pixels;
+    final double nearestItemPosition = (currentScroll / widget.itemWidth).round() * widget.itemWidth;
+
+    _scrollController.animateTo(
+      nearestItemPosition,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOut,
+    );
   }
 
   void _startAutoScroll() {
+    _timer?.cancel(); // Cancel existing timer
     _timer = Timer.periodic(widget.scrollInterval, (timer) {
-      if (_scrollController.hasClients) {
-        final maxScrollExtent = _scrollController.position.maxScrollExtent;
-        final currentScrollPosition = _scrollController.position.pixels;
-        final targetScrollPosition = currentScrollPosition + widget.itemWidth;
+      if (!mounted || !_scrollController.hasClients || _isUserScrolling) return;
 
-        if (targetScrollPosition >= maxScrollExtent) {
-          final double offset = targetScrollPosition - maxScrollExtent;
-          _scrollController.jumpTo(0);
-          _scrollController.animateTo(
-            offset,
-            duration: widget.scrollDuration,
-            curve: Curves.easeInOut,
-          );
-        } else {
-          _scrollController.animateTo(
-            targetScrollPosition,
-            duration: widget.scrollDuration,
-            curve: Curves.easeInOut,
-          );
-        }
+      final double maxScroll = _scrollController.position.maxScrollExtent;
+      final double currentScroll = _scrollController.position.pixels;
+
+      // Calculate next position
+      final double nextPosition = currentScroll + widget.itemWidth;
+
+      if (nextPosition >= maxScroll) {
+        // Reset to start
+        _scrollController.animateTo(
+          0,
+          duration: widget.scrollDuration,
+          curve: Curves.easeOut,
+        );
+      } else {
+        // Scroll to next item
+        _scrollController.animateTo(
+          nextPosition,
+          duration: widget.scrollDuration,
+          curve: Curves.easeOut,
+        );
       }
     });
   }
 
   @override
   void dispose() {
-    _timer.cancel();
+    _timer?.cancel();
+    _snapTimer?.cancel();
+    if (widget.snapToItems) {
+      _scrollController.removeListener(_onScroll);
+    }
     _scrollController.dispose();
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context) => ListView.builder(
-        shrinkWrap: true,
-        physics: const AlwaysScrollableScrollPhysics(),
-        controller: _scrollController,
-        reverse: false,
-        scrollDirection: Axis.horizontal,
-        itemCount: widget.children.length * 900,
-        // itemCount: widget.children.length ,
-        itemBuilder: (context, index) {
-          return widget
-              .children[index % widget.children.length]; // Circular indexing
-          // return widget.children[index];
-        },
-      );
+  Widget build(BuildContext context) {
+    if (widget.items.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    // Create extended list for smooth infinite scrolling
+    final List<Widget> extendedItems = [];
+    for (int i = 0; i < 5; i++) {
+      // Repeat items 5 times
+      extendedItems.addAll(widget.items);
+    }
+
+    return ListView.builder(
+      controller: _scrollController,
+      scrollDirection: Axis.horizontal,
+      physics: widget.snapToItems
+          ? const ClampingScrollPhysics() // Better for snapping
+          : const AlwaysScrollableScrollPhysics(),
+      itemCount: extendedItems.length,
+      itemBuilder: (context, index) {
+        return extendedItems[index];
+      },
+    );
+  }
 }

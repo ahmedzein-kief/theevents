@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/helper/validators/validator.dart';
 import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/core/styles/app_sizes.dart';
@@ -14,6 +15,8 @@ import 'package:event_app/vendor/view_models/vendor_settings/vendor_get_settings
 import 'package:event_app/vendor/view_models/vendor_settings/vendor_settings_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import '../../../../core/constants/vendor_app_strings.dart';
 
 class TaxInfoView extends StatefulWidget {
   const TaxInfoView({super.key});
@@ -70,16 +73,16 @@ class _TaxInfoViewState extends State<TaxInfoView> {
   }
 
   Future _onRefresh() async {
-    final VendorGetSettingsViewModel vendorGetSettingsProvider =
-        context.read<VendorGetSettingsViewModel>();
+    final VendorGetSettingsViewModel vendorGetSettingsProvider = context.read<VendorGetSettingsViewModel>();
     await vendorGetSettingsProvider.vendorGetSettings();
     if (vendorGetSettingsProvider.apiResponse.status == ApiStatus.COMPLETED) {
       _initializeTheField(vendorGetSettingsProvider: vendorGetSettingsProvider);
     }
   }
 
-  void _initializeTheField(
-      {required VendorGetSettingsViewModel vendorGetSettingsProvider}) {
+  void _initializeTheField({
+    required VendorGetSettingsViewModel vendorGetSettingsProvider,
+  }) {
     final taxInfo = vendorGetSettingsProvider.apiResponse.data?.data?.taxInfo;
     if (taxInfo != null) {
       businessNameController.text = taxInfo.businessName?.toString() ?? '';
@@ -90,20 +93,22 @@ class _TaxInfoViewState extends State<TaxInfoView> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         body: Utils.pageRefreshIndicator(
+          context: context,
           onRefresh: _onRefresh,
           child: Consumer<VendorGetSettingsViewModel>(
             builder: (context, vendorGetSettingsProvider, _) {
               /// Show loading if refreshing
-              if (vendorGetSettingsProvider.apiResponse.status ==
-                  ApiStatus.LOADING)
+              if (vendorGetSettingsProvider.apiResponse.status == ApiStatus.LOADING) {
                 return Utils.pageLoadingIndicator(context: context);
+              }
 
               /// return ui if loading ends
               return ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 children: [
-                  _buildUi(),
+                  _buildUi(context),
                 ],
               );
             },
@@ -111,16 +116,18 @@ class _TaxInfoViewState extends State<TaxInfoView> {
         ),
       );
 
-  Widget _buildUi() => SimpleCard(
+  Widget _buildUi(BuildContext context) => SimpleCard(
+        color: Theme.of(context).colorScheme.surface,
         expandedContent: Form(
           key: _formKey,
           child: Column(
             children: [
               /// Business Name
               CustomTextFormField(
-                labelText: 'Business Name',
+                labelText: VendorAppStrings.businessName.tr,
                 required: true,
-                hintText: 'Enter Business Name',
+                hintText: VendorAppStrings.enterBusinessName.tr,
+                hintStyle: TextStyle(color: Theme.of(context).hintColor),
                 validator: Validator.fieldCannotBeEmpty,
                 controller: businessNameController,
                 focusNode: businessNameFocusNode,
@@ -131,10 +138,10 @@ class _TaxInfoViewState extends State<TaxInfoView> {
 
               /// Tax ID
               CustomTextFormField(
-                labelText: 'Tax ID',
+                labelText: VendorAppStrings.taxId.tr,
                 required: true,
                 validator: Validator.fieldCannotBeEmpty,
-                hintText: 'Enter Tax ID',
+                hintText: VendorAppStrings.enterTaxId.tr,
                 controller: taxIdController,
                 focusNode: taxIdFocusNode,
                 nextFocusNode: addressFocusNode,
@@ -144,9 +151,9 @@ class _TaxInfoViewState extends State<TaxInfoView> {
 
               /// Address
               CustomTextFormField(
-                labelText: 'Address',
+                labelText: VendorAppStrings.address.tr,
                 required: false,
-                hintText: 'Enter Address',
+                hintText: VendorAppStrings.enterAddress.tr,
                 maxLines: 3,
                 controller: addressController,
                 focusNode: addressFocusNode,
@@ -160,7 +167,7 @@ class _TaxInfoViewState extends State<TaxInfoView> {
               /// Save Button
               Consumer<VendorSettingsViewModel>(
                 builder: (context, provider, _) => CustomAppButton(
-                  buttonText: 'Save Settings',
+                  buttonText: VendorAppStrings.save.tr,
                   borderRadius: kButtonRadius,
                   mainAxisSize: MainAxisSize.max,
                   buttonColor: AppColors.lightCoral,
@@ -172,13 +179,12 @@ class _TaxInfoViewState extends State<TaxInfoView> {
                         _createForm();
 
                         /// send data to server
-                        final vendorSettingsProvider =
-                            context.read<VendorSettingsViewModel>();
-                        final result =
-                            await vendorSettingsProvider.vendorSettings(
-                                vendorSettingsType: VendorSettingType.taxInfo,
-                                form: form,
-                                context: context);
+                        final vendorSettingsProvider = context.read<VendorSettingsViewModel>();
+                        final result = await vendorSettingsProvider.vendorSettings(
+                          vendorSettingsType: VendorSettingType.taxInfo,
+                          form: form,
+                          context: context,
+                        );
                         if (result) {
                           setProcessing(false);
                           await _onRefresh();
@@ -187,8 +193,9 @@ class _TaxInfoViewState extends State<TaxInfoView> {
                     } catch (e) {
                       setProcessing(false);
                       AlertServices.showErrorSnackBar(
-                          message: 'Oops! something went wrong..',
-                          context: context);
+                        message: VendorAppStrings.error.tr + 'Oops! something went wrong..',
+                        context: context,
+                      );
                     }
                   },
                 ),

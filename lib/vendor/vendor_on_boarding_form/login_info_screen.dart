@@ -1,5 +1,6 @@
 import 'package:event_app/core/constants/app_strings.dart';
 import 'package:event_app/core/constants/vendor_app_strings.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/helper/validators/validator.dart';
 import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/models/vendor_models/post_models/signup_post_data.dart';
@@ -17,6 +18,7 @@ import '../components/vendor_text_style.dart';
 
 class VendorLoginInfoScreen extends StatefulWidget {
   const VendorLoginInfoScreen({super.key, required this.onNext});
+
   final VoidCallback onNext;
 
   @override
@@ -50,7 +52,7 @@ class _VendorLoginInfoScreenState extends State<VendorLoginInfoScreen> {
   bool _confirmPasswordObscureText = true;
 
   Future<SignUpResponse?> signUp(
-      VendorSignUpPostData vendorSignUpPostData) async {
+      VendorSignUpPostData vendorSignUpPostData,) async {
     final provider = Provider.of<VendorSignUpProvider>(context, listen: false);
     final response = await provider.signUp(context, vendorSignUpPostData);
     return response;
@@ -123,7 +125,7 @@ class _VendorLoginInfoScreenState extends State<VendorLoginInfoScreen> {
                             left: screenWidth * 0.04,
                             right: screenWidth * 0.04,
                             top: screenHeight * 0.03,
-                            bottom: screenHeight * 0.015),
+                            bottom: screenHeight * 0.015,),
                         child: Container(
                           decoration: BoxDecoration(
                             boxShadow: [
@@ -143,7 +145,7 @@ class _VendorLoginInfoScreenState extends State<VendorLoginInfoScreen> {
                             elevation: 15,
                             child: Padding(
                               padding: const EdgeInsets.only(
-                                  top: 20, left: 10, right: 10, bottom: 30),
+                                  top: 20, left: 10, right: 10, bottom: 30,),
                               child: Form(
                                 key: _formKey, // Add Form key here
                                 child: Column(
@@ -152,14 +154,15 @@ class _VendorLoginInfoScreenState extends State<VendorLoginInfoScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     Text(
-                                      'Login Information',
+                                      VendorAppStrings.loginInformation.tr,
                                       style: loginHeading(),
                                     ),
                                     VendorCustomTextFields(
-                                      labelText: VendorAppStrings.titleFullName,
+                                      labelText:
+                                          VendorAppStrings.titleFullName.tr,
                                       hintText:
-                                          VendorAppStrings.hintEnterFullName,
-                                      textStar: VendorAppStrings.asterick,
+                                          VendorAppStrings.hintEnterFullName.tr,
+                                      textStar: VendorAppStrings.asterick.tr,
                                       controller: _nameController,
                                       keyboardType: TextInputType.name,
                                       focusNode: _nameFocusNode,
@@ -167,9 +170,10 @@ class _VendorLoginInfoScreenState extends State<VendorLoginInfoScreen> {
                                       validator: Validator.vendorName,
                                     ),
                                     VendorCustomTextFields(
-                                      labelText: VendorAppStrings.titleEmail,
-                                      hintText: VendorAppStrings.hintEnterEmail,
-                                      textStar: VendorAppStrings.asterick,
+                                      labelText: VendorAppStrings.titleEmail.tr,
+                                      hintText:
+                                          VendorAppStrings.hintEnterEmail.tr,
+                                      textStar: VendorAppStrings.asterick.tr,
                                       controller: _emailController,
                                       keyboardType: TextInputType.emailAddress,
                                       focusNode: _emailFocusNode,
@@ -177,10 +181,11 @@ class _VendorLoginInfoScreenState extends State<VendorLoginInfoScreen> {
                                       validator: Validator.vendorEmail,
                                     ),
                                     VendorCustomTextFields(
-                                      labelText: VendorAppStrings.titleGender,
+                                      labelText:
+                                          VendorAppStrings.titleGender.tr,
                                       hintText:
-                                          VendorAppStrings.hintSelectGender,
-                                      textStar: VendorAppStrings.asterick,
+                                          VendorAppStrings.hintSelectGender.tr,
+                                      textStar: VendorAppStrings.asterick.tr,
                                       controller: _genderController,
                                       // keyboardType: TextInputType.emailAddress,
                                       suffixIconColor: Colors.black,
@@ -193,7 +198,7 @@ class _VendorLoginInfoScreenState extends State<VendorLoginInfoScreen> {
                                       onIconPressed: () async {
                                         final selectedGender =
                                             await showGenderDropdown(context,
-                                                _genderController.text);
+                                                _genderController.text,);
                                         if (selectedGender != null) {
                                           _genderController.text =
                                               selectedGender;
@@ -201,9 +206,10 @@ class _VendorLoginInfoScreenState extends State<VendorLoginInfoScreen> {
                                       },
                                     ),
                                     VendorCustomTextFields(
-                                      labelText: 'Password',
-                                      hintText: 'Enter your password',
-                                      textStar: ' *',
+                                      labelText: VendorAppStrings.password.tr,
+                                      hintText:
+                                          VendorAppStrings.enterYourPassword.tr,
+                                      textStar: VendorAppStrings.asterick.tr,
                                       controller: _passwordController,
                                       keyboardType:
                                           TextInputType.visiblePassword,
@@ -219,8 +225,8 @@ class _VendorLoginInfoScreenState extends State<VendorLoginInfoScreen> {
                                               .colorScheme
                                               .onPrimary,
                                           _passwordObscureText
-                                              ? AppStrings.hideEye
-                                              : AppStrings.showEye,
+                                              ? AppStrings.hideEye.tr
+                                              : AppStrings.showEye.tr,
                                         ),
                                         onPressed: () {
                                           setState(() {
@@ -232,9 +238,11 @@ class _VendorLoginInfoScreenState extends State<VendorLoginInfoScreen> {
                                       obscureText: _passwordObscureText,
                                     ),
                                     VendorCustomTextFields(
-                                      labelText: 'Confirm Password',
-                                      hintText: 'Enter your password',
-                                      textStar: ' *',
+                                      labelText:
+                                          VendorAppStrings.confirmPassword.tr,
+                                      hintText:
+                                          VendorAppStrings.enterYourPassword.tr,
+                                      textStar: VendorAppStrings.asterick.tr,
                                       controller: _confirmPasswordController,
                                       keyboardType: TextInputType.emailAddress,
                                       focusNode: _confirmPasswordFocusNode,
@@ -249,8 +257,8 @@ class _VendorLoginInfoScreenState extends State<VendorLoginInfoScreen> {
                                               .colorScheme
                                               .onPrimary,
                                           _confirmPasswordObscureText
-                                              ? AppStrings.hideEye
-                                              : AppStrings.showEye,
+                                              ? AppStrings.hideEye.tr
+                                              : AppStrings.showEye.tr,
                                         ),
                                         onPressed: () {
                                           setState(() {
@@ -262,8 +270,10 @@ class _VendorLoginInfoScreenState extends State<VendorLoginInfoScreen> {
                                       obscureText: _confirmPasswordObscureText,
                                     ),
                                     VendorCustomTextFields(
-                                      labelText: 'Company Name',
-                                      hintText: 'Enter your company name',
+                                      labelText:
+                                          VendorAppStrings.companyName.tr,
+                                      hintText: VendorAppStrings
+                                          .enterYourCompanyName.tr,
                                       textStar: ' *',
                                       controller: _companyNameController,
                                       keyboardType: TextInputType.emailAddress,
@@ -278,15 +288,17 @@ class _VendorLoginInfoScreenState extends State<VendorLoginInfoScreen> {
                                               .trim()
                                               .toLowerCase()
                                               .replaceAll(
-                                                  RegExp(r'[^a-zA-Z0-9 ]'), '')
+                                                  RegExp(r'[^a-zA-Z0-9 ]'), '',)
                                               .replaceAll(RegExp(r'\s+'), '-');
                                         });
                                       },
                                     ),
                                     VendorCustomTextFields(
-                                      labelText: 'Company Slug',
-                                      hintText: 'Enter company slug',
-                                      textStar: ' *',
+                                      labelText:
+                                          VendorAppStrings.companySlug.tr,
+                                      hintText:
+                                          VendorAppStrings.enterCompanySlug.tr,
+                                      textStar: VendorAppStrings.asterick.tr,
                                       controller: _companySlugController,
                                       keyboardType: TextInputType.emailAddress,
                                       focusNode: _companySlugFocusNode,
@@ -295,10 +307,11 @@ class _VendorLoginInfoScreenState extends State<VendorLoginInfoScreen> {
                                       validator: Validator.companySlug,
                                     ),
                                     VendorCustomTextFields(
-                                      labelText: 'Company Mobile Number',
+                                      labelText: VendorAppStrings
+                                          .companyMobileNumber.tr,
                                       hintText:
-                                          'Enter your company mobile number',
-                                      textStar: ' *',
+                                          VendorAppStrings.enterMobileNumber.tr,
+                                      textStar: VendorAppStrings.asterick.tr,
                                       controller:
                                           _companyMobileNumberController,
                                       keyboardType: TextInputType.emailAddress,
@@ -321,7 +334,7 @@ class _VendorLoginInfoScreenState extends State<VendorLoginInfoScreen> {
               alignment: Alignment.bottomCenter,
               child: CustomVendorAuthButton(
                 isLoading: mainProvider.isLoading,
-                title: 'Continue',
+                title: VendorAppStrings.continueButton.tr,
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     final vendorSignUpPostData = VendorSignUpPostData(
@@ -343,9 +356,9 @@ class _VendorLoginInfoScreenState extends State<VendorLoginInfoScreen> {
                         );
                         if (signUpResponse.data?.isVendor == true) {
                           await SecurePreferencesUtil.saveToken(
-                              'Bearer ${signUpResponse.data!.token}');
+                              'Bearer ${signUpResponse.data!.token}',);
                           await SecurePreferencesUtil.setBool(
-                              SecurePreferencesUtil.isLoggedInKey, true);
+                              SecurePreferencesUtil.isLoggedInKey, true,);
                           widget.onNext();
                         }
                       }

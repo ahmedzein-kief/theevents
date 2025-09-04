@@ -47,7 +47,7 @@ class Data {
         returnOrders: json['returnOrders'],
         liveProducts: json['liveProducts'],
         products: List<Product>.from(
-            json['products'].map((x) => Product.fromJson(x))),
+            json['products'].map((x) => Product.fromJson(x)),),
         revenue: Revenue.fromJson(json['revenue']),
         balance: json['balance'],
         pendingPackages: json['pendingPackages'],

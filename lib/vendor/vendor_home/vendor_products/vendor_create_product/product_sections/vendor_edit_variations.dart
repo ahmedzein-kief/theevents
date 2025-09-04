@@ -1,6 +1,10 @@
 import 'dart:async';
 
 import 'package:dio/dio.dart';
+import 'package:event_app/core/helper/mixins/media_query_mixin.dart';
+import 'package:event_app/core/styles/app_colors.dart';
+import 'package:event_app/core/styles/app_sizes.dart';
+import 'package:event_app/core/widgets/custom_auth_views/app_custom_button.dart';
 import 'package:event_app/data/vendor/data/response/apis_status.dart';
 import 'package:event_app/models/vendor_models/products/create_product/product_overview_model.dart';
 import 'package:event_app/models/vendor_models/products/create_product/product_post_data_model.dart';
@@ -8,10 +12,6 @@ import 'package:event_app/models/vendor_models/products/edit_product/edit_variat
 import 'package:event_app/models/vendor_models/products/edit_product/new_product_view_data_response.dart';
 import 'package:event_app/models/vendor_models/products/holder_models/digital_links_model.dart';
 import 'package:event_app/models/vendor_models/products/holder_models/upload_images_model.dart';
-import 'package:event_app/core/styles/app_colors.dart';
-import 'package:event_app/core/widgets/custom_auth_views/app_custom_button.dart';
-import 'package:event_app/core/styles/app_sizes.dart';
-import 'package:event_app/core/helper/mixins/media_query_mixin.dart';
 import 'package:event_app/vendor/components/app_bars/vendor_modify_sections_app_bar.dart';
 import 'package:event_app/vendor/components/bottom_sheets/draggable_bottom_sheet.dart';
 import 'package:event_app/vendor/components/dropdowns/custom_dropdown.dart';
@@ -34,15 +34,19 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../../core/helper/validators/validator.dart';
 import '../../../../../models/vendor_models/products/create_product/attribute_sets_data_response.dart';
 import '../../../../../models/vendor_models/products/create_product/vendor_product_dimensions_model.dart';
-import '../../../../../core/helper/validators/validator.dart';
 import '../../../../components/checkboxes/custom_checkboxes.dart';
 import '../../../../view_models/vendor_products/vendor_edit_product/vendor_get_selected_product_attibutes_view_model.dart';
 
 class VendorEditVariations extends StatefulWidget {
-  const VendorEditVariations(
-      {super.key, this.productVariationsID, required this.productID});
+  const VendorEditVariations({
+    super.key,
+    this.productVariationsID,
+    required this.productID,
+  });
+
   final String? productVariationsID;
   final String productID;
 
@@ -50,15 +54,12 @@ class VendorEditVariations extends StatefulWidget {
   _VendorEditVariationsState createState() => _VendorEditVariationsState();
 }
 
-class _VendorEditVariationsState extends State<VendorEditVariations>
-    with MediaQueryMixin {
+class _VendorEditVariationsState extends State<VendorEditVariations> with MediaQueryMixin {
   VendorProductOverviewModel? overviewModel;
 
   final TextEditingController _imageCountController = TextEditingController();
-  final TextEditingController _digitalImageCountController =
-      TextEditingController();
-  final TextEditingController _digitalLinksCountController =
-      TextEditingController();
+  final TextEditingController _digitalImageCountController = TextEditingController();
+  final TextEditingController _digitalLinksCountController = TextEditingController();
 
   List<UploadImagesModel>? selectedImages;
   List<UploadImagesModel>? selectedDigitalImages;
@@ -100,71 +101,59 @@ class _VendorEditVariationsState extends State<VendorEditVariations>
       /// adding new product
       if (widget.productVariationsID == null && widget.productID.isNotEmpty) {
         /// ******** Get all attributes set start **********
-        final vendorGetAttributesSetProvider =
-            Provider.of<VendorCreateProductViewModel>(context, listen: false);
+        final vendorGetAttributesSetProvider = Provider.of<VendorCreateProductViewModel>(context, listen: false);
         await vendorGetAttributesSetProvider.getAttributeSetsData();
 
         /// ******** Get all attributes set end **********
 
         /// ******** Get selected attributes set start **********
-        final vendorGetSelectedAttributesSetProvider =
-            context.read<VendorGetSelectedAttributesViewModel>();
-        final result = await vendorGetSelectedAttributesSetProvider
-            .vendorGetSelectedProductAttributes(productID: widget.productID);
+        final vendorGetSelectedAttributesSetProvider = context.read<VendorGetSelectedAttributesViewModel>();
+        final result = await vendorGetSelectedAttributesSetProvider.vendorGetSelectedProductAttributes(
+            productID: widget.productID);
         if (result) {
-          _selectedAttributesSet = vendorGetSelectedAttributesSetProvider
-                  .attributeSetsApiResponse.data?.data ??
-              [];
+          _selectedAttributesSet = vendorGetSelectedAttributesSetProvider.attributeSetsApiResponse.data?.data ?? [];
         }
 
         /// ******** Get selected attributes set end **********
       } else {
-        final provider =
-            Provider.of<VendorCreateProductViewModel>(context, listen: false);
+        final provider = Provider.of<VendorCreateProductViewModel>(context, listen: false);
         await provider.getEditVariations(
-            context, widget.productVariationsID ?? '');
+          context,
+          widget.productVariationsID ?? '',
+        );
 
         if (provider.editVariationsApiResponse.status == ApiStatus.COMPLETED) {
-          _generateLicenseCode = provider
-                  .editVariationsApiResponse.data?.data?.generateLicenseCode ==
-              1;
-          listAttributes = provider
-                  .editVariationsApiResponse.data?.data?.productAttributeSets ??
-              [];
+          _generateLicenseCode = provider.editVariationsApiResponse.data?.data?.generateLicenseCode == 1;
+          listAttributes = provider.editVariationsApiResponse.data?.data?.productAttributeSets ?? [];
           overview = provider.editVariationsApiResponse.data?.data?.product;
 
           overviewModel = VendorProductOverviewModel(
             sku: overview?.sku ?? '',
             price: overview?.price.toString() ?? '',
             priceSale: overview?.salePrice?.toString() ?? '',
-            chooseDiscountPeriod:
-                (overview?.startDate?.toString().isNotEmpty ?? false) &&
-                    (overview?.endDate?.toString().isNotEmpty ?? false),
+            chooseDiscountPeriod: (overview?.startDate?.toString().isNotEmpty ?? false) &&
+                (overview?.endDate?.toString().isNotEmpty ?? false),
             fromDate: overview?.startDate?.toString() ?? '',
             toDate: overview?.endDate?.toString() ?? '',
             costPerItem: overview?.costPerItem?.toString() ?? '0',
             barcode: overview?.barcode?.toString() ?? '',
-            withWareHouseManagement:
-                overview?.withStorehouseManagement.toString() == '1',
+            withWareHouseManagement: overview?.withStorehouseManagement.toString() == '1',
             quantity: overview?.quantity?.toString() ?? '0',
-            allowCustomerCheckoutWhenProductIsOutOfStock:
-                overview?.allowCheckoutWhenOutOfStock.toString() == '1',
+            allowCustomerCheckoutWhenProductIsOutOfStock: overview?.allowCheckoutWhenOutOfStock.toString() == '1',
             stockStatus: overview?.stockStatus.value.toString() ?? 'in_stock',
           );
 
-          attachments =
-              provider.editVariationsApiResponse.data?.data?.attachments ?? [];
+          attachments = provider.editVariationsApiResponse.data?.data?.attachments ?? [];
 
-          selectedImages =
-              provider.editVariationsApiResponse.data?.data?.variationImages
-                  .map(
-                    (images) => UploadImagesModel(
-                      serverUrl: images.url,
-                      serverFullUrl: images.fullURL,
-                      hasFile: false,
-                    ),
-                  )
-                  .toList();
+          selectedImages = provider.editVariationsApiResponse.data?.data?.variationImages
+              .map(
+                (images) => UploadImagesModel(
+                  serverUrl: images.url,
+                  serverFullUrl: images.fullURL,
+                  hasFile: false,
+                ),
+              )
+              .toList();
           _updateImageCount();
 
           selectedDigitalLinks = [];
@@ -182,12 +171,6 @@ class _VendorEditVariationsState extends State<VendorEditVariations>
                   fileName: attachment.name,
                   fileLink: attachment.externalLink,
                   size: attachment.size?.split(' ').first ?? '',
-                  fileNameController:
-                      TextEditingController(text: attachment.name ?? ''),
-                  fileLinkController: TextEditingController(
-                      text: attachment.externalLink ?? ''),
-                  sizeController:
-                      TextEditingController(text: attachment.size ?? ''),
                   unit: attachment.size?.split(' ').last ?? '',
                 ),
               );
@@ -224,33 +207,22 @@ class _VendorEditVariationsState extends State<VendorEditVariations>
       variationPostDataModel.addedAttributes = {
         for (final attr in listAttributes)
           '${attr.id}': attr.attributes.isNotEmpty
-              ? (attr.attributes
-                      .firstWhere((childAttr) => childAttr.isDefault == 1)
-                      .id
-                      ?.toString() ??
-                  '')
+              ? (attr.attributes.firstWhere((childAttr) => childAttr.isDefault == 1).id?.toString() ?? '')
               : '',
       };
 
       /// if creating new product
       if (widget.productID.isNotEmpty && widget.productVariationsID == null) {
-        variationPostDataModel.addedAttributes =
-            _finalAttributesDataForCreateVariation;
+        variationPostDataModel.addedAttributes = _finalAttributesDataForCreateVariation;
       }
 
-      final List<String> serverImages = selectedImages
-              ?.where((e) => e.serverUrl.isNotEmpty)
-              .map((e) => e.serverUrl)
-              .toList() ??
-          [];
+      final List<String> serverImages =
+          selectedImages?.where((e) => e.serverUrl.isNotEmpty).map((e) => e.serverUrl).toList() ?? [];
       variationPostDataModel.images = serverImages;
-      variationPostDataModel.productFilesExternal = selectedDigitalLinks
-              ?.where((test) => test.isSaved == false)
-              .toList() ??
-          [];
+      variationPostDataModel.productFilesExternal =
+          selectedDigitalLinks?.where((test) => test.isSaved == false).toList() ?? [];
       variationPostDataModel.productFilesInput = selectedDigitalImages;
-      variationPostDataModel.generateLicenseCode =
-          _generateLicenseCode ? '1' : '0';
+      variationPostDataModel.generateLicenseCode = _generateLicenseCode ? '1' : '0';
       variationPostDataModel.autoGenerateSku = _authGenerateSku ? '1' : '0';
 
       /// **** assign values to post data model start ****
@@ -270,36 +242,32 @@ class _VendorEditVariationsState extends State<VendorEditVariations>
       /// update variation
       if (widget.productVariationsID != null) {
         print(
-            '********************** Inside Update variation *************************');
-        final updateProductVariationProvider =
-            context.read<VendorCreateUpdateVariationViewModel>();
-        final result =
-            await updateProductVariationProvider.vendorUpdateProductVariation(
-                context: context,
-                variationID: widget.productVariationsID!,
-                productPostDataModel: variationPostDataModel);
+          '********************** Inside Update variation *************************',
+        );
+        final updateProductVariationProvider = context.read<VendorCreateUpdateVariationViewModel>();
+        final result = await updateProductVariationProvider.vendorUpdateProductVariation(
+          context: context,
+          variationID: widget.productVariationsID!,
+          productPostDataModel: variationPostDataModel,
+        );
         if (result) {
           await _onRefresh();
           context.read<VendorGetProductVariationsViewModel>().clearList();
-          context
-              .read<VendorGetProductVariationsViewModel>()
-              .vendorGetProductVariations(productID: widget.productID);
+          context.read<VendorGetProductVariationsViewModel>().vendorGetProductVariations(productID: widget.productID);
         }
       } else {
         print(
-            '********************** Inside Create variation *************************');
-        final createVariationProvider =
-            context.read<VendorCreateUpdateVariationViewModel>();
-        final result =
-            await createVariationProvider.vendorCreateProductVariation(
-                context: context,
-                productID: widget.productID,
-                productPostDataModel: variationPostDataModel);
+          '********************** Inside Create variation *************************',
+        );
+        final createVariationProvider = context.read<VendorCreateUpdateVariationViewModel>();
+        final result = await createVariationProvider.vendorCreateProductVariation(
+          context: context,
+          productID: widget.productID,
+          productPostDataModel: variationPostDataModel,
+        );
         if (result) {
           context.read<VendorGetProductVariationsViewModel>().clearList();
-          context
-              .read<VendorGetProductVariationsViewModel>()
-              .vendorGetProductVariations(productID: widget.productID);
+          context.read<VendorGetProductVariationsViewModel>().vendorGetProductVariations(productID: widget.productID);
         }
       }
     } catch (e) {
@@ -325,8 +293,10 @@ class _VendorEditVariationsState extends State<VendorEditVariations>
           onGoBack: _return,
         ),
         body: Utils.modelProgressHud(
+          context: context,
           processing: _isProcessing,
           child: Utils.pageRefreshIndicator(
+            onRefresh: _onRefresh,
             child: Form(
               key: _formKey,
               child: Stack(
@@ -356,7 +326,9 @@ class _VendorEditVariationsState extends State<VendorEditVariations>
                                   color: Colors.white,
                                   child: Padding(
                                     padding: const EdgeInsets.symmetric(
-                                        horizontal: 8.0, vertical: 8.0),
+                                      horizontal: 8.0,
+                                      vertical: 8.0,
+                                    ),
                                     child: CustomAppButton(
                                       borderRadius: 4,
                                       textStyle: const TextStyle(
@@ -384,14 +356,15 @@ class _VendorEditVariationsState extends State<VendorEditVariations>
                                   width: MediaQuery.of(context).size.width,
                                   child: Padding(
                                     padding: const EdgeInsets.symmetric(
-                                        horizontal: 8.0, vertical: 8.0),
+                                      horizontal: 8.0,
+                                      vertical: 8.0,
+                                    ),
                                     child: CustomAppButton(
                                       borderRadius: 4,
                                       buttonText: 'Save',
                                       buttonColor: AppColors.lightCoral,
                                       onTap: () async {
-                                        if (_formKey.currentState?.validate() ??
-                                            false) {
+                                        if (_formKey.currentState?.validate() ?? false) {
                                           _createUpdateVariation();
                                         }
                                       },
@@ -408,27 +381,21 @@ class _VendorEditVariationsState extends State<VendorEditVariations>
                 ],
               ),
             ),
-            onRefresh: _onRefresh,
+            context: context,
           ),
         ),
       ),
     );
   }
 
-  Widget _buildUi(BuildContext context) =>
-      Consumer<VendorCreateProductViewModel>(
+  Widget _buildUi(BuildContext context) => Consumer<VendorCreateProductViewModel>(
         builder: (context, provider, _) {
-          final ApiStatus? apiStatus =
-              provider.editVariationsApiResponse.status;
-          final isDigital = provider.editVariationsApiResponse.data?.data
-                  ?.product.productType.value
-                  ?.toLowerCase() ==
+          final ApiStatus? apiStatus = provider.editVariationsApiResponse.status;
+          final isDigital = provider.editVariationsApiResponse.data?.data?.product.productType.value?.toLowerCase() ==
               VendorProductType.digital.name.toLowerCase();
 
           /// set variation product type in model
-          variationPostDataModel.productType = isDigital
-              ? ProductTypeConstants.DIGITAL
-              : ProductTypeConstants.PHYSICAL;
+          variationPostDataModel.productType = isDigital ? ProductTypeConstants.DIGITAL : ProductTypeConstants.PHYSICAL;
 
           if (apiStatus == ApiStatus.LOADING && listAttributes.isEmpty) {
             return Utils.pageLoadingIndicator(context: context);
@@ -444,7 +411,10 @@ class _VendorEditVariationsState extends State<VendorEditVariations>
 
           return Padding(
             padding: EdgeInsets.only(
-                left: kPadding, right: kPadding, bottom: kLargePadding),
+              left: kPadding,
+              right: kPadding,
+              bottom: kLargePadding,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -455,8 +425,7 @@ class _VendorEditVariationsState extends State<VendorEditVariations>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        if (widget.productVariationsID == null &&
-                            widget.productID.isNotEmpty) ...{
+                        if (widget.productVariationsID == null && widget.productID.isNotEmpty) ...{
                           _buildCreateVariationAttributes(),
                         },
 
@@ -469,13 +438,11 @@ class _VendorEditVariationsState extends State<VendorEditVariations>
                               if (value != null) {
                                 setState(() {
                                   _generateLicenseCode = value;
-                                  variationPostDataModel.generateLicenseCode =
-                                      _generateLicenseCode ? '1' : '0';
+                                  variationPostDataModel.generateLicenseCode = _generateLicenseCode ? '1' : '0';
                                 });
                               }
                             },
-                            title:
-                                'Generate license code after purchasing this product?',
+                            title: 'Generate license code after purchasing this product?',
                             titleStyle: const TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w400,
@@ -484,19 +451,19 @@ class _VendorEditVariationsState extends State<VendorEditVariations>
                           ),
                         },
                         _overviewSection(
-                            overview: overview, provider: provider),
+                          overview: overview,
+                          provider: provider,
+                        ),
 
                         /// auto generate sku
-                        if (overviewModel?.sku == null ||
-                            overviewModel?.sku.isEmpty == true)
+                        if (overviewModel?.sku == null || overviewModel?.sku.isEmpty == true)
                           CustomCheckboxWithTitle(
                             isChecked: _authGenerateSku,
                             onChanged: (value) {
                               if (value != null) {
                                 setState(() {
                                   _authGenerateSku = value;
-                                  variationPostDataModel.autoGenerateSku =
-                                      _authGenerateSku ? '1' : '0';
+                                  variationPostDataModel.autoGenerateSku = _authGenerateSku ? '1' : '0';
                                 });
                               }
                             },
@@ -509,8 +476,7 @@ class _VendorEditVariationsState extends State<VendorEditVariations>
                           ),
 
                         /// shipping
-                        if (widget.productVariationsID == null &&
-                            widget.productID.isNotEmpty) ...{
+                        if (widget.productVariationsID == null && widget.productID.isNotEmpty) ...{
                           _shippingSection(context: context),
                         },
 
@@ -554,15 +520,14 @@ class _VendorEditVariationsState extends State<VendorEditVariations>
                             value: elements.id.toString(),
                             child: Text(
                               elements.title,
-                              style: TextStyle(color: Colors.black),
+                              style: const TextStyle(color: Colors.black),
                             ),
                           ),
                         )
                         .toList(),
                     onChanged: (value) {
                       print(value.toString());
-                      _finalAttributesDataForCreateVariation
-                          .addAll({attribute.id.toString(): value.toString()});
+                      _finalAttributesDataForCreateVariation.addAll({attribute.id.toString(): value.toString()});
                       print(_finalAttributesDataForCreateVariation);
                     },
                   ),
@@ -585,8 +550,7 @@ class _VendorEditVariationsState extends State<VendorEditVariations>
                 /// **Label Above Dropdown**
                 Text(
                   variation.title, // Null safety check
-                  style: headingFields()
-                      .copyWith(fontSize: 13, fontWeight: FontWeight.w400),
+                  style: headingFields().copyWith(fontSize: 13, fontWeight: FontWeight.w400),
                 ),
 
                 /// **Dropdown**
@@ -595,8 +559,7 @@ class _VendorEditVariationsState extends State<VendorEditVariations>
                   value: variation.attributes.isNotEmpty
                       ? variation.attributes.firstWhere(
                           (x) => x.isDefault.toString() == '1',
-                          orElse: () => variation
-                              .attributes.first, // Provide a fallback value
+                          orElse: () => variation.attributes.first, // Provide a fallback value
                         )
                       : null,
                   textStyle: const TextStyle(color: Colors.grey, fontSize: 15),
@@ -625,7 +588,8 @@ class _VendorEditVariationsState extends State<VendorEditVariations>
                       for (final item in listAttributes) {
                         for (final attr in item.attributes) {
                           print(
-                              'Updated Attribute ID: ${attr.id}, isDefault: ${attr.isDefault}');
+                            'Updated Attribute ID: ${attr.id}, isDefault: ${attr.isDefault}',
+                          );
                         }
                       }
                       setState(() {});
@@ -641,9 +605,10 @@ class _VendorEditVariationsState extends State<VendorEditVariations>
       );
 
   /// overview section
-  Widget _overviewSection(
-          {required VariationProduct? overview,
-          required VendorCreateProductViewModel provider}) =>
+  Widget _overviewSection({
+    required VariationProduct? overview,
+    required VendorCreateProductViewModel provider,
+  }) =>
       Column(
         children: [
           TitleWithArrow(
@@ -660,7 +625,9 @@ class _VendorEditVariationsState extends State<VendorEditVariations>
           if (overviewModel != null)
             SimpleCard(
               expandedContentPadding: EdgeInsets.symmetric(
-                  horizontal: kMediumPadding, vertical: kExtraSmallPadding),
+                horizontal: kMediumPadding,
+                vertical: kExtraSmallPadding,
+              ),
               expandedContent: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 // Align the content to the left
@@ -668,33 +635,36 @@ class _VendorEditVariationsState extends State<VendorEditVariations>
                   showDetail(label: 'Sku', value: overviewModel?.sku),
                   showDetail(label: 'Price', value: overviewModel?.price),
                   showDetail(
-                      label: 'Sale Price', value: overviewModel?.priceSale),
+                    label: 'Sale Price',
+                    value: overviewModel?.priceSale,
+                  ),
                   if (overviewModel?.chooseDiscountPeriod ?? false)
                     Column(
                       children: [
                         showDetail(
-                            label: 'From', value: overviewModel?.fromDate),
+                          label: 'From',
+                          value: overviewModel?.fromDate,
+                        ),
                         showDetail(label: 'To', value: overviewModel?.toDate),
                       ],
                     ),
                   showDetail(
-                      label: 'Cost per item',
-                      value: overviewModel?.costPerItem),
+                    label: 'Cost per item',
+                    value: overviewModel?.costPerItem,
+                  ),
                   showDetail(label: 'Barcode', value: overviewModel?.barcode),
                   if (overviewModel?.withWareHouseManagement ?? false)
                     showDetail(
-                        label: 'Quantity', value: overviewModel?.quantity),
+                      label: 'Quantity',
+                      value: overviewModel?.quantity,
+                    ),
                   if (!(overviewModel?.withWareHouseManagement ?? true))
                     showDetail(
                       label: 'Stock Status',
-                      value: (overviewModel?.stockStatus != null &&
-                              overviewModel?.stockStatus.isNotEmpty == true)
-                          ? provider.generalSettingsApiResponse.data?.data
-                                  ?.stockStatuses
+                      value: (overviewModel?.stockStatus != null && overviewModel?.stockStatus.isNotEmpty == true)
+                          ? provider.generalSettingsApiResponse.data?.data?.stockStatuses
                                   ?.firstWhere(
-                                    (element) =>
-                                        element.value ==
-                                        overviewModel?.stockStatus,
+                                    (element) => element.value == overviewModel?.stockStatus,
                                   )
                                   .label ??
                               '--' // Fallback to 'Unknown' if not found
@@ -710,13 +680,7 @@ class _VendorEditVariationsState extends State<VendorEditVariations>
     // if (result != null) {
     overviewModel = result;
     variationPostDataModel.sku = overviewModel?.sku ??
-        context
-            .read<VendorCreateProductViewModel>()
-            .generalSettingsApiResponse
-            .data
-            ?.data
-            ?.sku
-            ?.toString() ??
+        context.read<VendorCreateProductViewModel>().generalSettingsApiResponse.data?.data?.sku?.toString() ??
         '';
     variationPostDataModel.price = overviewModel?.price ?? '0';
     variationPostDataModel.salePrice = overviewModel?.priceSale ?? '0';
@@ -724,18 +688,12 @@ class _VendorEditVariationsState extends State<VendorEditVariations>
     variationPostDataModel.endDate = overviewModel?.toDate ?? '';
     variationPostDataModel.costPerItem = overviewModel?.costPerItem ?? '0';
     variationPostDataModel.barcode = overviewModel?.barcode ?? '';
-    variationPostDataModel.withStorehouseManagement =
-        overviewModel?.withWareHouseManagement ?? false ? '1' : '0';
+    variationPostDataModel.withStorehouseManagement = overviewModel?.withWareHouseManagement ?? false ? '1' : '0';
     variationPostDataModel.allowCheckoutWhenOutOfStock =
-        overviewModel?.allowCustomerCheckoutWhenProductIsOutOfStock ?? false
-            ? '1'
-            : '0';
+        overviewModel?.allowCustomerCheckoutWhenProductIsOutOfStock ?? false ? '1' : '0';
     variationPostDataModel.quantity =
-        overviewModel?.withWareHouseManagement ?? false
-            ? overviewModel?.quantity ?? '0'
-            : '0';
-    variationPostDataModel.stockStatus =
-        overviewModel?.stockStatus ?? 'in_stock';
+        overviewModel?.withWareHouseManagement ?? false ? overviewModel?.quantity ?? '0' : '0';
+    variationPostDataModel.stockStatus = overviewModel?.stockStatus ?? 'in_stock';
     // }
     setState(() {});
   }
@@ -748,7 +706,8 @@ class _VendorEditVariationsState extends State<VendorEditVariations>
       context,
       CupertinoPageRoute(
         builder: (context) => VendorProductShippingView(
-            vendorProductDimensionsModel: vendorProductDimensionsModel),
+          vendorProductDimensionsModel: vendorProductDimensionsModel,
+        ),
       ),
     );
 
@@ -758,13 +717,10 @@ class _VendorEditVariationsState extends State<VendorEditVariations>
 
   void _handleShippingData(vendorProductDimensionsModel) {
     if (vendorProductDimensionsModel != null) {
-      variationPostDataModel.weight =
-          vendorProductDimensionsModel?.weight ?? '';
-      variationPostDataModel.length =
-          vendorProductDimensionsModel?.length ?? '';
+      variationPostDataModel.weight = vendorProductDimensionsModel?.weight ?? '';
+      variationPostDataModel.length = vendorProductDimensionsModel?.length ?? '';
       variationPostDataModel.wide = vendorProductDimensionsModel?.width ?? '';
-      variationPostDataModel.height =
-          vendorProductDimensionsModel?.height ?? '';
+      variationPostDataModel.height = vendorProductDimensionsModel?.height ?? '';
     }
   }
 
@@ -785,21 +741,27 @@ class _VendorEditVariationsState extends State<VendorEditVariations>
           if (vendorProductDimensionsModel != null)
             SimpleCard(
               expandedContentPadding: EdgeInsets.symmetric(
-                  horizontal: kMediumPadding, vertical: kExtraSmallPadding),
+                horizontal: kMediumPadding,
+                vertical: kExtraSmallPadding,
+              ),
               expandedContent: Column(
                 children: [
                   showDetail(
-                      label: 'Weight (g)',
-                      value: vendorProductDimensionsModel?.weight),
+                    label: 'Weight (g)',
+                    value: vendorProductDimensionsModel?.weight,
+                  ),
                   showDetail(
-                      label: 'Length (cm)',
-                      value: vendorProductDimensionsModel?.length),
+                    label: 'Length (cm)',
+                    value: vendorProductDimensionsModel?.length,
+                  ),
                   showDetail(
-                      label: 'Width (cm)',
-                      value: vendorProductDimensionsModel?.width),
+                    label: 'Width (cm)',
+                    value: vendorProductDimensionsModel?.width,
+                  ),
                   showDetail(
-                      label: 'Height (cm)',
-                      value: vendorProductDimensionsModel?.height),
+                    label: 'Height (cm)',
+                    value: vendorProductDimensionsModel?.height,
+                  ),
                 ],
               ),
             ),
@@ -867,8 +829,7 @@ class _VendorEditVariationsState extends State<VendorEditVariations>
               readOnly: true, // Prevent manual input
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
-                suffixIcon:
-                    Icon(Icons.attach_file, color: AppColors.lightCoral),
+                suffixIcon: Icon(Icons.attach_file, color: AppColors.lightCoral),
               ),
               onTap: _openDigitalLinksScreen,
             ),
@@ -886,10 +847,7 @@ class _VendorEditVariationsState extends State<VendorEditVariations>
     );
 
     if (images != null) {
-      final List<String> serverImages = images
-          .where((e) => e.serverUrl.isNotEmpty)
-          .map((e) => e.serverUrl)
-          .toList();
+      final List<String> serverImages = images.where((e) => e.serverUrl.isNotEmpty).map((e) => e.serverUrl).toList();
       print('Selected Digital Images: $serverImages');
     } else {}
 
@@ -937,10 +895,7 @@ class _VendorEditVariationsState extends State<VendorEditVariations>
     );
 
     if (images != null) {
-      final List<String> serverImages = images
-          .where((e) => e.serverUrl.isNotEmpty)
-          .map((e) => e.serverUrl)
-          .toList();
+      final List<String> serverImages = images.where((e) => e.serverUrl.isNotEmpty).map((e) => e.serverUrl).toList();
       print('Selected Server Images: $serverImages');
     } else {}
 
@@ -952,9 +907,8 @@ class _VendorEditVariationsState extends State<VendorEditVariations>
 
   void _updateImageCount() {
     if (selectedImages != null) {
-      _imageCountController.text = selectedImages!.isNotEmpty
-          ? '${selectedImages?.length} image(s) selected'
-          : 'No images selected';
+      _imageCountController.text =
+          selectedImages!.isNotEmpty ? '${selectedImages?.length} image(s) selected' : 'No images selected';
     } else {
       _imageCountController.clear();
     }
@@ -972,16 +926,16 @@ class _VendorEditVariationsState extends State<VendorEditVariations>
 
   void _updateDigitalLinksCount() {
     if (selectedDigitalLinks != null) {
-      _digitalLinksCountController.text = selectedDigitalLinks!.isNotEmpty
-          ? '${selectedDigitalLinks?.length} link(s) added'
-          : 'No links added';
+      _digitalLinksCountController.text =
+          selectedDigitalLinks!.isNotEmpty ? '${selectedDigitalLinks?.length} link(s) added' : 'No links added';
     } else {
       _digitalLinksCountController.clear();
     }
   }
 
-  Future<void> showOverviewDetails(
-      {required VariationProduct? overview}) async {
+  Future<void> showOverviewDetails({
+    required VariationProduct? overview,
+  }) async {
     // overviewModel = VendorProductOverviewModel(
     //   sku: overview?.sku ?? '',
     //   price: overview?.price.toString() ?? '',
@@ -1016,8 +970,7 @@ class _VendorEditVariationsState extends State<VendorEditVariations>
                 decoration: BoxDecoration(
                   color: AppColors.lightCoral,
                   // Replace with `AppColors.lightCoral`
-                  borderRadius:
-                      BorderRadius.circular(8.0), // Replace `kSmallCardRadius`
+                  borderRadius: BorderRadius.circular(8.0), // Replace `kSmallCardRadius`
                 ),
               ),
             ),

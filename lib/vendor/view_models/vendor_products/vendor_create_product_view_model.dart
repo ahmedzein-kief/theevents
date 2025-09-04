@@ -44,7 +44,7 @@ class VendorCreateProductViewModel with ChangeNotifier {
       get generalSettingsApiResponse => _generalSettingsApiResponse;
 
   set setGeneralSettingsApiResponse(
-      ApiResponse<VendorGetProductGeneralSettingsModel> response) {
+      ApiResponse<VendorGetProductGeneralSettingsModel> response,) {
     _generalSettingsApiResponse = response;
     notifyListeners();
   }
@@ -80,7 +80,7 @@ class VendorCreateProductViewModel with ChangeNotifier {
       _attributeSetsApiResponse;
 
   set setAttributeSetsApiResponse(
-      ApiResponse<AttributeSetsDataResponse> response) {
+      ApiResponse<AttributeSetsDataResponse> response,) {
     _attributeSetsApiResponse = response;
     notifyListeners();
   }
@@ -116,7 +116,7 @@ class VendorCreateProductViewModel with ChangeNotifier {
       _productTagsApiResponse;
 
   set setProductTagsApiResponse(
-      ApiResponse<VendorGetProductTagsModel> response) {
+      ApiResponse<VendorGetProductTagsModel> response,) {
     _productTagsApiResponse = response;
     notifyListeners();
   }
@@ -152,7 +152,7 @@ class VendorCreateProductViewModel with ChangeNotifier {
       _vendorCreateSlugApiResponse;
 
   set setVendorCreateSlugApiResponse(
-      ApiResponse<CommonPostRequestModel> response) {
+      ApiResponse<CommonPostRequestModel> response,) {
     _vendorCreateSlugApiResponse = response;
     notifyListeners();
   }
@@ -161,7 +161,7 @@ class VendorCreateProductViewModel with ChangeNotifier {
       {required String productName,
       String? slugID,
       String? productID,
-      required BuildContext context}) async {
+      required BuildContext context,}) async {
     try {
       setLoading(true);
       setVendorCreateSlugApiResponse = ApiResponse.loading();
@@ -193,7 +193,7 @@ class VendorCreateProductViewModel with ChangeNotifier {
     } catch (error) {
       setVendorCreateSlugApiResponse = ApiResponse.error(error.toString());
       AlertServices.showErrorSnackBar(
-          message: error.toString(), context: context);
+          message: error.toString(), context: context,);
       setLoading(false);
       return null;
     }
@@ -209,7 +209,7 @@ class VendorCreateProductViewModel with ChangeNotifier {
       _globalOptionsApiResponse;
 
   set setGlobalOptionsApiResponse(
-      ApiResponse<GlobalOptionsDataResponse> response) {
+      ApiResponse<GlobalOptionsDataResponse> response,) {
     _globalOptionsApiResponse = response;
     notifyListeners();
   }
@@ -228,7 +228,7 @@ class VendorCreateProductViewModel with ChangeNotifier {
       };
 
       final GlobalOptionsDataResponse response = await _myRepo.getGlobalOptions(
-          headers: headers, queryParams: queryParams);
+          headers: headers, queryParams: queryParams,);
       setGlobalOptionsApiResponse = ApiResponse.completed(response);
       setLoading(false);
       return response;
@@ -249,13 +249,13 @@ class VendorCreateProductViewModel with ChangeNotifier {
       _productSearchApiResponse;
 
   set setProductSearchApiResponse(
-      ApiResponse<VendorSearchProductDataResponse> response) {
+      ApiResponse<VendorSearchProductDataResponse> response,) {
     _productSearchApiResponse = response;
     notifyListeners();
   }
 
   Future<VendorSearchProductDataResponse?> productSearch(
-      String text, String productID) async {
+      String text, String productID,) async {
     try {
       setLoading(true);
       setGlobalOptionsApiResponse = ApiResponse.loading();
@@ -301,13 +301,13 @@ class VendorCreateProductViewModel with ChangeNotifier {
       _vendorGetSeoKeywordsApiResponse;
 
   set setVendorGetSeoKeywordsApiResponse(
-      ApiResponse<VendorGetSeoKeywordsModel> response) {
+      ApiResponse<VendorGetSeoKeywordsModel> response,) {
     _vendorGetSeoKeywordsApiResponse = response;
     notifyListeners();
   }
 
   Future<bool> vendorGetProductSeoKeywords(
-      {required BuildContext context}) async {
+      {required BuildContext context,}) async {
     try {
       setLoading(true);
       setVendorGetSeoKeywordsApiResponse = ApiResponse.loading();
@@ -323,7 +323,7 @@ class VendorCreateProductViewModel with ChangeNotifier {
     } catch (error) {
       setVendorGetSeoKeywordsApiResponse = ApiResponse.error(error.toString());
       AlertServices.showErrorSnackBar(
-          message: error.toString(), context: context);
+          message: error.toString(), context: context,);
       setLoading(false);
       return false;
     }
@@ -339,14 +339,14 @@ class VendorCreateProductViewModel with ChangeNotifier {
       _vendorCreateProductApiResponse;
 
   set setCreateProductApiResponse(
-      ApiResponse<CreateProductDataResponse> response) {
+      ApiResponse<CreateProductDataResponse> response,) {
     _vendorCreateProductApiResponse = response;
     notifyListeners();
   }
 
   Future<bool> createProduct(
       {required BuildContext context,
-      required ProductPostDataModel productPostDataModel}) async {
+      required ProductPostDataModel productPostDataModel,}) async {
     try {
       setLoading(true);
       _vendorCreateProductApiResponse = ApiResponse.loading();
@@ -364,13 +364,13 @@ class VendorCreateProductViewModel with ChangeNotifier {
       );
       _vendorCreateProductApiResponse = ApiResponse.completed(response);
       AlertServices.showSuccessSnackBar(
-          message: response.message.toString(), context: context);
+          message: response.message.toString(), context: context,);
       setLoading(false);
       return true;
     } catch (error) {
       _vendorCreateProductApiResponse = ApiResponse.error(error.toString());
       AlertServices.showErrorSnackBar(
-          message: error.toString(), context: context);
+          message: error.toString(), context: context,);
       setLoading(false);
       return false;
     }
@@ -386,7 +386,7 @@ class VendorCreateProductViewModel with ChangeNotifier {
       _vendorProductViewApiResponse;
 
   set setProductViewApiResponse(
-      ApiResponse<NewProductViewDataResponse> response) {
+      ApiResponse<NewProductViewDataResponse> response,) {
     _vendorProductViewApiResponse = response;
     notifyListeners();
   }
@@ -411,7 +411,7 @@ class VendorCreateProductViewModel with ChangeNotifier {
       print(error.toString());
       _vendorProductViewApiResponse = ApiResponse.error(error.toString());
       AlertServices.showErrorSnackBar(
-          message: error.toString(), context: context);
+          message: error.toString(), context: context,);
       setLoading(false);
       return false;
     }
@@ -425,13 +425,13 @@ class VendorCreateProductViewModel with ChangeNotifier {
       _editVariationsApiResponse;
 
   set setEditVariationsApiResponse(
-      ApiResponse<EditVariationsDataResponse> response) {
+      ApiResponse<EditVariationsDataResponse> response,) {
     _editVariationsApiResponse = response;
     notifyListeners();
   }
 
   Future<bool> getEditVariations(
-      BuildContext context, String productVariationId) async {
+      BuildContext context, String productVariationId,) async {
     try {
       setLoading(true);
       _editVariationsApiResponse = ApiResponse.loading();
@@ -451,14 +451,14 @@ class VendorCreateProductViewModel with ChangeNotifier {
       print(error.toString());
       _vendorProductViewApiResponse = ApiResponse.error(error.toString());
       AlertServices.showErrorSnackBar(
-          message: error.toString(), context: context);
+          message: error.toString(), context: context,);
       setLoading(false);
       return false;
     }
   }
 
   Future<bool> updateVariations(
-      BuildContext context, String productVariationId) async {
+      BuildContext context, String productVariationId,) async {
     try {
       setLoading(true);
       _editVariationsApiResponse = ApiResponse.loading();
@@ -478,7 +478,7 @@ class VendorCreateProductViewModel with ChangeNotifier {
       print(error.toString());
       _vendorProductViewApiResponse = ApiResponse.error(error.toString());
       AlertServices.showErrorSnackBar(
-          message: error.toString(), context: context);
+          message: error.toString(), context: context,);
       setLoading(false);
       return false;
     }
@@ -494,7 +494,7 @@ class VendorCreateProductViewModel with ChangeNotifier {
       _vendorUpdateProductApiResponse;
 
   set _setVendorUpdateProductApiResponse(
-      ApiResponse<CommonPostRequestModel> response) {
+      ApiResponse<CommonPostRequestModel> response,) {
     _vendorUpdateProductApiResponse = response;
     notifyListeners();
   }
@@ -502,7 +502,7 @@ class VendorCreateProductViewModel with ChangeNotifier {
   Future<bool> vendorUpdateProduct(
       {required BuildContext context,
       required String productID,
-      required ProductPostDataModel productPostDataModel}) async {
+      required ProductPostDataModel productPostDataModel,}) async {
     try {
       setLoading(true);
       _setVendorUpdateProductApiResponse = ApiResponse.loading();
@@ -514,16 +514,16 @@ class VendorCreateProductViewModel with ChangeNotifier {
       final body = formDataMap;
 
       final CommonPostRequestModel response = await _myRepo.vendorUpdateProduct(
-          headers: headers, body: body, productID: productID);
+          headers: headers, body: body, productID: productID,);
       _setVendorUpdateProductApiResponse = ApiResponse.completed(response);
       AlertServices.showSuccessSnackBar(
-          message: response.message.toString(), context: context);
+          message: response.message.toString(), context: context,);
       setLoading(false);
       return true;
     } catch (error) {
       _setVendorUpdateProductApiResponse = ApiResponse.error(error.toString());
       AlertServices.showErrorSnackBar(
-          message: error.toString(), context: context);
+          message: error.toString(), context: context,);
       setLoading(false);
       return false;
     }
@@ -537,7 +537,7 @@ class VendorCreateProductViewModel with ChangeNotifier {
           _attributeToExistingProductApiResponse;
 
   set _setAttributeToExistingProductApiResponse(
-      ApiResponse<CommonPostRequestModel> response) {
+      ApiResponse<CommonPostRequestModel> response,) {
     _attributeToExistingProductApiResponse = response;
     notifyListeners();
   }
@@ -545,7 +545,7 @@ class VendorCreateProductViewModel with ChangeNotifier {
   Future<CommonPostRequestModel?> addAttributeToExistingProduct(
       {required BuildContext context,
       required String productID,
-      required List<Map<String, dynamic>> attributes}) async {
+      required List<Map<String, dynamic>> attributes,}) async {
     try {
       setLoading(true);
       _setAttributeToExistingProductApiResponse = ApiResponse.loading();
@@ -572,18 +572,18 @@ class VendorCreateProductViewModel with ChangeNotifier {
 
       final CommonPostRequestModel response =
           await _myRepo.addAttributeToExistingProduct(
-              headers: headers, productId: productID, body: data);
+              headers: headers, productId: productID, body: data,);
       _setAttributeToExistingProductApiResponse =
           ApiResponse.completed(response);
       AlertServices.showSuccessSnackBar(
-          message: response.message.toString(), context: context);
+          message: response.message.toString(), context: context,);
       setLoading(false);
       return response;
     } catch (error) {
       _setAttributeToExistingProductApiResponse =
           ApiResponse.error(error.toString());
       AlertServices.showErrorSnackBar(
-          message: error.toString(), context: context);
+          message: error.toString(), context: context,);
       setLoading(false);
       return null;
     }

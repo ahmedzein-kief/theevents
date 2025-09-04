@@ -44,7 +44,7 @@ class _SimpleSliderState extends State<SimpleSlider> {
       padding: EdgeInsets.only(
           left: screenWidth * 0.02,
           right: screenWidth * 0.02,
-          top: screenHeight * 0.02),
+          top: screenHeight * 0.02,),
       child: Column(
         children: [
           Container(
@@ -52,8 +52,8 @@ class _SimpleSliderState extends State<SimpleSlider> {
             child: widget.data['attributes']['title'] != null
                 ? Text(
                     style: const TextStyle(
-                        fontWeight: FontWeight.w700, fontSize: 22),
-                    widget.data['attributes']['title'])
+                        fontWeight: FontWeight.w700, fontSize: 22,),
+                    widget.data['attributes']['title'],)
                 : null,
           ),
           Column(
@@ -161,7 +161,7 @@ class _SimpleSliderState extends State<SimpleSlider> {
                                 blurRadius: 2,
                                 // Blur radius
                                 offset: const Offset(
-                                    0, 01), // Offset for shadow position
+                                    0, 01,), // Offset for shadow position
                               ),
                             ],
                             borderRadius: BorderRadius.circular(14),

@@ -1,5 +1,8 @@
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/models/product_packages_models/product_options_model.dart';
 import 'package:flutter/material.dart';
+
+import '../../../core/constants/app_strings.dart';
 
 class DropdownWidget extends StatelessWidget {
   // Optional error message
@@ -11,6 +14,7 @@ class DropdownWidget extends StatelessWidget {
     required this.onChanged,
     this.errorMessage, // Add optional errorMessage parameter
   });
+
   final ProductOptionsModel option;
   final String? selectedValue;
   final ValueChanged<String?> onChanged;
@@ -50,7 +54,7 @@ class DropdownWidget extends StatelessWidget {
             child: DropdownButton<String>(
               value:
                   dropdownValues.contains(selectedValue) ? selectedValue : null,
-              hint: const Text('Select Location'),
+              hint: Text(AppStrings.selectLocation.tr),
               isExpanded: true,
               underline: const SizedBox.shrink(),
               items: option.values

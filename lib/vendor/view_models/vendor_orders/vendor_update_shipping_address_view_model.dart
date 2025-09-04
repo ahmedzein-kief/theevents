@@ -37,7 +37,7 @@ class VendorUpdateShippingAddressViewModel with ChangeNotifier {
   Future<bool> vendorUpdateShippingAddress(
       {required shippingID,
       required form,
-      required BuildContext context}) async {
+      required BuildContext context,}) async {
     try {
       setLoading(true);
       setApiResponse = ApiResponse.loading();
@@ -51,17 +51,17 @@ class VendorUpdateShippingAddressViewModel with ChangeNotifier {
 
       final CommonPostRequestModel response =
           await _myRepo.vendorUpdateShippingAddress(
-              headers: headers, shippingID: shippingID, body: body);
+              headers: headers, shippingID: shippingID, body: body,);
       setApiResponse = ApiResponse.completed(response);
       AlertServices.showSuccessSnackBar(
           message: apiResponse.data?.message?.toString() ?? '',
-          context: context);
+          context: context,);
       setLoading(false);
       return true;
     } catch (error) {
       setApiResponse = ApiResponse.error(error.toString());
       AlertServices.showErrorSnackBar(
-          message: error.toString() ?? '', context: context);
+          message: error.toString() ?? '', context: context,);
       setLoading(false);
       return false;
     }

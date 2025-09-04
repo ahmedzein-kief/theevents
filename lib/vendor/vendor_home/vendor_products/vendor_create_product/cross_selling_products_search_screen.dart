@@ -50,7 +50,7 @@ class _CrossSellingProductsSearchScreenState
   }
 
   Future<VendorSearchProductDataResponse?> _fetchOptionsData(
-      String query, String dataId) async {
+      String query, String dataId,) async {
     final provider =
         Provider.of<VendorCreateProductViewModel>(context, listen: false);
     if (query.isEmpty) {
@@ -137,12 +137,13 @@ class _CrossSellingProductsSearchScreenState
           ),
           backgroundColor: AppColors.bgColor,
           body: Utils.modelProgressHud(
+            context: context,
             processing: _isProcessing,
             child: Column(
               children: [
                 Padding(
                   padding: const EdgeInsets.only(
-                      bottom: 8.0, left: 8.0, right: 8.0, top: 4.0),
+                      bottom: 8.0, left: 8.0, right: 8.0, top: 4.0,),
                   child: SearchDropdown(
                     hint: 'Search products',
                     searchDropdownModel: searchDropdownModel,
@@ -154,19 +155,19 @@ class _CrossSellingProductsSearchScreenState
                         searchDropdownModel.records = [];
                         selectedProduct.price = null;
                         if (!listSearchProducts.any(
-                            (product) => product.id == selectedProduct.id)) {
+                            (product) => product.id == selectedProduct.id,)) {
                           listSearchProducts.add(selectedProduct);
                         } else {
                           AlertServices.showErrorSnackBar(
                               message:
                                   'Selected product already added in the list',
-                              context: context);
+                              context: context,);
                         }
                       });
                     },
                     onSearchChanged: (searchModel) async {
                       final result = await _fetchOptionsData(
-                          searchModel.searchText, widget.dataId ?? '');
+                          searchModel.searchText, widget.dataId ?? '',);
                       if (result != null) {
                         setState(() {
                           searchDropdownModel.showDropdown =
@@ -242,7 +243,7 @@ class _CrossSellingProductsSearchScreenState
             ),
             bottomWidget: Padding(
               padding: const EdgeInsets.only(
-                  left: 8, right: 8, bottom: 12), // Adds padding on both sides
+                  left: 8, right: 8, bottom: 12,), // Adds padding on both sides
               child: Row(
                 children: [
                   Expanded(
@@ -255,16 +256,17 @@ class _CrossSellingProductsSearchScreenState
                       onChanged: (value) {
                         setState(() {
                           print(
-                              'User Input 1 : $value'); // Debugging user input
+                              'User Input 1 : $value',); // Debugging user input
                           final int index = listSearchProducts
                               .indexWhere((option) => option.id == product.id);
                           if (index != -1) {
                             print(
-                                'User Input 2 : $value'); // Debugging user input
+                                'User Input 2 : $value',); // Debugging user input
 
-                            if (value is String)
+                            if (value is String) {
                               listSearchProducts[index].price =
                                   value.isNotEmpty ? int.parse(value) : 0;
+                            }
                           }
                         });
                       },
@@ -274,7 +276,7 @@ class _CrossSellingProductsSearchScreenState
                   ),
                   const SizedBox(
                       width:
-                          8), // Adds spacing between input field and dropdown
+                          8,), // Adds spacing between input field and dropdown
                   Expanded(
                     flex: 1, // Ensure dropdown has a defined width
                     child: GenericDropdown<String>(
@@ -306,7 +308,7 @@ class _CrossSellingProductsSearchScreenState
   }
 
   Widget _buildFormattedText(
-          {required String title, required String description}) =>
+          {required String title, required String description,}) =>
       RichText(
         text: TextSpan(
           style: const TextStyle(fontSize: 14, color: Colors.black87),

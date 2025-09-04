@@ -2,7 +2,7 @@ import '../../../vendor_models/products/VendorGetProductsModel.dart';
 
 class VendorGetProductVariationsModel {
   VendorGetProductVariationsModel(
-      {bool? error, ProductVariationsData? data, String? message})
+      {bool? error, ProductVariationsData? data, String? message,})
       : _error = error,
         _data = data,
         _message = message;
@@ -42,7 +42,7 @@ class VendorGetProductVariationsModel {
 
 class ProductVariationsData {
   ProductVariationsData(
-      {Pagination? pagination, List<ProductVariationRecord>? records})
+      {Pagination? pagination, List<ProductVariationRecord>? records,})
       : _pagination = pagination,
         _records = records;
 

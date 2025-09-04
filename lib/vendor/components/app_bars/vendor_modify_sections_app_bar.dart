@@ -5,7 +5,7 @@ import '../../../vendor/Components/vendor_text_style.dart';
 class VendorModifySectionsAppBar extends StatelessWidget
     implements PreferredSizeWidget {
   const VendorModifySectionsAppBar(
-      {super.key, required this.title, this.onGoBack});
+      {super.key, required this.title, this.onGoBack,});
   final String title;
   final Function()? onGoBack;
 

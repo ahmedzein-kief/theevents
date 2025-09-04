@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/provider/api_response_handler.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +8,7 @@ import '../../models/dashboard/events_bazaar_model/events_bazzar_models.dart';
 class EventBazaarProvider with ChangeNotifier {
   final ApiResponseHandler _apiResponseHandler = ApiResponseHandler();
 
-  //   ++++++++++++++++++++++++++++++++++++      All events in  of Events bazaar  +++++++++++++++++++++++++++++++++
+  //   ++++++++++++++++++++++++++++++++++++  All events in  of Events bazaar  +++++++++++++++++++++++++++++++++
   List<EventList> _events = [];
   bool _isLoading = false;
 
@@ -24,7 +22,7 @@ class EventBazaarProvider with ChangeNotifier {
   ) async {
     _isLoading = true;
     notifyListeners();
-    // final response = await http.get(Uri.parse('https://api.staging.theevents.ae/api/v1/countries/list'));
+    // final response = await http.get(Uri.parse('https://apistaging.theevents.ae/api/v1/countries/list'));
     const url = ApiEndpoints.eventsBazaarList;
 
     final response = await _apiResponseHandler.getRequest(
@@ -33,11 +31,10 @@ class EventBazaarProvider with ChangeNotifier {
     );
 
     if (response.statusCode == 200) {
-      final data = json.decode(response.body);
+      final data = response.data;
       final eventsBazaarModels = EventsBazaarModels.fromJson(data);
       _events = eventsBazaarModels.data?.list ?? [];
-      _events =
-          _events.where((event) => countries.contains(event.value)).toList();
+      // _events = _events.where((event) => countries.contains(event.iso)).toList();
     } else {
       throw Exception('Failed to load ');
     }
@@ -65,7 +62,7 @@ class EventBazaarProvider with ChangeNotifier {
     );
 
     if (response.statusCode == 200) {
-      final data = json.decode(response.body);
+      final data = response.data;
       _eventBazaarBanner = EventBazaarBanner.fromJson(data);
     } else {
       throw Exception('Failed to load event bazaar data');

@@ -1,3 +1,4 @@
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/models/orders/order_history_model.dart';
 import 'package:event_app/provider/orders_provider/order_data_provider.dart';
@@ -15,8 +16,7 @@ class OrderPageScreen extends StatefulWidget {
   State<OrderPageScreen> createState() => _OrderPageScreenState();
 }
 
-class _OrderPageScreenState extends State<OrderPageScreen>
-    with SingleTickerProviderStateMixin {
+class _OrderPageScreenState extends State<OrderPageScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
@@ -26,8 +26,7 @@ class _OrderPageScreenState extends State<OrderPageScreen>
     _tabController = TabController(length: 2, vsync: this);
 
     _tabController.addListener(() {
-      if (_tabController.indexIsChanging ||
-          _tabController.index != _tabController.previousIndex) {
+      if (_tabController.indexIsChanging || _tabController.index != _tabController.previousIndex) {
         fetchOrders(context, isPending: _tabController.index == 0);
       }
     });
@@ -37,11 +36,28 @@ class _OrderPageScreenState extends State<OrderPageScreen>
     });
   }
 
-  Future<void> fetchOrders(BuildContext? context,
-      {required bool isPending}) async {
+  // Add this method to handle when screen is resumed/focused
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Refresh orders when screen becomes active
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        fetchOrders(context, isPending: _tabController.index == 0);
+      }
+    });
+  }
+
+  Future<void> fetchOrders(
+    BuildContext? context, {
+    required bool isPending,
+  }) async {
     if (!mounted) return;
     final provider = Provider.of<OrderDataProvider>(context!, listen: false);
-    // provider.clearOrders();
+
+    // Clear existing orders to force refresh
+    provider.clearOrders();
+
     await provider.getOrders(
       context,
       isPending,
@@ -53,53 +69,54 @@ class _OrderPageScreenState extends State<OrderPageScreen>
     final double screenHeight = MediaQuery.sizeOf(context).height;
 
     return BaseAppBar(
-      textBack: 'Back',
+      textBack: AppStrings.back.tr,
       customBackIcon: const Icon(Icons.arrow_back_ios_sharp, size: 16),
-      // firstRightIconPath: AppStrings.firstRightIconPath,
-      secondRightIconPath: AppStrings.secondRightIconPath,
-      thirdRightIconPath: AppStrings.thirdRightIconPath,
-      title: 'Orders',
+      secondRightIconPath: AppStrings.secondRightIconPath.tr,
+      thirdRightIconPath: AppStrings.thirdRightIconPath.tr,
+      title: AppStrings.orders.tr,
       body: Scaffold(
-        backgroundColor: Colors.grey[100],
         appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(50), // Adjust height as needed
+          preferredSize: const Size.fromHeight(50),
           child: Container(
-            color: Colors.white, // Background color for the tab bar area
+            color: Theme.of(context).colorScheme.primary,
             child: TabBar(
               controller: _tabController,
               labelColor: AppColors.lightCoral,
               unselectedLabelColor: Colors.grey,
               indicatorColor: AppColors.lightCoral,
-              // Thickness of the indicator
               isScrollable: false,
-              // Makes tabs take up the full width
-              tabs: const [
+              tabs: [
                 Tab(
-                  text: 'Pending',
+                  text: AppStrings.pending.tr,
                 ),
                 Tab(
-                  text: 'Completed',
+                  text: AppStrings.completed.tr,
                 ),
               ],
               onTap: (index) {
-                fetchOrders(context, isPending: index == 0); // Toggle API call
+                fetchOrders(context, isPending: index == 0);
               },
             ),
           ),
         ),
-        body: TabBarView(
-          controller: _tabController,
-          children: [
-            _buildOrderList(context, isCompleted: false),
-            _buildOrderList(context, isCompleted: true),
-          ],
+        body: RefreshIndicator(
+          color: Colors.black,
+          onRefresh: () async {
+            await fetchOrders(context, isPending: _tabController.index == 0);
+          },
+          child: TabBarView(
+            controller: _tabController,
+            children: [
+              _buildOrderList(context, isCompleted: false),
+              _buildOrderList(context, isCompleted: true),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildOrderList(BuildContext context, {required bool isCompleted}) =>
-      Consumer<OrderDataProvider>(
+  Widget _buildOrderList(BuildContext context, {required bool isCompleted}) => Consumer<OrderDataProvider>(
         builder: (context, provider, child) {
           final records = isCompleted
               ? provider.completedOrderHistoryModel?.data.records
@@ -137,15 +154,45 @@ class _OrderPageScreenState extends State<OrderPageScreen>
 
           return SafeArea(
             child: allProducts == null || allProducts.isEmpty
-                ? const Center(child: Text('No orders found'))
+                ? SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.6,
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.shopping_bag_outlined,
+                              size: 64,
+                              color: Colors.grey[400],
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              AppStrings.noOrders.tr,
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  )
                 : SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
                     child: Column(
-                      children: allProducts
-                          .map((order) => OrderHistoryView(order: order))
-                          .toList(),
+                      children: allProducts.map((order) => OrderHistoryView(order: order)).toList(),
                     ),
                   ),
           );
         },
       );
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
 }

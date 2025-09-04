@@ -37,7 +37,7 @@ class VendorProductsView extends StatelessWidget {
                 top: screenHeight * 0.001,
                 left: screenWidth * 0.03,
                 right: screenHeight * 0.02,
-                bottom: screenHeight * 0.001),
+                bottom: screenHeight * 0.001,),
             child: Column(
               children: [
                 Container(
@@ -67,7 +67,7 @@ class VendorProductsView extends StatelessWidget {
                                   width: 30,
                                   height: 30,
                                   child: const Icon(Icons.edit,
-                                      size: 20, color: Colors.white)),
+                                      size: 20, color: Colors.white,),),
                             ),
                             const SizedBox(width: 5),
                             GestureDetector(
@@ -77,7 +77,7 @@ class VendorProductsView extends StatelessWidget {
                                     width: 30,
                                     height: 30,
                                     child: const Icon(Icons.delete,
-                                        size: 20, color: Colors.white))),
+                                        size: 20, color: Colors.white,),),),
                           ],
                         )
                       else

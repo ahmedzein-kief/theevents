@@ -6,8 +6,7 @@ class SecurePreferencesUtil {
   static const FlutterSecureStorage _secureStorage = FlutterSecureStorage(
     aOptions: AndroidOptions(
       encryptedSharedPreferences: true,
-      keyCipherAlgorithm:
-          KeyCipherAlgorithm.RSA_ECB_OAEPwithSHA_256andMGF1Padding,
+      keyCipherAlgorithm: KeyCipherAlgorithm.RSA_ECB_OAEPwithSHA_256andMGF1Padding,
       storageCipherAlgorithm: StorageCipherAlgorithm.AES_GCM_NoPadding,
     ),
     iOptions: IOSOptions(
@@ -27,12 +26,17 @@ class SecurePreferencesUtil {
   static const String isVendor = 'is_vendor';
   static const String isFirstTimeKey = 'isFirstTime';
   static const String serverStep = 'serverStep';
+  static const String _languageKey = 'app_language';
 
   // Getters for backward compatibility
   static String get tokenKey => _tokenKey;
+
   static String get loggedInKey => isLoggedInKey;
+
   static String get verified => isVerified;
+
   static String get approved => isApproved;
+
   static String get vendor => isVendor;
 
   /// Initialize the preferences
@@ -50,8 +54,7 @@ class SecurePreferencesUtil {
   }
 
   /// Get user name from secure storage
-  static Future<String?> getUserName() async =>
-      _secureStorage.read(key: _userNameKey);
+  static Future<String?> getUserName() async => _secureStorage.read(key: _userNameKey);
 
   /// Save user email securely
   static Future<void> saveUserMail(String userMail) async {
@@ -59,8 +62,7 @@ class SecurePreferencesUtil {
   }
 
   /// Get user email from secure storage
-  static Future<String?> getUserMail() async =>
-      _secureStorage.read(key: _userMailKey);
+  static Future<String?> getUserMail() async => _secureStorage.read(key: _userMailKey);
 
   /// Save authentication token securely
   static Future<void> saveToken(String token) async {
@@ -68,8 +70,7 @@ class SecurePreferencesUtil {
   }
 
   /// Get authentication token from secure storage
-  static Future<String?> getToken() async =>
-      _secureStorage.read(key: _tokenKey);
+  static Future<String?> getToken() async => _secureStorage.read(key: _tokenKey);
 
   /// Remove authentication token
   static Future<void> removeToken() async {
@@ -86,21 +87,25 @@ class SecurePreferencesUtil {
     await _secureStorage.delete(key: _userMailKey);
   }
 
+  /// Save app language code securely
+  static Future<void> saveLanguage(String languageCode) async {
+    await _preferences!.setString(_languageKey, languageCode);
+  }
+
+  /// Get app language code from secure storage
+  static String? getLanguage() => _preferences!.getString(_languageKey);
+
   // ===============================
   // REGULAR SHARED PREFERENCES METHODS (for non-sensitive data)
   // ===============================
 
   /// Save server step
   static Future<void> saveServerStep(int step) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt(serverStep, step);
+    await _preferences!.setInt(serverStep, step);
   }
 
   /// Get server step
-  static Future<int?> getServerStep() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getInt(serverStep);
-  }
+  static Future<int?> getServerStep() async => _preferences!.getInt(serverStep);
 
   /// Set boolean value
   static Future<void> setBool(String key, bool value) async {
@@ -113,7 +118,7 @@ class SecurePreferencesUtil {
   }
 
   /// Get boolean value
-  static bool getBool(String key) => _preferences?.getBool(key) ?? false;
+  static bool? getBool(String key) => _preferences?.getBool(key);
 
   /// Set string value (for non-sensitive data only)
   static Future<void> setString(String key, String value) async {
@@ -140,10 +145,7 @@ class SecurePreferencesUtil {
   }
 
   /// Check if user is logged in
-  static Future<bool> isLoggedIn() async {
-    _preferences ??= await SharedPreferences.getInstance();
-    return _preferences?.getBool(isLoggedInKey) ?? false;
-  }
+  static Future<bool> isLoggedIn() async => _preferences!.getBool(isLoggedInKey) ?? false;
 
   /// Set login status
   static Future<void> setLoginStatus(bool status) async {
@@ -156,8 +158,7 @@ class SecurePreferencesUtil {
 
   /// Clear all regular shared preferences
   static Future<void> clearSharedPreferences() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.clear();
+    await _preferences!.clear();
   }
 
   /// Clear all secure storage data
@@ -190,15 +191,11 @@ class SecurePreferencesUtil {
   // ===============================
 
   /// Check if secure storage contains a key
-  static Future<bool> containsKeyInSecureStorage(String key) async =>
-      _secureStorage.containsKey(key: key);
+  static Future<bool> containsKeyInSecureStorage(String key) async => _secureStorage.containsKey(key: key);
 
   /// Get all keys from secure storage
-  static Future<Map<String, String>> getAllFromSecureStorage() async =>
-      _secureStorage.readAll();
+  static Future<Map<String, String>> getAllFromSecureStorage() async => _secureStorage.readAll();
 }
-
-
 
 // import 'package:shared_preferences/shared_preferences.dart';
 //

@@ -113,7 +113,7 @@ class _VendorCreateCouponViewState extends State<VendorCreateCouponView>
 
   /// Method to generate Coupon code
   Future<void> _generateCouponCode(
-      VendorGenerateCouponCodeViewModel provider) async {
+      VendorGenerateCouponCodeViewModel provider,) async {
     try {
       setProcessing(true);
       await provider.vendorGenerateCouponCode();
@@ -132,7 +132,9 @@ class _VendorCreateCouponViewState extends State<VendorCreateCouponView>
   Widget build(BuildContext context) => Scaffold(
         appBar: const VendorCommonAppBar(title: 'Coupons'),
         body: Utils.modelProgressHud(
-            processing: _isProcessing, child: _buildUi(context)),
+            context: context,
+            processing: _isProcessing,
+            child: _buildUi(context),),
         backgroundColor: AppColors.bgColor,
       );
 
@@ -197,7 +199,7 @@ class _VendorCreateCouponViewState extends State<VendorCreateCouponView>
                         borderRadius: 4,
                         hintText: 'Enter Coupon name',
                         hintStyle: const TextStyle(
-                            fontWeight: FontWeight.bold, color: Colors.grey),
+                            fontWeight: FontWeight.bold, color: Colors.grey,),
                         controller: _couponNameController,
                       ),
                       kSmallSpace,
@@ -294,13 +296,13 @@ class _VendorCreateCouponViewState extends State<VendorCreateCouponView>
                         prefix: CouponViewUtils.discountFieldPrefixAndSuffix(
                             couponType: couponType,
                             isPrefix: true,
-                            screenWidth: screenWidth),
+                            screenWidth: screenWidth,),
                         suffix: CouponViewUtils.discountFieldPrefixAndSuffix(
                             couponType: couponType,
                             isPrefix: false,
-                            screenWidth: screenWidth),
+                            screenWidth: screenWidth,),
                         keyboardType: const TextInputType.numberWithOptions(
-                            decimal: true),
+                            decimal: true,),
                         controller: _discountController,
                       ),
                       kFormFieldSpace,
@@ -322,7 +324,7 @@ class _VendorCreateCouponViewState extends State<VendorCreateCouponView>
                             left: kPadding,
                             right: kPadding,
                             top: kPadding,
-                            bottom: kSmallPadding),
+                            bottom: kSmallPadding,),
                         child: Text(
                           'Time',
                           style: CouponViewUtils.couponLabelTextStyle(),
@@ -342,7 +344,7 @@ class _VendorCreateCouponViewState extends State<VendorCreateCouponView>
                             fieldTitle(
                                 text: 'Start Date',
                                 textStyle:
-                                    CouponViewUtils.couponLabelTextStyle()),
+                                    CouponViewUtils.couponLabelTextStyle(),),
                             kSmallSpace,
                             CustomDateTimePickerField(
                               date: _startDateController,
@@ -375,7 +377,7 @@ class _VendorCreateCouponViewState extends State<VendorCreateCouponView>
                             fieldTitle(
                                 text: 'End Date',
                                 textStyle:
-                                    CouponViewUtils.couponLabelTextStyle()),
+                                    CouponViewUtils.couponLabelTextStyle(),),
                             kSmallSpace,
                             CustomDateTimePickerField(
                               date: _endDateController,
@@ -439,7 +441,7 @@ class _VendorCreateCouponViewState extends State<VendorCreateCouponView>
                             borderRadius: kSmallButtonRadius,
                             buttonColor: AppColors.lightCoral,
                             padding: EdgeInsets.symmetric(
-                                horizontal: screenWidth / 20, vertical: 5),
+                                horizontal: screenWidth / 20, vertical: 5,),
                             isLoading: provider.apiResponse.status ==
                                 ApiStatus.LOADING,
                             onTap: () async {
@@ -450,14 +452,14 @@ class _VendorCreateCouponViewState extends State<VendorCreateCouponView>
                                     false) {
                                   _creteForm();
                                   await provider.vendorCreateCoupon(
-                                      form: form, context: context);
+                                      form: form, context: context,);
                                   // setProcessing(false);
 
                                   /// Calling the get vendor coupons api
                                   final getCouponsProvider =
                                       Provider.of<VendorGetCouponsViewModel>(
                                           context,
-                                          listen: false);
+                                          listen: false,);
                                   getCouponsProvider.clearList();
                                   getCouponsProvider.vendorGetCoupons();
                                   setProcessing(false);
@@ -480,7 +482,7 @@ class _VendorCreateCouponViewState extends State<VendorCreateCouponView>
                         buttonColor: Colors.transparent,
                         borderColor: Colors.black,
                         padding: EdgeInsets.symmetric(
-                            horizontal: screenWidth / 20, vertical: 5),
+                            horizontal: screenWidth / 20, vertical: 5,),
                         onTap: () {
                           /// Simply Go back
                           Navigator.of(context).pop();

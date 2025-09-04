@@ -1,7 +1,9 @@
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/views/product_detail_screens/product_detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../core/constants/app_strings.dart';
 import '../../core/network/api_endpoints/api_end_point.dart';
 import '../../core/services/shared_preferences_helper.dart';
 import '../../core/widgets/custom_items_views/product_card.dart';
@@ -19,6 +21,7 @@ class ProductRelatedItemsScreen extends StatefulWidget {
     required this.onBackNavigation,
     required this.onActionUpdate,
   });
+
   final double screenWidth;
   final List<RecordProduct> relatedProducts;
   final String offPercentage;
@@ -48,11 +51,11 @@ class _ProductRelatedItemsScreenState extends State<ProductRelatedItemsScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Title
-        const Padding(
-          padding: EdgeInsets.all(8.0),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
           child: Text(
-            'Related Products', // Title for the list
-            style: TextStyle(
+            AppStrings.relatedProducts.tr, // Title for the list
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
@@ -69,7 +72,7 @@ class _ProductRelatedItemsScreenState extends State<ProductRelatedItemsScreen> {
 
               return Padding(
                 padding: const EdgeInsets.symmetric(
-                    horizontal: 8.0), // Add horizontal padding
+                    horizontal: 8.0,), // Add horizontal padding
                 child: SizedBox(
                   width: widget.screenWidth *
                       0.4, // Set a fixed width for each item
@@ -91,7 +94,7 @@ class _ProductRelatedItemsScreenState extends State<ProductRelatedItemsScreen> {
                     child: ProductCard(
                       isOutOfStock: product.outOfStock ?? false,
                       off: widget.offPercentage.isNotEmpty
-                          ? '${widget.offPercentage}% off'
+                          ? '${widget.offPercentage}% ${AppStrings.off.tr}'
                           : '',
                       priceWithTaxes: (product.prices?.frontSalePrice ?? 0) <
                               (product.prices?.price ?? 0)
@@ -119,7 +122,7 @@ class _ProductRelatedItemsScreenState extends State<ProductRelatedItemsScreen> {
                       reviewsCount: product.review?.reviewsCount?.toInt(),
                       isHeartObscure: wishlistProvider.wishlist?.data?.products
                               .any((wishlistProduct) =>
-                                  wishlistProduct.id == product.id) ??
+                                  wishlistProduct.id == product.id,) ??
                           false,
                       onHeartTap: () async {
                         widget.onActionUpdate(true);
@@ -127,17 +130,17 @@ class _ProductRelatedItemsScreenState extends State<ProductRelatedItemsScreen> {
                         final bool isInWishlist = wishlistProvider
                                 .wishlist?.data?.products
                                 .any((wishlistProduct) =>
-                                    wishlistProduct.id == product.id) ??
+                                    wishlistProduct.id == product.id,) ??
                             false;
                         if (isInWishlist) {
                           await wishlistProvider.deleteWishlistItem(
-                              product.id ?? 0, context, token ?? '');
+                              product.id ?? 0, context, token ?? '',);
                         } else {
                           await freshPicksProvider.handleHeartTap(
-                              context, product.id ?? 0);
+                              context, product.id ?? 0,);
                         }
                         await wishlistProvider.fetchWishlist(
-                            token ?? '', context);
+                            token ?? '', context,);
                         widget.onActionUpdate(false);
                       },
                     ),

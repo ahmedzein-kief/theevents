@@ -42,7 +42,7 @@ class ImageTextView extends StatelessWidget {
               softWrap: true,
               maxLines: 1,
               textAlign: TextAlign.center,
-              style: textStyle),
+              style: textStyle,),
         ],
       );
 }

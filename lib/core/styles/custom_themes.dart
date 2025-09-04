@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import '../../vendor/components/checkboxes/custom_checkboxes.dart';
 
 class CustomThemes {
-  static CheckboxTheme checkboxTheme({required Widget child}) => CheckboxTheme(
+  static CheckboxTheme checkboxTheme(
+          {required BuildContext context, required Widget child,}) =>
+      CheckboxTheme(
         data: CheckboxThemeData(
-          fillColor: checkboxColor(),
-          checkColor: checkColor(),
-          overlayColor: checkboxColor(),
+          fillColor: checkboxColor(context),
+          checkColor: checkColor(context),
+          overlayColor: checkboxColor(context),
           side: const BorderSide(
             color: Colors.grey,
             width: 1,

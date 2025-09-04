@@ -7,7 +7,7 @@ class CustomGriditemsUsertypeSeeall extends StatelessWidget {
       required this.imageUrl,
       required this.name,
       required this.onTap,
-      required this.textStyle});
+      required this.textStyle,});
   final String imageUrl;
   final String name;
   final VoidCallback onTap;
@@ -37,7 +37,7 @@ class CustomGriditemsUsertypeSeeall extends StatelessWidget {
                     if (loadingProcessor == null) return child;
                     return const Center(
                       child: CupertinoActivityIndicator(
-                          color: Colors.black, radius: 10, animating: true),
+                          color: Colors.black, radius: 10, animating: true,),
                     );
                   },
                 ),

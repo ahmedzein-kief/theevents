@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 class DecimalInputFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(
-      TextEditingValue oldValue, TextEditingValue newValue) {
+      TextEditingValue oldValue, TextEditingValue newValue,) {
     final String text = newValue.text;
 
     // Ensure only one decimal point is allowed

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/services/shared_preferences_helper.dart';
 import 'package:event_app/models/wishlist_models/wishlist_items_models.dart';
 import 'package:event_app/provider/cart_item_provider/cart_item_provider.dart';
@@ -62,20 +63,43 @@ class _WishListScreenState extends State<WishListScreen> {
     await provider.deleteWishlistItem(itemId, context, token);
   }
 
+  // Helper method to get appropriate colors based on theme
+  Color _getItemContainerColor(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    return isDarkMode ? Colors.grey[850]! : AppColors.itemContainerBack;
+  }
+
+  Color _getAddToCartButtonColor(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    return isDarkMode ? Theme.of(context).colorScheme.primary : Colors.black;
+  }
+
+  Color _getAddToCartTextColor(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    return isDarkMode ? Colors.white : Colors.white;
+  }
+
+  Color _getEmptyWishlistColor(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    return isDarkMode ? Colors.grey[800]! : AppColors.lightCoral;
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
     final cartProvider = Provider.of<CartProvider>(context, listen: false);
     final storeProvider = Provider.of<StoreProvider>(context, listen: false);
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
 
     return BaseAppBar(
-      textBack: AppStrings.back,
+      textBack: AppStrings.back.tr,
       customBackIcon: const Icon(Icons.arrow_back_ios_sharp, size: 16),
-      firstRightIconPath: AppStrings.firstRightIconPath,
-      thirdRightIconPath: AppStrings.thirdRightIconPath,
+      firstRightIconPath: AppStrings.firstRightIconPath.tr,
+      thirdRightIconPath: AppStrings.thirdRightIconPath.tr,
       body: Scaffold(
-        backgroundColor: Theme.of(context).colorScheme.surface,
+        backgroundColor: theme.colorScheme.surface,
         body: SafeArea(
           child: Consumer<WishlistProvider>(
             builder: (context, wishlistProvider, child) => Column(
@@ -91,7 +115,12 @@ class _WishListScreenState extends State<WishListScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Text(AppStrings.wishList, style: wishListText(context)),
+                      Text(
+                        AppStrings.wishList.tr,
+                        style: wishListText(context).copyWith(
+                          color: isDarkMode ? Colors.white : null,
+                        ),
+                      ),
                       CircleAvatar(
                         radius: 16.5,
                         backgroundImage: _selectedImage != null
@@ -104,9 +133,11 @@ class _WishListScreenState extends State<WishListScreen> {
                 ),
                 Expanded(
                   child: wishlistProvider.isLoading
-                      ? const Center(
+                      ? Center(
                           child: CircularProgressIndicator(
-                              color: Colors.black, strokeWidth: 0.5),
+                            color: isDarkMode ? Colors.white : Colors.black,
+                            strokeWidth: 0.5,
+                          ),
                         )
                       : wishlistProvider.wishlist?.data?.products.isEmpty ??
                               true
@@ -121,14 +152,21 @@ class _WishListScreenState extends State<WishListScreen> {
                                 child: Center(
                                   child: Container(
                                     width: double.infinity,
-                                    decoration: const BoxDecoration(
-                                      color: AppColors.lightCoral,
+                                    decoration: BoxDecoration(
+                                      color: _getEmptyWishlistColor(context),
+                                      borderRadius: BorderRadius.circular(8),
                                     ),
                                     height: 50,
                                     child: Align(
-                                        alignment: Alignment.center,
-                                        child: Text(AppStrings.emptyWishList,
-                                            style: wishListText(context))),
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        AppStrings.emptyWishList.tr,
+                                        style: wishListText(context).copyWith(
+                                          color:
+                                              isDarkMode ? Colors.white : null,
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
@@ -166,7 +204,7 @@ class _WishListScreenState extends State<WishListScreen> {
                                 /// wishlist product widget
                                 return Padding(
                                   padding: EdgeInsets.only(
-                                      bottom: screenHeight * 0.035),
+                                      bottom: screenHeight * 0.035,),
                                   child: GestureDetector(
                                     onTap: () {
                                       Navigator.push(
@@ -183,18 +221,17 @@ class _WishListScreenState extends State<WishListScreen> {
                                     child: Container(
                                       width: double.infinity,
                                       decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(5),
-                                        // image: Image.network(product?.image.toString() ?? ''),
-                                        // color: Theme.of(context).colorScheme.onErrorContainer,
-                                        color: AppColors.itemContainerBack,
-                                        // color: AppColors.peachyPink,
+                                        borderRadius: BorderRadius.circular(8),
+                                        color: _getItemContainerColor(context),
                                         boxShadow: [
                                           BoxShadow(
                                             offset: const Offset(0, 1),
                                             blurRadius: 0.5,
                                             spreadRadius: 0.5,
-                                            color:
-                                                Colors.white.withOpacity(0.3),
+                                            color: isDarkMode
+                                                ? Colors.grey[700]!
+                                                    .withOpacity(0.3)
+                                                : Colors.white.withOpacity(0.3),
                                           ),
                                         ],
                                       ),
@@ -203,7 +240,7 @@ class _WishListScreenState extends State<WishListScreen> {
                                             left: screenWidth * 0.02,
                                             right: screenWidth * 0.02,
                                             top: screenHeight * 0.02,
-                                            bottom: screenHeight * 0.02),
+                                            bottom: screenHeight * 0.02,),
                                         child: IntrinsicHeight(
                                           child: Row(
                                             crossAxisAlignment:
@@ -230,36 +267,39 @@ class _WishListScreenState extends State<WishListScreen> {
                                                           screenHeight * 0.1,
                                                       placeholder:
                                                           (BuildContext context,
-                                                                  String url) =>
+                                                                  String url,) =>
                                                               Container(
                                                         height:
                                                             MediaQuery.sizeOf(
-                                                                        context)
+                                                                        context,)
                                                                     .height *
                                                                 0.28,
                                                         width: double.infinity,
-                                                        color: Colors.blueGrey[
-                                                            300], // Background color
+                                                        color: isDarkMode
+                                                            ? Colors.grey[700]
+                                                            : Colors
+                                                                .blueGrey[300],
                                                         child: Stack(
                                                           alignment:
                                                               Alignment.center,
                                                           children: [
                                                             Image.asset(
-                                                              'assets/placeholder.png', // Replace with your actual image path
-                                                              fit: BoxFit
-                                                                  .cover, // Adjust fit if needed
+                                                              'assets/placeholder.png',
+                                                              fit: BoxFit.cover,
                                                               height: MediaQuery
                                                                           .sizeOf(
-                                                                              context)
+                                                                              context,)
                                                                       .height *
                                                                   0.28,
                                                               width: double
                                                                   .infinity,
                                                             ),
-                                                            const CupertinoActivityIndicator(
-                                                              radius:
-                                                                  16, // Adjust size of the loader
+                                                            CupertinoActivityIndicator(
+                                                              radius: 16,
                                                               animating: true,
+                                                              color: isDarkMode
+                                                                  ? Colors.white
+                                                                  : null,
                                                             ),
                                                           ],
                                                         ),
@@ -283,17 +323,25 @@ class _WishListScreenState extends State<WishListScreen> {
                                                     children: [
                                                       Text(
                                                         product.name ?? '',
-                                                        // "dd",
                                                         style: wishTopItemStyle(
-                                                            context),
+                                                                context,)
+                                                            .copyWith(
+                                                          color: isDarkMode
+                                                              ? Colors.white
+                                                              : null,
+                                                        ),
                                                       ),
                                                       Text(
-                                                        'Sold By: ${product.store.name}',
+                                                        '${AppStrings.soldBy.tr}: ${product.store.name}',
                                                         maxLines: 1,
                                                         overflow: TextOverflow
                                                             .ellipsis,
-                                                        style: const TextStyle(
+                                                        style: TextStyle(
                                                           fontSize: 8,
+                                                          color: isDarkMode
+                                                              ? Colors.grey[400]
+                                                              : Colors
+                                                                  .grey[600],
                                                         ),
                                                       ),
                                                       Row(
@@ -306,10 +354,17 @@ class _WishListScreenState extends State<WishListScreen> {
                                                         children: [
                                                           Expanded(
                                                             child: Text(
-                                                                'AED${product.price.toString()}',
-                                                                style:
-                                                                    wishTopItemStyle(
-                                                                        context)),
+                                                              'AED${product.price.toString()}',
+                                                              style:
+                                                                  wishTopItemStyle(
+                                                                          context,)
+                                                                      .copyWith(
+                                                                color: isDarkMode
+                                                                    ? Colors
+                                                                        .white
+                                                                    : null,
+                                                              ),
+                                                            ),
                                                           ),
                                                           Expanded(
                                                             child: Text(
@@ -324,18 +379,30 @@ class _WishListScreenState extends State<WishListScreen> {
                                                                   : '',
                                                               style:
                                                                   wishItemSalePrice(
-                                                                      context),
+                                                                          context,)
+                                                                      .copyWith(
+                                                                color: isDarkMode
+                                                                    ? Colors
+                                                                        .grey[400]
+                                                                    : null,
+                                                              ),
                                                             ),
                                                           ),
-                                                          // const SizedBox(width: 10),
                                                           Expanded(
                                                             child: Text(
-                                                                offPercentage
-                                                                        .isNotEmpty
-                                                                    ? '$offPercentage%off'
-                                                                    : '',
-                                                                style:
-                                                                    wishItemSaleOff()),
+                                                              offPercentage
+                                                                      .isNotEmpty
+                                                                  ? '$offPercentage%off'
+                                                                  : '',
+                                                              style:
+                                                                  wishItemSaleOff()
+                                                                      .copyWith(
+                                                                color: isDarkMode
+                                                                    ? Colors
+                                                                        .green[300]
+                                                                    : null,
+                                                              ),
+                                                            ),
                                                           ),
                                                         ],
                                                       ),
@@ -359,39 +426,53 @@ class _WishListScreenState extends State<WishListScreen> {
                                                                         product
                                                                             .id,
                                                                         context,
-                                                                        1);
+                                                                        1,);
                                                               }
                                                             },
                                                             child: Container(
-                                                              color:
-                                                                  Colors.black,
-                                                              height: 20,
-                                                              width: 80,
-                                                              child: const Row(
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                color:
+                                                                    _getAddToCartButtonColor(
+                                                                        context,),
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            4,),
+                                                              ),
+                                                              height: 24,
+                                                              width: 85,
+                                                              child: Row(
                                                                 crossAxisAlignment:
                                                                     CrossAxisAlignment
                                                                         .center,
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .center,
                                                                 children: [
                                                                   Padding(
-                                                                    padding:
-                                                                        EdgeInsets
-                                                                            .all(5),
+                                                                    padding: const EdgeInsets
+                                                                        .only(
+                                                                        right:
+                                                                            4,),
                                                                     child: Icon(
                                                                       Icons
                                                                           .shopping_cart,
                                                                       size: 13,
-                                                                      color: Colors
-                                                                          .white,
+                                                                      color: _getAddToCartTextColor(
+                                                                          context,),
                                                                     ),
                                                                   ),
                                                                   Text(
                                                                     AppStrings
                                                                         .addToCart,
-                                                                    style: TextStyle(
-                                                                        fontSize:
-                                                                            10,
-                                                                        color: Colors
-                                                                            .white),
+                                                                    style:
+                                                                        TextStyle(
+                                                                      fontSize:
+                                                                          10,
+                                                                      color: _getAddToCartTextColor(
+                                                                          context,),
+                                                                    ),
                                                                   ),
                                                                 ],
                                                               ),
@@ -401,16 +482,20 @@ class _WishListScreenState extends State<WishListScreen> {
                                                             onTap: () async {
                                                               removeWishlistConfirmationDialog(
                                                                   context,
-                                                                  product);
+                                                                  product,);
                                                             },
                                                             child: Icon(
-                                                                CupertinoIcons
-                                                                    .delete,
-                                                                size: 22,
-                                                                color: Colors
-                                                                    .deepOrangeAccent
-                                                                    .withOpacity(
-                                                                        0.5)),
+                                                              CupertinoIcons
+                                                                  .delete,
+                                                              size: 22,
+                                                              color: isDarkMode
+                                                                  ? Colors
+                                                                      .red[300]
+                                                                  : Colors
+                                                                      .deepOrangeAccent
+                                                                      .withOpacity(
+                                                                          0.5,),
+                                                            ),
                                                           ),
                                                         ],
                                                       ),
@@ -430,7 +515,6 @@ class _WishListScreenState extends State<WishListScreen> {
                 ),
               ],
             ),
-            // },
           ),
         ),
       ),
@@ -441,38 +525,53 @@ class _WishListScreenState extends State<WishListScreen> {
     BuildContext mainContext,
     Product product,
   ) {
+    final isDarkMode = Theme.of(mainContext).brightness == Brightness.dark;
+
     showDialog(
       context: mainContext,
       builder: (BuildContext context) => AlertDialog(
-        title: const Text('Remove Wishlist'),
-        content: const Text('Are you sure you want to remove from wishlist?'),
+        backgroundColor: isDarkMode ? Colors.grey[850] : Colors.white,
+        title: Text(
+          AppStrings.removeWishlistTitle.tr,
+          style: TextStyle(
+            color: isDarkMode ? Colors.white : Colors.black,
+          ),
+        ),
+        content: Text(
+          AppStrings.removeWishlistMessage.tr,
+          style: TextStyle(
+            color: isDarkMode ? Colors.grey[300] : Colors.grey[700],
+          ),
+        ),
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.of(context).pop(); // Close the dialog
+              Navigator.of(context).pop();
             },
             style: TextButton.styleFrom(
-              foregroundColor: AppColors.peachyPink, // Set the text color
+              foregroundColor:
+                  isDarkMode ? Colors.blue[300] : AppColors.peachyPink,
               textStyle: const TextStyle(
-                fontSize: 16.0, // Optional: Adjust font size
-                fontWeight: FontWeight.bold, // Optional: Adjust font weight
+                fontSize: 16.0,
+                fontWeight: FontWeight.bold,
               ),
             ),
-            child: const Text('Cancel'),
+            child: Text(AppStrings.cancel.tr),
           ),
           TextButton(
             onPressed: () async {
-              Navigator.of(context).pop(); // Close the dialog
+              Navigator.of(context).pop();
               await handleDelete(product.id);
             },
             style: TextButton.styleFrom(
-              foregroundColor: AppColors.peachyPink, // Set the text color
+              foregroundColor:
+                  isDarkMode ? Colors.red[300] : AppColors.peachyPink,
               textStyle: const TextStyle(
-                fontSize: 16.0, // Optional: Adjust font size
-                fontWeight: FontWeight.bold, // Optional: Adjust font weight
+                fontSize: 16.0,
+                fontWeight: FontWeight.bold,
               ),
             ),
-            child: const Text('Yes'),
+            child: Text(AppStrings.yes.tr),
           ),
         ],
       ),
@@ -480,11 +579,16 @@ class _WishListScreenState extends State<WishListScreen> {
   }
 
   void showLoadingDialog(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (BuildContext context) => const Center(
-        child: CircularProgressIndicator(color: Colors.black, strokeWidth: 0.5),
+      builder: (BuildContext context) => Center(
+        child: CircularProgressIndicator(
+          color: isDarkMode ? Colors.white : Colors.black,
+          strokeWidth: 0.5,
+        ),
       ),
     );
   }

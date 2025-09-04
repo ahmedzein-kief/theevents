@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:event_app/core/constants/vendor_app_strings.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/helper/validators/validator.dart';
 import 'package:event_app/core/services/shared_preferences_helper.dart';
 import 'package:event_app/models/vendor_models/post_models/bank_details_post_data.dart';
@@ -55,7 +57,7 @@ class _BankDetailScreenState extends State<BankDetailScreen> {
        * Parsing bank details data
        */
       SecurePreferencesUtil.saveServerStep(
-          int.parse(response.data['step'] ?? '1'));
+          int.parse(response.data['step'] ?? '1'),);
       bdModel.bankName =
           _bankNameController.text = response.data['bank_name'] ?? '';
       bdModel.ibanNumber =
@@ -119,7 +121,7 @@ class _BankDetailScreenState extends State<BankDetailScreen> {
                             left: screenWidth * 0.04,
                             right: screenWidth * 0.04,
                             top: screenHeight * 0.03,
-                            bottom: screenHeight * 0.015),
+                            bottom: screenHeight * 0.015,),
                         child: Container(
                           decoration: BoxDecoration(
                             boxShadow: [
@@ -141,19 +143,20 @@ class _BankDetailScreenState extends State<BankDetailScreen> {
                               elevation: 15,
                               child: Padding(
                                 padding: const EdgeInsets.only(
-                                    top: 20, left: 10, right: 10, bottom: 30),
+                                    top: 20, left: 10, right: 10, bottom: 30,),
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     Text(
-                                      'Bank Details',
+                                      VendorAppStrings.bankDetails.tr,
                                       style: loginHeading(),
                                     ),
                                     VendorCustomTextFields(
-                                      labelText: 'Bank Name',
-                                      hintText: 'Enter bank Name',
-                                      textStar: ' *',
+                                      labelText: VendorAppStrings.bankName.tr,
+                                      hintText:
+                                          VendorAppStrings.enterBankName.tr,
+                                      textStar: VendorAppStrings.asterick.tr,
                                       controller: _bankNameController,
                                       keyboardType: TextInputType.name,
                                       focusNode: _bankNameFocusNode,
@@ -164,9 +167,10 @@ class _BankDetailScreenState extends State<BankDetailScreen> {
                                       },
                                     ),
                                     VendorCustomTextFields(
-                                      labelText: 'IBAN Number',
-                                      hintText: 'Enter IBAN number',
-                                      textStar: ' *',
+                                      labelText: VendorAppStrings.ibanNumber.tr,
+                                      hintText:
+                                          VendorAppStrings.enterIbanNumber.tr,
+                                      textStar: VendorAppStrings.asterick.tr,
                                       controller: _iBANNumberController,
                                       keyboardType: TextInputType.name,
                                       focusNode: _iBANNumberFocusNode,
@@ -177,9 +181,11 @@ class _BankDetailScreenState extends State<BankDetailScreen> {
                                       },
                                     ),
                                     VendorCustomTextFields(
-                                      labelText: 'Account Name',
-                                      hintText: 'Enter account name',
-                                      textStar: ' *',
+                                      labelText:
+                                          VendorAppStrings.accountName.tr,
+                                      hintText:
+                                          VendorAppStrings.enterAccountName.tr,
+                                      textStar: VendorAppStrings.asterick.tr,
                                       controller: _accountNameController,
                                       keyboardType: TextInputType.name,
                                       focusNode: _accountNameFocusNode,
@@ -190,9 +196,11 @@ class _BankDetailScreenState extends State<BankDetailScreen> {
                                       },
                                     ),
                                     VendorCustomTextFields(
-                                      labelText: 'Account Number',
-                                      hintText: 'Enter account number',
-                                      textStar: ' *',
+                                      labelText:
+                                          VendorAppStrings.accountNumber.tr,
+                                      hintText: VendorAppStrings
+                                          .enterAccountNumber.tr,
+                                      textStar: VendorAppStrings.asterick.tr,
                                       controller: _accountNumberController,
                                       keyboardType: TextInputType.name,
                                       focusNode: _accountNumberFocusNode,
@@ -203,9 +211,11 @@ class _BankDetailScreenState extends State<BankDetailScreen> {
                                       },
                                     ),
                                     VendorCustomTextFields(
-                                      labelText: 'Bank Letter (pdf)',
-                                      hintText: 'No file chosen',
-                                      textStar: ' *',
+                                      labelText:
+                                          VendorAppStrings.bankLetterPdf.tr,
+                                      hintText:
+                                          VendorAppStrings.noFileChosen.tr,
+                                      textStar: VendorAppStrings.asterick.tr,
                                       controller: _bankLetterController,
                                       keyboardType: TextInputType.name,
                                       focusNode: _bankLetterFocusNode,
@@ -215,7 +225,7 @@ class _BankDetailScreenState extends State<BankDetailScreen> {
                                       prefixContainerColor:
                                           Colors.grey.shade300,
                                       borderSideColor: const BorderSide(
-                                          color: Colors.grey, width: 0.5),
+                                          color: Colors.grey, width: 0.5,),
                                       prefixIconColor: Colors.black,
                                       nextFocusNode: _bankLetterFocusNode,
                                       validator: Validator.fieldRequired,
@@ -256,7 +266,7 @@ class _BankDetailScreenState extends State<BankDetailScreen> {
               alignment: Alignment.bottomCenter,
               child: CustomVendorAuthButton(
                 isLoading: mainProvider.isLoading,
-                title: 'Save & Continue',
+                title: VendorAppStrings.saveAndContinue.tr,
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     final result = await updateBankDetails(

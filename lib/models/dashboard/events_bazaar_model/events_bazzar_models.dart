@@ -6,6 +6,7 @@ class EventsBazaarModels {
     data = json['data'] != null ? Data.fromJson(json['data']) : null;
     message = json['message'];
   }
+
   bool? error;
   Data? data;
   Null message;
@@ -33,6 +34,7 @@ class Data {
     }
     isMulti = json['is_multi'];
   }
+
   List<EventList>? list;
   bool? isMulti;
 
@@ -47,21 +49,25 @@ class Data {
 }
 
 class EventList {
-  EventList({this.label, this.value, this.title});
+  EventList({this.label, this.iso, this.code, this.title});
 
   EventList.fromJson(Map<String, dynamic> json) {
     label = json['label'];
-    value = json['value'];
+    iso = json['iso'];
+    code = json['code'];
     title = json['title'];
   }
+
   String? label;
-  String? value;
+  String? iso;
+  String? code;
   String? title;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['label'] = label;
-    data['value'] = value;
+    data['iso'] = iso;
+    data['code'] = code;
     data['title'] = title;
     return data;
   }

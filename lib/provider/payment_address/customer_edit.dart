@@ -13,7 +13,7 @@ class CustomerAddress extends ChangeNotifier {
   final ApiResponseHandler _apiResponseHandler = ApiResponseHandler();
 
   Future<bool> updateAddress(AddressModel address, String token, int addressId,
-      BuildContext context) async {
+      BuildContext context,) async {
     final url = '${ApiEndpoints.customerAddressEdit}$addressId';
     final headers = {
       'Authorization': 'Bearer $token',
@@ -21,7 +21,7 @@ class CustomerAddress extends ChangeNotifier {
     };
 
     final response = await _apiResponseHandler.postRequest(url,
-        headers: headers, body: address.toJsonString());
+        headers: headers, body: address.toJsonString(),);
 
     if (response.statusCode == 200) {
       CustomSnackbar.showSuccess(context, 'Address Update successfully!');

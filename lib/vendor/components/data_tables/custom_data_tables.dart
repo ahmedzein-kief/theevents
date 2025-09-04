@@ -14,6 +14,7 @@ class CustomDataTable extends StatefulWidget {
     this.onSelectAll,
     this.dividerThickness = 0.2,
   });
+
   final List<DataColumn> columns;
   final List<DataRow> rows;
   final Function(bool?)? onSelectAll;
@@ -28,6 +29,7 @@ class _CustomDataTableState extends State<CustomDataTable>
   @override
   Widget build(BuildContext context) => Center(
         child: CustomThemes.checkboxTheme(
+          context: context,
           child: ScrollableWidget(
             child: DataTable(
               dividerThickness: widget.dividerThickness,
@@ -46,11 +48,11 @@ class _CustomDataTableState extends State<CustomDataTable>
 
 /// Data Column text style
 TextStyle dataColumnTextStyle() => const TextStyle(
-    fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.mistyGray);
+    fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.mistyGray,);
 
 /// Data Row text style
 TextStyle dataRowTextStyle() => const TextStyle(
-    fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.slateGrayBlue);
+    fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.slateGrayBlue,);
 
 Widget buildHeaderCell(String value) => Expanded(
       child: Text(
@@ -74,7 +76,7 @@ Widget buildDataRowWithStyle({required Widget child, onRowTap}) =>
         child: Container(
           decoration: const BoxDecoration(
             border: Border.symmetric(
-                horizontal: BorderSide(color: Colors.grey, width: 0.1)),
+                horizontal: BorderSide(color: Colors.grey, width: 0.1),),
           ),
           padding: const EdgeInsets.symmetric(vertical: 8.0),
           child: child,
@@ -84,7 +86,7 @@ Widget buildDataRowWithStyle({required Widget child, onRowTap}) =>
 
 // Helper method to avoid repetitive code for row items
 Widget buildRow(String label, String? value,
-        {bool isLastRow = false, TextStyle? style, Widget? valueWidget}) =>
+        {bool isLastRow = false, TextStyle? style, Widget? valueWidget,}) =>
     Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
@@ -97,7 +99,7 @@ Widget buildRow(String label, String? value,
             if (valueWidget == null)
               Expanded(
                   child: Text(value ?? '--',
-                      style: style ?? detailsDescriptionStyle))
+                      style: style ?? detailsDescriptionStyle,),)
             else
               valueWidget,
           ],
@@ -134,7 +136,7 @@ Widget buildStatusRow(
         {required String label,
         required String buttonText,
         Color? color,
-        Color? textColor}) =>
+        Color? textColor,}) =>
     Row(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -144,7 +146,7 @@ Widget buildStatusRow(
           width: 8,
         ),
         showStatusBox(
-            statusText: buttonText, color: color, textColor: textColor),
+            statusText: buttonText, color: color, textColor: textColor,),
       ],
     );
 
@@ -157,13 +159,13 @@ Widget showStatusBox({Color? textColor, color, required statusText}) =>
         color: color,
       ),
       child: Text(statusText,
-          style: detailsTitleStyle.copyWith(color: textColor ?? Colors.white)),
+          style: detailsTitleStyle.copyWith(color: textColor ?? Colors.white),),
     );
 
 TextStyle detailsTitleStyle = const TextStyle(
-    fontSize: 13, fontWeight: FontWeight.w600, color: Colors.black);
+    fontSize: 13, fontWeight: FontWeight.w600, color: Colors.black,);
 TextStyle detailsDescriptionStyle = const TextStyle(
-    fontSize: 12, fontWeight: FontWeight.w500, color: Colors.grey);
+    fontSize: 12, fontWeight: FontWeight.w500, color: Colors.grey,);
 
 Color getStatusButtonColor(String? status) {
   const statusColors = {

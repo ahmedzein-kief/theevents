@@ -1,8 +1,5 @@
-import 'dart:convert';
-
 import 'package:event_app/provider/api_response_handler.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:http/http.dart' as http;
 
 import '../../core/network/api_status/api_status.dart';
 
@@ -24,13 +21,14 @@ class SubMitCheckoutInformationProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<http.Response?> submitCheckoutInformation({
+  Future<dynamic> submitCheckoutInformation({
     required BuildContext context,
-    required String tracked_start_checkout,
-    required String address_id,
+    required String trackedStartCheckout,
+    required String addressId,
     required String name,
     required String email,
     required String city,
+    required String state,
     required String address,
     required int phone,
     required String country,
@@ -43,30 +41,34 @@ class SubMitCheckoutInformationProvider extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
     setStatus(ApiStatus.loading);
-    final url =
-        'https://api.staging.theevents.ae/api/v1/checkout/$tracked_start_checkout/information';
+    final url = 'https://apistaging.theevents.ae/api/v1/checkout/$trackedStartCheckout/information';
     final headers = {
-      'Authorization': 'Bearer $token',
+      'Authorization': token,
     };
 
-    final Map<String, String> postDataMap = {
-      'tracked_start_checkout': tracked_start_checkout,
-      'address[address_id]': address_id,
-      'address[name]': name.trim(),
-      'address[email]': email.trim(),
-      'address[phone]': phone.toString().trim(),
-      'address[country]': country,
-      'address[city]': city,
-      'address[address]': address,
+    final Map<String, dynamic> postDataMap = {
+      'tracked_start_checkout': trackedStartCheckout,
+      'address': {
+        'address_id': addressId,
+        'name': name.trim(),
+        'email': email.trim(),
+        'phone': phone.toString().trim(),
+        'country': country,
+        'city': city,
+        'state': state,
+        'address': address,
+      },
     };
 
     try {
-      final response = await _apiResponseHandler.postRequest(url,
-          headers: headers, body: postDataMap);
-
+      final response = await _apiResponseHandler.postRequest(
+        url,
+        headers: headers,
+        body: postDataMap,
+      );
       if (response.statusCode == 200) {
         setStatus(ApiStatus.completed);
-        final responseData = jsonDecode(response.body);
+        final responseData = response.data;
         final cartUpdateResponse = InformationUpdate.fromJson(responseData);
         notifyListeners();
         _isLoading = false;
@@ -90,8 +92,7 @@ class InformationUpdate {
   });
 
   // Factory constructor to create a CartUpdateResponse from JSON
-  factory InformationUpdate.fromJson(Map<String, dynamic> json) =>
-      InformationUpdate(
+  factory InformationUpdate.fromJson(Map<String, dynamic> json) => InformationUpdate(
         error: json['error'] as bool,
         data: json['data'], // Handle null or any type of data here
         message: json['message'] as String,

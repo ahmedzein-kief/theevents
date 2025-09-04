@@ -5,7 +5,7 @@ VendorGetProductGeneralSettingsModel
         VendorGetProductGeneralSettingsModel.fromJson(json.decode(str));
 
 String vendorGetProductGeneralSettingsModelToJson(
-        VendorGetProductGeneralSettingsModel data) =>
+        VendorGetProductGeneralSettingsModel data,) =>
     json.encode(data.toJson());
 
 class VendorGetProductGeneralSettingsModel {

@@ -24,9 +24,9 @@ import 'package:event_app/provider/information_icons_provider/fifty_discount_pro
 import 'package:event_app/provider/information_icons_provider/gift_card_payments_provider.dart';
 import 'package:event_app/provider/information_icons_provider/gift_card_provider.dart';
 import 'package:event_app/provider/information_icons_provider/new_products_provider.dart';
+import 'package:event_app/provider/locale_provider.dart';
 import 'package:event_app/provider/login_profile_provider/change_password.dart';
 import 'package:event_app/provider/login_profile_provider/profile_update.dart';
-import 'package:event_app/provider/navigation_service.dart';
 import 'package:event_app/provider/orders_provider/order_data_provider.dart';
 import 'package:event_app/provider/payment_address/create_address_provider.dart';
 import 'package:event_app/provider/payment_address/customer_address.dart';
@@ -35,6 +35,7 @@ import 'package:event_app/provider/product_package_provider/packages_provider.da
 import 'package:event_app/provider/product_package_provider/product_details_provider.dart';
 import 'package:event_app/provider/product_package_provider/product_provider.dart';
 import 'package:event_app/provider/search_bar_provider/search_bar_provider.dart';
+import 'package:event_app/provider/search_suggestions_provider.dart';
 import 'package:event_app/provider/shortcode_events_bazaar_provider/events_bazaar_provider.dart';
 import 'package:event_app/provider/shortcode_featured_categories_provider/featured_categories_detail_provider.dart';
 import 'package:event_app/provider/shortcode_featured_categories_provider/featured_categories_provider.dart';
@@ -80,11 +81,14 @@ import 'package:event_app/views/profile_page_screens/privacy_policy_screen.dart'
 import 'package:event_app/views/profile_page_screens/terms_and_condtion_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_quill/flutter_quill.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:provider/provider.dart';
 
-final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+import 'core/helper/di/locator.dart';
+import 'core/services/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -92,9 +96,17 @@ void main() async {
   await Hive.openBox('wishlist');
 
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  await SecurePreferencesUtil.init(); // Initialize shared preferences
+
+  await SecurePreferencesUtil.init();
+
+  // await SecurePreferencesUtil.clearAllData();
+
+  setupLocator();
+
   runApp(const MyApp());
 }
+
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -113,7 +125,8 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider(create: (_) => FeaturedBrandsProvider()),
           ChangeNotifierProvider(create: (_) => FeaturedBrandsItemsProvider()),
           ChangeNotifierProvider(
-              create: (_) => FeaturedCategoriesDetailProvider()),
+            create: (_) => FeaturedCategoriesDetailProvider(),
+          ),
           ChangeNotifierProvider(create: (_) => HomePageProvider()),
           ChangeNotifierProvider(create: (_) => EventBazaarProvider()),
           ChangeNotifierProvider(create: (_) => FreshPicksProvider()),
@@ -136,7 +149,8 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider(create: (_) => StoreProvider()),
           ChangeNotifierProvider(create: (_) => AddressProvider()),
           ChangeNotifierProvider(
-              create: (_) => PaymentMethodProviderGiftCard()),
+            create: (_) => PaymentMethodProviderGiftCard(),
+          ),
           ChangeNotifierProvider(create: (_) => EventsBrandProvider()),
           ChangeNotifierProvider(create: (_) => EventsBrandProductProvider()),
           ChangeNotifierProvider(create: (_) => ChangePasswordProvider()),
@@ -148,7 +162,8 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider(create: (_) => UserOrderProvider()),
           ChangeNotifierProvider(create: (_) => CheckoutProvider()),
           ChangeNotifierProvider(
-              create: (_) => SubMitCheckoutInformationProvider()),
+            create: (_) => SubMitCheckoutInformationProvider(),
+          ),
           ChangeNotifierProvider(create: (_) => OrderDataProvider()),
           ChangeNotifierProvider(create: (_) => VendorSignUpProvider()),
 
@@ -156,11 +171,14 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider(create: (_) => VendorGetProductsViewModel()),
           ChangeNotifierProvider(create: (_) => VendorCreateProductViewModel()),
           ChangeNotifierProvider(
-              create: (_) => VendorGetProductVariationsViewModel()),
+            create: (_) => VendorGetProductVariationsViewModel(),
+          ),
           ChangeNotifierProvider(
-              create: (_) => VendorSetDefaultProductVariationViewModel()),
+            create: (_) => VendorSetDefaultProductVariationViewModel(),
+          ),
           ChangeNotifierProvider(
-              create: (_) => VendorGetSelectedAttributesViewModel()),
+            create: (_) => VendorGetSelectedAttributesViewModel(),
+          ),
 
           ChangeNotifierProvider(create: (_) => VendorGetCouponsViewModel()),
           ChangeNotifierProvider(create: (_) => VendorGetSettingsViewModel()),
@@ -170,14 +188,17 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider(create: (_) => VendorUploadImagesViewModel()),
           ChangeNotifierProvider(create: (_) => VendorDeleteProductViewModel()),
           ChangeNotifierProvider(
-              create: (_) => VendorCreateUpdateVariationViewModel()),
+            create: (_) => VendorCreateUpdateVariationViewModel(),
+          ),
 
           /// vendor orders
           ChangeNotifierProvider(create: (_) => VendorGetOrdersViewModel()),
           ChangeNotifierProvider(
-              create: (_) => VendorGetOrderDetailsViewModel()),
+            create: (_) => VendorGetOrderDetailsViewModel(),
+          ),
           ChangeNotifierProvider(
-              create: (_) => VendorGenerateOrderInvoiceViewModel()),
+            create: (_) => VendorGenerateOrderInvoiceViewModel(),
+          ),
           ChangeNotifierProvider(create: (_) => VendorOrderReturnsViewModel()),
           ChangeNotifierProvider(create: (_) => VendorReviewsViewModel()),
           ChangeNotifierProvider(create: (_) => VendorRevenuesViewModel()),
@@ -186,61 +207,95 @@ class MyApp extends StatelessWidget {
           /// vendor packages
           ChangeNotifierProvider(create: (_) => VendorGetPackagesViewModel()),
           ChangeNotifierProvider(
-              create: (_) => VendorGetPackageGeneralSettingsViewModel()),
+            create: (_) => VendorGetPackageGeneralSettingsViewModel(),
+          ),
           ChangeNotifierProvider(create: (_) => VendorCreatePackageViewModel()),
           ChangeNotifierProvider(create: (_) => VendorDeletePackageViewModel()),
           ChangeNotifierProvider(
-              create: (_) => VendorGetViewPackageViewModel()),
+            create: (_) => VendorGetViewPackageViewModel(),
+          ),
 
           /// withdrawals
           ChangeNotifierProvider(create: (_) => VendorWithdrawalsViewModel()),
           ChangeNotifierProvider(
-              create: (_) => VendorShowWithdrawalViewModel()),
+            create: (_) => VendorShowWithdrawalViewModel(),
+          ),
 
           /// customer
           ChangeNotifierProvider(
-              create: (_) => CustomerUploadProfilePicViewModel()),
+            create: (_) => CustomerUploadProfilePicViewModel(),
+          ),
           ChangeNotifierProvider(
-              create: (_) => CustomerGetProductReviewsViewModel()),
+            create: (_) => CustomerGetProductReviewsViewModel(),
+          ),
           ChangeNotifierProvider(
-              create: (_) => CustomerDeleteReviewViewModel()),
+            create: (_) => CustomerDeleteReviewViewModel(),
+          ),
+
+          /// Localization
+          ChangeNotifierProvider(create: (_) => LocaleProvider()..loadLocale()),
+          ChangeNotifierProvider(create: (_) => SearchSuggestionsProvider()),
         ],
-        child: Consumer<ThemeNotifier>(
-          builder: (context, theme, child) {
-            NavigationService().setContext(context);
-            return
-                // AnnotatedRegion<SystemUiOverlayStyle>(
-                // value: SystemUiOverlayStyle(
-                //   statusBarIconBrightness: Brightness.light,
-                //   // Use light icons on a dark status bar
-                //   statusBarBrightness: Brightness.dark,
-                //   // Use dark status bar background
-                //   statusBarColor: theme.isLightTheme ? Colors.black : Colors.transparent, // Adjust based on theme
-                //   // statusBarColor: AppColors.peachyPink
-                // ),
-                // child:
-                MaterialApp(
-              theme: lightTheme,
-              darkTheme: darkTheme,
-              title: 'Events',
-              debugShowCheckedModeBanner: false,
-              themeMode: theme.isLightTheme ? ThemeMode.light : ThemeMode.dark,
-              localizationsDelegates: const [
-                FlutterQuillLocalizations.delegate,
-              ],
-              supportedLocales: const [
-                Locale('en'), // Add more locales if needed
-                Locale('ar'), // Add more locales if needed
-              ],
-              home: const SplashScreen(),
-              // home: VendorCreatePhysicalProductView(),
-              routes: {
-                '/homeScreen': (context) => const BaseHomeScreen(),
-                ...AppRoutes.getRoutes(context),
-              },
-              // ),
-            );
-          },
+        child: Consumer<LocaleProvider>(
+          builder: (context, localProvider, _) => Consumer<ThemeNotifier>(
+            builder: (context, theme, child) {
+              return ScreenUtilInit(
+                designSize: const Size(390, 852),
+                splitScreenMode: true,
+                fontSizeResolver: FontSizeResolvers.height,
+                child: MaterialApp(
+                  navigatorKey: navigatorKey,
+                  theme: lightTheme,
+                  darkTheme: darkTheme,
+                  title: 'Events',
+                  debugShowCheckedModeBanner: false,
+                  themeMode: theme.isLightTheme ? ThemeMode.light : ThemeMode.dark,
+                  locale: localProvider.locale,
+
+                  // Add builder for RTL support
+                  builder: (context, child) {
+                    return Directionality(
+                      textDirection: localProvider.isCurrentLocaleRTL ? TextDirection.rtl : TextDirection.ltr,
+                      child: child!,
+                    );
+                  },
+
+                  localizationsDelegates: const [
+                    FlutterQuillLocalizations.delegate,
+                    AppLocalizationsDelegate(),
+                    GlobalMaterialLocalizations.delegate,
+                    GlobalWidgetsLocalizations.delegate,
+                    GlobalCupertinoLocalizations.delegate,
+                  ],
+
+                  supportedLocales: const [
+                    Locale('en'), // English
+                    Locale('ar'), // Arabic
+                    Locale('hi'), // Hindi
+                    Locale('ru'), // Russian
+                    Locale('zh'), // Chinese
+                    Locale('ur'), // Urdu
+                  ],
+
+                  // Ensure RTL is detected automatically
+                  localeResolutionCallback: (locale, supportedLocales) {
+                    for (final supportedLocale in supportedLocales) {
+                      if (supportedLocale.languageCode == locale?.languageCode) {
+                        return supportedLocale;
+                      }
+                    }
+                    return supportedLocales.first;
+                  },
+
+                  home: const SplashScreen(),
+                  routes: {
+                    '/homeScreen': (context) => const BaseHomeScreen(),
+                    ...AppRoutes.getRoutes(context),
+                  },
+                ),
+              );
+            },
+          ),
         ),
       );
 }
@@ -261,11 +316,14 @@ ThemeData lightTheme = ThemeData(
   brightness: Brightness.light,
   useMaterial3: true,
   scaffoldBackgroundColor: AppColors.bgColor,
+  bottomAppBarTheme: const BottomAppBarTheme(color: Colors.white),
+  unselectedWidgetColor: Colors.grey,
   appBarTheme: const AppBarTheme(
-      backgroundColor: AppColors.bgColor,
-      elevation: 0.5,
-      shadowColor: Colors.grey,
-      titleTextStyle: TextStyle(color: Colors.black)),
+    backgroundColor: AppColors.bgColor,
+    elevation: 0.5,
+    shadowColor: Colors.grey,
+    titleTextStyle: TextStyle(color: Colors.black),
+  ),
 );
 
 ThemeData darkTheme = ThemeData(
@@ -278,15 +336,20 @@ ThemeData darkTheme = ThemeData(
     onPrimary: Colors.white,
   ),
   textSelectionTheme: const TextSelectionThemeData(
-      cursorColor: AppColors.peachyPink,
-      selectionColor: AppColors.peachyPink,
-      selectionHandleColor: AppColors.peachyPink),
+    cursorColor: AppColors.peachyPink,
+    selectionColor: AppColors.peachyPink,
+    selectionHandleColor: AppColors.peachyPink,
+  ),
   bottomNavigationBarTheme: BottomNavigationBarThemeData(
-      backgroundColor: Colors.grey.withOpacity(0.5)),
+    backgroundColor: Colors.grey.withOpacity(0.5),
+  ),
   scaffoldBackgroundColor: Colors.black,
+  bottomAppBarTheme: const BottomAppBarTheme(color: Colors.black),
+  unselectedWidgetColor: Colors.grey,
   appBarTheme: const AppBarTheme(
-      backgroundColor: Colors.black,
-      elevation: 0.5,
-      shadowColor: AppColors.lightCoral,
-      titleTextStyle: TextStyle(color: Colors.white)),
+    backgroundColor: Colors.black,
+    elevation: 0.5,
+    shadowColor: AppColors.lightCoral,
+    titleTextStyle: TextStyle(color: Colors.white),
+  ),
 );

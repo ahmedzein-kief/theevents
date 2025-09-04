@@ -26,7 +26,7 @@ class WishlistData {
 
   factory WishlistData.fromJson(Map<String, dynamic> json) => WishlistData(
         products: List<Product>.from(
-            json['products'].map((x) => Product.fromJson(x))),
+            json['products'].map((x) => Product.fromJson(x)),),
         total: json['total'],
         count: json['count'],
         ids: List<int>.from(json['ids']),

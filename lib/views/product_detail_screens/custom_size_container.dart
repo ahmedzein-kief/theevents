@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../core/styles/app_colors.dart';
-
 class CustomSizeContainer extends StatelessWidget {
   const CustomSizeContainer({
     super.key,
@@ -10,6 +8,7 @@ class CustomSizeContainer extends StatelessWidget {
     required this.selected,
     required this.isAvailable,
   });
+
   final String title;
   final void Function() onTap;
   final bool selected;
@@ -52,9 +51,7 @@ class CustomSizeContainer extends StatelessWidget {
               color: selected ? const Color(0xff3C3C43) : Colors.transparent,
               borderRadius: BorderRadius.circular(24),
               border: Border.all(
-                color: isAvailable
-                    ? AppColors.peachyPink
-                    : Colors.grey, // Change border color when unavailable
+                color: isAvailable ? Colors.grey.shade300 : Colors.grey, // Change border color when unavailable
                 width: 0.4,
               ),
             ),
@@ -71,7 +68,7 @@ class CustomSizeContainer extends StatelessWidget {
                   color: selected
                       ? Colors.white
                       : isAvailable
-                          ? Colors.black
+                          ? Theme.of(context).colorScheme.onPrimary
                           : Colors.grey, // Change text color when unavailable
                 ),
               ),

@@ -1,13 +1,13 @@
 //    ----------------------------------------------------------------  MODELS CLASS OF THE FEATURED CATEGORY BANNER ----------------------------------------------------------------
 class ProductCategoryBanner {
   ProductCategoryBanner(
-      {required this.error, required this.data, this.message});
+      {required this.error, required this.data, this.message,});
 
   factory ProductCategoryBanner.fromJson(Map<String, dynamic> json) =>
       ProductCategoryBanner(
         error: json['error'] ?? false, // Default to false if not present
         data: ProductCategoryData.fromJson(
-            json['data'] ?? {}), // Provide empty map if 'data' is null
+            json['data'] ?? {},), // Provide empty map if 'data' is null
         message: json['message'],
       );
   final bool error;
@@ -42,7 +42,7 @@ class ProductCategoryData {
         coverImage: json['cover_image'] ?? '',
         items: json['items'] ?? 0,
         seoMeta: SeoMeta.fromJson(
-            json['seo_meta'] ?? {}), // Provide empty map if 'seo_meta' is null
+            json['seo_meta'] ?? {},), // Provide empty map if 'seo_meta' is null
       );
   final int id;
   final String name;
@@ -85,6 +85,7 @@ class ProductCategoryModel {
     data = json['data'] != null ? Data.fromJson(json['data']) : null;
     message = json['message'];
   }
+
   bool? error;
   Data? data;
   String? message;
@@ -104,7 +105,9 @@ class Data {
   Data({this.parent, this.pagination, this.records, this.filters});
 
   Data.fromJson(Map<String, dynamic> json) {
-    parent = json['parent'] != null ? Parent.fromJson(json['parent']) : null;
+    parent = (json['parent'] is Map<String, dynamic>)
+        ? Parent.fromJson(json['parent'])
+        : null;
     pagination = json['pagination'] != null
         ? Paginations.fromJson(json['pagination'])
         : null;
@@ -115,6 +118,7 @@ class Data {
     filters =
         json['filters'] != null ? Filters.fromJson(json['filters']) : null;
   }
+
   Parent? parent;
   Paginations? pagination;
   List<Records>? records;
@@ -146,7 +150,7 @@ class Parent {
       this.thumb,
       this.coverImage,
       this.description,
-      this.slug});
+      this.slug,});
 
   Parent.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -157,6 +161,7 @@ class Parent {
     description = json['description'];
     slug = json['slug'];
   }
+
   int? id;
   String? name;
   String? image;
@@ -187,6 +192,7 @@ class Paginations {
     currentPage = json['current_page'];
     perPage = json['per_page'];
   }
+
   int? total;
   int? lastPage;
   int? currentPage;
@@ -244,6 +250,7 @@ class Records {
       labels = (json['labels'] as List).map((v) => Labels.fromJson(v)).toList();
     }
   }
+
   int? id;
   String? name;
   String? slug;
@@ -302,6 +309,7 @@ class Review {
     rating = json['rating']?.toDouble();
     reviewsCount = json['reviews_count'];
   }
+
   double? rating;
   int? reviewsCount;
 
@@ -318,7 +326,7 @@ class Prices {
       {this.frontSalePrice,
       this.price,
       this.frontSalePriceWithTaxes,
-      this.priceWithTaxes});
+      this.priceWithTaxes,});
 
   Prices.fromJson(Map<String, dynamic> json) {
     frontSalePrice = json['front_sale_price'];
@@ -326,6 +334,7 @@ class Prices {
     frontSalePriceWithTaxes = json['front_sale_price_with_taxes'];
     priceWithTaxes = json['price_with_taxes'];
   }
+
   int? frontSalePrice;
   int? price;
   String? frontSalePriceWithTaxes;
@@ -348,6 +357,7 @@ class Store {
     name = json['name'];
     slug = json['slug'];
   }
+
   String? name;
   String? slug;
 
@@ -366,6 +376,7 @@ class Labels {
     color = json['color'];
     name = json['name'];
   }
+
   String? color;
   String? name;
 
@@ -390,6 +401,7 @@ class Filters {
           (json['options'] as List).map((v) => Options.fromJson(v)).toList();
     }
   }
+
   List<FilterData>? filterData;
   List<Options>? options;
 
@@ -412,6 +424,7 @@ class FilterData {
     id = json['id'];
     name = json['name'];
   }
+
   int? id;
   String? name;
 
@@ -430,6 +443,7 @@ class Options {
     id = json['id'];
     name = json['name'];
   }
+
   int? id;
   String? name;
 

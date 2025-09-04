@@ -1,15 +1,19 @@
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:flutter/material.dart';
+
+import '../../core/constants/vendor_app_strings.dart';
 
 class CustomSearchBarVendor extends StatefulWidget {
   const CustomSearchBarVendor({
     super.key,
     required this.suffixIcon,
     required this.onSearch,
-    this.hintText = 'Search',
+    this.hintText,
   });
+
   final IconData suffixIcon;
   final Function(String) onSearch;
-  final String hintText;
+  final String? hintText;
 
   @override
   _CustomSearchBarState createState() => _CustomSearchBarState();
@@ -37,7 +41,7 @@ class _CustomSearchBarState extends State<CustomSearchBarVendor> {
                 decoration: InputDecoration(
                   contentPadding: const EdgeInsets.only(left: 8),
                   hintStyle: const TextStyle(color: Colors.grey),
-                  hintText: widget.hintText,
+                  hintText: widget.hintText ?? VendorAppStrings.search.tr,
                   border: InputBorder.none,
                   suffixIcon: IconButton(
                     color: Colors.grey,

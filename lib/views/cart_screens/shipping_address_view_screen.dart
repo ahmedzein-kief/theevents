@@ -1,3 +1,5 @@
+import 'package:event_app/core/constants/app_strings.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/models/checkout_models/checkout_data_models.dart';
 import 'package:event_app/views/cart_screens/save_address_screen.dart';
 import 'package:flutter/material.dart';
@@ -12,18 +14,30 @@ class ShippingAddressViewScreen extends StatefulWidget {
     this.checkoutData,
     required this.loadCheckoutData,
   });
+
   final String? checkoutToken;
   final CheckoutData? checkoutData;
   final void Function(bool checkoutData) loadCheckoutData;
 
   @override
-  _ShippingAddressViewScreenState createState() =>
-      _ShippingAddressViewScreenState();
+  _ShippingAddressViewScreenState createState() => _ShippingAddressViewScreenState();
 }
 
 class _ShippingAddressViewScreenState extends State<ShippingAddressViewScreen> {
   @override
   Widget build(BuildContext context) {
+    // Get the current session address ID
+    final sessionAddressId = widget.checkoutData?.sessionCheckoutData.addressId;
+
+    // Find the address that matches the session address ID
+    final Address? currentAddress = widget.checkoutData?.addresses.firstWhere(
+      (address) => address.id == sessionAddressId,
+      orElse: () => widget.checkoutData!.addresses.firstWhere(
+        (address) => address.isDefault == 1,
+        orElse: () => widget.checkoutData!.addresses.first,
+      ),
+    );
+
     final dynamic screenWidth = MediaQuery.sizeOf(context).width;
     final dynamic screenHeight = MediaQuery.sizeOf(context).height;
     return Padding(
@@ -35,7 +49,8 @@ class _ShippingAddressViewScreenState extends State<ShippingAddressViewScreen> {
       child: Container(
         decoration: BoxDecoration(
           border: Border.all(
-              color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.08)),
+            color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.08),
+          ),
           borderRadius: BorderRadius.circular(4),
         ),
         padding: const EdgeInsets.all(10),
@@ -47,8 +62,11 @@ class _ShippingAddressViewScreenState extends State<ShippingAddressViewScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Expanded(
-                    child:
-                        Text('Shipping address', style: chooseStyle(context))),
+                  child: Text(
+                    AppStrings.shippingAddress.tr,
+                    style: chooseStyle(context),
+                  ),
+                ),
                 GestureDetector(
                   onTap: () async {
                     final checkoutToken = widget.checkoutToken;
@@ -60,36 +78,18 @@ class _ShippingAddressViewScreenState extends State<ShippingAddressViewScreen> {
                             tracked_start_checkout: checkoutToken,
                             isEditable: true,
                             addressModel: AddressModel(
-                              id: widget.checkoutData?.sessionCheckoutData
-                                      ?.addressId
-                                      .toString() ??
-                                  '',
-                              name: widget.checkoutData?.sessionCheckoutData
-                                      ?.name ??
-                                  '',
-                              email: widget.checkoutData?.sessionCheckoutData
-                                      ?.email ??
-                                  '',
-                              phone: widget.checkoutData?.sessionCheckoutData
-                                      ?.phone ??
-                                  '',
-                              country: widget.checkoutData?.sessionCheckoutData
-                                      ?.country ??
-                                  '',
-                              city: widget.checkoutData?.sessionCheckoutData
-                                      ?.city ??
-                                  '',
-                              address: widget.checkoutData?.sessionCheckoutData
-                                      ?.address ??
-                                  '',
-                              state: widget.checkoutData?.sessionCheckoutData
-                                      ?.state ??
-                                  '',
-                              zipCode: widget.checkoutData?.sessionCheckoutData
-                                      ?.zipCode ??
-                                  '',
-                              // Add state if available
-                              isDefault: true, // Set if applicable
+                              id: widget.checkoutData?.sessionCheckoutData.addressId.toString() ?? '',
+                              name: widget.checkoutData?.sessionCheckoutData.name ?? '',
+                              email: widget.checkoutData?.sessionCheckoutData.email ?? '',
+                              phone: widget.checkoutData?.sessionCheckoutData.phone ?? '',
+                              countryId: widget.checkoutData?.sessionCheckoutData.country ?? '',
+                              cityId: widget.checkoutData?.sessionCheckoutData.city ?? '',
+                              address: widget.checkoutData?.sessionCheckoutData.address ?? '',
+                              stateId: widget.checkoutData?.sessionCheckoutData.state ?? '',
+                              country: currentAddress?.locationCountry.name ?? '',
+                              state: currentAddress?.locationState.name ?? '',
+                              city: currentAddress?.locationCity.name ?? '',
+                              isDefault: true,
                             ),
                           ),
                         ),
@@ -100,9 +100,9 @@ class _ShippingAddressViewScreenState extends State<ShippingAddressViewScreen> {
                       }
                     }
                   },
-                  child: const Text(
-                    'Update',
-                    style: TextStyle(
+                  child: Text(
+                    AppStrings.update.tr,
+                    style: const TextStyle(
                       fontFamily: 'FontSf',
                       color: Colors.blue,
                       fontSize: 18,
@@ -118,15 +118,16 @@ class _ShippingAddressViewScreenState extends State<ShippingAddressViewScreen> {
               mainAxisSize: MainAxisSize.max,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                // Expanded(child: Text(value.checkoutData?.data!.token ?? '', style: chooseStyle(context))),
-                Expanded(child: Text('Name', style: description(context))),
+                Expanded(
+                  child: Text(AppStrings.name.tr, style: description(context)),
+                ),
                 Expanded(
                   child: Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      widget.checkoutData?.sessionCheckoutData?.name
-                              .toString() ??
-                          'loading..',
+                      currentAddress?.name ??
+                          widget.checkoutData?.sessionCheckoutData.name ??
+                          '${AppStrings.loading.tr}..',
                       style: description(context),
                     ),
                   ),
@@ -139,13 +140,16 @@ class _ShippingAddressViewScreenState extends State<ShippingAddressViewScreen> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Expanded(child: Text('Email', style: description(context))),
+                Expanded(
+                  child: Text(AppStrings.email.tr, style: description(context)),
+                ),
                 Expanded(
                   child: Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      widget.checkoutData?.sessionCheckoutData?.email ??
-                          'loading..',
+                      currentAddress?.email ??
+                          widget.checkoutData?.sessionCheckoutData.email ??
+                          '${AppStrings.loading.tr}..',
                       style: description(context),
                     ),
                   ),
@@ -158,14 +162,16 @@ class _ShippingAddressViewScreenState extends State<ShippingAddressViewScreen> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Expanded(child: Text('Phone', style: description(context))),
+                Expanded(
+                  child: Text(AppStrings.phone.tr, style: description(context)),
+                ),
                 Expanded(
                   child: Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      widget.checkoutData?.sessionCheckoutData?.phone
-                              .toString() ??
-                          'loading..',
+                      currentAddress?.phone ??
+                          widget.checkoutData?.sessionCheckoutData.phone ??
+                          '${AppStrings.loading.tr}..',
                       style: description(context),
                     ),
                   ),
@@ -178,13 +184,88 @@ class _ShippingAddressViewScreenState extends State<ShippingAddressViewScreen> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Expanded(child: Text('Address', style: description(context))),
+                Expanded(
+                  child: Text(
+                    AppStrings.country.tr,
+                    style: description(context),
+                  ),
+                ),
                 Expanded(
                   child: Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      widget.checkoutData?.sessionCheckoutData?.address ??
-                          'loading..',
+                      currentAddress?.locationCountry.name ?? '${AppStrings.loading.tr}..',
+                      style: description(context),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: screenHeight * 0.01),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Expanded(
+                  child: Text(
+                    AppStrings.state.tr,
+                    style: description(context),
+                  ),
+                ),
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      currentAddress?.locationState.name ?? '${AppStrings.loading.tr}..',
+                      style: description(context),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: screenHeight * 0.01),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Expanded(
+                  child: Text(
+                    AppStrings.city.tr,
+                    style: description(context),
+                  ),
+                ),
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      currentAddress?.locationCity.name ?? '${AppStrings.loading.tr}..',
+                      style: description(context),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: screenHeight * 0.01),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Expanded(
+                  child: Text(
+                    AppStrings.address.tr,
+                    style: description(context),
+                  ),
+                ),
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      currentAddress?.address ??
+                          widget.checkoutData?.sessionCheckoutData.address ??
+                          '${AppStrings.loading.tr}..',
                       style: description(context),
                     ),
                   ),
@@ -196,7 +277,5 @@ class _ShippingAddressViewScreenState extends State<ShippingAddressViewScreen> {
         ),
       ),
     );
-    /*},
-    );*/
   }
 }

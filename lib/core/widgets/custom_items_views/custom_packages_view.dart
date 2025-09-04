@@ -178,7 +178,7 @@ class _CustomPackagesViewState extends State<CustomPackagesView> {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       Text(widget.productName.toString(),
-                          style: packagesProduct()),
+                          style: packagesProduct(),),
                       Text(widget.price.toString(), style: packagesProduct()),
                       GestureDetector(
                         onTap: _onCartTap,
@@ -192,7 +192,7 @@ class _CustomPackagesViewState extends State<CustomPackagesView> {
                               'Add To Cart',
                               maxLines: 1,
                               style: GoogleFonts.inter(
-                                  color: Colors.white, fontSize: 10),
+                                  color: Colors.white, fontSize: 10,),
                             ),
                           ),
                         ),
@@ -207,7 +207,7 @@ class _CustomPackagesViewState extends State<CustomPackagesView> {
                               });
                             },
                             child: const Icon(Icons.star,
-                                size: 12, color: Colors.white),
+                                size: 12, color: Colors.white,),
                           ),
                         ),
                       ),

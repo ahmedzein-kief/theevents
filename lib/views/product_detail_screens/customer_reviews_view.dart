@@ -1,10 +1,14 @@
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/models/product_packages_models/customer_reviews_data_response.dart';
 import 'package:event_app/models/product_packages_models/product_details_models.dart';
 import 'package:flutter/material.dart';
 
+import '../../core/constants/app_strings.dart';
+
 class CustomerReviews extends StatelessWidget {
   const CustomerReviews(
-      {super.key, required this.review, required this.customerReviews});
+      {super.key, required this.review, required this.customerReviews,});
+
   final Review review;
   final List<CustomerReviewRecord> customerReviews;
 
@@ -52,7 +56,9 @@ class CustomerReviews extends StatelessWidget {
             children: review.averageCountArray
                 .map(
                   (e) => _buildRatingBar(
-                    e.star == 1 ? '${e.star} Star' : '${e.star} Stars',
+                    e.star == 1
+                        ? '${e.star} ${AppStrings.star.tr}'
+                        : '${e.star} ${AppStrings.stars.tr}',
                     e.percent.toDouble(),
                   ),
                 )
@@ -90,7 +96,7 @@ class CustomerReviews extends StatelessWidget {
           children: [
             SizedBox(
                 width: 60,
-                child: Text(label, style: const TextStyle(fontSize: 16))),
+                child: Text(label, style: const TextStyle(fontSize: 16)),),
             Expanded(
               child: Stack(
                 alignment: Alignment.center,
@@ -135,10 +141,10 @@ class CustomerReviews extends StatelessWidget {
                       Text(
                         review.name,
                         style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
+                            fontSize: 16, fontWeight: FontWeight.bold,),
                       ),
                       Text(
-                        '${review.createdAtDiffer} Purchased ${review.orderCreatedAt}',
+                        '${review.createdAtDiffer} ${AppStrings.purchased.tr} ${review.orderCreatedAt}',
                         style:
                             const TextStyle(fontSize: 14, color: Colors.grey),
                       ),

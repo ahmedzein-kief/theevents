@@ -67,7 +67,7 @@ class VendorCustomAppBar extends StatelessWidget
                             ),
                           SizedBox(
                               width: screenWidth * 0.02,
-                              height: screenHeight * 0.02),
+                              height: screenHeight * 0.02,),
                           if (leftWidget != null) leftWidget!,
                           if (leftText != null) Text(leftText!),
                         ],

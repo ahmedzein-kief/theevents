@@ -19,7 +19,7 @@ Future deleteItemAlertDialog({
     builder: (context) => AlertDialog(
       backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(kCardRadius)),
+          borderRadius: BorderRadius.circular(kCardRadius),),
       title: Text(
         'Confirmation!',
         style: detailsTitleStyle.copyWith(fontSize: 16),
@@ -30,7 +30,7 @@ Future deleteItemAlertDialog({
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(descriptionText ??
-                  'Are you sure you want to delete this item?'),
+                  'Are you sure you want to delete this item?',),
               Text(
                 'This operation cannot be undone.',
                 style: dataRowTextStyle().copyWith(color: AppColors.lightCoral),

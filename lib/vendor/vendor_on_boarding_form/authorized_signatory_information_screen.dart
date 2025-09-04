@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:event_app/core/constants/vendor_app_strings.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/helper/validators/validator.dart';
 import 'package:event_app/models/vendor_models/post_models/authorized_signatory_info_post_data.dart';
 import 'package:file_picker/file_picker.dart';
@@ -17,6 +19,7 @@ class AuthorizedSignatoryInformationScreen extends StatefulWidget {
     required this.asiModel,
     required this.onASIModelUpdate,
   });
+
   final AuthorizedSignatoryInfoPostData asiModel;
   final Function(AuthorizedSignatoryInfoPostData) onASIModelUpdate;
 
@@ -72,8 +75,8 @@ class _AuthorizedSignatoryInformationScreenState
   String findCountryNameUsingCode(String code) {
     countryCode = code;
     return countryModel?.data?.list
-            ?.firstWhere((countryData) => countryData.value == code)
-            .label ??
+            ?.firstWhere((countryData) => countryData.code == code)
+            .name ??
         '';
   }
 
@@ -121,7 +124,7 @@ class _AuthorizedSignatoryInformationScreenState
               left: screenWidth * 0.04,
               right: screenWidth * 0.04,
               top: screenHeight * 0.03,
-              bottom: screenHeight * 0.015),
+              bottom: screenHeight * 0.015,),
           child: Container(
             decoration: BoxDecoration(
               boxShadow: [
@@ -139,19 +142,19 @@ class _AuthorizedSignatoryInformationScreenState
               elevation: 10,
               child: Padding(
                 padding: const EdgeInsets.only(
-                    top: 20, left: 10, right: 10, bottom: 30),
+                    top: 20, left: 10, right: 10, bottom: 30,),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                      'Authorized Signatory Information',
+                      VendorAppStrings.authorizedSignatoryInformation.tr,
                       style: loginHeading(),
                     ),
                     VendorCustomTextFields(
-                      labelText: 'Full Name',
-                      hintText: 'Enter Full Name',
-                      textStar: ' *',
+                      labelText: VendorAppStrings.fullName.tr,
+                      hintText: VendorAppStrings.enterFullName.tr,
+                      textStar: VendorAppStrings.asterick.tr,
                       controller: _nameController,
                       keyboardType: TextInputType.name,
                       focusNode: _nameFocusNode,
@@ -163,9 +166,9 @@ class _AuthorizedSignatoryInformationScreenState
                       },
                     ),
                     VendorCustomTextFields(
-                      labelText: 'Phone Number',
-                      textStar: '*',
-                      hintText: 'Enter your number',
+                      labelText: VendorAppStrings.phoneNumber.tr,
+                      textStar: VendorAppStrings.asterick.tr,
+                      hintText: VendorAppStrings.enterYourNumber.tr,
                       controller: _phNumberController,
                       prefixIcon: Icons.keyboard_arrow_down_outlined,
                       prefixText: '+971',
@@ -180,9 +183,9 @@ class _AuthorizedSignatoryInformationScreenState
                       },
                     ),
                     VendorCustomTextFields(
-                      labelText: 'Country',
-                      hintText: 'Please select country',
-                      textStar: ' *',
+                      labelText: VendorAppStrings.country.tr,
+                      hintText: VendorAppStrings.selectCountry.tr,
+                      textStar: VendorAppStrings.asterick.tr,
                       controller: _countryController,
                       keyboardType: TextInputType.name,
                       focusNode: _countryFocusNode,
@@ -197,7 +200,7 @@ class _AuthorizedSignatoryInformationScreenState
                           final List<CountryList> filteredList = countryModel
                                   ?.data?.list
                                   ?.where((value) =>
-                                      value.value?.toLowerCase() == 'ae')
+                                      value.code?.toLowerCase() == '+971',)
                                   .toList() ??
                               [];
                           showDialog(
@@ -207,11 +210,11 @@ class _AuthorizedSignatoryInformationScreenState
                               currentSelection: _countryController.text,
                               onCountrySelected: (selectedCountry) {
                                 setState(() {
-                                  countryCode = selectedCountry.value ?? '';
+                                  countryCode = selectedCountry.code ?? '';
                                   _countryController.text =
-                                      selectedCountry.label ?? '';
+                                      selectedCountry.name ?? '';
                                   widget.asiModel.ownerCountry =
-                                      selectedCountry.value;
+                                      selectedCountry.code;
                                   widget.onASIModelUpdate(widget.asiModel);
                                 });
                               },
@@ -221,9 +224,9 @@ class _AuthorizedSignatoryInformationScreenState
                       },
                     ),
                     VendorCustomTextFields(
-                      labelText: 'Region',
-                      hintText: 'Please select region',
-                      textStar: ' *',
+                      labelText: VendorAppStrings.region.tr,
+                      hintText: VendorAppStrings.selectRegion.tr,
+                      textStar: VendorAppStrings.asterick.tr,
                       controller: _regionController,
                       keyboardType: TextInputType.name,
                       focusNode: _regionFocusNode,
@@ -234,7 +237,7 @@ class _AuthorizedSignatoryInformationScreenState
                       validator: Validator.region,
                       onIconPressed: () async {
                         final region = await showRegionDropdown(
-                            context, _regionController.text);
+                            context, _regionController.text,);
                         if (region != null) {
                           _regionController.text = region;
                           widget.asiModel.ownerRegion = region;
@@ -243,9 +246,9 @@ class _AuthorizedSignatoryInformationScreenState
                       },
                     ),
                     VendorCustomTextFields(
-                      labelText: 'Emirates ID Number',
-                      hintText: 'Enter ID Number',
-                      textStar: ' *',
+                      labelText: VendorAppStrings.emiratesIdNumber.tr,
+                      hintText: VendorAppStrings.enterIdNumber.tr,
+                      textStar: VendorAppStrings.asterick.tr,
                       controller: _emiratesIdController,
                       keyboardType: TextInputType.name,
                       focusNode: _emiratesIdFocusNode,
@@ -257,9 +260,9 @@ class _AuthorizedSignatoryInformationScreenState
                       },
                     ),
                     VendorCustomTextFields(
-                      labelText: 'Emirates ID Number Expiry Date',
-                      hintText: 'dd-MM-yyyy',
-                      textStar: ' *',
+                      labelText: VendorAppStrings.emiratesIdNumberExpiryDate.tr,
+                      hintText: VendorAppStrings.ddMmYyyy.tr,
+                      textStar: VendorAppStrings.asterick.tr,
                       controller: _emiratesExpireDateController,
                       keyboardType: TextInputType.name,
                       focusNode: _emiratesExpireDateFocusNode,
@@ -269,8 +272,8 @@ class _AuthorizedSignatoryInformationScreenState
                       suffixIconColor: Colors.grey,
                       validator: Validator.emiratesIdNumberDate,
                       onIconPressed: () async {
-                        final result =
-                            await showDatePickerDialog(context, 'dd-MM-yyyy');
+                        final result = await showDatePickerDialog(
+                            context, VendorAppStrings.ddMmYyyy.tr,);
                         if (result != null) {
                           final date = result.toString().split(' ')[0];
                           _emiratesExpireDateController.text = date;
@@ -280,9 +283,9 @@ class _AuthorizedSignatoryInformationScreenState
                       },
                     ),
                     VendorCustomTextFields(
-                      labelText: 'Upload EID (pdf)',
-                      hintText: 'No file Chosen',
-                      textStar: ' *',
+                      labelText: VendorAppStrings.uploadEidPdf.tr,
+                      hintText: VendorAppStrings.noFileChosenAlt.tr,
+                      textStar: VendorAppStrings.asterick.tr,
                       controller: _eidPdfController,
                       keyboardType: TextInputType.name,
                       focusNode: _eidPdfFocusNode,
@@ -317,9 +320,9 @@ class _AuthorizedSignatoryInformationScreenState
                       },
                     ),
                     VendorCustomTextFields(
-                      labelText: 'Upload Passport (pdf)',
-                      hintText: 'No file Chosen',
-                      textStar: ' *',
+                      labelText: VendorAppStrings.uploadPassportPdf.tr,
+                      hintText: VendorAppStrings.noFileChosenAlt.tr,
+                      textStar: VendorAppStrings.asterick.tr,
                       controller: _passportController,
                       keyboardType: TextInputType.name,
                       focusNode: _passportFocusNode,
@@ -354,9 +357,9 @@ class _AuthorizedSignatoryInformationScreenState
                       },
                     ),
                     VendorCustomTextFields(
-                      labelText: 'POA /MOA (pdf)',
-                      hintText: 'No file Chosen',
-                      textStar: ' *',
+                      labelText: VendorAppStrings.poaMoaPdf.tr,
+                      hintText: VendorAppStrings.noFileChosenAlt.tr,
+                      textStar: VendorAppStrings.asterick.tr,
                       controller: _poaMoaController,
                       keyboardType: TextInputType.name,
                       focusNode: _poaMoaFocusNode,

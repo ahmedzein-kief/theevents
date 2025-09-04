@@ -48,7 +48,7 @@ class _RelatedProductsSearchScreenState
   }
 
   Future<VendorSearchProductDataResponse?> _fetchOptionsData(
-      String query, String dataId) async {
+      String query, String dataId,) async {
     final provider =
         Provider.of<VendorCreateProductViewModel>(context, listen: false);
     if (query.isEmpty) {
@@ -96,6 +96,7 @@ class _RelatedProductsSearchScreenState
           ),
           backgroundColor: AppColors.bgColor,
           body: Utils.modelProgressHud(
+            context: context,
             processing: _isProcessing,
             child: Column(
               children: [
@@ -111,19 +112,19 @@ class _RelatedProductsSearchScreenState
                         searchDropdownModel.showDropdown = false;
                         searchDropdownModel.records = [];
                         if (!listSearchProducts.any(
-                            (product) => product.id == selectedProduct.id)) {
+                            (product) => product.id == selectedProduct.id,)) {
                           listSearchProducts.add(selectedProduct);
                         } else {
                           AlertServices.showErrorSnackBar(
                               message:
                                   'Selected product already added in the list',
-                              context: context);
+                              context: context,);
                         }
                       });
                     },
                     onSearchChanged: (searchModel) async {
                       final result = await _fetchOptionsData(
-                          searchModel.searchText, widget.dataId ?? '');
+                          searchModel.searchText, widget.dataId ?? '',);
                       print(result);
                       if (result != null) {
                         setState(() {
@@ -192,7 +193,7 @@ class _RelatedProductsSearchScreenState
                           });
                         },
                         child: const Icon(Icons.cancel_outlined,
-                            color: Colors.grey),
+                            color: Colors.grey,),
                       ),
                     ],
                   ),

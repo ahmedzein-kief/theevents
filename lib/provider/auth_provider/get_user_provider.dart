@@ -1,5 +1,5 @@
 // user_provider.dart
-import 'dart:convert';
+import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
@@ -7,8 +7,8 @@ import 'package:event_app/core/network/api_endpoints/vendor_api_end_point.dart';
 import 'package:event_app/core/services/shared_preferences_helper.dart';
 import 'package:event_app/core/utils/custom_toast.dart';
 import 'package:event_app/provider/api_response_handler.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../models/auth_models/get_user_models.dart';
 
@@ -50,7 +50,7 @@ class UserProvider with ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        final responseData = json.decode(response.body);
+        final responseData = response.data;
         _user = UserModel.fromJson(responseData['data']);
         _isLoading = false;
         notifyListeners();
@@ -66,46 +66,40 @@ class UserProvider with ChangeNotifier {
     }
   }
 
-  Future<Uint8List?> downloadAgreement(
-    BuildContext context,
-  ) async {
+  Future<void> downloadAgreement(BuildContext context, int vendorId) async {
     _isLoading = true;
     notifyListeners();
 
-    const url = VendorApiEndpoints.downloadAgreement;
+    const url = VendorApiEndpoints.getAgreementUrl;
     final token = await SecurePreferencesUtil.getToken();
-    final headers = {
-      'Authorization': token ?? '',
-    };
-
+    final headers = {'Authorization': token ?? ''};
     try {
       final response = await _apiResponseHandler.getDioRequest(
-        url,
+        '$url/$vendorId',
         headers: headers,
-        responseType: ResponseType.bytes,
       );
-
-      if (response.statusCode == 200) {
-        _isLoading = false;
-        notifyListeners();
-        return response.data;
-      } else {
-        final jsonData = json.decode(response.data);
-        CustomSnackbar.showError(context, _errorMessage(response));
-        _isLoading = false;
-        notifyListeners();
-        return null;
+      final data = response.data;
+      if (response.statusCode != 200) {
+        CustomSnackbar.showError(context, data['message']);
+        return;
       }
+
+      await openPdfFromUrl(data['data']['url']);
     } catch (e) {
-      if (e is DioException) {
-        CustomSnackbar.showError(context, _errorMessage(e.response));
-      } else {}
-      _isLoading = false;
-      notifyListeners();
-      return null;
+      CustomSnackbar.showError(context, 'Could not open PDF ${e.toString()}');
     } finally {
       _isLoading = false;
       notifyListeners();
+    }
+  }
+
+  Future<void> openPdfFromUrl(String url) async {
+    log('url is $url');
+    final Uri uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      throw Exception('Could not launch PDF URL: $url');
     }
   }
 
@@ -122,7 +116,7 @@ class UserProvider with ChangeNotifier {
         message = errorData['message'];
       }
     } else {
-      final jsonData = json.decode(response.body);
+      final jsonData = response.data;
       if (response != null) {
         errors = jsonData['errors'];
         error = jsonData['error'];
@@ -161,7 +155,6 @@ class UserProvider with ChangeNotifier {
       }
 
       return 'An unknown error occurred.'; // Fallback message if no errors are found
-
     } catch (e) {
       return 'Unknown error occurred with status code: ${response.statusCode}';
     }

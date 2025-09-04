@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/widgets/custom_app_views/search_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +9,7 @@ import '../../../core/constants/app_strings.dart';
 import '../../../core/styles/custom_text_styles.dart';
 import '../../../provider/home_shortcode_provider/featured_brands_provider.dart';
 import '../../base_screens/base_app_bar.dart';
-import '../../filters/items_sorting.dart';
+import '../../filters/items_sorting_drop_down.dart';
 import 'featured_brands_items_screen.dart';
 
 class FeaturedBrandsScreenViewAll extends StatefulWidget {
@@ -20,17 +21,16 @@ class FeaturedBrandsScreenViewAll extends StatefulWidget {
     this.showIcons = true,
     this.showText = true,
   });
+
   final dynamic data;
   final bool showIcons; // New parameter to control icon visibility
   final bool showText;
 
   @override
-  State<FeaturedBrandsScreenViewAll> createState() =>
-      _FeaturedCategoriesScreenState();
+  State<FeaturedBrandsScreenViewAll> createState() => _FeaturedCategoriesScreenState();
 }
 
-class _FeaturedCategoriesScreenState
-    extends State<FeaturedBrandsScreenViewAll> {
+class _FeaturedCategoriesScreenState extends State<FeaturedBrandsScreenViewAll> {
   String _selectedSortBy = 'default_sorting';
   final ScrollController _scrollController = ScrollController();
   bool _isFetchingMore = false; // Default to false
@@ -47,8 +47,7 @@ class _FeaturedCategoriesScreenState
   }
 
   Future<void> fetchTopBanner() async {
-    final provider =
-        Provider.of<FeaturedBrandsProvider>(context, listen: false);
+    final provider = Provider.of<FeaturedBrandsProvider>(context, listen: false);
     await provider.fetchFeaturedBrands(context);
   }
 
@@ -57,8 +56,7 @@ class _FeaturedCategoriesScreenState
       setState(() {
         _isFetchingMore = true;
       });
-      await Provider.of<FeaturedBrandsProvider>(context, listen: false)
-          .fetchBrandsItems(
+      await Provider.of<FeaturedBrandsProvider>(context, listen: false).fetchBrandsItems(
         perPage: 12,
         context,
         page: _currentPage,
@@ -76,8 +74,7 @@ class _FeaturedCategoriesScreenState
 
   void _onScroll() {
     if (_isFetchingMore) return;
-    if (_scrollController.offset >=
-            _scrollController.position.maxScrollExtent &&
+    if (_scrollController.offset >= _scrollController.position.maxScrollExtent &&
         !_scrollController.position.outOfRange) {
       _currentPage++;
       _isFetchingMore = true;
@@ -89,9 +86,7 @@ class _FeaturedCategoriesScreenState
     setState(() {
       _selectedSortBy = newValue;
       _currentPage = 1; // Reset to the first page
-      Provider.of<FeaturedBrandsProvider>(context, listen: false)
-          .brands
-          .clear(); // Clear existing products
+      Provider.of<FeaturedBrandsProvider>(context, listen: false).brands.clear(); // Clear existing products
       _isFetchingMore = false;
     });
     fetchBrandsTypes();
@@ -111,13 +106,11 @@ class _FeaturedCategoriesScreenState
     final double screenWidth = MediaQuery.sizeOf(context).width;
 
     return BaseAppBar(
-      textBack: widget.showText ? AppStrings.back : '',
-      customBackIcon: widget.showIcons
-          ? const Icon(Icons.arrow_back_ios_sharp, size: 16)
-          : null,
-      firstRightIconPath: AppStrings.firstRightIconPath,
-      secondRightIconPath: AppStrings.secondRightIconPath,
-      thirdRightIconPath: AppStrings.thirdRightIconPath,
+      textBack: widget.showText ? AppStrings.back.tr : '',
+      customBackIcon: widget.showIcons ? const Icon(Icons.arrow_back_ios_sharp, size: 16) : null,
+      firstRightIconPath: AppStrings.firstRightIconPath.tr,
+      secondRightIconPath: AppStrings.secondRightIconPath.tr,
+      thirdRightIconPath: AppStrings.thirdRightIconPath.tr,
       body: Scaffold(
         body: SafeArea(
           child: Consumer<FeaturedBrandsProvider>(
@@ -141,7 +134,7 @@ class _FeaturedCategoriesScreenState
                     mainAxisAlignment: MainAxisAlignment.start,
                     mainAxisSize: MainAxisSize.max,
                     children: [
-                      const CustomSearchBar(hintText: 'Search Brands'),
+                      CustomSearchBar(hintText: AppStrings.searchBrands.tr),
                       Expanded(
                         child: SingleChildScrollView(
                           controller: _scrollController,
@@ -152,17 +145,16 @@ class _FeaturedCategoriesScreenState
                             children: [
                               Padding(
                                 padding: EdgeInsets.only(
-                                    left: screenWidth * 0.02,
-                                    right: screenWidth * 0.02,
-                                    top: screenHeight * 0.02),
+                                  left: screenWidth * 0.02,
+                                  right: screenWidth * 0.02,
+                                  top: screenHeight * 0.02,
+                                ),
                                 child: SizedBox(
                                   height: 100,
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(0),
                                     child: CachedNetworkImage(
-                                      imageUrl: provider.featuredBrandsBanner
-                                              ?.data.coverImage ??
-                                          '',
+                                      imageUrl: provider.featuredBrandsBanner?.data.coverImage ?? '',
                                       fit: BoxFit.fill,
                                       errorListener: (object) {
                                         Container(
@@ -172,20 +164,18 @@ class _FeaturedCategoriesScreenState
                                             gradient: LinearGradient(
                                               colors: [
                                                 Colors.grey,
-                                                Colors.black
+                                                Colors.black,
                                               ],
                                             ),
                                           ),
-                                          child:
-                                              const CupertinoActivityIndicator(
+                                          child: const CupertinoActivityIndicator(
                                             color: Colors.black,
                                             radius: 10,
                                             animating: true,
                                           ),
                                         );
                                       },
-                                      errorWidget: (context, object, error) =>
-                                          Container(
+                                      errorWidget: (context, object, error) => Container(
                                         height: screenHeight,
                                         width: screenWidth,
                                         decoration: const BoxDecoration(
@@ -199,9 +189,7 @@ class _FeaturedCategoriesScreenState
                                           animating: true,
                                         ),
                                       ),
-                                      placeholder:
-                                          (BuildContext context, String url) =>
-                                              Container(
+                                      placeholder: (BuildContext context, String url) => Container(
                                         height: screenHeight,
                                         width: screenWidth,
                                         decoration: const BoxDecoration(
@@ -221,12 +209,12 @@ class _FeaturedCategoriesScreenState
                               ),
                               Padding(
                                 padding: EdgeInsets.only(
-                                    top: screenHeight * 0.02,
-                                    left: screenWidth * 0.04,
-                                    right: screenWidth * 0.04),
+                                  top: screenHeight * 0.02,
+                                  left: screenWidth * 0.04,
+                                  right: screenWidth * 0.04,
+                                ),
                                 child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
                                       widget.data ?? '',
@@ -246,169 +234,134 @@ class _FeaturedCategoriesScreenState
                                   ],
                                 ),
                               ),
-                              Container(
-                                child: Padding(
-                                  padding: EdgeInsets.only(
-                                      top: screenHeight * 0.02,
-                                      left: screenWidth * 0.04,
-                                      bottom: screenHeight * 0.02,
-                                      right: screenWidth * 0.04),
-                                  child: GridView.builder(
-                                    gridDelegate:
-                                        const SliverGridDelegateWithFixedCrossAxisCount(
-                                            crossAxisCount: 3,
-                                            crossAxisSpacing: 8.0,
-                                            mainAxisSpacing: 8.0,
-                                            childAspectRatio: 0.95),
-                                    shrinkWrap: true,
-                                    scrollDirection: Axis.vertical,
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
-                                    itemCount: provider.brands.length +
-                                        (_isFetchingMore ? 1 : 0),
-                                    itemBuilder: (context, index) {
-                                      if (_isFetchingMore &&
-                                          index == provider.brands.length) {
-                                        return const Align(
-                                          alignment: Alignment.center,
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            children: [
-                                              Center(
-                                                child:
-                                                    CircularProgressIndicator(
-                                                  color: Colors.black,
-                                                  strokeWidth: 0.5,
-                                                ),
+                              Padding(
+                                padding: EdgeInsets.only(
+                                  top: screenHeight * 0.02,
+                                  left: screenWidth * 0.04,
+                                  bottom: screenHeight * 0.02,
+                                  right: screenWidth * 0.04,
+                                ),
+                                child: GridView.builder(
+                                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 3,
+                                    crossAxisSpacing: 8.0,
+                                    mainAxisSpacing: 8.0,
+                                    childAspectRatio: 0.85,
+                                  ),
+                                  shrinkWrap: true,
+                                  scrollDirection: Axis.vertical,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: provider.brands.length + (_isFetchingMore ? 1 : 0),
+                                  itemBuilder: (context, index) {
+                                    if (_isFetchingMore && index == provider.brands.length) {
+                                      return const Align(
+                                        alignment: Alignment.center,
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          children: [
+                                            Center(
+                                              child: CircularProgressIndicator(
+                                                color: Colors.black,
+                                                strokeWidth: 0.5,
                                               ),
-                                            ],
-                                          ),
-                                        );
-                                      }
-
-                                      final brand = provider.brands[index];
-                                      return GestureDetector(
-                                        onTap: () {
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      FeaturedBrandsItemsScreen(
-                                                          slug: brand.slug)));
-                                        },
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .primary,
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Colors.black
-                                                    .withOpacity(0.2),
-                                                spreadRadius: 1,
-                                                blurRadius: 5,
-                                                offset: const Offset(0,
-                                                    3), // changes position of shadow
-                                              ),
-                                            ],
-                                          ),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            children: [
-                                              SizedBox(
-                                                width: double.infinity,
-                                                child: CachedNetworkImage(
-                                                  alignment: Alignment.center,
-                                                  imageUrl: brand.image,
-                                                  fit: BoxFit.cover,
-                                                  width: double.infinity,
-                                                  errorListener: (object) {
-                                                    Center(
-                                                      child: Container(
-                                                        height: 100,
-                                                        width: double.infinity,
-                                                        decoration:
-                                                            const BoxDecoration(
-                                                          gradient:
-                                                              LinearGradient(
-                                                            colors: [
-                                                              Colors.grey,
-                                                              Colors.black
-                                                            ],
-                                                          ),
-                                                        ),
-                                                        child:
-                                                            const CupertinoActivityIndicator(
-                                                          color: Colors.black,
-                                                          radius: 10,
-                                                          animating: true,
-                                                        ),
-                                                      ),
-                                                    );
-                                                  },
-                                                  errorWidget: (context, object,
-                                                          error) =>
-                                                      Center(
-                                                    child: Container(
-                                                      height: 100,
-                                                      width: double.infinity,
-                                                      decoration:
-                                                          const BoxDecoration(
-                                                        gradient:
-                                                            LinearGradient(
-                                                          colors: [
-                                                            Colors.grey,
-                                                            Colors.black
-                                                          ],
-                                                        ),
-                                                      ),
-                                                      child:
-                                                          const CupertinoActivityIndicator(
-                                                        color: Colors.black,
-                                                        radius: 10,
-                                                        animating: true,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  placeholder:
-                                                      (BuildContext context,
-                                                              String url) =>
-                                                          Center(
-                                                    child: Container(
-                                                      height: 100,
-                                                      width: double.infinity,
-                                                      decoration:
-                                                          const BoxDecoration(
-                                                        gradient:
-                                                            LinearGradient(
-                                                          colors: [
-                                                            Colors.grey,
-                                                            Colors.black
-                                                          ],
-                                                        ),
-                                                      ),
-                                                      child:
-                                                          const CupertinoActivityIndicator(
-                                                        color: Colors.black,
-                                                        radius: 10,
-                                                        animating: true,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                              // Text(brand.name,
-                                              //     style: twoSliderAdsTextStyle())
-                                            ],
-                                          ),
+                                            ),
+                                          ],
                                         ),
                                       );
-                                    },
-                                  ),
+                                    }
+
+                                    final brand = provider.brands[index];
+                                    return GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => FeaturedBrandsItemsScreen(
+                                              slug: brand.slug,
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.circular(8.0),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.black.withOpacity(0.1),
+                                              spreadRadius: 1,
+                                              blurRadius: 8,
+                                              offset: const Offset(0, 4),
+                                            ),
+                                          ],
+                                        ),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          children: [
+                                            // Image container with rounded top corners
+                                            SizedBox(
+                                              height: 100, // Fixed height for consistency
+
+                                              child: CachedNetworkImage(
+                                                imageUrl: brand.image,
+                                                fit: BoxFit.contain,
+                                                // Changed to contain to maintain aspect ratio
+                                                width: double.infinity,
+                                                height: double.infinity,
+                                                errorWidget: (context, object, error) => Container(
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.grey[100],
+                                                    borderRadius: const BorderRadius.only(
+                                                      topLeft: Radius.circular(8.0),
+                                                      topRight: Radius.circular(8.0),
+                                                    ),
+                                                  ),
+                                                  child: const Center(
+                                                    child: Icon(
+                                                      Icons.image_not_supported,
+                                                      color: Colors.grey,
+                                                      size: 24,
+                                                    ),
+                                                  ),
+                                                ),
+                                                placeholder: (BuildContext context, String url) => Container(
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.grey[100],
+                                                    borderRadius: const BorderRadius.only(
+                                                      topLeft: Radius.circular(8.0),
+                                                      topRight: Radius.circular(8.0),
+                                                    ),
+                                                  ),
+                                                  child: const Center(
+                                                    child: CupertinoActivityIndicator(
+                                                      color: Colors.grey,
+                                                      radius: 15,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                            // Brand name section
+                                            Padding(
+                                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                              child: Text(
+                                                brand.name,
+                                                style: const TextStyle(
+                                                  fontSize: 10,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                                textAlign: TextAlign.center,
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 8)
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  },
                                 ),
                               ),
                             ],

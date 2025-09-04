@@ -265,7 +265,7 @@ class Review {
 
 class AverageCountArray {
   AverageCountArray(
-      {required this.star, required this.count, required this.percent});
+      {required this.star, required this.count, required this.percent,});
 
   factory AverageCountArray.fromJson(Map<String, dynamic> json) =>
       AverageCountArray(

@@ -64,7 +64,7 @@ class Data {
 
 class PaginationPagination {
   PaginationPagination(
-      {this.total, this.lastPage, this.currentPage, this.perPage});
+      {this.total, this.lastPage, this.currentPage, this.perPage,});
 
   PaginationPagination.fromJson(Map<String, dynamic> json) {
     total = json['total'];
@@ -211,7 +211,7 @@ class Prices {
       {this.frontSalePrice,
       this.price,
       this.frontSalePriceWithTaxes,
-      this.priceWithTaxes});
+      this.priceWithTaxes,});
 
   Prices.fromJson(Map<String, dynamic> json) {
     frontSalePrice = json['front_sale_price'];
@@ -260,7 +260,7 @@ class Filters {
       this.rand,
       this.categoryRequest,
       this.categoryId,
-      this.maxPrice});
+      this.maxPrice,});
 
   Filters.fromJson(Map<String, dynamic> json) {
     if (json['categories'] != null) {
@@ -315,7 +315,7 @@ class Filters {
 
 class Categories {
   Categories(
-      {this.id, this.name, this.image, this.count, this.selected, this.slug});
+      {this.id, this.name, this.image, this.count, this.selected, this.slug,});
 
   Categories.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -346,7 +346,7 @@ class Categories {
 
 class Brands {
   Brands(
-      {this.id, this.name, this.image, this.count, this.selected, this.slug});
+      {this.id, this.name, this.image, this.count, this.selected, this.slug,});
 
   Brands.fromJson(Map<String, dynamic> json) {
     id = json['id'];

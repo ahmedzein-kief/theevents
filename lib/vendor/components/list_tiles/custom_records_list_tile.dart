@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:event_app/core/helper/mixins/media_query_mixin.dart';
 import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/core/styles/app_sizes.dart';
@@ -23,7 +25,10 @@ class CustomRecordListTile extends StatefulWidget {
     this.subtitleAsWidget,
     this.tileColor,
     this.titleTextStyle,
+    this.productId, // Add productId for API call
+    this.onRejectionHistoryTap, // Callback for handling rejection history
   });
+
   final void Function() onTap;
   final Color selectedTileColor;
   final bool selected;
@@ -40,13 +45,24 @@ class CustomRecordListTile extends StatefulWidget {
   final TextStyle? statusTextStyle;
   final Color? tileColor;
   final TextStyle? titleTextStyle;
+  final int? productId; // Product ID for API call
+  final void Function(String productId)? onRejectionHistoryTap; // Callback
 
   @override
-  State<CustomRecordListTile> createState() => _RecordListTileState();
+  State<CustomRecordListTile> createState() => _CustomRecordListTileState();
 }
 
-class _RecordListTileState extends State<CustomRecordListTile>
+class _CustomRecordListTileState extends State<CustomRecordListTile>
     with MediaQueryMixin {
+  bool get isRejected => widget.status?.toLowerCase() == 'rejected';
+
+  void _handleRejectionTap() {
+    log('_handleRejectionTap ${widget.productId} ${widget.onRejectionHistoryTap}');
+    if (widget.productId != null && widget.onRejectionHistoryTap != null) {
+      widget.onRejectionHistoryTap!(widget.productId.toString());
+    }
+  }
+
   @override
   Widget build(BuildContext context) => Card(
         elevation: 1,
@@ -56,7 +72,7 @@ class _RecordListTileState extends State<CustomRecordListTile>
           borderRadius: BorderRadius.circular(kSmallCardRadius),
           child: Container(
             padding: EdgeInsets.symmetric(
-                horizontal: kPadding, vertical: kSmallPadding),
+                horizontal: kPadding, vertical: kSmallPadding,),
             decoration: BoxDecoration(
               color: widget.tileColor ?? Colors.white,
               borderRadius: BorderRadius.circular(kSmallCardRadius),
@@ -102,11 +118,32 @@ class _RecordListTileState extends State<CustomRecordListTile>
                           ),
                       kExtraSmallSpace,
                       if (widget.status != null)
-                        Text(
-                          widget.status ?? '',
-                          style: widget.statusTextStyle ??
-                              dataRowTextStyle().copyWith(color: Colors.black),
-                          textAlign: TextAlign.end,
+                        Row(
+                          children: [
+                            if (isRejected)
+                              const Icon(
+                                Icons.warning,
+                                color: AppColors.vividRed,
+                                size: 16,
+                              ),
+                            if (isRejected) const SizedBox(width: 4),
+                            GestureDetector(
+                              onTap: isRejected ? _handleRejectionTap : null,
+                              child: Text(
+                                widget.status ?? '',
+                                style: widget.statusTextStyle ??
+                                    dataRowTextStyle().copyWith(
+                                      color: isRejected
+                                          ? AppColors.vividRed
+                                          : Colors.black,
+                                      decoration: isRejected
+                                          ? TextDecoration.underline
+                                          : null,
+                                    ),
+                                textAlign: TextAlign.start,
+                              ),
+                            ),
+                          ],
                         ),
                     ],
                   ),

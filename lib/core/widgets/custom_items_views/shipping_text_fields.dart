@@ -49,7 +49,7 @@ class CustomFieldSaveCard extends StatelessWidget {
           if (label != null) // Display the label if provided
             Padding(
               padding: const EdgeInsets.only(
-                  bottom: 5), // Add spacing below the label
+                  bottom: 5,), // Add spacing below the label
               child: Text(label!, style: labelHeading(context)),
             ),
           TextField(
@@ -80,11 +80,11 @@ class CustomFieldSaveCard extends StatelessWidget {
                 controller.selection = TextSelection.fromPosition(
                   TextPosition(
                       offset:
-                          controller.text.length), // Move the cursor to the end
+                          controller.text.length,), // Move the cursor to the end
                 );
               }
               onChanged?.call(
-                  controller.text); // Call onChanged when the text changes
+                  controller.text,); // Call onChanged when the text changes
             },
             decoration: InputDecoration(
               hintText: controller.text.isEmpty ? hintText : null,

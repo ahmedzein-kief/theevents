@@ -1,4 +1,5 @@
 import 'package:event_app/core/constants/app_strings.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/views/home_screens_shortcode/shortcode_user_by_type/user_by_types_items_screen.dart';
 import 'package:event_app/views/home_screens_shortcode/shortcode_user_by_type/user_type_inner_page_screen.dart';
 import 'package:flutter/cupertino.dart';
@@ -10,6 +11,7 @@ import '../../../provider/home_shortcode_provider/users_by_type_provider.dart';
 
 class UsersByTypeScreen extends StatefulWidget {
   const UsersByTypeScreen({super.key, required this.data});
+
   final dynamic data;
 
   @override
@@ -60,7 +62,7 @@ class _UsersByTypeScreenState extends State<UsersByTypeScreen> {
                   isLoading: provider.isLoading,
                   items: items,
                   title: attributes['title'],
-                  seeAllText: AppStrings.viewAll,
+                  seeAllText: AppStrings.viewAll.tr,
                   onSeeAllTap: () {
                     Navigator.push(
                       context,

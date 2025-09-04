@@ -1,6 +1,5 @@
 import 'package:event_app/core/styles/app_sizes.dart';
-import 'package:event_app/core/utils/vendor_utils.dart'
-    show DecimalInputFormatter;
+import 'package:event_app/core/utils/vendor_utils.dart' show DecimalInputFormatter;
 import 'package:event_app/vendor/components/input_borders_hub/input_border_hub.dart';
 import 'package:event_app/vendor/components/vendor_text_style.dart';
 import 'package:flutter/material.dart';
@@ -50,13 +49,14 @@ class CustomTextFormField extends StatefulWidget {
     this.textStyle,
     this.errorText,
   });
+
   final String labelText;
   final bool required;
   final String hintText;
   final TextEditingController controller;
   final TextInputType keyboardType;
   final bool obscureText;
-  final IconData? suffixIcon;
+  final Widget? suffixIcon;
   final VoidCallback? onIconPressed;
   final Color borderColor;
   final FocusNode? focusNode;
@@ -103,11 +103,13 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
         ? InputBordersHub.getOutlinedInputBorder(
             borderColor: widget.borderColor,
             borderWidth: widget.borderWidth,
-            borderRadius: widget.borderRadius)
+            borderRadius: widget.borderRadius,
+          )
         : InputBordersHub.getUnderlinedInputBorder(
             borderColor: widget.borderColor,
             borderWidth: widget.borderWidth,
-            borderRadius: widget.borderRadius);
+            borderRadius: widget.borderRadius,
+          );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -118,8 +120,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
             padding: EdgeInsets.only(
               bottom: kTinyPadding,
             ),
-            child:
-                fieldTitle(text: widget.labelText, required: widget.required),
+            child: fieldTitle(text: widget.labelText, required: widget.required),
           )
         else
           kShowVoid,
@@ -140,8 +141,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
 
             /// If field is required then only validate the field
             validator: (value) {
-              if (widget.required ||
-                  (value != null && value.isNotEmpty == true)) {
+              if (widget.required || (value != null && value.isNotEmpty == true)) {
                 return widget.validator?.call(value);
               }
               return null;
@@ -154,8 +154,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
                 FocusScope.of(context).requestFocus(widget.nextFocusNode);
               }
             },
-            inputFormatters: widget.keyboardType ==
-                    const TextInputType.numberWithOptions(decimal: true)
+            inputFormatters: widget.keyboardType == const TextInputType.numberWithOptions(decimal: true)
                 ? [
                     FilteringTextInputFormatter.allow(
                       RegExp(r'^\d+\.?\d{0,2}'),
@@ -168,21 +167,19 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
               errorMaxLines: 100,
               hintText: widget.hintText,
               suffixIcon: widget.suffix,
-              hintStyle: widget.hintStyle ??
-                  const TextStyle(color: Colors.grey, fontSize: 12),
+              hintStyle: widget.hintStyle ?? const TextStyle(color: Colors.grey, fontSize: 12),
               prefixIcon: widget.prefix,
               border: border,
               focusedBorder: border,
               enabledBorder: border,
-              contentPadding: widget.contentPadding ??
-                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+              contentPadding: widget.contentPadding ?? const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
               isCollapsed: false,
               isDense: false,
               filled: widget.filled ?? true,
+
+              // 🔑 Adaptive fillColor with opposite alpha in dark mode
               fillColor: widget.fillColor ??
-                  (widget.readOnly ?? false
-                      ? Colors.grey.shade200
-                      : Colors.white),
+                  (widget.readOnly ?? false ? Colors.grey.shade200 : _getAdaptiveFillColor(context)),
             ),
           ),
         ),
@@ -191,20 +188,32 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
   }
 }
 
+Color _getAdaptiveFillColor(BuildContext context) {
+  return Theme.of(context).brightness == Brightness.dark
+      ? const Color(0xFF3A3A3A) // Dark → opposite alpha
+      : const Color(0xFFF5F5F5); // Light → normal alpha
+}
+
 /// field label
-Widget fieldTitle(
-        {required String text, TextStyle? textStyle, bool? required}) =>
+Widget fieldTitle({
+  required String text,
+  TextStyle? textStyle,
+  bool? required,
+}) =>
     Row(
       mainAxisSize: MainAxisSize.max,
       children: [
-        Text(text,
-            style: textStyle ??
-                headingFields()
-                    .copyWith(fontSize: 13, fontWeight: FontWeight.w400)),
+        Text(
+          text,
+          style: textStyle ?? headingFields().copyWith(fontSize: 13, fontWeight: FontWeight.w400),
+        ),
         Text(
           required ?? false ? '*' : '',
           style: headingFields().copyWith(
-              fontSize: 13, fontWeight: FontWeight.w400, color: Colors.red),
+            fontSize: 13,
+            fontWeight: FontWeight.w400,
+            color: Colors.red,
+          ),
         ),
       ],
     );

@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/models/product_packages_models/product_filters_model.dart';
@@ -35,7 +34,7 @@ class FiftyPercentDiscountProvider extends ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
+        final jsonData = response.data;
         _halfDiscountModels = HalfDiscountModels.fromJson(jsonData);
       } else {
         throw Exception('Failed to load collection data');
@@ -113,10 +112,10 @@ class FiftyPercentDiscountProvider extends ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
+        final jsonData = response.data;
         // final jsonResponse = NewProductsModels.fromJson(jsonData).data?.records ?? [];
 
-        final Map<String, dynamic> jsonResponse = json.decode(response.body);
+        final Map<String, dynamic> jsonResponse = response.data;
         final HalfDiscountProductsModels apiResponse =
             HalfDiscountProductsModels.fromJson(jsonResponse);
 
@@ -146,7 +145,7 @@ class FiftyPercentDiscountProvider extends ChangeNotifier {
   Future<void> fetchPackagesNew(BuildContext context,
       {int page = 1,
       int perPage = 12,
-      String sortBy = 'default_sorting'}) async {
+      String sortBy = 'default_sorting',}) async {
     // _isLoading = false;
 
     if (page == 1) {
@@ -162,10 +161,10 @@ class FiftyPercentDiscountProvider extends ChangeNotifier {
         context: context,
       );
       if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
+        final jsonData = response.data;
         // final jsonResponse = NewProductsModels.fromJson(jsonData).data?.records ?? [];
 
-        final Map<String, dynamic> jsonResponse = json.decode(response.body);
+        final Map<String, dynamic> jsonResponse = response.data;
         final HalfDiscountProductsModels apiResponse =
             HalfDiscountProductsModels.fromJson(jsonResponse);
 

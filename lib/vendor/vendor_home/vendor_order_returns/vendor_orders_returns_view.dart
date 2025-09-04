@@ -1,3 +1,4 @@
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/helper/mixins/media_query_mixin.dart';
 import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/core/styles/app_sizes.dart';
@@ -13,6 +14,7 @@ import 'package:event_app/vendor/view_models/vendor_order_returns/vendor_order_r
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/constants/vendor_app_strings.dart';
 import '../../components/generics/debouced_search.dart';
 import '../../components/vendor_tool_bar_widgets/vendor_tool_bar_widgets.dart';
 
@@ -20,12 +22,10 @@ class VendorOrdersReturnsView extends StatefulWidget {
   const VendorOrdersReturnsView({super.key});
 
   @override
-  State<VendorOrdersReturnsView> createState() =>
-      _VendorOrdersReturnsViewState();
+  State<VendorOrdersReturnsView> createState() => _VendorOrdersReturnsViewState();
 }
 
-class _VendorOrdersReturnsViewState extends State<VendorOrdersReturnsView>
-    with MediaQueryMixin {
+class _VendorOrdersReturnsViewState extends State<VendorOrdersReturnsView> with MediaQueryMixin {
   /// To show modal progress hud
   bool _isProcessing = false;
 
@@ -43,8 +43,7 @@ class _VendorOrdersReturnsViewState extends State<VendorOrdersReturnsView>
 
   Future _onRefresh() async {
     try {
-      final provider =
-          Provider.of<VendorOrderReturnsViewModel>(context, listen: false);
+      final provider = Provider.of<VendorOrderReturnsViewModel>(context, listen: false);
 
       /// clear list on refresh
       provider.clearList();
@@ -56,10 +55,8 @@ class _VendorOrdersReturnsViewState extends State<VendorOrdersReturnsView>
 
   Future<void> _loadMoreData() async {
     // Load more data here
-    if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent) {
-      final provider =
-          Provider.of<VendorOrderReturnsViewModel>(context, listen: false);
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent) {
+      final provider = Provider.of<VendorOrderReturnsViewModel>(context, listen: false);
       if (provider.apiResponse.status != ApiStatus.LOADING) {
         await provider.vendorOrderReturns(search: _searchController.text);
       }
@@ -89,11 +86,15 @@ class _VendorOrdersReturnsViewState extends State<VendorOrdersReturnsView>
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        backgroundColor: AppColors.bgColor,
         body: Utils.modelProgressHud(
-            processing: _isProcessing,
-            child: Utils.pageRefreshIndicator(
-                onRefresh: _onRefresh, child: _buildUi(context))),
+          context: context,
+          processing: _isProcessing,
+          child: Utils.pageRefreshIndicator(
+            onRefresh: _onRefresh,
+            child: _buildUi(context),
+            context: context,
+          ),
+        ),
       );
 
   Widget _buildUi(BuildContext context) => Padding(
@@ -113,8 +114,9 @@ class _VendorOrdersReturnsViewState extends State<VendorOrdersReturnsView>
                   }
                   if (apiStatus == ApiStatus.ERROR) {
                     return ListView(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        children: [Utils.somethingWentWrong()]);
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      children: [Utils.somethingWentWrong()],
+                    );
                   }
                   return Padding(
                     padding: EdgeInsets.symmetric(horizontal: kSmallPadding),
@@ -126,10 +128,8 @@ class _VendorOrdersReturnsViewState extends State<VendorOrdersReturnsView>
                         VendorDataListBuilder(
                           scrollController: _scrollController,
                           listLength: provider.list.length,
-                          loadingMoreData:
-                              provider.apiResponse.status == ApiStatus.LOADING,
-                          contentBuilder: (context) =>
-                              _buildRecordsList(provider: provider),
+                          loadingMoreData: provider.apiResponse.status == ApiStatus.LOADING,
+                          contentBuilder: (context) => _buildRecordsList(provider: provider),
                         ),
                       ],
                     ),
@@ -141,8 +141,7 @@ class _VendorOrdersReturnsViewState extends State<VendorOrdersReturnsView>
         ),
       );
 
-  Widget _buildRecordsList({required VendorOrderReturnsViewModel provider}) =>
-      ListView.builder(
+  Widget _buildRecordsList({required VendorOrderReturnsViewModel provider}) => ListView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         itemCount: provider.list.length,
@@ -191,12 +190,10 @@ class _VendorOrdersReturnsViewState extends State<VendorOrdersReturnsView>
                     }
                   },
                   textEditingController: _searchController,
-                  onChanged: (value) =>
-                      debouncedSearch<VendorOrderReturnsViewModel>(
+                  onChanged: (value) => debouncedSearch<VendorOrderReturnsViewModel>(
                     context: context,
                     value: value,
-                    providerGetter: (context) =>
-                        context.read<VendorOrderReturnsViewModel>(),
+                    providerGetter: (context) => context.read<VendorOrderReturnsViewModel>(),
                     refreshFunction: _onRefresh,
                   ),
                 ),
@@ -206,8 +203,10 @@ class _VendorOrdersReturnsViewState extends State<VendorOrdersReturnsView>
         ],
       );
 
-  void _onRowTap(
-      {required BuildContext context, required OrderRecords rowData}) {
+  void _onRowTap({
+    required BuildContext context,
+    required OrderRecords rowData,
+  }) {
     /// showing through bottom sheet
     showModalBottomSheet(
       context: context,
@@ -216,8 +215,9 @@ class _VendorOrdersReturnsViewState extends State<VendorOrdersReturnsView>
         onClosing: () {},
         builder: (context) => Container(
           decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(kCardRadius)),
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(kCardRadius),
+          ),
           child: SafeArea(
             child: Padding(
               padding: EdgeInsets.all(kSmallPadding),
@@ -225,31 +225,40 @@ class _VendorOrdersReturnsViewState extends State<VendorOrdersReturnsView>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    buildRow('ID', rowData.id?.toString()),
-                    buildRow('Customer', rowData.customerName?.toString()),
-                    buildRow('Amount', rowData.amountFormat.toString()),
-                    buildRow('Tax Amount', rowData.taxAmountFormat.toString()),
-                    buildRow('Shipping Amount',
-                        rowData.shippingAmountFormat.toString()),
+                    buildRow(VendorAppStrings.id.tr, rowData.id?.toString()),
                     buildRow(
-                        'Payment Method',
-                        (rowData.paymentMethod?.value == null)
-                            ? '--'
-                            : rowData.paymentMethod?.label?.toString()),
+                      VendorAppStrings.customer.tr,
+                      rowData.customerName?.toString(),
+                    ),
+                    buildRow(
+                      VendorAppStrings.amount.tr,
+                      rowData.amountFormat.toString(),
+                    ),
+                    buildRow(
+                      VendorAppStrings.taxAmount.tr,
+                      rowData.taxAmountFormat.toString(),
+                    ),
+                    buildRow(
+                      VendorAppStrings.shippingAmount.tr,
+                      rowData.shippingAmountFormat.toString(),
+                    ),
+                    buildRow(
+                      'Payment Method',
+                      (rowData.paymentMethod?.value == null) ? '--' : rowData.paymentMethod?.label?.toString(),
+                    ),
                     buildStatusRow(
                       label: 'Payment Status',
-                      buttonText: (rowData.paymentStatus?.value == null)
-                          ? '--'
-                          : rowData.paymentStatus!.label!,
+                      buttonText: (rowData.paymentStatus?.value == null) ? '--' : rowData.paymentStatus!.label!,
                       color: getStatusButtonColor(rowData.paymentStatus?.value),
-                      textColor: (rowData.paymentStatus?.value == null)
-                          ? AppColors.stoneGray
-                          : Colors.white,
+                      textColor: (rowData.paymentStatus?.value == null) ? AppColors.stoneGray : Colors.white,
                     ),
                     const Divider(
                       thickness: 0.1,
                     ),
-                    buildRow('Created At', rowData.createdAt.toString() ?? ''),
+                    buildRow(
+                      VendorAppStrings.createdAt.tr,
+                      rowData.createdAt.toString() ?? '',
+                    ),
                     buildStatusRow(
                       label: 'Status',
                       buttonText: rowData.status?.label?.toString() ?? '',
@@ -274,8 +283,7 @@ class _VendorOrdersReturnsViewState extends State<VendorOrdersReturnsView>
         _setDeletionProcessing(rowData: rowData, processing: true);
         Navigator.of(context).pop();
         await Future.delayed(const Duration(seconds: 5));
-        final VendorOrderReturnsViewModel provider =
-            Provider.of<VendorOrderReturnsViewModel>(context, listen: false);
+        final VendorOrderReturnsViewModel provider = Provider.of<VendorOrderReturnsViewModel>(context, listen: false);
 
         /// Fetch the viewmodel for deleting the record
         if (true) {
@@ -290,8 +298,10 @@ class _VendorOrdersReturnsViewState extends State<VendorOrdersReturnsView>
   Future<void> _onEditRecord({required OrderRecords rowData}) async {}
 
   /// maintain the deletion indicator visibility by calling setState.
-  void _setDeletionProcessing(
-      {required OrderRecords rowData, required bool processing}) {
+  void _setDeletionProcessing({
+    required OrderRecords rowData,
+    required bool processing,
+  }) {
     setState(() {
       rowData.isDeleting = processing;
     });

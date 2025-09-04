@@ -1,11 +1,13 @@
 import 'package:another_stepper/dto/stepper_data.dart';
 import 'package:another_stepper/widgets/another_stepper.dart';
+import 'package:event_app/core/constants/vendor_app_strings.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
+import 'package:event_app/core/helper/mixins/media_query_mixin.dart';
+import 'package:event_app/core/styles/app_colors.dart';
+import 'package:event_app/core/styles/app_sizes.dart';
+import 'package:event_app/core/widgets/custom_auth_views/app_custom_button.dart';
 import 'package:event_app/data/vendor/data/response/apis_status.dart';
 import 'package:event_app/provider/payment_address/customer_address.dart';
-import 'package:event_app/core/styles/app_colors.dart';
-import 'package:event_app/core/widgets/custom_auth_views/app_custom_button.dart';
-import 'package:event_app/core/styles/app_sizes.dart';
-import 'package:event_app/core/helper/mixins/media_query_mixin.dart';
 import 'package:event_app/vendor/components/app_bars/vendor_common_app_bar.dart';
 import 'package:event_app/vendor/components/buttons/custom_icon_button_with_text.dart';
 import 'package:event_app/vendor/components/data_tables/custom_data_tables.dart';
@@ -34,6 +36,7 @@ import 'package:provider/provider.dart';
 
 class VendorEditOrderView extends StatefulWidget {
   const VendorEditOrderView({super.key, required this.orderID});
+
   final String orderID;
 
   @override
@@ -51,13 +54,13 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
         .map(
           (element) => StepperData(
             title: StepperText(element.historyVariables?.toString() ?? '',
-                textStyle: detailsTitleStyle),
+                textStyle: detailsTitleStyle,),
             subtitle: StepperText(element.createdAt?.toString() ?? '',
-                textStyle: detailsDescriptionStyle),
+                textStyle: detailsDescriptionStyle,),
             iconWidget: Container(
               decoration: const BoxDecoration(
                   color: AppColors.lightCoral,
-                  borderRadius: BorderRadius.all(Radius.circular(30))),
+                  borderRadius: BorderRadius.all(Radius.circular(30)),),
               child: kShowVoid,
             ),
           ),
@@ -96,9 +99,12 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
   Widget build(BuildContext context) => Scaffold(
         appBar: const VendorCommonAppBar(title: 'Orders'),
         body: Utils.modelProgressHud(
+            context: context,
             processing: _isProcessing,
             child: Utils.pageRefreshIndicator(
-                onRefresh: _onRefresh, child: _buildUi(context))),
+                onRefresh: _onRefresh,
+                child: _buildUi(context),
+                context: context,),),
         backgroundColor: AppColors.bgColor,
       );
 
@@ -116,14 +122,14 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
           if (apiStatus == ApiStatus.ERROR) {
             return ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                children: [Utils.somethingWentWrong()]);
+                children: [Utils.somethingWentWrong()],);
           }
           return _orderDetails(context: context, provider: provider);
         },
       );
 
   Widget _orderDetails(
-      {required context, required VendorGetOrderDetailsViewModel provider}) {
+      {required context, required VendorGetOrderDetailsViewModel provider,}) {
     final orderData = provider.apiResponse.data?.data;
     return SingleChildScrollView(
       child: Padding(
@@ -186,12 +192,12 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                       children: [
                         const TextSpan(
                             text: 'Order Information ',
-                            style: TextStyle(color: Colors.black)),
+                            style: TextStyle(color: Colors.black),),
                         TextSpan(
                             text: orderData?.code.toString() ?? '--',
                             style: const TextStyle(
                                 color: Colors.black,
-                                fontWeight: FontWeight.w500)),
+                                fontWeight: FontWeight.w500,),),
                       ],
                     ),
                   ),
@@ -208,7 +214,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                     ),
                     borderColor: Colors.transparent,
                     color: AppColors.getOrderStatusColor(
-                        orderData?.orderStatus?.value),
+                        orderData?.orderStatus?.value,),
                     textColor: Colors.white,
                     borderRadius: kExtraSmallCardRadius,
                     visualDensity: VisualDensity.compact,
@@ -243,7 +249,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                       children: [
                         Text(item?.name?.toString() ?? '--',
                             style: const TextStyle(
-                                color: AppColors.lightCoral, fontSize: 17)),
+                                color: AppColors.lightCoral, fontSize: 17,),),
                         kMinorSpace,
 
                         /// SKU
@@ -256,14 +262,14 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                               const TextSpan(
                                   text: 'SKU: ',
                                   style: TextStyle(
-                                      color: Colors.black, fontSize: 13)),
+                                      color: Colors.black, fontSize: 13,),),
                               TextSpan(
                                 text: item?.sku?.toString() ??
                                     '--', // Dynamic SKU
                                 style: const TextStyle(
                                     color: Colors.black,
                                     fontSize: 12,
-                                    fontWeight: FontWeight.w500),
+                                    fontWeight: FontWeight.w500,),
                               ),
                               // TextSpan(
                               //     text: ")",
@@ -281,12 +287,12 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                                 TextSpan(
                                   text: "${item?.qty?.toString() ?? ''} ",
                                   style: const TextStyle(
-                                      color: AppColors.stoneGray, fontSize: 12),
+                                      color: AppColors.stoneGray, fontSize: 12,),
                                 ),
                                 const TextSpan(
                                   text: 'Completed',
                                   style: TextStyle(
-                                      color: AppColors.stoneGray, fontSize: 12),
+                                      color: AppColors.stoneGray, fontSize: 12,),
                                 ),
                               ],
                             ),
@@ -308,7 +314,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                                   const TextSpan(
                                     text: 'Shipping ',
                                     style: TextStyle(
-                                        color: Colors.black, fontSize: 11),
+                                        color: Colors.black, fontSize: 11,),
                                   ),
                                   TextSpan(
                                     text:
@@ -317,7 +323,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                                     style: const TextStyle(
                                         color: Colors.black,
                                         fontSize: 11,
-                                        fontWeight: FontWeight.w600),
+                                        fontWeight: FontWeight.w600,),
                                   ),
                                 ],
                               ),
@@ -334,11 +340,11 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                             RichText(
                               text: TextSpan(
                                 style: const TextStyle(
-                                    color: Colors.black, fontSize: 12),
+                                    color: Colors.black, fontSize: 12,),
                                 children: [
                                   TextSpan(
                                       text:
-                                          item?.priceFormat?.toString() ?? ''),
+                                          item?.priceFormat?.toString() ?? '',),
                                   const WidgetSpan(
                                     child: SizedBox(width: 8),
                                   ),
@@ -352,7 +358,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                                   ),
                                   TextSpan(
                                       text:
-                                          item?.totalAmountFormat?.toString()),
+                                          item?.totalAmountFormat?.toString(),),
                                 ],
                               ),
                             ),
@@ -395,7 +401,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                       crossAxisAlignment: CrossAxisAlignment.end,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text('Shipping Fee'),
+                        Text(VendorAppStrings.shippingFee.tr),
                         Text(
                           orderData?.shippingMethodName?.toString() ?? '',
                           style: const TextStyle(fontSize: 12),
@@ -434,7 +440,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                 ),
                 children: [
                   _buildCell(
-                      text: 'Paid Amount', isEndAligned: true, isBold: true),
+                      text: 'Paid Amount', isEndAligned: true, isBold: true,),
 
                   /// show full amount here if payment status is completed
                   _buildCell(
@@ -442,7 +448,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                               PaymentStatusConst.COMPLETED
                           ? orderData?.amountFormat?.toString() ?? '--'
                           : '--',
-                      isBold: true),
+                      isBold: true,),
                 ],
               ),
             ],
@@ -468,7 +474,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                         ApiStatus.LOADING,
                     onPressed: () async {
                       await generateInvoiceProvider.vendorGenerateOrderInvoice(
-                          orderId: widget.orderID.toString());
+                          orderId: widget.orderID.toString(),);
                     },
                   ),
                 ),
@@ -483,9 +489,9 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 CustomTextFormField(
-                  labelText: 'Note',
+                  labelText: VendorAppStrings.note.tr,
                   required: false,
-                  hintText: 'Add Note..',
+                  hintText: VendorAppStrings.addNote.tr,
                   controller: _noteController,
                   maxLines: 2,
                   borderRadius: kSmallButtonRadius,
@@ -505,19 +511,19 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                       buttonColor: Colors.transparent,
                       loadingIndicatorColor: AppColors.lightCoral,
                       padding: EdgeInsets.symmetric(
-                          horizontal: kPadding, vertical: kExtraSmallPadding),
+                          horizontal: kPadding, vertical: kExtraSmallPadding,),
                       isLoading: vendorUpdateOrderProvider.apiResponse.status ==
                           ApiStatus.LOADING,
                       onTap: () async {
                         try {
                           if (_noteController.text.isEmpty) {
                             AlertServices.showErrorSnackBar(
-                                message: 'Please add note.', context: context);
+                                message: 'Please add note.', context: context,);
                           } else {
                             await vendorUpdateOrderProvider.vendorUpdateOrder(
                                 orderID: widget.orderID.toString(),
                                 description: _noteController.text,
-                                context: context);
+                                context: context,);
                           }
                         } catch (e) {}
                       },
@@ -542,7 +548,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                   children: [
                     StatusLabel(
                       label: showOrderConfirmationLabel(
-                          !(orderData?.isConfirmed ?? false)),
+                          !(orderData?.isConfirmed ?? false),),
                       icon: CupertinoIcons.checkmark_alt,
                       iconColor: !(orderData?.isConfirmed ?? false)
                           ? AppColors.stoneGray
@@ -557,11 +563,11 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                             buttonText: 'Confirm',
                             buttonColor: Colors.blue,
                             padding: const EdgeInsets.symmetric(
-                                vertical: 4, horizontal: 10),
+                                vertical: 4, horizontal: 10,),
                             borderRadius: kSmallButtonRadius,
                             textStyle: const TextStyle(
                                 color: Colors.white,
-                                fontWeight: FontWeight.w500),
+                                fontWeight: FontWeight.w500,),
                             isLoading:
                                 vendorConfirmOrderProvider.apiResponse.status ==
                                     ApiStatus.LOADING,
@@ -570,7 +576,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                                 final result = await vendorConfirmOrderProvider
                                     .vendorConfirmOrder(
                                         orderID: widget.orderID.toString(),
-                                        context: context);
+                                        context: context,);
                                 if (result) {
                                   await _onRefresh();
                                   final vendorAllOrdersProvider =
@@ -637,7 +643,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                 showStatusBox(
                     statusText: shipment?.status?.label ?? '',
                     color: AppColors.getShipmentStatusColor(
-                        shipment?.status?.value)),
+                        shipment?.status?.value,),),
 
                 kMediumSpace,
 
@@ -668,7 +674,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                 ),
                 kExtraSmallSpace,
                 Text(Utils.formatTimestamp(
-                    shipment?.updatedAt?.toString() ?? '')),
+                    shipment?.updatedAt?.toString() ?? '',),),
               ],
             ),
           ),
@@ -679,10 +685,10 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
               isShipmentStatusValid(shipment?.status?.value))
             Container(
               padding: EdgeInsets.symmetric(
-                  horizontal: kPadding, vertical: kSmallPadding),
+                  horizontal: kPadding, vertical: kSmallPadding,),
               decoration: BoxDecoration(
                   color: Colors.grey.shade200,
-                  border: Border(top: BorderSide(color: Colors.grey.shade300))),
+                  border: Border(top: BorderSide(color: Colors.grey.shade300)),),
               child: Row(
                 children: [
                   CustomIconButtonWithText(
@@ -703,13 +709,13 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                         builder: (context) => AlertDialog(
                           backgroundColor: Colors.white,
                           shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(kCardRadius)),
+                              borderRadius: BorderRadius.circular(kCardRadius),),
                           title: Container(
                             padding: const EdgeInsets.only(bottom: 5),
                             decoration: BoxDecoration(
                                 border: Border(
                                     bottom: BorderSide(
-                                        color: Colors.grey.shade300))),
+                                        color: Colors.grey.shade300,),),),
                             child: Text(
                               'Update Shipping Status',
                               style: detailsTitleStyle.copyWith(fontSize: 16),
@@ -730,7 +736,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                                             child: Text(
                                               element.label?.toString() ?? '',
                                               style: const TextStyle(
-                                                  color: Colors.black),
+                                                  color: Colors.black,),
                                             ),
                                           ),
                                         )
@@ -750,7 +756,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                               buttonColor: Colors.white,
                               borderRadius: kSmallButtonRadius,
                               padding: const EdgeInsets.symmetric(
-                                  vertical: 5, horizontal: 10),
+                                  vertical: 5, horizontal: 10,),
                               textStyle: TextStyle(color: Colors.grey.shade900),
                               borderColor: Colors.grey,
                               onTap: () {
@@ -768,7 +774,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                                   buttonColor: AppColors.lightCoral,
                                   borderRadius: kSmallButtonRadius,
                                   padding: const EdgeInsets.symmetric(
-                                      vertical: 5, horizontal: 10),
+                                      vertical: 5, horizontal: 10,),
                                   textStyle:
                                       const TextStyle(color: Colors.white),
                                   isLoading:
@@ -781,7 +787,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                                         AlertServices.showErrorSnackBar(
                                             message:
                                                 'Please Select shipment status',
-                                            context: context);
+                                            context: context,);
                                       } else {
                                         final bool result =
                                             await updateStatusProvider
@@ -833,7 +839,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                     top: kPadding,
                     left: kPadding,
                     right: kPadding,
-                    bottom: kExtraSmallPadding),
+                    bottom: kExtraSmallPadding,),
                 child: Text(
                   'History',
                   style: titleTextStyle(),
@@ -863,11 +869,11 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
               if (history.isNotEmpty == true &&
                   history.any((element) =>
                           element.action?.toString() ==
-                          'send_order_confirmation_email') ==
+                          'send_order_confirmation_email',) ==
                       true)
                 Padding(
                   padding: EdgeInsets.only(
-                      left: kPadding, right: kPadding, bottom: kPadding),
+                      left: kPadding, right: kPadding, bottom: kPadding,),
                   child: Row(
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.end,
@@ -895,7 +901,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                                     await sendConfirmationEmailProvider
                                         .vendorSendConfirmationEmail(
                                             orderID: widget.orderID.toString(),
-                                            context: context);
+                                            context: context,);
                                 if (result) {
                                   await _onRefresh();
                                 }
@@ -917,7 +923,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
 
   /// custom details
   Widget _customerInformation(
-      {required VendorGetOrderDetailsViewModel provider}) {
+      {required VendorGetOrderDetailsViewModel provider,}) {
     final orderData = provider.apiResponse.data?.data;
     final customer = provider.apiResponse.data?.data?.customer;
     final shipping = provider.apiResponse.data?.data?.shipping;
@@ -935,7 +941,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                     left: kPadding,
                     right: kPadding,
                     top: kPadding,
-                    bottom: kSmallPadding),
+                    bottom: kSmallPadding,),
                 child: Text('Customer', style: titleTextStyle()),
               ),
             ],
@@ -946,7 +952,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
 
           Padding(
             padding: EdgeInsets.symmetric(
-                horizontal: kPadding, vertical: kSmallPadding),
+                horizontal: kPadding, vertical: kSmallPadding,),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -965,14 +971,14 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                   child: (customer?.avatarUrl == null ||
                           customer!.avatarUrl!.isEmpty)
                       ? const Icon(Icons.person,
-                          color: Colors.grey, size: 30) // Placeholder icon
+                          color: Colors.grey, size: 30,) // Placeholder icon
                       : null,
                 ),
 
                 kExtraSmallSpace,
                 Text(customer?.name?.toString() ?? '',
                     style: const TextStyle(
-                        fontSize: 15, fontWeight: FontWeight.normal)),
+                        fontSize: 15, fontWeight: FontWeight.normal,),),
                 kMinorSpace,
                 // number of orders
                 Row(
@@ -981,7 +987,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                     kExtraSmallSpace,
                     Text(customer?.totalOrders?.toString() ?? ''),
                     kExtraSmallSpace,
-                    const Text('Order(s)')
+                    Text(VendorAppStrings.orderSuffix.tr),
                   ],
                 ),
                 kMinorSpace,
@@ -1008,7 +1014,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
           ),
           Padding(
             padding: EdgeInsets.only(
-                left: kPadding, right: kPadding, top: kSmallPadding, bottom: 0),
+                left: kPadding, right: kPadding, top: kSmallPadding, bottom: 0,),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -1019,7 +1025,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                       child: Text(
                         'Shipping Information',
                         style: detailsTitleStyle.copyWith(
-                            fontSize: 17, fontWeight: FontWeight.w500),
+                            fontSize: 17, fontWeight: FontWeight.w500,),
                       ),
                     ),
                     if (isOrderStatusValid(orderData?.orderStatus?.value))
@@ -1031,7 +1037,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                             isScrollControlled: true,
                             shape: const RoundedRectangleBorder(
                                 borderRadius: BorderRadius.vertical(
-                                    top: Radius.circular(4))),
+                                    top: Radius.circular(4),),),
                             builder: (context) =>
                                 VendorUpdateShippingAddressBottomSheetView(
                               orderId: widget.orderID.toString(),
@@ -1049,7 +1055,6 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                                 name: shipping?.name,
                                 phone: shipping?.phone,
                                 email: shipping?.email,
-                                zip_code: shipping?.zipCode,
                                 address: shipping?.address,
                                 country: shipping?.countryName,
                                 state: shipping?.stateName,
@@ -1072,7 +1077,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                 /// name
                 Text(shipping?.name?.toString() ?? '',
                     style: const TextStyle(
-                        fontSize: 15, fontWeight: FontWeight.normal)),
+                        fontSize: 15, fontWeight: FontWeight.normal,),),
                 kMinorSpace,
 
                 /// phone number
@@ -1090,7 +1095,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                         onTap: () async {
                           await Utils.makePhoneCall(
                               phoneNumber: shipping?.phone?.toString() ?? '',
-                              context: context);
+                              context: context,);
                         },
                         child: Text(
                           shipping?.phone?.toString() ?? '',
@@ -1129,9 +1134,6 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                 /// country
                 Text(shipping?.countryName?.toString() ?? ''),
                 kMinorSpace,
-
-                /// zip
-                Text(shipping?.zipCode?.toString() ?? ''),
               ],
             ),
           ),
@@ -1144,10 +1146,10 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                   left: kPadding,
                   right: kPadding,
                   top: kExtraSmallPadding,
-                  bottom: kExtraSmallPadding),
+                  bottom: kExtraSmallPadding,),
               decoration: BoxDecoration(
                   color: Colors.grey.shade100,
-                  border: Border(top: BorderSide(color: Colors.grey.shade300))),
+                  border: Border(top: BorderSide(color: Colors.grey.shade300)),),
               child: Row(
                 children: [
                   ChangeNotifierProvider(
@@ -1161,7 +1163,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                         buttonColor: Colors.white,
                         loadingIndicatorColor: AppColors.lightCoral,
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 7),
+                            horizontal: 10, vertical: 7,),
                         textStyle: const TextStyle(color: Colors.black),
                         isLoading: cancelOrderProvider.apiResponse.status ==
                             ApiStatus.LOADING,
@@ -1177,7 +1179,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                                 final result =
                                     await cancelOrderProvider.vendorCancelOrder(
                                         orderID: widget.orderID.toString(),
-                                        context: context);
+                                        context: context,);
                                 if (result) {
                                   await _onRefresh();
                                 }
@@ -1201,7 +1203,7 @@ Widget _buildCell(
         {Widget? customText,
         String? text,
         bool isBold = false,
-        bool isEndAligned = false}) =>
+        bool isEndAligned = false,}) =>
     Padding(
       padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8.0),
       // Horizontal padding for spacing between columns
@@ -1228,6 +1230,7 @@ class StatusLabel extends StatelessWidget {
     this.iconColor = Colors.green, // Default color for the icon
     this.iconSize = 15.0, // Default size for the icon
   });
+
   final String label;
   final IconData icon;
   final Color iconColor;
@@ -1249,7 +1252,7 @@ bool isShipmentStatusValid(String? status) {
     ShipmentStatusConst.PENDING,
     ShipmentStatusConst.APPROVED,
     ShipmentStatusConst.ARRANGE_SHIPMENT,
-    ShipmentStatusConst.READY_TO_BE_SHIPPED_OUT
+    ShipmentStatusConst.READY_TO_BE_SHIPPED_OUT,
   ];
   return validStatuses.contains(status);
 }

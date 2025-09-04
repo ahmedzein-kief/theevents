@@ -1,3 +1,5 @@
+import 'package:event_app/core/constants/vendor_app_strings.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/services/shared_preferences_helper.dart';
 import 'package:event_app/models/vendor_models/post_models/authorized_signatory_info_post_data.dart';
 import 'package:event_app/models/vendor_models/post_models/business_owner_info_post_data.dart';
@@ -36,7 +38,7 @@ class _BusinessAndAuthorizationScreenState
 
     if (response != null) {
       SecurePreferencesUtil.saveServerStep(
-          int.parse(response.data['step'] ?? '1'));
+          int.parse(response.data['step'] ?? '1'),);
       _radioValue =
           response.data['user_information_type']?.toLowerCase() == 'owner'
               ? 0
@@ -115,8 +117,9 @@ class _BusinessAndAuthorizationScreenState
                               Expanded(
                                 child: RadioListTile<int>(
                                   activeColor: Colors.black,
-                                  title: Text('Are you business owner',
-                                      style: vendorBusinessInfo()),
+                                  title: Text(
+                                      VendorAppStrings.areYouBusinessOwner.tr,
+                                      style: vendorBusinessInfo(),),
                                   value: 0,
                                   groupValue: _radioValue,
                                   onChanged: (int? value) {
@@ -129,8 +132,9 @@ class _BusinessAndAuthorizationScreenState
                               Expanded(
                                 child: RadioListTile<int>(
                                   title: Text(
-                                      'Are you an authorized signatory?',
-                                      style: vendorBusinessInfo()),
+                                      VendorAppStrings
+                                          .areYouAuthorizedSignatory.tr,
+                                      style: vendorBusinessInfo(),),
                                   activeColor: Colors.black,
                                   value: 1,
                                   groupValue: _radioValue,
@@ -173,7 +177,7 @@ class _BusinessAndAuthorizationScreenState
               alignment: Alignment.bottomCenter,
               child: CustomVendorAuthButton(
                 isLoading: mainProvider.isLoading,
-                title: 'Save & Continue',
+                title: VendorAppStrings.saveAndContinue.tr,
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     final result = await updateBusinessSignatoryData(

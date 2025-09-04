@@ -1,3 +1,4 @@
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/styles/custom_text_styles.dart';
 import 'package:event_app/models/dashboard/information_icons_models/gift_card_models/checkout_payment_model.dart';
 import 'package:event_app/provider/information_icons_provider/gift_card_provider.dart';
@@ -6,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../core/constants/app_strings.dart'; // Add this import
 import '../../../../core/helper/validators/validator.dart';
 import '../../../../core/widgets/custom_input_decoration.dart';
 import 'gift_card_bottom.dart';
@@ -56,8 +58,7 @@ class _GiftCardFormState extends State<GiftCardForm> {
   final List<bool> _selected = [false, false, false, false];
 
   Future<CheckoutPaymentModel?> createGiftCard() async {
-    final provider =
-        Provider.of<CreateGiftCardProvider>(context, listen: false);
+    final provider = Provider.of<CreateGiftCardProvider>(context, listen: false);
     final response = await provider.createGiftCard(
       _customTextController.text,
       _receiptNameController.text,
@@ -78,8 +79,7 @@ class _GiftCardFormState extends State<GiftCardForm> {
       // Update the text controller without disrupting user input
       selectedPrice = prices[index].toString();
       if (_customTextController.text != selectedPrice) {
-        _customTextController.text =
-            selectedPrice; // Set the selected value in the controller
+        _customTextController.text = selectedPrice; // Set the selected value in the controller
         // Move cursor to the end of the text field
         _customTextController.selection = TextSelection.fromPosition(
           TextPosition(offset: selectedPrice.length),
@@ -118,8 +118,10 @@ class _GiftCardFormState extends State<GiftCardForm> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Select Gift Card Amount',
-                style: giftSelectAmountText(context)),
+            Text(
+              AppStrings.selectGiftCardAmount.tr,
+              style: giftSelectAmountText(context),
+            ),
             Padding(
               padding: const EdgeInsets.only(top: 8),
               child: Column(
@@ -138,23 +140,21 @@ class _GiftCardFormState extends State<GiftCardForm> {
                             },
                             child: Container(
                               padding: const EdgeInsets.symmetric(
-                                  vertical: 7, horizontal: 12),
+                                vertical: 7,
+                                horizontal: 12,
+                              ),
                               margin: const EdgeInsets.all(4),
                               decoration: BoxDecoration(
                                 border: Border.all(color: Colors.black),
-                                color: _selected[index]
-                                    ? Colors.black
-                                    : Colors.white,
+                                color: _selected[index] ? Colors.black : Colors.white,
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Text(
-                                '${prices[index]} AED',
+                                '${prices[index]} ${AppStrings.aed.tr}',
                                 style: GoogleFonts.inter(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w700,
-                                  color: _selected[index]
-                                      ? Colors.white
-                                      : Colors.black,
+                                  color: _selected[index] ? Colors.white : Colors.black,
                                 ),
                               ),
                             ),
@@ -180,25 +180,27 @@ class _GiftCardFormState extends State<GiftCardForm> {
                       children: [
                         Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 4, vertical: 4),
+                            horizontal: 4,
+                            vertical: 4,
+                          ),
                           child: TextFormField(
-                            autovalidateMode:
-                                AutovalidateMode.onUserInteraction,
+                            autovalidateMode: AutovalidateMode.onUserInteraction,
                             textAlign: TextAlign.center,
                             controller: _customTextController,
                             validator: (value) {
                               if (value == null || value.trim().isEmpty) {
-                                return 'Select or add amount';
+                                return AppStrings.selectOrAddAmount.tr;
                               }
                               if (value.isNotEmpty) {
                                 try {
                                   final double parsedValue = double.parse(
-                                      value); // Parses both int & double
+                                    value,
+                                  ); // Parses both int & double
                                   if (parsedValue > 10000) {
-                                    return 'Amount must be less than 10000 AED';
+                                    return AppStrings.amountMustBeLessThan.tr;
                                   }
                                 } catch (e) {
-                                  return 'Invalid amount entered'; // Handles invalid numbers or large values
+                                  return AppStrings.invalidAmountEntered.tr; // Handles invalid numbers or large values
                                 }
                                 return null; // No error
                               }
@@ -219,19 +221,19 @@ class _GiftCardFormState extends State<GiftCardForm> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Enter Receipt Name *',
-                                  softWrap: true,
-                                  style: giftSelectAmountText(context)),
+                              Text(
+                                AppStrings.enterReceiptName.tr,
+                                softWrap: true,
+                                style: giftSelectAmountText(context),
+                              ),
                               Padding(
                                 padding: const EdgeInsets.only(top: 8),
                                 child: TextFormField(
-                                  autovalidateMode:
-                                      AutovalidateMode.onUserInteraction,
+                                  autovalidateMode: AutovalidateMode.onUserInteraction,
                                   controller: _receiptNameController,
                                   validator: Validator.nameGiftCard,
                                   cursorHeight: 10,
-                                  decoration:
-                                      CustomInputDecoration.getDecoration(),
+                                  decoration: CustomInputDecoration.getDecoration(),
                                 ),
                               ),
                             ],
@@ -242,20 +244,20 @@ class _GiftCardFormState extends State<GiftCardForm> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Enter Receipt Email *',
-                                  softWrap: true,
-                                  style: giftSelectAmountText(context)),
+                              Text(
+                                AppStrings.enterReceiptEmail.tr,
+                                softWrap: true,
+                                style: giftSelectAmountText(context),
+                              ),
                               Padding(
                                 padding: const EdgeInsets.only(top: 8),
                                 child: TextFormField(
-                                  autovalidateMode:
-                                      AutovalidateMode.onUserInteraction,
+                                  autovalidateMode: AutovalidateMode.onUserInteraction,
                                   controller: _cardEmailController,
                                   validator: Validator.emailGiftCard,
                                   style: const TextStyle(height: 0.2),
                                   cursorHeight: 10,
-                                  decoration:
-                                      CustomInputDecoration.getDecoration(),
+                                  decoration: CustomInputDecoration.getDecoration(),
                                 ),
                               ),
                             ],
@@ -266,9 +268,11 @@ class _GiftCardFormState extends State<GiftCardForm> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Additional Notes',
-                                  softWrap: true,
-                                  style: giftSelectAmountText(context)),
+                              Text(
+                                AppStrings.additionalNotes.tr,
+                                softWrap: true,
+                                style: giftSelectAmountText(context),
+                              ),
                               Padding(
                                 padding: const EdgeInsets.only(top: 8),
                                 child: TextFormField(
@@ -277,8 +281,7 @@ class _GiftCardFormState extends State<GiftCardForm> {
                                   style: const TextStyle(height: 1.5),
                                   // Adjust height if needed
                                   decoration: InputDecoration(
-                                    contentPadding:
-                                        const EdgeInsets.only(left: 8, top: 8),
+                                    contentPadding: const EdgeInsets.only(left: 8, top: 8),
                                     // Adjust padding to align text
                                     focusedBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(4),
@@ -302,6 +305,7 @@ class _GiftCardFormState extends State<GiftCardForm> {
                           ),
                         ),
                         PaymentMethods(
+                          paymentType: 'gift_card',
                           onSelectionChanged: (selectedMethod) {
                             paymentMethod = selectedMethod;
                           },
@@ -320,23 +324,20 @@ class _GiftCardFormState extends State<GiftCardForm> {
                               }
                               return InkWell(
                                 onTap: () async {
-                                  if (_formKey.currentState?.validate() ??
-                                      false) {
+                                  if (_formKey.currentState?.validate() ?? false) {
                                     final response = await createGiftCard();
 
                                     final data = response?.data;
 
                                     // Check if the checkoutUrl is available and we haven't navigated yet
                                     if (data?.checkoutUrl.isNotEmpty == true) {
-                                      _navigatedToPaymentScreen =
-                                          true; // Set the flag to true
+                                      _navigatedToPaymentScreen = true; // Set the flag to true
                                       final result = await Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) =>
-                                              PaymentViewScreen(
-                                                  checkoutUrl:
-                                                      data!.checkoutUrl),
+                                          builder: (context) => PaymentViewScreen(
+                                            checkoutUrl: data!.checkoutUrl,
+                                          ),
                                         ),
                                       );
                                     }
@@ -350,7 +351,7 @@ class _GiftCardFormState extends State<GiftCardForm> {
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: Text(
-                                    'Pay Now',
+                                    AppStrings.payNow.tr,
                                     style: payNowText(context),
                                   ),
                                 ),

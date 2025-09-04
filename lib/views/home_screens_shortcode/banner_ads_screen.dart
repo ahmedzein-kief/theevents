@@ -69,11 +69,11 @@ class _ApplyBannerState extends State<BannerAdsScreen> {
                           end: Alignment.bottomRight,
                         ),
                         borderRadius: BorderRadius.circular(
-                            12), // Optional: to round the corners
+                            12,), // Optional: to round the corners
                       ),
                       child: const Center(
                         child: CupertinoActivityIndicator(
-                            color: Colors.black, radius: 10, animating: true),
+                            color: Colors.black, radius: 10, animating: true,),
                       ),
                     ),
                     errorListener: (object) {
@@ -87,7 +87,7 @@ class _ApplyBannerState extends State<BannerAdsScreen> {
                             end: Alignment.bottomRight,
                           ),
                           borderRadius: BorderRadius.circular(
-                              12), // Optional: to round the corners
+                              12,), // Optional: to round the corners
                         ),
                       );
                     },

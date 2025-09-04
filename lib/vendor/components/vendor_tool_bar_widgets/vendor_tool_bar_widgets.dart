@@ -21,7 +21,10 @@ class VendorToolbarWidgets {
         required: false,
         hintText: 'Search..',
         hintStyle: const TextStyle(
-            fontSize: 16, fontWeight: FontWeight.w400, color: Colors.black),
+          fontSize: 16,
+          fontWeight: FontWeight.w400,
+          color: Colors.black,
+        ),
         borderColor: AppColors.stoneGray,
         borderRadius: 2,
         height: 35,
@@ -70,7 +73,7 @@ class VendorToolbarWidgets {
   static dynamic vendorDropdownWidget({
     required String hintText,
     required List<DropdownMenuItem> menuItemsList,
-    required Function(dynamic) onChanged,
+    required String? Function(dynamic)? onChanged,
   }) =>
       wrapUnderElevation(
         child: CustomDropdown(
@@ -78,15 +81,13 @@ class VendorToolbarWidgets {
           borderRadius: 0,
           hintText: hintText,
           textStyle: const TextStyle(
-              color: Colors.black, fontWeight: FontWeight.w400, fontSize: 12),
+            color: Colors.black,
+            fontWeight: FontWeight.w400,
+            fontSize: 12,
+          ),
           borderColor: AppColors.stoneGray,
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 10, vertical: 7.2),
-          onChanged: (value) {
-            onChanged(value);
-
-            /// Callback
-          },
+          contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7.2),
+          onChanged: onChanged,
         ),
       );
 

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/helper/mixins/media_query_mixin.dart';
 import 'package:event_app/core/styles/app_sizes.dart';
 import 'package:event_app/data/vendor/data/response/apis_status.dart';
@@ -15,6 +16,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/constants/vendor_app_strings.dart';
 import '../../../core/styles/app_colors.dart';
 import '../../Components/utils/utils.dart';
 import '../../components/data_tables/custom_data_tables.dart';
@@ -28,8 +30,7 @@ class VendorPackagesView extends StatefulWidget {
   State<VendorPackagesView> createState() => _VendorPackagesViewState();
 }
 
-class _VendorPackagesViewState extends State<VendorPackagesView>
-    with MediaQueryMixin {
+class _VendorPackagesViewState extends State<VendorPackagesView> with MediaQueryMixin {
   /// To show modal progress hud
   bool _isProcessing = false;
 
@@ -47,8 +48,7 @@ class _VendorPackagesViewState extends State<VendorPackagesView>
 
   Future _onRefresh() async {
     try {
-      final provider =
-          Provider.of<VendorGetPackagesViewModel>(context, listen: false);
+      final provider = Provider.of<VendorGetPackagesViewModel>(context, listen: false);
 
       /// clear list on refresh
       provider.clearList();
@@ -60,10 +60,8 @@ class _VendorPackagesViewState extends State<VendorPackagesView>
 
   Future<void> _loadMoreData() async {
     // Load more data here
-    if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent) {
-      final provider =
-          Provider.of<VendorGetPackagesViewModel>(context, listen: false);
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent) {
+      final provider = Provider.of<VendorGetPackagesViewModel>(context, listen: false);
       if (provider.apiResponse.status != ApiStatus.LOADING) {
         await provider.vendorGetPackages(search: _searchController.text);
       }
@@ -93,11 +91,15 @@ class _VendorPackagesViewState extends State<VendorPackagesView>
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        backgroundColor: AppColors.bgColor,
         body: Utils.modelProgressHud(
-            processing: _isProcessing,
-            child: Utils.pageRefreshIndicator(
-                onRefresh: _onRefresh, child: _buildUi(context))),
+          context: context,
+          processing: _isProcessing,
+          child: Utils.pageRefreshIndicator(
+            context: context,
+            onRefresh: _onRefresh,
+            child: _buildUi(context),
+          ),
+        ),
       );
 
   Widget _buildUi(BuildContext context) => Padding(
@@ -123,10 +125,8 @@ class _VendorPackagesViewState extends State<VendorPackagesView>
                       VendorDataListBuilder(
                         scrollController: _scrollController,
                         listLength: provider.list.length,
-                        loadingMoreData:
-                            provider.apiResponse.status == ApiStatus.LOADING,
-                        contentBuilder: (context) =>
-                            _buildRecordsList(provider: provider),
+                        loadingMoreData: provider.apiResponse.status == ApiStatus.LOADING,
+                        contentBuilder: (context) => _buildRecordsList(provider: provider),
                       ),
                     ],
                   );
@@ -137,8 +137,7 @@ class _VendorPackagesViewState extends State<VendorPackagesView>
         ),
       );
 
-  Widget _buildRecordsList({required VendorGetPackagesViewModel provider}) =>
-      ListView.builder(
+  Widget _buildRecordsList({required VendorGetPackagesViewModel provider}) => ListView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         itemCount: provider.list.length,
@@ -151,8 +150,10 @@ class _VendorPackagesViewState extends State<VendorPackagesView>
                 imageAddress: product.image.toString(),
                 status: '${product.status?.label.toString()}' ?? '',
                 statusTextStyle: TextStyle(
-                    color: AppColors.getProductPackageStatusColor(
-                        product.status?.value.toString())),
+                  color: AppColors.getProductPackageStatusColor(
+                    product.status?.value.toString(),
+                  ),
+                ),
                 title: product.id.toString(),
                 subtitle: product.name.toString(),
                 actionCell: VendorActionCell(
@@ -188,12 +189,10 @@ class _VendorPackagesViewState extends State<VendorPackagesView>
                     }
                   },
                   textEditingController: _searchController,
-                  onChanged: (value) =>
-                      debouncedSearch<VendorGetPackagesViewModel>(
+                  onChanged: (value) => debouncedSearch<VendorGetPackagesViewModel>(
                     context: context,
                     value: value,
-                    providerGetter: (context) =>
-                        context.read<VendorGetPackagesViewModel>(),
+                    providerGetter: (context) => context.read<VendorGetPackagesViewModel>(),
                     refreshFunction: _onRefresh,
                   ),
                 ),
@@ -201,8 +200,11 @@ class _VendorPackagesViewState extends State<VendorPackagesView>
               kExtraSmallSpace,
               VendorToolbarWidgets.vendorCreateButton(
                 onTap: () {
-                  Navigator.of(context).push(CupertinoPageRoute(
-                      builder: (context) => VendorCreatePackageView()));
+                  Navigator.of(context).push(
+                    CupertinoPageRoute(
+                      builder: (context) => VendorCreatePackageView(),
+                    ),
+                  );
                 },
                 isLoading: false,
               ),
@@ -211,8 +213,10 @@ class _VendorPackagesViewState extends State<VendorPackagesView>
         ],
       );
 
-  void _onRowTap(
-      {required BuildContext context, required GetProductRecords rowData}) {
+  void _onRowTap({
+    required BuildContext context,
+    required GetProductRecords rowData,
+  }) {
     /// showing through bottom sheet
     showModalBottomSheet(
       context: context,
@@ -220,12 +224,15 @@ class _VendorPackagesViewState extends State<VendorPackagesView>
         onClosing: () {},
         builder: (context) => Container(
           decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(kCardRadius)),
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(kCardRadius),
+          ),
           child: SafeArea(
             child: Padding(
               padding: EdgeInsets.symmetric(
-                  vertical: kPadding, horizontal: kSmallPadding),
+                vertical: kPadding,
+                horizontal: kSmallPadding,
+              ),
               child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -243,18 +250,40 @@ class _VendorPackagesViewState extends State<VendorPackagesView>
                       ),
                     ),
                     kMediumSpace,
-                    buildRow('ID', rowData.id.toString() ?? ''),
-                    buildRow('Name', rowData.name.toString() ?? ''),
-                    buildRow('Price', rowData.priceFormat.toString() ?? ''),
-                    buildRow('Quantity', rowData.quantity.toString() ?? ''),
-                    buildRow('SKU', rowData.sku.toString() ?? ''),
-                    buildRow('Order', rowData.order.toString() ?? ''),
-                    buildRow('Created At', rowData.createdAt.toString() ?? ''),
+                    buildRow(
+                      VendorAppStrings.id.tr,
+                      rowData.id.toString() ?? '',
+                    ),
+                    buildRow(
+                      VendorAppStrings.name.tr,
+                      rowData.name.toString() ?? '',
+                    ),
+                    buildRow(
+                      VendorAppStrings.price.tr,
+                      rowData.priceFormat.toString() ?? '',
+                    ),
+                    buildRow(
+                      VendorAppStrings.quantity.tr,
+                      rowData.quantity.toString() ?? '',
+                    ),
+                    buildRow(
+                      VendorAppStrings.sku.tr,
+                      rowData.sku.toString() ?? '',
+                    ),
+                    buildRow(
+                      VendorAppStrings.order.tr,
+                      rowData.order.toString() ?? '',
+                    ),
+                    buildRow(
+                      VendorAppStrings.createdAt.tr,
+                      rowData.createdAt.toString() ?? '',
+                    ),
                     buildStatusRow(
                       label: 'Status',
                       buttonText: rowData.status?.label?.toString() ?? '',
                       color: AppColors.getProductPackageStatusColor(
-                          rowData.status?.value.toString()),
+                        rowData.status?.value.toString(),
+                      ),
                     ),
                   ],
                 ),
@@ -272,8 +301,7 @@ class _VendorPackagesViewState extends State<VendorPackagesView>
       onDelete: () async {
         _setDeletionProcessing(rowData: rowData, processing: true);
         Navigator.pop(context);
-        final VendorGetPackagesViewModel provider =
-            Provider.of<VendorGetPackagesViewModel>(context, listen: false);
+        final VendorGetPackagesViewModel provider = Provider.of<VendorGetPackagesViewModel>(context, listen: false);
 
         final result = await context
             .read<VendorDeletePackageViewModel>()
@@ -290,15 +318,20 @@ class _VendorPackagesViewState extends State<VendorPackagesView>
   }
 
   Future<void> _onEditRecord({required GetProductRecords rowData}) async {
-    Navigator.of(context).push(CupertinoPageRoute(
+    Navigator.of(context).push(
+      CupertinoPageRoute(
         builder: (context) => VendorCreatePackageView(
-              packageID: rowData.id.toString(),
-            )));
+          packageID: rowData.id.toString(),
+        ),
+      ),
+    );
   }
 
   /// maintain the deletion indicator visibility by calling setState.
-  void _setDeletionProcessing(
-      {required GetProductRecords rowData, required bool processing}) {
+  void _setDeletionProcessing({
+    required GetProductRecords rowData,
+    required bool processing,
+  }) {
     setState(() {
       rowData.isDeleting = processing;
       // setProcessing(processing); /// To show model progress hud. toggle this if don't want to show progress hud.

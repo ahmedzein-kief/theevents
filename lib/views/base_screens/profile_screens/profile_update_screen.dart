@@ -1,8 +1,10 @@
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/services/shared_preferences_helper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/constants/app_strings.dart';
 import '../../../core/network/api_status/api_status.dart';
 import '../../../core/styles/app_colors.dart';
 import '../../../core/utils/custom_toast.dart';
@@ -61,16 +63,16 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
           children: [
             Column(
               children: [
-                const BackAppBarStyle(
+                BackAppBarStyle(
                   icon: Icons.arrow_back_ios,
-                  text: 'My Account',
+                  text: AppStrings.myAccount.tr,
                 ),
                 SizedBox(height: screenHeight * 0.04),
                 Expanded(
                   child: SingleChildScrollView(
                     child: Consumer<UserProvider>(
                       builder: (BuildContext context, UserProvider provider,
-                          Widget? child) {
+                          Widget? child,) {
                         final user = provider.user;
                         if (user == null) return Container();
                         return Column(
@@ -81,49 +83,49 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
                                 children: [
                                   CustomFieldProfileScreen(
                                     displayName: user.name,
-                                    hintText: 'Enter your Name',
+                                    hintText: AppStrings.enterYourName.tr,
                                     controller: _fullNameController,
                                     focusNode: fullNameFocusNode,
                                     nextFocusNode: fullEmailFocusNode,
-                                    labelText: 'Full Name',
+                                    labelText: AppStrings.fullName.tr,
                                     formFieldValidator: (value) {
                                       if (value == null || value.isEmpty) {
-                                        return 'Name cannot be empty.';
+                                        return AppStrings.nameCannotBeEmpty.tr;
                                       }
                                       return null;
                                     },
                                   ),
                                   CustomFieldProfileScreen(
                                     displayName: user.email,
-                                    hintText: 'Enter email Address',
+                                    hintText: AppStrings.enterEmailAddress.tr,
                                     controller: _fullEmailController,
                                     focusNode: fullEmailFocusNode,
                                     isEditable: false,
                                     nextFocusNode: phoneNumberFocusNode,
-                                    labelText: 'Email',
+                                    labelText: AppStrings.email.tr,
                                     formFieldValidator: (value) {
                                       if (value == null || value.isEmpty) {
-                                        return 'Email cannot be empty.';
+                                        return AppStrings.emailCannotBeEmpty.tr;
                                       }
                                       return null;
                                     },
                                   ),
                                   CustomFieldProfileScreen(
                                     displayName: user.phone,
-                                    hintText: 'Enter Phone Number',
+                                    hintText: AppStrings.enterPhoneNumber.tr,
                                     controller: _phoneNumberController,
                                     focusNode: phoneNumberFocusNode,
-                                    labelText: 'Phone',
+                                    labelText: AppStrings.phone.tr,
                                     formFieldValidator: (value) {
                                       if (value == null || value.isEmpty) {
-                                        return 'Phone Number cannot be empty.';
+                                        return AppStrings.phoneCannotBeEmpty.tr;
                                       }
                                       return null;
                                     },
                                   ),
                                   SizedBox(height: screenHeight * 0.04),
                                   AppCustomButton(
-                                    title: 'Update',
+                                    title: AppStrings.update.tr,
                                     isLoading: context
                                             .watch<ProfileUpdateProvider>()
                                             .status ==
@@ -134,12 +136,12 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
                                         await forUpdateProfile(context);
                                         final provider =
                                             Provider.of<UserProvider>(context,
-                                                listen: false);
+                                                listen: false,);
                                         await provider.fetchUserData(
-                                            user.token ?? '', context);
+                                            user.token ?? '', context,);
                                       } else {
-                                        CustomSnackbar.showError(
-                                            context, 'Please fill all fields.');
+                                        CustomSnackbar.showError(context,
+                                            AppStrings.pleaseFillAllFields.tr,);
                                       }
                                     },
                                   ),
@@ -152,11 +154,11 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
                             TextButton(
                               onPressed: () =>
                                   _showDeleteAccountWarning(context),
-                              child: const Text(
-                                'Delete My Account',
-                                style: TextStyle(
+                              child: Text(
+                                AppStrings.deleteMyAccount.tr,
+                                style: const TextStyle(
                                     color: Colors.red,
-                                    fontWeight: FontWeight.bold),
+                                    fontWeight: FontWeight.bold,),
                               ),
                             ),
                           ],
@@ -204,15 +206,14 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
     showDialog(
       context: mainContext,
       builder: (BuildContext context) => AlertDialog(
-        title: const Text('Delete Account'),
-        content: const Text(
-            'Are you sure you want to delete your account? This action cannot be undone.'),
+        title: Text(AppStrings.deleteAccount.tr),
+        content: Text(AppStrings.deleteAccountWarning.tr),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text(
-              'Cancel',
-              style: TextStyle(color: Colors.black),
+            child: Text(
+              AppStrings.cancel.tr,
+              style: const TextStyle(color: Colors.black),
             ),
           ),
           TextButton(
@@ -220,7 +221,8 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
               Navigator.of(context).pop();
               await _deleteAccount(mainContext);
             },
-            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+            child: Text(AppStrings.delete.tr,
+                style: const TextStyle(color: Colors.red),),
           ),
         ],
       ),
@@ -235,7 +237,7 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
 
     if (isDeleted) {
       Navigator.pushReplacement(
-          context, CupertinoPageRoute(builder: (context) => AuthScreen()));
+          context, CupertinoPageRoute(builder: (context) => AuthScreen()),);
     }
   }
 }

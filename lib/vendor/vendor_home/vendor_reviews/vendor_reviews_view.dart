@@ -1,5 +1,5 @@
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/helper/mixins/media_query_mixin.dart';
-import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/core/styles/app_sizes.dart';
 import 'package:event_app/data/vendor/data/response/apis_status.dart';
 import 'package:event_app/models/vendor_models/reviews/reviews_data_response.dart';
@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/constants/vendor_app_strings.dart';
 import '../../components/generics/debouced_search.dart';
 
 class VendorReviewsView extends StatefulWidget {
@@ -22,8 +23,7 @@ class VendorReviewsView extends StatefulWidget {
   State<VendorReviewsView> createState() => _VendorReviewsViewState();
 }
 
-class _VendorReviewsViewState extends State<VendorReviewsView>
-    with MediaQueryMixin {
+class _VendorReviewsViewState extends State<VendorReviewsView> with MediaQueryMixin {
   /// To show modal progress hud
   bool _isProcessing = false;
 
@@ -41,8 +41,7 @@ class _VendorReviewsViewState extends State<VendorReviewsView>
 
   Future _onRefresh() async {
     try {
-      final provider =
-          Provider.of<VendorReviewsViewModel>(context, listen: false);
+      final provider = Provider.of<VendorReviewsViewModel>(context, listen: false);
 
       /// clear list on refresh
       provider.clearList();
@@ -54,10 +53,8 @@ class _VendorReviewsViewState extends State<VendorReviewsView>
 
   Future<void> _loadMoreData() async {
     // Load more data here
-    if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent) {
-      final provider =
-          Provider.of<VendorReviewsViewModel>(context, listen: false);
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent) {
+      final provider = Provider.of<VendorReviewsViewModel>(context, listen: false);
       if (provider.apiResponse.status != ApiStatus.LOADING) {
         await provider.vendorReviews(search: _searchController.text);
       }
@@ -87,11 +84,15 @@ class _VendorReviewsViewState extends State<VendorReviewsView>
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        backgroundColor: AppColors.bgColor,
         body: Utils.modelProgressHud(
-            processing: _isProcessing,
-            child: Utils.pageRefreshIndicator(
-                onRefresh: _onRefresh, child: _buildUi(context))),
+          context: context,
+          processing: _isProcessing,
+          child: Utils.pageRefreshIndicator(
+            onRefresh: _onRefresh,
+            child: _buildUi(context),
+            context: context,
+          ),
+        ),
       );
 
   Widget _buildUi(BuildContext context) => Padding(
@@ -111,8 +112,9 @@ class _VendorReviewsViewState extends State<VendorReviewsView>
                   }
                   if (apiStatus == ApiStatus.ERROR) {
                     return ListView(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        children: [Utils.somethingWentWrong()]);
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      children: [Utils.somethingWentWrong()],
+                    );
                   }
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -121,10 +123,8 @@ class _VendorReviewsViewState extends State<VendorReviewsView>
                       VendorDataListBuilder(
                         scrollController: _scrollController,
                         listLength: provider.list.length,
-                        loadingMoreData:
-                            provider.apiResponse.status == ApiStatus.LOADING,
-                        contentBuilder: (context) =>
-                            _buildRecordsList(provider: provider),
+                        loadingMoreData: provider.apiResponse.status == ApiStatus.LOADING,
+                        contentBuilder: (context) => _buildRecordsList(provider: provider),
                       ),
                     ],
                   );
@@ -135,8 +135,7 @@ class _VendorReviewsViewState extends State<VendorReviewsView>
         ),
       );
 
-  Widget _buildRecordsList({required VendorReviewsViewModel provider}) =>
-      ListView.builder(
+  Widget _buildRecordsList({required VendorReviewsViewModel provider}) => ListView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         itemCount: provider.list.length,
@@ -159,8 +158,7 @@ class _VendorReviewsViewState extends State<VendorReviewsView>
                   direction: Axis.horizontal,
                   itemCount: 5,
                   itemSize: 20,
-                  itemBuilder: (context, _) =>
-                      const Icon(Icons.star, color: Colors.amber),
+                  itemBuilder: (context, _) => const Icon(Icons.star, color: Colors.amber),
                   ignoreGestures: true,
                   onRatingUpdate: (rating) {},
                 ),
@@ -189,8 +187,7 @@ class _VendorReviewsViewState extends State<VendorReviewsView>
                   onChanged: (value) => debouncedSearch<VendorReviewsViewModel>(
                     context: context,
                     value: value,
-                    providerGetter: (context) =>
-                        context.read<VendorReviewsViewModel>(),
+                    providerGetter: (context) => context.read<VendorReviewsViewModel>(),
                     refreshFunction: _onRefresh,
                   ),
                 ),
@@ -200,8 +197,10 @@ class _VendorReviewsViewState extends State<VendorReviewsView>
         ],
       );
 
-  void _onRowTap(
-      {required BuildContext context, required ReviewRecord rowData}) {
+  void _onRowTap({
+    required BuildContext context,
+    required ReviewRecord rowData,
+  }) {
     /// showing through bottom sheet
     showModalBottomSheet(
       context: context,
@@ -210,8 +209,9 @@ class _VendorReviewsViewState extends State<VendorReviewsView>
         onClosing: () {},
         builder: (context) => Container(
           decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(kCardRadius)),
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(kCardRadius),
+          ),
           child: SafeArea(
             child: Padding(
               padding: EdgeInsets.all(kSmallPadding),
@@ -219,11 +219,23 @@ class _VendorReviewsViewState extends State<VendorReviewsView>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    buildRow('ID', rowData.id.toString()),
-                    buildRow('Product', rowData.productName.toString()),
-                    buildRow('User', rowData.customerName.toString()),
-                    buildRow('Comment', rowData.comment.toString()),
-                    buildRow('Created At', rowData.createdAt.toString()),
+                    buildRow(VendorAppStrings.id.tr, rowData.id.toString()),
+                    buildRow(
+                      VendorAppStrings.product.tr,
+                      rowData.productName.toString(),
+                    ),
+                    buildRow(
+                      VendorAppStrings.user.tr,
+                      rowData.customerName.toString(),
+                    ),
+                    buildRow(
+                      VendorAppStrings.comment.tr,
+                      rowData.comment.toString(),
+                    ),
+                    buildRow(
+                      VendorAppStrings.createdAt.tr,
+                      rowData.createdAt.toString(),
+                    ),
                     buildWidgetRow(
                       'Star',
                       RatingBar.builder(
@@ -232,8 +244,7 @@ class _VendorReviewsViewState extends State<VendorReviewsView>
                         direction: Axis.horizontal,
                         itemCount: 5,
                         itemSize: 20,
-                        itemBuilder: (context, _) =>
-                            const Icon(Icons.star, color: Colors.amber),
+                        itemBuilder: (context, _) => const Icon(Icons.star, color: Colors.amber),
                         ignoreGestures: true,
                         onRatingUpdate: (rating) {},
                       ),

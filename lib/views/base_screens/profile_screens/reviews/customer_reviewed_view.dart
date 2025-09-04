@@ -1,3 +1,5 @@
+import 'package:event_app/core/constants/app_strings.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/helper/mixins/media_query_mixin.dart';
 import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/core/styles/app_sizes.dart';
@@ -24,8 +26,7 @@ class CustomerReviewedView extends StatefulWidget {
   State<CustomerReviewedView> createState() => _CustomerReviewedViewState();
 }
 
-class _CustomerReviewedViewState extends State<CustomerReviewedView>
-    with MediaQueryMixin {
+class _CustomerReviewedViewState extends State<CustomerReviewedView> with MediaQueryMixin {
   /// To show modal progress hud
   bool _isProcessing = false;
 
@@ -43,8 +44,10 @@ class _CustomerReviewedViewState extends State<CustomerReviewedView>
 
   Future _onRefresh() async {
     try {
-      final provider = Provider.of<CustomerGetProductReviewsViewModel>(context,
-          listen: false);
+      final provider = Provider.of<CustomerGetProductReviewsViewModel>(
+        context,
+        listen: false,
+      );
 
       /// clear list on refresh
       provider.clearList();
@@ -56,13 +59,15 @@ class _CustomerReviewedViewState extends State<CustomerReviewedView>
 
   Future<void> _loadMoreData() async {
     // Load more data here
-    if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent) {
-      final provider = Provider.of<CustomerGetProductReviewsViewModel>(context,
-          listen: false);
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent) {
+      final provider = Provider.of<CustomerGetProductReviewsViewModel>(
+        context,
+        listen: false,
+      );
       if (provider.apiResponse.status != ApiStatus.LOADING) {
         await provider.customerGetProductReviews(
-            search: _searchController.text);
+          search: _searchController.text,
+        );
       }
     }
   }
@@ -90,11 +95,16 @@ class _CustomerReviewedViewState extends State<CustomerReviewedView>
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        backgroundColor: AppColors.bgColor,
+        // backgroundColor: AppColors.bgColor,
         body: Utils.modelProgressHud(
-            processing: _isProcessing,
-            child: Utils.pageRefreshIndicator(
-                onRefresh: _onRefresh, child: _buildUi(context))),
+          context: context,
+          processing: _isProcessing,
+          child: Utils.pageRefreshIndicator(
+            context: context,
+            onRefresh: _onRefresh,
+            child: _buildUi(context),
+          ),
+        ),
       );
 
   Widget _buildUi(BuildContext context) => Padding(
@@ -111,8 +121,9 @@ class _CustomerReviewedViewState extends State<CustomerReviewedView>
                   }
                   if (apiStatus == ApiStatus.ERROR) {
                     return ListView(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        children: [Utils.somethingWentWrong()]);
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      children: [Utils.somethingWentWrong()],
+                    );
                   }
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -122,20 +133,19 @@ class _CustomerReviewedViewState extends State<CustomerReviewedView>
                         onNoDataAvailable: Padding(
                           padding: const EdgeInsets.all(12.0),
                           child: Text(
-                            'You have not reviewed any product.',
+                            AppStrings.noReviews.tr,
                             style: GoogleFonts.inter(
-                                fontSize: 20,
-                                color: AppColors.peachyPink,
-                                fontWeight: FontWeight.bold),
+                              fontSize: 20,
+                              color: AppColors.peachyPink,
+                              fontWeight: FontWeight.bold,
+                            ),
                             textAlign: TextAlign.start,
                           ),
                         ),
                         scrollController: _scrollController,
                         listLength: provider.reviewedProductList.length,
-                        loadingMoreData:
-                            provider.apiResponse.status == ApiStatus.LOADING,
-                        contentBuilder: (context) =>
-                            _buildRecordsList(provider: provider),
+                        loadingMoreData: provider.apiResponse.status == ApiStatus.LOADING,
+                        contentBuilder: (context) => _buildRecordsList(provider: provider),
                       ),
                     ],
                   );
@@ -146,8 +156,9 @@ class _CustomerReviewedViewState extends State<CustomerReviewedView>
         ),
       );
 
-  Widget _buildRecordsList(
-          {required CustomerGetProductReviewsViewModel provider}) =>
+  Widget _buildRecordsList({
+    required CustomerGetProductReviewsViewModel provider,
+  }) =>
       ListView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
@@ -202,17 +213,16 @@ class _CustomerReviewedViewState extends State<CustomerReviewedView>
                     ),
                     kSmallSpace,
                     GestureDetector(
-                      onTap: record.isDeleting
-                          ? null
-                          : () => _onDeleteRecord(rowData: record),
+                      onTap: record.isDeleting ? null : () => _onDeleteRecord(rowData: record),
                       child: record.isDeleting
                           ? SizedBox(
                               height: 20,
                               width: 20,
-                              child:
-                                  Utils.pageLoadingIndicator(context: context))
+                              child: Utils.pageLoadingIndicator(context: context),
+                            )
                           : SvgPicture.asset(
-                              'assets/vendor_assets/settings/delete_record.svg'),
+                              'assets/vendor_assets/settings/delete_record.svg',
+                            ),
                     ),
                   ],
                 ),
@@ -223,8 +233,10 @@ class _CustomerReviewedViewState extends State<CustomerReviewedView>
         },
       );
 
-  void _onRowTap(
-      {required BuildContext context, required ReviewedRecords rowData}) {
+  void _onRowTap({
+    required BuildContext context,
+    required ReviewedRecords rowData,
+  }) {
     /// showing through bottom sheet
     showModalBottomSheet(
       context: context,
@@ -233,8 +245,9 @@ class _CustomerReviewedViewState extends State<CustomerReviewedView>
         onClosing: () {},
         builder: (context) => Container(
           decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(kCardRadius)),
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(kCardRadius),
+          ),
           child: SafeArea(
             child: Padding(
               padding: EdgeInsets.all(kSmallPadding),
@@ -245,14 +258,15 @@ class _CustomerReviewedViewState extends State<CustomerReviewedView>
                     Container(
                       height: 200,
                       decoration: BoxDecoration(
-                          image: DecorationImage(
-                              image: NetworkImage(rowData.image.toString()))),
+                        image: DecorationImage(
+                          image: NetworkImage(rowData.image.toString()),
+                        ),
+                      ),
                     ),
                     kSmallSpace,
                     // buildRow("ID", rowData.id?.toString()),
                     buildRow('Name', rowData.name?.toString()),
-                    if ((rowData.sku?.length ?? 0) > 0)
-                      buildRow('SKU', rowData.sku?.toString()),
+                    if ((rowData.sku?.length ?? 0) > 0) buildRow('SKU', rowData.sku?.toString()),
                     buildWidgetRow(
                       'Star',
                       RatingBar.builder(
@@ -261,15 +275,13 @@ class _CustomerReviewedViewState extends State<CustomerReviewedView>
                         direction: Axis.horizontal,
                         itemCount: 5,
                         itemSize: 20,
-                        itemBuilder: (context, _) =>
-                            const Icon(Icons.star, color: Colors.amber),
+                        itemBuilder: (context, _) => const Icon(Icons.star, color: Colors.amber),
                         ignoreGestures: true,
                         onRatingUpdate: (rating) {},
                       ),
                     ),
                     buildRow('Comment', rowData.comment?.toString()),
-                    if ((rowData.storeName?.length ?? 0) > 0)
-                      buildRow('Store Name', rowData.storeName?.toString()),
+                    if ((rowData.storeName?.length ?? 0) > 0) buildRow('Store Name', rowData.storeName?.toString()),
                     buildRow('Created At', rowData.createdAt?.toString()),
                   ],
                 ),
@@ -287,9 +299,10 @@ class _CustomerReviewedViewState extends State<CustomerReviewedView>
       onDelete: () async {
         _setDeletionProcessing(rowData: rowData, processing: true);
         Navigator.pop(context);
-        final CustomerGetProductReviewsViewModel provider =
-            Provider.of<CustomerGetProductReviewsViewModel>(context,
-                listen: false);
+        final CustomerGetProductReviewsViewModel provider = Provider.of<CustomerGetProductReviewsViewModel>(
+          context,
+          listen: false,
+        );
         final result = await context
             .read<CustomerDeleteReviewViewModel>()
             .customerDeleteReview(reviewID: rowData.id, context: context);
@@ -309,8 +322,10 @@ class _CustomerReviewedViewState extends State<CustomerReviewedView>
   }
 
   /// maintain the deletion indicator visibility by calling setState.
-  void _setDeletionProcessing(
-      {required ReviewedRecords rowData, required bool processing}) {
+  void _setDeletionProcessing({
+    required ReviewedRecords rowData,
+    required bool processing,
+  }) {
     setState(() {
       rowData.isDeleting = processing;
     });

@@ -85,7 +85,7 @@ class Records {
       this.storeSlug,
       this.storeLogo,
       this.storeLogoThumb,
-      this.coverImage});
+      this.coverImage,});
 
   Records.fromJson(Map<String, dynamic> json) {
     id = json['id'];

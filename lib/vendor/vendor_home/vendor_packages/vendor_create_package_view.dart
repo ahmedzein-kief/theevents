@@ -56,6 +56,7 @@ class VendorCreatePackageView extends StatefulWidget {
     super.key,
     this.packageID,
   });
+
   String? packageID;
 
   @override
@@ -183,13 +184,13 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView>
         createProductPostData.description = productViewData?.description ?? '';
     if (_descriptionController.text.isNotEmpty) {
       _descriptionQuilController.document = Document.fromDelta(
-          convertHtmlToDelta(htmlContent: _descriptionController.text));
+          convertHtmlToDelta(htmlContent: _descriptionController.text),);
     }
     _contentController.text =
         createProductPostData.content = productViewData?.content ?? '';
     if (_contentController.text.isNotEmpty) {
       _contentQuilController.document = Document.fromDelta(
-          convertHtmlToDelta(htmlContent: _contentController.text));
+          convertHtmlToDelta(htmlContent: _contentController.text),);
     }
     createProductPostData.categories = productViewData?.categories ?? [];
     _initializeProductCategories(categories: productViewData?.categories ?? []);
@@ -200,7 +201,7 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView>
     createProductPostData.productCollections =
         productViewData?.collections ?? [];
     _initializeProductCollections(
-        collections: productViewData?.collections ?? []);
+        collections: productViewData?.collections ?? [],);
 
     createProductPostData.productLabels = productViewData?.labels ?? [];
     _initializeProductLabel(labels: productViewData?.labels ?? []);
@@ -353,13 +354,13 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView>
         final result = await provider.vendorUpdatePackage(
             context: context,
             packageID: widget.packageID ?? '',
-            productPostDataModel: createProductPostData);
+            productPostDataModel: createProductPostData,);
         if (result) {
           await _onRefresh();
         }
       } else {
         final result = await provider.vendorCreatePackage(
-            context: context, productPostDataModel: createProductPostData);
+            context: context, productPostDataModel: createProductPostData,);
         if (result) {
           _currentPackageId =
               provider.vendorCreatePackageApiResponse.data?.data.id.toString();
@@ -451,7 +452,7 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView>
 
   /// ***---------------------------- Products options Section start ------------------------*** ///
   Future<void> _openProductOptionsScreen(
-      List<GlobalOptions> globalOptions) async {
+      List<GlobalOptions> globalOptions,) async {
     final List<GlobalOptionsData>? options = await Navigator.push(
       context,
       MaterialPageRoute(
@@ -612,7 +613,7 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView>
       context,
       CupertinoPageRoute(
         builder: (context) => VendorProductShippingView(
-            vendorProductDimensionsModel: vendorProductDimensionsModel),
+            vendorProductDimensionsModel: vendorProductDimensionsModel,),
       ),
     );
 
@@ -649,8 +650,8 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView>
   /// handle seo data if no data is available also
   void _handleSeoData(vendorProductSeoModel) {
     createProductPostData.seoMeta = {
-      'seo_title': (vendorProductSeoModel?.title.trim().isNotEmpty ?? false)
-          ? vendorProductSeoModel!.title
+      'seo_title': (vendorProductSeoModel?.iso.trim().isNotEmpty ?? false)
+          ? vendorProductSeoModel!.iso
           : (_nameController.text.trim().isNotEmpty
               ? _nameController.text
               : ''),
@@ -835,7 +836,7 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView>
               productName: slug,
               productID: widget.packageID,
               slugID: _slugID,
-              context: context);
+              context: context,);
       if (slugGenerated != null) {
         setState(() {
           createProductPostData.slug = slugGenerated;
@@ -891,6 +892,7 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView>
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: VendorCommonAppBar(title: getHeaderText()),
       body: Utils.modelProgressHud(
+        context: context,
         processing: _isProcessing,
         child: Stack(
           children: [
@@ -919,7 +921,7 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView>
                             width: MediaQuery.of(context).size.width,
                             child: Padding(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 8.0, vertical: 8.0),
+                                  horizontal: 8.0, vertical: 8.0,),
                               child: CustomAppButton(
                                 borderRadius: 4,
                                 buttonText: 'Save',
@@ -996,7 +998,7 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView>
           final settings = provider.generalSettingsApiResponse.data?.data;
           return Padding(
             padding: EdgeInsets.only(
-                left: kPadding, right: kPadding, top: kPadding, bottom: 80),
+                left: kPadding, right: kPadding, top: kPadding, bottom: 80,),
             child: ListView.separated(
               itemCount:
                   provider.generalSettingsApiResponse.status == ApiStatus.ERROR
@@ -1011,10 +1013,10 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView>
 
                 final sections = [
                   _generalInformation(
-                      theme: theme, context: context, provider: provider),
+                      theme: theme, context: context, provider: provider,),
                   _imagesSection(theme: theme, context: context),
                   _overviewSection(
-                      theme: theme, context: context, provider: provider),
+                      theme: theme, context: context, provider: provider,),
                   if (widget.packageID == null)
                     _shippingSection(
                       theme: theme,
@@ -1045,7 +1047,7 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView>
   Widget _generalInformation(
       {required ThemeData theme,
       required BuildContext context,
-      required VendorGetPackageGeneralSettingsViewModel provider}) {
+      required VendorGetPackageGeneralSettingsViewModel provider,}) {
     final settings = provider.generalSettingsApiResponse.data?.data;
 
     /// general settings data
@@ -1088,7 +1090,7 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView>
               prefix: texFieldPrefix(
                   screenWidth: screenWidth,
                   text: VendorApiEndpoints.vendorProductBaseUrl,
-                  padding: EdgeInsets.only(left: screenWidth * 0.04)),
+                  padding: EdgeInsets.only(left: screenWidth * 0.04),),
               validator: Validator.validatePermalink,
               suffix: _permalinkController.text.isNotEmpty ||
                       _nameController.text.isNotEmpty
@@ -1106,7 +1108,7 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView>
                               height: 20,
                               width: 20,
                               child:
-                                  Utils.pageLoadingIndicator(context: context))
+                                  Utils.pageLoadingIndicator(context: context),)
                           : const Icon(
                               Icons.edit,
                             ),
@@ -1131,7 +1133,7 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView>
             placeholder: '',
             showToolBar: false,
             fieldHeight: 100,
-            quillController: _descriptionQuilController),
+            quillController: _descriptionQuilController,),
         kFormFieldSpace,
         // /// content
         fieldTitle(text: 'Content'),
@@ -1139,7 +1141,7 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView>
             placeholder: '',
             showToolBar: false,
             fieldHeight: 100,
-            quillController: _contentQuilController),
+            quillController: _contentQuilController,),
         kFormFieldSpace,
 
         /// brands
@@ -1275,7 +1277,7 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView>
 
   /// Upload images
   Widget _imagesSection(
-          {required ThemeData theme, required BuildContext context}) =>
+          {required ThemeData theme, required BuildContext context,}) =>
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -1301,7 +1303,7 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView>
   Widget _overviewSection(
           {required ThemeData theme,
           required BuildContext context,
-          required VendorGetPackageGeneralSettingsViewModel provider}) =>
+          required VendorGetPackageGeneralSettingsViewModel provider,}) =>
       Column(
         children: [
           TitleWithArrow(
@@ -1318,7 +1320,7 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView>
           if (overviewModel != null)
             SimpleCard(
               expandedContentPadding: EdgeInsets.symmetric(
-                  horizontal: kMediumPadding, vertical: kExtraSmallPadding),
+                  horizontal: kMediumPadding, vertical: kExtraSmallPadding,),
               expandedContent: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 // Align the content to the left
@@ -1326,22 +1328,22 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView>
                   showDetail(label: 'Sku', value: overviewModel?.sku),
                   showDetail(label: 'Price', value: overviewModel?.price),
                   showDetail(
-                      label: 'Sale Price', value: overviewModel?.priceSale),
+                      label: 'Sale Price', value: overviewModel?.priceSale,),
                   if (overviewModel?.chooseDiscountPeriod ?? false)
                     Column(
                       children: [
                         showDetail(
-                            label: 'From', value: overviewModel?.fromDate),
+                            label: 'From', value: overviewModel?.fromDate,),
                         showDetail(label: 'To', value: overviewModel?.toDate),
                       ],
                     ),
                   showDetail(
                       label: 'Cost per item',
-                      value: overviewModel?.costPerItem),
+                      value: overviewModel?.costPerItem,),
                   showDetail(label: 'Barcode', value: overviewModel?.barcode),
                   if (overviewModel?.withWareHouseManagement ?? false)
                     showDetail(
-                        label: 'Quantity', value: overviewModel?.quantity),
+                        label: 'Quantity', value: overviewModel?.quantity,),
                   if (!(overviewModel?.withWareHouseManagement ?? true))
                     showDetail(
                       label: 'Stock Status',
@@ -1366,7 +1368,7 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView>
 
   /// shipping section : visible for physical product only
   Widget _shippingSection(
-          {required ThemeData theme, required BuildContext context}) =>
+          {required ThemeData theme, required BuildContext context,}) =>
       Column(
         children: [
           TitleWithArrow(
@@ -1383,21 +1385,21 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView>
           if (vendorProductDimensionsModel != null)
             SimpleCard(
               expandedContentPadding: EdgeInsets.symmetric(
-                  horizontal: kMediumPadding, vertical: kExtraSmallPadding),
+                  horizontal: kMediumPadding, vertical: kExtraSmallPadding,),
               expandedContent: Column(
                 children: [
                   showDetail(
                       label: 'Weight (g)',
-                      value: vendorProductDimensionsModel?.weight),
+                      value: vendorProductDimensionsModel?.weight,),
                   showDetail(
                       label: 'Length (cm)',
-                      value: vendorProductDimensionsModel?.length),
+                      value: vendorProductDimensionsModel?.length,),
                   showDetail(
                       label: 'Width (cm)',
-                      value: vendorProductDimensionsModel?.width),
+                      value: vendorProductDimensionsModel?.width,),
                   showDetail(
                       label: 'Height (cm)',
-                      value: vendorProductDimensionsModel?.height),
+                      value: vendorProductDimensionsModel?.height,),
                 ],
               ),
             ),
@@ -1406,7 +1408,7 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView>
 
   /// package products
   Widget _packageProducts(
-          {required ThemeData theme, required BuildContext context}) =>
+          {required ThemeData theme, required BuildContext context,}) =>
       Column(
         children: [
           TitleWithArrow(
@@ -1454,7 +1456,7 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView>
 
   /// Search Engine Optimization
   Widget _seoSection(
-          {required ThemeData theme, required BuildContext context}) =>
+          {required ThemeData theme, required BuildContext context,}) =>
       Column(
         children: [
           TitleWithArrow(
@@ -1468,7 +1470,7 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView>
               _nameController.text.isNotEmpty)
             SimpleCard(
               expandedContentPadding: EdgeInsets.symmetric(
-                  horizontal: kMediumPadding, vertical: kExtraSmallPadding),
+                  horizontal: kMediumPadding, vertical: kExtraSmallPadding,),
               expandedContent: vendorProductSeoModel?.type ==
                       SeoIndexConstants.NO_INDEX
                   ? Row(
@@ -1495,7 +1497,7 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView>
                               ? _nameController.text
                               : vendorProductSeoModel?.title ?? '',
                           style: const TextStyle(
-                              color: AppColors.royalIndigo, fontSize: 18),
+                              color: AppColors.royalIndigo, fontSize: 18,),
                         ),
                         Text(
                           VendorApiEndpoints.vendorProductBaseUrl +
@@ -1520,7 +1522,7 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView>
                                         : ''),
                                 // Only show "-" if description or text is not empty
                                 style: const TextStyle(
-                                    color: Colors.black, fontSize: 13),
+                                    color: Colors.black, fontSize: 13,),
                               ),
                             ),
                           ],

@@ -1,34 +1,33 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
+import '../core/services/shared_preferences_helper.dart';
 
 class ThemeNotifier with ChangeNotifier {
   ThemeNotifier() {
     _loadFromPrefs();
   }
+
   bool _isLightTheme = true; // Default theme
-  late SharedPreferences _prefs;
   final String key = 'theme';
 
   bool get isLightTheme => _isLightTheme;
 
   void toggleTheme() {
     _isLightTheme = !_isLightTheme;
-    _saveToPrefs();
-    notifyListeners();
-  }
-
-  Future<void> _initPrefs() async {
-    _prefs = await SharedPreferences.getInstance();
+    notifyListeners(); // Notify first for instant UI change
+    _saveToPrefs(); // Then persist asynchronously
   }
 
   Future<void> _loadFromPrefs() async {
-    await _initPrefs();
-    _isLightTheme = _prefs.getBool(key) ?? true;
+    final storedValue = SecurePreferencesUtil.getBool(key);
+    if (storedValue != null) {
+      _isLightTheme = storedValue;
+    }
+    // Only notify here once after initial load
     notifyListeners();
   }
 
   Future<void> _saveToPrefs() async {
-    await _initPrefs();
-    _prefs.setBool(key, _isLightTheme);
+    await SecurePreferencesUtil.setBool(key, _isLightTheme);
   }
 }

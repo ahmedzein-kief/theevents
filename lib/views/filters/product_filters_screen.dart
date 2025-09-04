@@ -1,3 +1,6 @@
+import 'package:event_app/core/constants/app_strings.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
+import 'package:event_app/core/helper/functions/functions.dart';
 import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/models/product_packages_models/product_filters_model.dart';
 import 'package:flutter/material.dart';
@@ -53,20 +56,16 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
     selectedIds.removeWhere((key, value) {
       switch (key) {
         case 'Categories':
-          return widget.isCategory ||
-              (value.isEmpty && (widget.filters?.categories.isEmpty ?? true));
+          return widget.isCategory || (value.isEmpty && (widget.filters?.categories.isEmpty ?? true));
         case 'Brands':
           return value.isEmpty && (widget.filters?.brands.isEmpty ?? true);
         case 'Tags':
           return value.isEmpty && (widget.filters?.tags.isEmpty ?? true);
         case 'Colors':
-          final hasColors = widget.filters?.attributesSet
-                  .any((attr) => attr.slug == 'colors') ??
-              false;
+          final hasColors = widget.filters?.attributesSet.any((attr) => attr.slug == 'colors') ?? false;
           return value.isEmpty && !hasColors;
         case 'Prices':
-          return widget.filters?.maxPrice ==
-              0; // Always keep Prices as it's a range filter
+          return widget.filters?.maxPrice == 0; // Always keep Prices as it's a range filter
         default:
           return true; // Remove unknown keys
       }
@@ -91,7 +90,6 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
         height: MediaQuery.of(context).size.height * 0.6,
         padding: const EdgeInsets.all(0),
         decoration: const BoxDecoration(
-          color: Colors.white,
           borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
         child: Column(
@@ -104,10 +102,10 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                 color: AppColors.peachyPink,
                 borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
               ),
-              child: const Center(
+              child: Center(
                 child: Text(
-                  'Filters',
-                  style: TextStyle(
+                  AppStrings.filters.tr,
+                  style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
@@ -125,13 +123,11 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                           .map(
                             (filter) => ListTile(
                               title: Text(
-                                filter,
+                                getFilterText(filter),
                                 style: TextStyle(
                                   fontSize: 14,
-                                  color: AppColors.semiTransparentBlack,
-                                  fontWeight: selectedFilter == filter
-                                      ? FontWeight.bold
-                                      : FontWeight.normal,
+                                  color: Theme.of(context).colorScheme.onPrimary,
+                                  fontWeight: selectedFilter == filter ? FontWeight.bold : FontWeight.normal,
                                 ),
                               ),
                               selected: selectedFilter == filter,
@@ -159,12 +155,11 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                               values: _priceRange,
                               onChanged: (SfRangeValues values) {
                                 setState(() {
-                                  _priceRange =
-                                      values; // Update the price range
+                                  _priceRange = values; // Update the price range
                                   // Save the values as integers in the selectedIds map
                                   selectedIds['Prices'] = [
                                     values.start.toInt(),
-                                    values.end.toInt()
+                                    values.end.toInt(),
                                   ];
                                 });
                               },
@@ -175,14 +170,12 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                               labelFormatterCallback: (actualValue, index) {
                                 return '${actualValue.toStringAsFixed(0)}'; // Display only the number for the label
                               },
-                              tooltipTextFormatterCallback:
-                                  (actualValue, index) {
+                              tooltipTextFormatterCallback: (actualValue, index) {
                                 return '${actualValue.toStringAsFixed(0)}'; // Show number as the tooltip text
                               },
                               activeColor: Colors.blue,
                               // Active color of the range
-                              inactiveColor:
-                                  Colors.grey, // Inactive color of the range
+                              inactiveColor: Colors.grey, // Inactive color of the range
                             ),
                           )
                         : // Otherwise, show the checkbox list
@@ -192,8 +185,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                               final filterValue = getFilterValues()[index];
                               final String value = filterValue['name'];
                               final int id = filterValue['id'];
-                              final bool isSelected =
-                                  selectedIds[selectedFilter]!.contains(id);
+                              final bool isSelected = selectedIds[selectedFilter]!.contains(id);
 
                               // Check if the current filter is a color and extract the color
                               Color? color;
@@ -211,12 +203,11 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                                         width: 20,
                                         height: 20,
                                         margin: const EdgeInsets.only(
-                                            right:
-                                                8), // Margin between color and text
+                                          right: 8,
+                                        ), // Margin between color and text
                                         decoration: BoxDecoration(
                                           color: color,
-                                          borderRadius:
-                                              BorderRadius.circular(4),
+                                          borderRadius: BorderRadius.circular(4),
                                         ),
                                       ),
                                     Text(
@@ -255,9 +246,9 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                     onPressed: () {
                       Navigator.pop(context); // Close the bottom sheet
                     },
-                    child: const Text(
-                      'Cancel',
-                      style: TextStyle(color: Colors.blue),
+                    child: Text(
+                      AppStrings.cancel.tr,
+                      style: const TextStyle(color: Colors.blue),
                     ),
                   ),
                   ElevatedButton(
@@ -268,9 +259,9 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,
                     ),
-                    child: const Text(
-                      'Apply',
-                      style: TextStyle(color: Colors.white),
+                    child: Text(
+                      AppStrings.apply.tr,
+                      style: const TextStyle(color: Colors.white),
                     ),
                   ),
                 ],
@@ -284,29 +275,24 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
   List<Map<String, dynamic>> getFilterValues() {
     switch (selectedFilter) {
       case 'Categories':
-        return widget.filters!.categories
-            .map((category) => {'name': category.name, 'id': category.id})
-            .toList();
+        return widget.filters!.categories.map((category) => {'name': category.name, 'id': category.id}).toList();
       case 'Brands':
-        return widget.filters!.brands
-            .map((brand) => {'name': brand.name, 'id': brand.id})
-            .toList();
+        return widget.filters!.brands.map((brand) => {'name': brand.name, 'id': brand.id}).toList();
       case 'Tags':
-        return widget.filters!.tags
-            .map((tag) => {'name': tag.name, 'id': tag.id})
-            .toList();
+        return widget.filters!.tags.map((tag) => {'name': tag.name, 'id': tag.id}).toList();
       case 'Colors':
-        final AttributeSet colorAttributeSet =
-            widget.filters!.attributesSet.firstWhere(
+        final AttributeSet colorAttributeSet = widget.filters!.attributesSet.firstWhere(
           (attributeSet) => attributeSet.slug == 'colors',
         );
         final colorAttributes = colorAttributeSet.attributes;
         return colorAttributes
-            .map((attribute) => {
-                  'name': attribute.title,
-                  'id': attribute.id,
-                  'color': attribute.color
-                })
+            .map(
+              (attribute) => {
+                'name': attribute.title,
+                'id': attribute.id,
+                'color': attribute.color,
+              },
+            )
             .toList();
       default:
         return [];
@@ -315,8 +301,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
 
   Color getColorFromString(String colorString) {
     try {
-      final match =
-          RegExp(r'rgb\((\d+), (\d+), (\d+)\)').firstMatch(colorString);
+      final match = RegExp(r'rgb\((\d+), (\d+), (\d+)\)').firstMatch(colorString);
       if (match != null) {
         final r = int.parse(match.group(1)!);
         final g = int.parse(match.group(2)!);

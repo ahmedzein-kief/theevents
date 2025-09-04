@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:event_app/core/services/image_picker.dart';
 import 'package:event_app/core/widgets/bottom_navigation_bar.dart';
@@ -30,47 +31,65 @@ class AuthProvider with ChangeNotifier {
   String get message => _message;
 
   Future<UserLoginModel?> login(
-      BuildContext context, String email, String password, bool rememberMe,
-      {required String TokenName}) async {
+    BuildContext context,
+    String email,
+    String password,
+    bool rememberMe, {
+    required String tokenName,
+  }) async {
     _isLoading = true;
     _status = ApiStatus.loading;
     notifyListeners();
 
-    const url = '${ApiEndpoints.baseUrl}${ApiEndpoints.login}';
+    const url = ApiEndpoints.login;
     final headers = {
       'Content-Type': 'application/json; charset=UTF-8',
     };
     final body = jsonEncode(
-        {'email': email, 'password': password, 'token_name': TokenName});
-
-    final response = await _apiResponseHandler.postRequest(url,
-        headers: headers, bodyString: body, authService: false);
+      {'email': email, 'password': password, 'token_name': tokenName},
+    );
 
     try {
+      final response = await _apiResponseHandler.postRequest(
+        url,
+        headers: headers,
+        bodyString: body,
+        authService: false,
+      );
+
       if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
+        final jsonData = response.data;
         final UserLoginModel userLoginModel = UserLoginModel.fromJson(jsonData);
 
         /// store image url to preferences
-        ImagePickerHelper()
-            .saveImageToPreferences(userLoginModel.data?.avatar ?? '');
+        ImagePickerHelper().saveImageToPreferences(userLoginModel.data?.avatar ?? '');
         _isLoading = false;
         notifyListeners();
-        CustomSnackbar.showSuccess(
-            context, userLoginModel.message ?? 'Login successfully.');
+        if (context.mounted) {
+          CustomSnackbar.showSuccess(
+            context,
+            userLoginModel.message ?? 'Login successfully.',
+          );
+        }
         return userLoginModel;
       } else {
-        final jsonData = json.decode(response.body);
+        log('Login response: ${response.data}');
+        final jsonData = response.data;
         final UserLoginModel userLoginModel = UserLoginModel.fromJson(jsonData);
         _isLoading = false;
         notifyListeners();
-        CustomSnackbar.showError(context, userLoginModel.message ?? '');
+        if (context.mounted) {
+          CustomSnackbar.showError(context, userLoginModel.message ?? '');
+        }
         return userLoginModel;
       }
     } catch (exception) {
+      log('Login exception  $exception');
       _isLoading = false;
       notifyListeners();
-      CustomSnackbar.showError(context, exception.toString());
+      if (context.mounted) {
+        CustomSnackbar.showError(context, exception.toString());
+      }
       return null;
     } finally {
       _isLoading = false;
@@ -80,8 +99,13 @@ class AuthProvider with ChangeNotifier {
 
   ///    +++++++++++++++++  SignUp -------------------------------------------
 
-  Future<SignUpResponse?> signUp(String name, String email, String password,
-      String passwordConfirmation, context) async {
+  Future<SignUpResponse?> signUp(
+    String name,
+    String email,
+    String password,
+    String passwordConfirmation,
+    context,
+  ) async {
     _isLoading = true;
     _status = ApiStatus.loading;
     notifyListeners();
@@ -97,22 +121,28 @@ class AuthProvider with ChangeNotifier {
         'name': name,
         'email': email,
         'password': password,
-        'password_confirmation': passwordConfirmation
+        'password_confirmation': passwordConfirmation,
       });
 
-      final response = await _apiResponseHandler.postRequest(url,
-          headers: headers, bodyString: body, authService: false);
+      final response = await _apiResponseHandler.postRequest(
+        url,
+        headers: headers,
+        bodyString: body,
+        authService: false,
+      );
 
       if (response.statusCode == 200) {
-        final jsonData = jsonDecode(response.body);
+        final jsonData = response.data;
         final signUpResponse = SignUpResponse.fromJson(jsonData);
         _isLoading = false;
         notifyListeners();
         CustomSnackbar.showSuccess(
-            context, signUpResponse.message ?? 'Registered successfully.');
+          context,
+          signUpResponse.message ?? 'Registered successfully.',
+        );
         return signUpResponse;
       } else {
-        final jsonData = jsonDecode(response.body);
+        final jsonData = response.data;
         final SignUpResponse dataModel = SignUpResponse.fromJson(jsonData);
         _isLoading = false;
         CustomSnackbar.showError(context, dataModel.formattedErrors);
@@ -144,7 +174,7 @@ class AuthProvider with ChangeNotifier {
       return;
     }
 
-    final dynamic headers = {'Authorization': 'Bearer $token'};
+    final dynamic headers = {'Authorization': token};
     final provider = Provider.of<UserProvider>(context, listen: false);
     final user = provider.user;
     final url = '${ApiEndpoints.logout}?${user?.name}';
@@ -157,30 +187,37 @@ class AuthProvider with ChangeNotifier {
 
     setLoading(false);
     if (response.statusCode == 200) {
-      final responseBody = jsonDecode(response.body);
-      final UserLogoutModel userLogoutModel =
-          UserLogoutModel.fromJson(responseBody);
+      final responseBody = response.data;
+      final UserLogoutModel userLogoutModel = UserLogoutModel.fromJson(responseBody);
       if (userLogoutModel.error == false) {
         await SecurePreferencesUtil.clearSharedPreferences();
 
         Navigator.of(context).popUntil((route) => route.isFirst);
-        Navigator.pushReplacement(context,
-            CupertinoPageRoute(builder: (context) => const BaseHomeScreen()));
+        Navigator.pushReplacement(
+          context,
+          CupertinoPageRoute(builder: (context) => const BaseHomeScreen()),
+        );
         CustomSnackbar.showSuccess(
-            context, userLogoutModel.message ?? 'Logged out successfully');
+          context,
+          userLogoutModel.message ?? 'Logged out successfully',
+        );
         _isLoading = false;
         notifyListeners();
       } else {
         // Show error message from the model
         CustomSnackbar.showError(
-            context, userLogoutModel.message ?? 'Logged out successfully');
+          context,
+          userLogoutModel.message ?? 'Logged out successfully',
+        );
         _isLoading = false;
         notifyListeners();
       }
     } else {
       // Handle other status codes and show an appropriate message
       CustomSnackbar.showError(
-          context, 'An error occurred. Please try again later.');
+        context,
+        'An error occurred. Please try again later.',
+      );
       _isLoading = false;
       notifyListeners();
     }
@@ -211,10 +248,12 @@ class AuthProvider with ChangeNotifier {
 
       final body = jsonEncode({'email': email});
 
-      final response = await _apiResponseHandler.postRequest(url,
-          headers: headers,
-          bodyString: body,
-          authService: true) as Map<String, dynamic>;
+      final response = await _apiResponseHandler.postRequest(
+        url,
+        headers: headers,
+        bodyString: body,
+        authService: true,
+      ) as Map<String, dynamic>;
 
       if (response['status']) {
         // Success case
@@ -236,8 +275,7 @@ class AuthProvider with ChangeNotifier {
 
   /// +++++++++++++++++++  FUNCTIONS  =================================
 
-  Future<bool> checkLoginState() async =>
-      SecurePreferencesUtil.getBool(SecurePreferencesUtil.isLoggedInKey);
+  Future<bool> checkLoginState() async => SecurePreferencesUtil.getBool(SecurePreferencesUtil.isLoggedInKey) ?? false;
 
   void setLoading(bool value) {
     _isLoading = value;

@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/provider/information_icons_provider/new_products_provider.dart';
 import 'package:event_app/views/base_screens/base_app_bar.dart';
 import 'package:flutter/cupertino.dart';
@@ -15,7 +16,7 @@ import '../../../provider/cart_item_provider/cart_item_provider.dart';
 import '../../../provider/shortcode_fresh_picks_provider/fresh_picks_provider.dart';
 import '../../../provider/wishlist_items_provider/wishlist_provider.dart';
 import '../../filters/product_filters_screen.dart';
-import '../../filters/product_sorting.dart';
+import '../../filters/sort_an_filter_widget.dart';
 import '../../product_detail_screens/product_detail_screen.dart';
 
 class NewProductPageScreen extends StatefulWidget {
@@ -35,7 +36,7 @@ class _NewProductPageScreenState extends State<NewProductPageScreen> {
     'Brands': [],
     'Tags': [],
     'Prices': [],
-    'Colors': []
+    'Colors': [],
   };
 
   @override
@@ -59,8 +60,7 @@ class _NewProductPageScreenState extends State<NewProductPageScreen> {
 
   void _onScroll() {
     if (_isFetchingMore) return;
-    if (_scrollController.offset >=
-            _scrollController.position.maxScrollExtent &&
+    if (_scrollController.offset >= _scrollController.position.maxScrollExtent &&
         !_scrollController.position.outOfRange) {
       _currentPage++;
       _isFetchingMore = true;
@@ -78,8 +78,7 @@ class _NewProductPageScreenState extends State<NewProductPageScreen> {
       setState(() {
         _isFetchingMore = true;
       });
-      await Provider.of<NewProductsProvider>(context, listen: false)
-          .fetchProductsNew(
+      await Provider.of<NewProductsProvider>(context, listen: false).fetchProductsNew(
         context: context,
         perPage: 12,
         page: _currentPage,
@@ -100,9 +99,7 @@ class _NewProductPageScreenState extends State<NewProductPageScreen> {
     setState(() {
       _selectedSortBy = newValue;
       _currentPage = 1;
-      Provider.of<NewProductsProvider>(context, listen: false)
-          .products
-          .clear(); // Clear existing products
+      Provider.of<NewProductsProvider>(context, listen: false).products.clear(); // Clear existing products
     });
     fetchNewProductsItems();
   }
@@ -111,19 +108,17 @@ class _NewProductPageScreenState extends State<NewProductPageScreen> {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.sizeOf(context).height;
     final screenWidth = MediaQuery.sizeOf(context).width;
-    final freshPicksProvider =
-        Provider.of<FreshPicksProvider>(context, listen: true);
-    final wishlistProvider =
-        Provider.of<WishlistProvider>(context, listen: true);
+    final freshPicksProvider = Provider.of<FreshPicksProvider>(context, listen: true);
+    final wishlistProvider = Provider.of<WishlistProvider>(context, listen: true);
     final cartProvider = Provider.of<CartProvider>(context, listen: true);
     final provider = Provider.of<NewProductsProvider>(context);
 
     return BaseAppBar(
-      textBack: AppStrings.back,
+      textBack: AppStrings.back.tr,
       customBackIcon: const Icon(Icons.arrow_back_ios_sharp, size: 16),
-      firstRightIconPath: AppStrings.firstRightIconPath,
-      secondRightIconPath: AppStrings.secondRightIconPath,
-      thirdRightIconPath: AppStrings.thirdRightIconPath,
+      firstRightIconPath: AppStrings.firstRightIconPath.tr,
+      secondRightIconPath: AppStrings.secondRightIconPath.tr,
+      thirdRightIconPath: AppStrings.thirdRightIconPath.tr,
       body: Scaffold(
         body: SafeArea(
           child: Stack(
@@ -146,15 +141,17 @@ class _NewProductPageScreenState extends State<NewProductPageScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         CustomSearchBar(
-                            hintText: 'Search ${product.name.toString()}'),
+                          hintText: AppStrings.searchEvents.tr,
+                        ),
                         Expanded(
                           child: SingleChildScrollView(
                             controller: _scrollController,
                             child: Padding(
                               padding: EdgeInsets.only(
-                                  left: screenWidth * 0.02,
-                                  right: screenWidth * 0.02,
-                                  top: screenHeight * 0.02),
+                                left: screenWidth * 0.02,
+                                right: screenWidth * 0.02,
+                                top: screenHeight * 0.02,
+                              ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment: MainAxisAlignment.start,
@@ -165,30 +162,21 @@ class _NewProductPageScreenState extends State<NewProductPageScreen> {
                                       imageUrl: product.coverImage,
                                       fit: BoxFit.fill,
                                       height: 100,
-                                      placeholder:
-                                          (BuildContext context, String url) =>
-                                              Container(
-                                        height:
-                                            MediaQuery.sizeOf(context).height *
-                                                0.28,
+                                      placeholder: (BuildContext context, String url) => Container(
+                                        height: MediaQuery.sizeOf(context).height * 0.28,
                                         width: double.infinity,
-                                        color: Colors
-                                            .blueGrey[300], // Background color
+                                        color: Colors.blueGrey[300], // Background color
                                         child: Stack(
                                           alignment: Alignment.center,
                                           children: [
                                             Image.asset(
                                               'assets/placeholder.png', // Replace with your actual image path
-                                              fit: BoxFit
-                                                  .cover, // Adjust fit if needed
-                                              height: MediaQuery.sizeOf(context)
-                                                      .height *
-                                                  0.28,
+                                              fit: BoxFit.cover, // Adjust fit if needed
+                                              height: MediaQuery.sizeOf(context).height * 0.28,
                                               width: double.infinity,
                                             ),
                                             const CupertinoActivityIndicator(
-                                              radius:
-                                                  16, // Adjust size of the loader
+                                              radius: 16, // Adjust size of the loader
                                               animating: true,
                                             ),
                                           ],
@@ -199,13 +187,11 @@ class _NewProductPageScreenState extends State<NewProductPageScreen> {
                                   Padding(
                                     padding: const EdgeInsets.only(top: 10),
                                     child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Flexible(
-                                          child: SortAndFilterDropdown(
+                                          child: SortAndFilterWidget(
                                             selectedSortBy: _selectedSortBy,
                                             onSortChanged: (newSortBy) {
                                               _onSortChanged(newSortBy);
@@ -214,18 +200,15 @@ class _NewProductPageScreenState extends State<NewProductPageScreen> {
                                               showModalBottomSheet(
                                                 context: context,
                                                 isScrollControlled: true,
-                                                builder: (context) =>
-                                                    FilterBottomSheet(
-                                                  filters: freshPicksProvider
-                                                      .productFilters,
+                                                builder: (context) => FilterBottomSheet(
+                                                  filters: freshPicksProvider.productFilters,
                                                   selectedIds: selectedFilters,
-                                                ), // Show the filter bottom sheet
+                                                ),
                                               ).then((result) {
                                                 if (result != null) {
                                                   setState(() {
                                                     _currentPage = 1;
-                                                    selectedFilters =
-                                                        result; // Store the selected filter IDs
+                                                    selectedFilters = result;
                                                   });
                                                   fetchNewProductsItems();
                                                 }
@@ -239,49 +222,35 @@ class _NewProductPageScreenState extends State<NewProductPageScreen> {
                                   Padding(
                                     padding: const EdgeInsets.only(top: 10),
                                     child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
                                         if (provider.products.isEmpty)
                                           const ItemsEmptyView()
                                         else
                                           GridView.builder(
-                                            gridDelegate:
-                                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                                               crossAxisCount: 2,
                                               childAspectRatio: 0.6,
                                               mainAxisSpacing: 10,
                                               crossAxisSpacing: 10,
                                             ),
-                                            itemCount:
-                                                provider.products.length +
-                                                    (_isFetchingMore ? 1 : 0),
+                                            itemCount: provider.products.length + (_isFetchingMore ? 1 : 0),
                                             shrinkWrap: true,
-                                            physics:
-                                                const NeverScrollableScrollPhysics(),
+                                            physics: const NeverScrollableScrollPhysics(),
                                             itemBuilder: (context, index) {
-                                              if (_isFetchingMore &&
-                                                  index ==
-                                                      provider
-                                                          .products.length) {
+                                              if (_isFetchingMore && index == provider.products.length) {
                                                 return const Align(
                                                   alignment: Alignment.center,
                                                   child: Column(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .center,
+                                                    mainAxisAlignment: MainAxisAlignment.center,
+                                                    crossAxisAlignment: CrossAxisAlignment.center,
                                                     children: [
                                                       Center(
                                                         child: SizedBox(
                                                           height: 25,
                                                           width: 25,
-                                                          child:
-                                                              CircularProgressIndicator(
+                                                          child: CircularProgressIndicator(
                                                             color: Colors.black,
                                                           ),
                                                         ),
@@ -291,29 +260,19 @@ class _NewProductPageScreenState extends State<NewProductPageScreen> {
                                                 );
                                               }
 
-                                              final product =
-                                                  provider.products[index];
+                                              final product = provider.products[index];
 
                                               /// Check if both frontSalePrice and price are non-null and non-zero to avoid division by zero
-                                              final double? frontSalePrice =
-                                                  product.prices?.frontSalePrice
-                                                      ?.toDouble();
-                                              final double? price = product
-                                                  .prices?.price
-                                                  ?.toDouble();
+                                              final double? frontSalePrice = product.prices?.frontSalePrice?.toDouble();
+                                              final double? price = product.prices?.price?.toDouble();
                                               String offPercentage = '';
 
-                                              if (frontSalePrice != null &&
-                                                  price != null &&
-                                                  price > 0) {
+                                              if (frontSalePrice != null && price != null && price > 0) {
                                                 // Calculate the discount percentage
-                                                final double discount = 100 -
-                                                    ((frontSalePrice / price) *
-                                                        100);
+                                                final double discount = 100 - ((frontSalePrice / price) * 100);
                                                 // offPercentage = discount.toStringAsFixed(0);
                                                 if (discount > 0) {
-                                                  offPercentage = discount
-                                                      .toStringAsFixed(0);
+                                                  offPercentage = discount.toStringAsFixed(0);
                                                 }
                                               }
 
@@ -322,100 +281,69 @@ class _NewProductPageScreenState extends State<NewProductPageScreen> {
                                                   Navigator.push(
                                                     context,
                                                     MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          ProductDetailScreen(
-                                                        slug: product.slug
-                                                            .toString(),
+                                                      builder: (context) => ProductDetailScreen(
+                                                        slug: product.slug.toString(),
                                                       ),
                                                     ),
                                                   );
                                                 },
                                                 child: ProductCard(
-                                                  isOutOfStock:
-                                                      product.outOfStock ??
-                                                          false,
+                                                  isOutOfStock: product.outOfStock ?? false,
                                                   off: offPercentage.isNotEmpty
-                                                      ? '$offPercentage%off'
+                                                      ? '$offPercentage${AppStrings.percentOff.tr}'
                                                       : '',
                                                   // Display the discount percentage
-                                                  priceWithTaxes: (product
-                                                                  .prices
-                                                                  ?.frontSalePrice ??
-                                                              0) <
-                                                          (product.prices
-                                                                  ?.price ??
-                                                              0)
-                                                      ? product.prices!
-                                                          .priceWithTaxes
+                                                  priceWithTaxes: (product.prices?.frontSalePrice ?? 0) <
+                                                          (product.prices?.price ?? 0)
+                                                      ? product.prices!.priceWithTaxes
                                                       : null,
                                                   itemsId: 0,
                                                   imageUrl: product.image,
-                                                  frontSalePriceWithTaxes:
-                                                      product.review?.average ??
-                                                          '0',
+                                                  frontSalePriceWithTaxes: product.review?.average ?? '0',
                                                   name: product.name,
-                                                  storeName: product.store!.name
-                                                      .toString(),
-                                                  price: product
-                                                      .prices?.frontSalePrice
-                                                      .toString(),
+                                                  storeName: product.store!.name.toString(),
+                                                  price: product.prices?.frontSalePrice.toString(),
                                                   // price: product.prices!.price.toString(),
-                                                  reviewsCount: product
-                                                      .review!.reviewsCount!
-                                                      .toInt(),
+                                                  reviewsCount: product.review!.reviewsCount!.toInt(),
 
-                                                  optionalIcon:
-                                                      Icons.shopping_cart,
+                                                  optionalIcon: Icons.shopping_cart,
                                                   onOptionalIconTap: () async {
-                                                    final token =
-                                                        await SecurePreferencesUtil
-                                                            .getToken();
+                                                    final token = await SecurePreferencesUtil.getToken();
                                                     if (token != null) {
-                                                      await cartProvider
-                                                          .addToCart(product.id,
-                                                              context, 1);
+                                                      await cartProvider.addToCart(
+                                                        product.id,
+                                                        context,
+                                                        1,
+                                                      );
                                                     }
                                                   },
-                                                  isHeartObscure: wishlistProvider
-                                                          .wishlist
-                                                          ?.data
-                                                          ?.products
-                                                          .any((wishlistProduct) =>
-                                                              wishlistProduct
-                                                                  .id ==
-                                                              product.id) ??
+                                                  isHeartObscure: wishlistProvider.wishlist?.data?.products.any(
+                                                        (wishlistProduct) => wishlistProduct.id == product.id,
+                                                      ) ??
                                                       false,
                                                   onHeartTap: () async {
-                                                    final token =
-                                                        await SecurePreferencesUtil
-                                                            .getToken();
+                                                    final token = await SecurePreferencesUtil.getToken();
                                                     final bool isInWishlist =
-                                                        wishlistProvider
-                                                                .wishlist
-                                                                ?.data
-                                                                ?.products
-                                                                .any((wishlistProduct) =>
-                                                                    wishlistProduct
-                                                                        .id ==
-                                                                    product
-                                                                        .id) ??
+                                                        wishlistProvider.wishlist?.data?.products.any(
+                                                              (wishlistProduct) => wishlistProduct.id == product.id,
+                                                            ) ??
                                                             false;
                                                     if (isInWishlist) {
-                                                      await wishlistProvider
-                                                          .deleteWishlistItem(
-                                                              product.id ?? 0,
-                                                              context,
-                                                              token ?? '');
+                                                      await wishlistProvider.deleteWishlistItem(
+                                                        product.id ?? 0,
+                                                        context,
+                                                        token ?? '',
+                                                      );
                                                     } else {
-                                                      await freshPicksProvider
-                                                          .handleHeartTap(
-                                                              context,
-                                                              product.id ?? 0);
+                                                      await freshPicksProvider.handleHeartTap(
+                                                        context,
+                                                        product.id ?? 0,
+                                                      );
                                                     }
-                                                    await wishlistProvider
-                                                        .fetchWishlist(
-                                                            token ?? '',
-                                                            context);
+                                                    await wishlistProvider.fetchWishlist(
+                                                      token ?? '',
+                                                      context,
+                                                    );
                                                   },
                                                 ),
                                               );
@@ -436,16 +364,12 @@ class _NewProductPageScreenState extends State<NewProductPageScreen> {
                   }
                 },
               ),
-              if (wishlistProvider.isLoading ||
-                  freshPicksProvider.isLoading ||
-                  cartProvider.isLoading)
+              if (wishlistProvider.isLoading || freshPicksProvider.isLoading || cartProvider.isLoading)
                 Container(
-                  color: Colors.black
-                      .withOpacity(0.5), // Semi-transparent background
+                  color: Colors.black.withOpacity(0.5), // Semi-transparent background
                   child: const Center(
                     child: CircularProgressIndicator(
-                      valueColor:
-                          AlwaysStoppedAnimation<Color>(AppColors.peachyPink),
+                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.peachyPink),
                     ),
                   ),
                 ),

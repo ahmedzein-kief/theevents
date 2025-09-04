@@ -120,7 +120,7 @@ class VendorSearchProductDataResponse {
   });
 
   factory VendorSearchProductDataResponse.fromJson(
-          Map<dynamic, dynamic> json) =>
+          Map<dynamic, dynamic> json,) =>
       VendorSearchProductDataResponse(
         data: json['data'] != null ? Data.fromJson(json['data']) : null,
         error: json['error'],

@@ -12,7 +12,7 @@ class AttributeSetsDataResponse {
   factory AttributeSetsDataResponse.fromJson(Map<dynamic, dynamic> json) =>
       AttributeSetsDataResponse(
         data: List<AttributeSetsData>.from(
-            json['data'].map((x) => AttributeSetsData.fromJson(x))),
+            json['data'].map((x) => AttributeSetsData.fromJson(x)),),
         error: json['error'],
       );
 
@@ -30,7 +30,7 @@ class AttributeSetsData {
   factory AttributeSetsData.fromJson(Map<dynamic, dynamic> json) =>
       AttributeSetsData(
         attributes: List<Attribute>.from(
-            json['attributes'].map((x) => Attribute.fromJson(x))),
+            json['attributes'].map((x) => Attribute.fromJson(x)),),
         id: json['id'],
         title: json['title'],
       );

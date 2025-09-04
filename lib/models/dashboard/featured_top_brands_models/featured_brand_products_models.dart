@@ -73,7 +73,7 @@ class Parent {
       this.coverImage,
       this.description,
       this.website,
-      this.slug});
+      this.slug,});
 
   Parent.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -257,7 +257,7 @@ class Prices {
       {this.frontSalePrice,
       this.price,
       this.frontSalePriceWithTaxes,
-      this.priceWithTaxes});
+      this.priceWithTaxes,});
 
   Prices.fromJson(Map<String, dynamic> json) {
     frontSalePrice = json['front_sale_price'];
@@ -309,7 +309,7 @@ class Filters {
       this.brandRequest,
       this.tagRequest,
       this.priceRange,
-      this.rating});
+      this.rating,});
 
   Filters.fromJson(Map<String, dynamic> json) {
     if (json['categories'] != null) {

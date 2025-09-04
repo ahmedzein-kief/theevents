@@ -1,13 +1,16 @@
 class ApiEndpoints {
-  static const String baseUrl = 'https://api.staging.theevents.ae/api/v1/';
-  static const String imageBaseURL =
-      'https://api.staging.theevents.ae/storage/';
+  static const String baseUrl = 'https://apistaging.theevents.ae/api/v1/';
+  static const String imageBaseURL = 'https://apistaging.theevents.ae/storage/';
+
+  static const String payBaseURL = 'https://paystaging.theevents.ae/api/v1/';
 
   /*static const String baseUrl = 'https://events-api.clientswork.in/api/v1/';
   static const String imageBaseURL = 'https://events-api.clientswork.in/storage/';*/
 
   //   Urls Of Api Endpoints  new one
   static const String shortCode = '${baseUrl}pages/home';
+
+  static const String searchBarSuggestion = '${baseUrl}search-bar';
   static const String homeSlider = '${baseUrl}simple-slider';
   static const String categoryViewAllBanner = '${baseUrl}pages/categories';
   static const String orderScreenBanner = '${baseUrl}pages/orders';
@@ -24,19 +27,15 @@ class ApiEndpoints {
   static const String featuredBrandPackages = '${baseUrl}brand-packages/';
   static const String featuredBrandsSlide = '${baseUrl}featured-brands';
   static const String bestSellerBanner = '${baseUrl}collections/best-sellers';
-  static const String bestSellerProducts =
-      '${baseUrl}collections/best-sellers/products';
-  static const String bestSellerPackages =
-      '${baseUrl}collections/best-sellers/packages';
-  static const String fiftyPercentDiscountBanner =
-      '${baseUrl}collections/50-discount';
-  static const String fiftyPercentDiscountProducts =
-      '${baseUrl}collections/50-discount/products';
-  static const String fiftyPercentDiscountPackages =
-      '${baseUrl}collections/50-discount/packages';
-  static const String eventsBazaarList = '${baseUrl}countries/list';
-  static const String eventsBazaarBanner =
-      '${baseUrl}pages/event-bazaar-coming-soon';
+  static const String bestSellerProducts = '${baseUrl}collections/best-sellers/products';
+  static const String bestSellerPackages = '${baseUrl}collections/best-sellers/packages';
+  static const String fiftyPercentDiscountBanner = '${baseUrl}collections/50-discount';
+  static const String fiftyPercentDiscountProducts = '${baseUrl}collections/50-discount/products';
+  static const String fiftyPercentDiscountPackages = '${baseUrl}collections/50-discount/packages';
+
+  static const String eventsBazaarList = '${baseUrl}countries/bazaar';
+
+  static const String eventsBazaarBanner = '${baseUrl}pages/event-bazaar-coming-soon';
   static const String userByTypeBanner = '${baseUrl}vendor-type-by-id/';
   static const String userByTypeStores = '${baseUrl}stores';
   static const String homeBrands = '${baseUrl}theme-ad/';
@@ -47,6 +46,7 @@ class ApiEndpoints {
   static const String eComTagsAll = '${baseUrl}ecom-tags';
   static const String products = '${baseUrl}products/';
   static const String homeUserStores = '${baseUrl}stores';
+  static const String customerByType = '${baseUrl}customers-by-type';
   static const String homeVendorData = '${baseUrl}vendor-data/';
   static const String userByTypeProducts = '${baseUrl}products';
   static const String userByTypePackages = '${baseUrl}packages';
@@ -66,27 +66,30 @@ class ApiEndpoints {
   static const String productsECom = '${baseUrl}tag-products/';
   static const String packagesECom = '${baseUrl}tag-packages/';
   static const String countryList = '${baseUrl}countries/list';
-  static const String createCustomerAddress =
-      '${baseUrl}customer/address/create';
+  static const String cityList = '${baseUrl}cities/list';
+  static const String stateList = '${baseUrl}states/list';
+
+  static const String createCustomerAddress = '${baseUrl}customer/address/create';
+
   static const String customerAddressList = '${baseUrl}customer/address/list';
-  static const String paymentMethods = '${baseUrl}payment-methods';
+
+  static const String paymentMethods = '${payBaseURL}payment-methods';
   static const String brandStore = '${baseUrl}stores/';
-  static const String eventBrandProducts =
-      '${baseUrl}collections/events-brand/products';
-  static const String eventBrandPackages =
-      '${baseUrl}collections/events-brand/packages';
+  static const String eventBrandProducts = '${baseUrl}collections/events-brand/products';
+  static const String eventBrandPackages = '${baseUrl}collections/events-brand/packages';
   static const String changePassword = '${baseUrl}customer/change-password';
   static const String editAccount = '${baseUrl}customer/edit-account';
 
   static const String createGiftCard = '${baseUrl}gift-cards/create';
 
   static const String customerAddressEdit = '${baseUrl}customer/address/edit/';
-  static const String customerAddressDelete =
-      '${baseUrl}customer/address/delete/';
+  static const String customerAddressDelete = '${baseUrl}customer/address/delete/';
 
   static const String forgotPassword = 'forgot-password';
   static const String vendorTypes = 'vendor-types';
-  static const String login = 'login';
+
+  static const String login = '${baseUrl}login';
+
   static const String logout = '${baseUrl}logout';
   static const String signUp = 'register';
   static const String homeBanner = '/simple-slider?key=home-slider';
@@ -107,14 +110,15 @@ class ApiEndpoints {
   static const String customerUploadProfilePic = '${baseUrl}customer/avatar';
 
   /// get product reviews
-  static const String customerGetProductReviews =
-      '${baseUrl}customer/product-reviews';
+  static const String customerGetProductReviews = '${baseUrl}customer/product-reviews';
 
   /// submit customer review
   static const String customerSubmitReview = '${baseUrl}review/create';
 
   /// customer delete review
   static const String customerDeleteReview = '${baseUrl}review/delete/';
+
+  static const String getAllActiveLanguages = '${baseUrl}languages';
 }
 
 class CommonVariables {

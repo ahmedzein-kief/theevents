@@ -10,7 +10,7 @@ class UserByTypeSeeAll extends StatelessWidget {
       required this.imageUrl,
       required this.name,
       required this.onTap,
-      required this.textStyle});
+      required this.textStyle,});
   final String imageUrl;
   final String name;
   final VoidCallback onTap;
@@ -26,7 +26,7 @@ class UserByTypeSeeAll extends StatelessWidget {
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.primary,
           borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(8), topRight: Radius.circular(8)),
+              topLeft: Radius.circular(8), topRight: Radius.circular(8),),
           boxShadow: [
             BoxShadow(
               color: Colors.grey.withOpacity(0.2),
@@ -44,7 +44,7 @@ class UserByTypeSeeAll extends StatelessWidget {
               flex: 1,
               child: ClipRRect(
                 borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(4), topRight: Radius.circular(4)),
+                    topLeft: Radius.circular(4), topRight: Radius.circular(4),),
                 child: CachedNetworkImage(
                   imageUrl: imageUrl,
                   fit: BoxFit.cover,

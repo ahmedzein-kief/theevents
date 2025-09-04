@@ -3,6 +3,8 @@ import 'dart:io';
 
 import 'package:camera_gallery_image_picker/camera_gallery_image_picker.dart';
 import 'package:event_app/core/constants/app_strings.dart';
+import 'package:event_app/core/constants/vendor_app_strings.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/helper/validators/validator.dart';
 import 'package:event_app/core/services/shared_preferences_helper.dart';
 import 'package:event_app/core/styles/app_colors.dart';
@@ -15,15 +17,17 @@ import 'package:event_app/vendor/components/vendor_custom_text_fields.dart';
 import 'package:event_app/vendor/components/vendor_text_style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:open_file/open_file.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:signature/signature.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
+import '../../core/services/agreement_pdf.dart';
+
 class ContractAgreementScreen extends StatefulWidget {
   const ContractAgreementScreen({super.key, required this.onNext});
+
   final VoidCallback onNext;
 
   @override
@@ -57,7 +61,7 @@ class _ContractAgreementScreenState extends State<ContractAgreementScreen> {
     return response;
   }
 
-  Future<Uint8List?> previewAgreement() async {
+  Future<Map<String, dynamic>?> previewAgreement() async {
     final provider = Provider.of<VendorSignUpProvider>(context, listen: false);
     final response = await provider.previewAgreement(context);
     return response;
@@ -72,7 +76,7 @@ class _ContractAgreementScreenState extends State<ContractAgreementScreen> {
        * Parsing contract agreement data
        */
       SecurePreferencesUtil.saveServerStep(
-          int.parse(response.data['step'] ?? '1'));
+          int.parse(response.data['step'] ?? '1'),);
       caModel.signImage = response.data['sign_image'] ?? '';
       caModel.companyStampFileName = _stampTextEditingController.text =
           response.data['company_stamp_file_name'] ?? '';
@@ -128,7 +132,7 @@ class _ContractAgreementScreenState extends State<ContractAgreementScreen> {
                             left: screenWidth * 0.04,
                             right: screenWidth * 0.04,
                             top: screenHeight * 0.03,
-                            bottom: screenHeight * 0.015),
+                            bottom: screenHeight * 0.015,),
                         child: Container(
                           decoration: BoxDecoration(
                             boxShadow: [
@@ -150,20 +154,20 @@ class _ContractAgreementScreenState extends State<ContractAgreementScreen> {
                               color: Colors.white,
                               child: Padding(
                                 padding: const EdgeInsets.only(
-                                    top: 20, left: 10, right: 10, bottom: 30),
+                                    top: 20, left: 10, right: 10, bottom: 30,),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Text(
-                                      'Contract Agreement',
+                                      VendorAppStrings.contractAgreement.tr,
                                       style: loginHeading(),
                                     ),
                                     Padding(
                                       padding: EdgeInsets.only(
                                           top: screenHeight * 0.055,
-                                          bottom: 10),
+                                          bottom: 10,),
                                       child: Container(
                                         decoration: BoxDecoration(
                                           color: Theme.of(context)
@@ -182,43 +186,52 @@ class _ContractAgreementScreenState extends State<ContractAgreementScreen> {
                                         child: Padding(
                                           padding: EdgeInsets.only(
                                               top: screenHeight * 0.035,
-                                              bottom: screenHeight * 0.025),
+                                              bottom: screenHeight * 0.025,),
                                           child: Column(
                                             children: [
                                               Text(
-                                                AppStrings.vendorContactHeading,
+                                                AppStrings
+                                                    .vendorContactHeading.tr,
                                                 style:
                                                     vendorDescriptionAgreement(),
                                                 softWrap: true,
                                                 textAlign: TextAlign.center,
                                               ),
+                                              // Padding(
+                                              //   padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.2),
+                                              //   child: CustomVendorAuthButton(
+                                              //     title: 'Preview Agreement',
+                                              //     onPressed: () async {
+                                              //       final previewResult = await previewAgreement();
+                                              //       if (previewResult != null) {
+                                              //         final String filePath =
+                                              //             await saveBase64ToExternalCache(base64Encode(previewResult));
+                                              //
+                                              //         if (filePath.isEmpty) {
+                                              //           return;
+                                              //         }
+                                              //
+                                              //         final File file = File(filePath);
+                                              //         if (!file.existsSync()) {
+                                              //           return;
+                                              //         }
+                                              //
+                                              //         OpenFile.open(filePath);
+                                              //       }
+                                              //     },
+                                              //   ),
+                                              // ),
+
                                               Padding(
                                                 padding: EdgeInsets.symmetric(
                                                     horizontal:
-                                                        screenWidth * 0.2),
+                                                        screenWidth * 0.2,),
                                                 child: CustomVendorAuthButton(
-                                                  title: 'Preview Agreement',
+                                                  title: VendorAppStrings
+                                                      .previewAgreement.tr,
                                                   onPressed: () async {
-                                                    final previewResult =
-                                                        await previewAgreement();
-                                                    if (previewResult != null) {
-                                                      final String filePath =
-                                                          await saveBase64ToExternalCache(
-                                                              base64Encode(
-                                                                  previewResult));
-
-                                                      if (filePath.isEmpty) {
-                                                        return;
-                                                      }
-
-                                                      final File file =
-                                                          File(filePath);
-                                                      if (!file.existsSync()) {
-                                                        return;
-                                                      }
-
-                                                      OpenFile.open(filePath);
-                                                    }
+                                                    await previewAgreementAndGeneratePdf(
+                                                        context,);
                                                   },
                                                 ),
                                               ),
@@ -230,9 +243,9 @@ class _ContractAgreementScreenState extends State<ContractAgreementScreen> {
                                     Padding(
                                       padding: EdgeInsets.symmetric(
                                           horizontal: screenWidth * 0.1,
-                                          vertical: screenHeight * 0.01),
+                                          vertical: screenHeight * 0.01,),
                                       child: Text(
-                                        'Please Sign Here *',
+                                        VendorAppStrings.pleaseSignHere.tr,
                                         style: signHere(),
                                         softWrap: true,
                                         textAlign: TextAlign.center,
@@ -240,23 +253,23 @@ class _ContractAgreementScreenState extends State<ContractAgreementScreen> {
                                     ),
                                     Padding(
                                       padding: const EdgeInsets.symmetric(
-                                          vertical: 10, horizontal: 10),
+                                          vertical: 10, horizontal: 10,),
                                       child: Container(
                                         decoration: BoxDecoration(
                                           color:
                                               Colors.white, // Background color
                                           borderRadius: BorderRadius.circular(
-                                              4), // Rounded corners
+                                              4,), // Rounded corners
                                           border: Border.all(
                                               color: Colors.grey,
-                                              width: 2), // Border
+                                              width: 2,), // Border
                                           boxShadow: [
                                             BoxShadow(
                                               color: Colors.black.withOpacity(
-                                                  0.5), // Shadow color
+                                                  0.5,), // Shadow color
                                               blurRadius: 8, // Blur radius
                                               offset: const Offset(
-                                                  0, 2), // Offset (x, y)
+                                                  0, 2,), // Offset (x, y)
                                             ),
                                           ],
                                         ),
@@ -273,7 +286,7 @@ class _ContractAgreementScreenState extends State<ContractAgreementScreen> {
                                                 color: Colors.white,
                                                 child: Image.memory(
                                                   base64Decode(
-                                                      caModel.signImage ?? ''),
+                                                      caModel.signImage ?? '',),
                                                   errorBuilder: (_, __, ___) =>
                                                       kShowVoid,
                                                 ),
@@ -283,7 +296,7 @@ class _ContractAgreementScreenState extends State<ContractAgreementScreen> {
                                     Padding(
                                       padding: EdgeInsets.symmetric(
                                           horizontal: screenWidth * 0.1,
-                                          vertical: screenHeight * 0.015),
+                                          vertical: screenHeight * 0.015,),
                                       child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.center,
@@ -304,15 +317,16 @@ class _ContractAgreementScreenState extends State<ContractAgreementScreen> {
                                                   child: Center(
                                                     child: GestureDetector(
                                                       child: Text(
-                                                        'Save',
+                                                        VendorAppStrings
+                                                            .save.tr,
                                                         textAlign:
                                                             TextAlign.center,
                                                         softWrap: true,
                                                         style: TextStyle(
                                                             color: Theme.of(
-                                                                    context)
+                                                                    context,)
                                                                 .colorScheme
-                                                                .primary),
+                                                                .primary,),
                                                       ),
                                                       onTap: () async {
                                                         final Uint8List? data =
@@ -323,7 +337,7 @@ class _ContractAgreementScreenState extends State<ContractAgreementScreen> {
                                                             setState(() {
                                                               final encodeImage =
                                                                   base64Encode(
-                                                                      data);
+                                                                      data,);
                                                               caModel.signImage =
                                                                   encodeImage;
                                                               hasSignError =
@@ -354,14 +368,15 @@ class _ContractAgreementScreenState extends State<ContractAgreementScreen> {
                                                   child: Center(
                                                     child: GestureDetector(
                                                       child: Text(
-                                                        'Clear',
+                                                        VendorAppStrings
+                                                            .clear.tr,
                                                         textAlign:
                                                             TextAlign.center,
                                                         style: TextStyle(
                                                             color: Theme.of(
-                                                                    context)
+                                                                    context,)
                                                                 .colorScheme
-                                                                .primary),
+                                                                .primary,),
                                                       ),
                                                       onTap: () {
                                                         _controller.clear();
@@ -382,14 +397,15 @@ class _ContractAgreementScreenState extends State<ContractAgreementScreen> {
                                                   child: Center(
                                                     child: GestureDetector(
                                                       child: Text(
-                                                        'Edit',
+                                                        VendorAppStrings
+                                                            .edit.tr,
                                                         textAlign:
                                                             TextAlign.center,
                                                         style: TextStyle(
                                                             color: Theme.of(
-                                                                    context)
+                                                                    context,)
                                                                 .colorScheme
-                                                                .primary),
+                                                                .primary,),
                                                       ),
                                                       onTap: () {
                                                         setState(() {
@@ -410,15 +426,16 @@ class _ContractAgreementScreenState extends State<ContractAgreementScreen> {
                                       ),
                                     ),
                                     if (hasSignError)
-                                      const Align(
+                                      Align(
                                         alignment: Alignment.centerLeft,
                                         child: Padding(
-                                          padding: EdgeInsets.only(left: 12.0),
+                                          padding: const EdgeInsets.only(left: 12.0),
                                           child: Text(
-                                            'Please sign this agreement',
-                                            style: TextStyle(
+                                            VendorAppStrings
+                                                .pleaseSignAgreement.tr,
+                                            style: const TextStyle(
                                                 color: Colors.red,
-                                                fontSize: 12),
+                                                fontSize: 12,),
                                           ),
                                         ),
                                       ),
@@ -429,8 +446,10 @@ class _ContractAgreementScreenState extends State<ContractAgreementScreen> {
                                         child: Image.memory(data!),
                                       ),*/
                                     VendorCustomTextFields(
-                                      labelText: 'Company Stamp (500*500)',
-                                      hintText: 'No file chosen',
+                                      labelText:
+                                          VendorAppStrings.companyStamp.tr,
+                                      hintText:
+                                          VendorAppStrings.noFileChosen.tr,
                                       textStar: ' *',
                                       controller: _stampTextEditingController,
                                       keyboardType: TextInputType.name,
@@ -441,7 +460,7 @@ class _ContractAgreementScreenState extends State<ContractAgreementScreen> {
                                       prefixContainerColor:
                                           Colors.grey.shade300,
                                       borderSideColor: const BorderSide(
-                                          color: Colors.grey, width: 0.5),
+                                          color: Colors.grey, width: 0.5,),
                                       prefixIconColor: Colors.black,
                                       nextFocusNode: _stampFocusNode,
                                       validator: Validator.fieldRequired,
@@ -467,7 +486,7 @@ class _ContractAgreementScreenState extends State<ContractAgreementScreen> {
                                     ),
                                     Padding(
                                       padding: EdgeInsets.symmetric(
-                                          vertical: screenHeight * 0.015),
+                                          vertical: screenHeight * 0.015,),
                                       child: Column(
                                         children: [
                                           Row(
@@ -495,7 +514,7 @@ class _ContractAgreementScreenState extends State<ContractAgreementScreen> {
                                               ),
                                               Expanded(
                                                 child: Text(
-                                                  AppStrings.agreementAccept,
+                                                  AppStrings.agreementAccept.tr,
                                                   softWrap: true,
                                                   style: agreementAccept(),
                                                 ),
@@ -504,16 +523,17 @@ class _ContractAgreementScreenState extends State<ContractAgreementScreen> {
                                           ),
                                           // Validation message
                                           if (hasAgreementError)
-                                            const Align(
+                                            Align(
                                               alignment: Alignment.centerLeft,
                                               child: Padding(
                                                 padding:
-                                                    EdgeInsets.only(left: 12.0),
+                                                    const EdgeInsets.only(left: 12.0),
                                                 child: Text(
-                                                  'You must agree to proceed',
-                                                  style: TextStyle(
+                                                  VendorAppStrings
+                                                      .youMustAgreeToProceed.tr,
+                                                  style: const TextStyle(
                                                       color: Colors.red,
-                                                      fontSize: 12),
+                                                      fontSize: 12,),
                                                 ),
                                               ),
                                             ),
@@ -536,7 +556,7 @@ class _ContractAgreementScreenState extends State<ContractAgreementScreen> {
               alignment: Alignment.bottomCenter,
               child: CustomVendorAuthButton(
                 isLoading: mainProvider.isLoading,
-                title: 'Save & Continue',
+                title: VendorAppStrings.saveAndContinue.tr,
                 onPressed: () async {
                   if (_formKey.currentState!.validate() && !hasSignError) {
                     final result = await updateContractAgreementData(

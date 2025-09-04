@@ -56,9 +56,9 @@
 //     double screenWidth = MediaQuery.sizeOf(context).width;
 //     double screenHeight = MediaQuery.sizeOf(context).height;
 //     return BaseAppBar(
-//       firstRightIconPath: AppStrings.firstRightIconPath,
-//       secondRightIconPath: AppStrings.secondRightIconPath,
-//       thirdRightIconPath: AppStrings.thirdRightIconPath,
+//       firstRightIconPath: AppStrings.firstRightIconPath.tr,
+//       secondRightIconPath: AppStrings.secondRightIconPath.tr,
+//       thirdRightIconPath: AppStrings.thirdRightIconPath.tr,
 //       body: Scaffold(
 //         body: SafeArea(child: Consumer<FiftyPercentDiscountProvider>(
 //           builder: (context, provider, child) {
@@ -226,6 +226,7 @@
 // }
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/widgets/items_empty_view.dart';
 import 'package:event_app/views/base_screens/base_app_bar.dart';
 import 'package:flutter/cupertino.dart';
@@ -243,7 +244,7 @@ import '../../../../provider/information_icons_provider/fifty_discount_provider.
 import '../../../../provider/shortcode_fresh_picks_provider/fresh_picks_provider.dart';
 import '../../../../provider/wishlist_items_provider/wishlist_provider.dart';
 import '../../../filters/product_filters_screen.dart';
-import '../../../filters/product_sorting.dart';
+import '../../../filters/sort_an_filter_widget.dart';
 import '../../../product_detail_screens/product_detail_screen.dart';
 import 'discount_packages.dart';
 
@@ -280,8 +281,7 @@ class _DiscountScreenState extends State<DiscountScreen> {
 
   ///   BANNER OF FIFTY PERCENT DISCOUNTS  --------------------------------
   Future<void> fetchHalfDiscountBanner() async {
-    final provider =
-        Provider.of<FiftyPercentDiscountProvider>(context, listen: false);
+    final provider = Provider.of<FiftyPercentDiscountProvider>(context, listen: false);
     provider.fetchBannerFiftyPercentDiscount(context);
   }
 
@@ -304,8 +304,7 @@ class _DiscountScreenState extends State<DiscountScreen> {
       setState(() {
         _isFetchingMore = true;
       });
-      await Provider.of<FiftyPercentDiscountProvider>(context, listen: false)
-          .fetchProductsNew(
+      await Provider.of<FiftyPercentDiscountProvider>(context, listen: false).fetchProductsNew(
         context: context,
         perPage: 12,
         page: _currentPage,
@@ -334,8 +333,7 @@ class _DiscountScreenState extends State<DiscountScreen> {
 
   @override
   void dispose() {
-    _scrollController
-        .removeListener(_onScroll); // Remove the listener in dispose
+    _scrollController.removeListener(_onScroll); // Remove the listener in dispose
     _scrollController.dispose();
     super.dispose();
   }
@@ -344,9 +342,7 @@ class _DiscountScreenState extends State<DiscountScreen> {
     setState(() {
       _selectedSortBy = newValue;
       _currentPage = 1; // Reset to the first page
-      Provider.of<FiftyPercentDiscountProvider>(context, listen: false)
-          .products
-          .clear(); // Clear existing products
+      Provider.of<FiftyPercentDiscountProvider>(context, listen: false).products.clear(); // Clear existing products
     });
     fetchNewProductsItems();
   }
@@ -356,18 +352,16 @@ class _DiscountScreenState extends State<DiscountScreen> {
     final double screenWidth = MediaQuery.sizeOf(context).width;
     final double screenHeight = MediaQuery.sizeOf(context).height;
 
-    final wishlistProvider =
-        Provider.of<WishlistProvider>(context, listen: true);
-    final freshListProvider =
-        Provider.of<FreshPicksProvider>(context, listen: true);
+    final wishlistProvider = Provider.of<WishlistProvider>(context, listen: true);
+    final freshListProvider = Provider.of<FreshPicksProvider>(context, listen: true);
     final cartProvider = Provider.of<CartProvider>(context, listen: true);
 
     return BaseAppBar(
-      textBack: AppStrings.back,
+      textBack: AppStrings.back.tr,
       customBackIcon: const Icon(Icons.arrow_back_ios_sharp, size: 16),
-      firstRightIconPath: AppStrings.firstRightIconPath,
-      secondRightIconPath: AppStrings.secondRightIconPath,
-      thirdRightIconPath: AppStrings.thirdRightIconPath,
+      firstRightIconPath: AppStrings.firstRightIconPath.tr,
+      secondRightIconPath: AppStrings.secondRightIconPath.tr,
+      thirdRightIconPath: AppStrings.thirdRightIconPath.tr,
       body: Scaffold(
         body: SafeArea(
           child: Stack(
@@ -388,8 +382,8 @@ class _DiscountScreenState extends State<DiscountScreen> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       mainAxisSize: MainAxisSize.max,
                       children: [
-                        const CustomSearchBar(
-                          hintText: 'Search Discounts',
+                        CustomSearchBar(
+                          hintText: AppStrings.searchDiscounts.tr,
                         ),
 
                         // Scrollable Content
@@ -398,8 +392,9 @@ class _DiscountScreenState extends State<DiscountScreen> {
                             controller: _scrollController,
                             child: Padding(
                               padding: EdgeInsets.symmetric(
-                                  horizontal: screenWidth * 0.02,
-                                  vertical: screenHeight * 0.02),
+                                horizontal: screenWidth * 0.02,
+                                vertical: screenHeight * 0.02,
+                              ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment: MainAxisAlignment.start,
@@ -413,30 +408,21 @@ class _DiscountScreenState extends State<DiscountScreen> {
                                       height: screenHeight * 0.14,
                                       fit: BoxFit.cover,
                                       width: screenWidth,
-                                      placeholder:
-                                          (BuildContext context, String url) =>
-                                              Container(
-                                        height:
-                                            MediaQuery.sizeOf(context).height *
-                                                0.28,
+                                      placeholder: (BuildContext context, String url) => Container(
+                                        height: MediaQuery.sizeOf(context).height * 0.28,
                                         width: double.infinity,
-                                        color: Colors
-                                            .blueGrey[300], // Background color
+                                        color: Colors.blueGrey[300], // Background color
                                         child: Stack(
                                           alignment: Alignment.center,
                                           children: [
                                             Image.asset(
                                               'assets/placeholder.png', // Replace with your actual image path
-                                              fit: BoxFit
-                                                  .cover, // Adjust fit if needed
-                                              height: MediaQuery.sizeOf(context)
-                                                      .height *
-                                                  0.28,
+                                              fit: BoxFit.cover, // Adjust fit if needed
+                                              height: MediaQuery.sizeOf(context).height * 0.28,
                                               width: double.infinity,
                                             ),
                                             const CupertinoActivityIndicator(
-                                              radius:
-                                                  16, // Adjust size of the loader
+                                              radius: 16, // Adjust size of the loader
                                               animating: true,
                                             ),
                                           ],
@@ -448,8 +434,10 @@ class _DiscountScreenState extends State<DiscountScreen> {
                                   /// ========= NAME ARGUMENTS HERE =========
                                   Padding(
                                     padding: const EdgeInsets.only(top: 10),
-                                    child: Text(data?.name ?? '50% Discount',
-                                        style: boldHomeTextStyle()),
+                                    child: Text(
+                                      data?.name ?? AppStrings.discount50.tr,
+                                      style: boldHomeTextStyle(),
+                                    ),
                                   ),
 
                                   /// ======  TAB HERE ========
@@ -457,8 +445,7 @@ class _DiscountScreenState extends State<DiscountScreen> {
                                   Padding(
                                     padding: const EdgeInsets.only(top: 20),
                                     child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Row(
                                           children: <Widget>[
@@ -471,25 +458,18 @@ class _DiscountScreenState extends State<DiscountScreen> {
                                               child: Container(
                                                 decoration: BoxDecoration(
                                                   border: Border.all(
-                                                      color: _currentTab ==
-                                                              'Products'
-                                                          ? Colors.grey
-                                                          : Colors.transparent),
-                                                  borderRadius:
-                                                      const BorderRadius.only(
-                                                    topRight:
-                                                        Radius.circular(10),
-                                                    topLeft:
-                                                        Radius.circular(10),
+                                                    color: _currentTab == 'Products' ? Colors.grey : Colors.transparent,
+                                                  ),
+                                                  borderRadius: const BorderRadius.only(
+                                                    topRight: Radius.circular(10),
+                                                    topLeft: Radius.circular(10),
                                                   ),
                                                 ),
                                                 child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(4),
+                                                  padding: const EdgeInsets.all(4),
                                                   child: Text(
-                                                    'Products',
-                                                    style:
-                                                        topTabBarStyle(context),
+                                                    AppStrings.products.tr,
+                                                    style: topTabBarStyle(context),
                                                   ),
                                                 ),
                                               ),
@@ -503,26 +483,18 @@ class _DiscountScreenState extends State<DiscountScreen> {
                                               child: Container(
                                                 decoration: BoxDecoration(
                                                   border: Border.all(
-                                                    color: _currentTab ==
-                                                            'Packages'
-                                                        ? Colors.grey
-                                                        : Colors.transparent,
+                                                    color: _currentTab == 'Packages' ? Colors.grey : Colors.transparent,
                                                   ),
-                                                  borderRadius:
-                                                      const BorderRadius.only(
-                                                    topRight:
-                                                        Radius.circular(10),
-                                                    topLeft:
-                                                        Radius.circular(10),
+                                                  borderRadius: const BorderRadius.only(
+                                                    topRight: Radius.circular(10),
+                                                    topLeft: Radius.circular(10),
                                                   ),
                                                 ),
                                                 child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(4),
+                                                  padding: const EdgeInsets.all(4),
                                                   child: Text(
-                                                    'Packages',
-                                                    style:
-                                                        topTabBarStyle(context),
+                                                    AppStrings.packages.tr,
+                                                    style: topTabBarStyle(context),
                                                   ),
                                                 ),
                                               ),
@@ -543,10 +515,7 @@ class _DiscountScreenState extends State<DiscountScreen> {
                                   //     ? const DiscountsProducts()
                                   //     : const DiscountPackages(),
 
-                                  if (_currentTab == 'Products')
-                                    _productsView()
-                                  else
-                                    const DiscountPackages(),
+                                  if (_currentTab == 'Products') _productsView() else const DiscountPackages(),
                                 ],
                               ),
                             ),
@@ -557,16 +526,12 @@ class _DiscountScreenState extends State<DiscountScreen> {
                   }
                 },
               ),
-              if (wishlistProvider.isLoading ||
-                  freshListProvider.isLoading ||
-                  cartProvider.isLoading)
+              if (wishlistProvider.isLoading || freshListProvider.isLoading || cartProvider.isLoading)
                 Container(
-                  color: Colors.black
-                      .withOpacity(0.5), // Semi-transparent background
+                  color: Colors.black.withOpacity(0.5), // Semi-transparent background
                   child: const Center(
                     child: CircularProgressIndicator(
-                      valueColor:
-                          AlwaysStoppedAnimation<Color>(AppColors.peachyPink),
+                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.peachyPink),
                     ),
                   ),
                 ),
@@ -588,15 +553,18 @@ class _DiscountScreenState extends State<DiscountScreen> {
         builder: (ctx, provider, child) {
           if (provider.isLoadingProducts) {
             return const Center(
-                child: CircularProgressIndicator(
-                    color: Colors.black, strokeWidth: 0.5));
+              child: CircularProgressIndicator(
+                color: Colors.black,
+                strokeWidth: 0.5,
+              ),
+            );
           } else {
             return SizedBox(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  SortAndFilterDropdown(
+                  SortAndFilterWidget(
                     selectedSortBy: _selectedSortBy,
                     onSortChanged: (newSortBy) {
                       _onSortChanged(newSortBy);
@@ -608,12 +576,11 @@ class _DiscountScreenState extends State<DiscountScreen> {
                         builder: (context) => FilterBottomSheet(
                           filters: provider.productFilters,
                           selectedIds: selectedFilters,
-                        ), // Show the filter bottom sheet
+                        ),
                       ).then((result) {
                         setState(() {
                           _currentPage = 1;
-                          selectedFilters =
-                              result; // Store the selected filter IDs
+                          selectedFilters = result;
                         });
                         fetchNewProductsItems();
                       });
@@ -628,19 +595,17 @@ class _DiscountScreenState extends State<DiscountScreen> {
                       else
                         GridView.builder(
                           scrollDirection: Axis.vertical,
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
-                                  childAspectRatio: 0.6,
-                                  mainAxisSpacing: 10,
-                                  crossAxisSpacing: 10),
-                          itemCount: provider.products.length +
-                              (_isFetchingMore ? 1 : 0),
+                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            childAspectRatio: 0.6,
+                            mainAxisSpacing: 10,
+                            crossAxisSpacing: 10,
+                          ),
+                          itemCount: provider.products.length + (_isFetchingMore ? 1 : 0),
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
                           itemBuilder: (context, index) {
-                            if (_isFetchingMore &&
-                                index == provider.products.length) {
+                            if (_isFetchingMore && index == provider.products.length) {
                               return const Align(
                                 alignment: Alignment.center,
                                 child: Column(
@@ -664,18 +629,13 @@ class _DiscountScreenState extends State<DiscountScreen> {
                             final product = provider.products[index];
 
                             /// Check if both frontSalePrice and price are non-null and non-zero to avoid division by zero
-                            final double? frontSalePrice =
-                                product.prices?.frontSalePrice?.toDouble();
-                            final double? price =
-                                product.prices?.price?.toDouble();
+                            final double? frontSalePrice = product.prices?.frontSalePrice?.toDouble();
+                            final double? price = product.prices?.price?.toDouble();
                             String offPercentage = '';
 
-                            if (frontSalePrice != null &&
-                                price != null &&
-                                price > 0) {
+                            if (frontSalePrice != null && price != null && price > 0) {
                               /// Calculate the discount percentage
-                              final double discount =
-                                  100 - ((frontSalePrice / price) * 100);
+                              final double discount = 100 - ((frontSalePrice / price) * 100);
                               // offPercentage = discount.toStringAsFixed(0);
                               if (discount > 0) {
                                 offPercentage = discount.toStringAsFixed(0);
@@ -696,56 +656,55 @@ class _DiscountScreenState extends State<DiscountScreen> {
                               },
                               child: ProductCard(
                                 isOutOfStock: product.outOfStock ?? false,
-                                off: offPercentage.isNotEmpty
-                                    ? '$offPercentage%off'
-                                    : '',
+                                off: offPercentage.isNotEmpty ? '$offPercentage%off' : '',
                                 // Display the discount percentage
-                                priceWithTaxes:
-                                    (product.prices?.frontSalePrice ?? 0) <
-                                            (product.prices?.price ?? 0)
-                                        ? product.prices!.priceWithTaxes
-                                        : null,
+                                priceWithTaxes: (product.prices?.frontSalePrice ?? 0) < (product.prices?.price ?? 0)
+                                    ? product.prices!.priceWithTaxes
+                                    : null,
                                 itemsId: 0,
                                 imageUrl: product.image,
-                                frontSalePriceWithTaxes:
-                                    product.review?.average ?? '0',
+                                frontSalePriceWithTaxes: product.review?.average ?? '0',
                                 name: product.name,
                                 storeName: product.store?.name.toString(),
                                 price: product.prices?.price.toString(),
-                                reviewsCount:
-                                    product.review?.reviewsCount?.toInt(),
+                                reviewsCount: product.review?.reviewsCount?.toInt(),
                                 optionalIcon: Icons.shopping_cart,
                                 onOptionalIconTap: () async {
-                                  final token =
-                                      await SecurePreferencesUtil.getToken();
+                                  final token = await SecurePreferencesUtil.getToken();
                                   if (token != null) {
                                     await cartProvider.addToCart(
-                                        product.id, context, 1);
+                                      product.id,
+                                      context,
+                                      1,
+                                    );
                                   }
                                 },
-                                isHeartObscure: wishlistProvider
-                                        .wishlist?.data?.products
-                                        .any((wishlistProduct) =>
-                                            wishlistProduct.id == product.id) ??
+                                isHeartObscure: wishlistProvider.wishlist?.data?.products.any(
+                                      (wishlistProduct) => wishlistProduct.id == product.id,
+                                    ) ??
                                     false,
                                 onHeartTap: () async {
-                                  final token =
-                                      await SecurePreferencesUtil.getToken();
-                                  final bool isInWishlist = wishlistProvider
-                                          .wishlist?.data?.products
-                                          .any((wishlistProduct) =>
-                                              wishlistProduct.id ==
-                                              product.id) ??
+                                  final token = await SecurePreferencesUtil.getToken();
+                                  final bool isInWishlist = wishlistProvider.wishlist?.data?.products.any(
+                                        (wishlistProduct) => wishlistProduct.id == product.id,
+                                      ) ??
                                       false;
                                   if (isInWishlist) {
                                     await wishlistProvider.deleteWishlistItem(
-                                        product.id ?? 0, context, token ?? '');
+                                      product.id ?? 0,
+                                      context,
+                                      token ?? '',
+                                    );
                                   } else {
                                     await freshPicksProvider.handleHeartTap(
-                                        context, product.id ?? 0);
+                                      context,
+                                      product.id ?? 0,
+                                    );
                                   }
                                   await wishlistProvider.fetchWishlist(
-                                      token ?? '', context);
+                                    token ?? '',
+                                    context,
+                                  );
                                 },
                               ),
                             );

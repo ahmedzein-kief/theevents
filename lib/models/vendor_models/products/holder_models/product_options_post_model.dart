@@ -4,7 +4,7 @@ ProductOptionsPostModel productOptionsPostModelFromJson(String str) =>
     ProductOptionsPostModel.fromJson(json.decode(str));
 
 Map<String, dynamic> productOptionsPostModelToJson(
-        ProductOptionsPostModel data) =>
+        ProductOptionsPostModel data,) =>
     data.toJson();
 
 class ProductOptionsPostModel {
@@ -15,7 +15,7 @@ class ProductOptionsPostModel {
   factory ProductOptionsPostModel.fromJson(Map<dynamic, dynamic> json) =>
       ProductOptionsPostModel(
         options: List<ProductOption>.from(
-            json['options'].map((x) => ProductOption.fromJson(x))),
+            json['options'].map((x) => ProductOption.fromJson(x)),),
       );
 
   List<ProductOption> options;
@@ -38,7 +38,7 @@ class ProductOption {
   factory ProductOption.fromJson(Map<dynamic, dynamic> json) => ProductOption(
         optionType: json['option_type'],
         values: List<OptionValues>.from(
-            json['values'].map((x) => OptionValues.fromJson(x))),
+            json['values'].map((x) => OptionValues.fromJson(x)),),
         name: json['name'],
         id: json['id'],
         required: json['required'],

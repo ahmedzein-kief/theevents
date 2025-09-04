@@ -56,7 +56,7 @@ class VendorRevenuesViewModel with ChangeNotifier {
       if (_currentPage <= _lastPage) {
         setApiResponse = ApiResponse.loading();
         final RevenueDataResponse response = await _myRepo.vendorRevenues(
-            headers: headers, queryParams: queryParams);
+            headers: headers, queryParams: queryParams,);
         setLastPage(response);
         resetList(response);
         setApiResponse = ApiResponse.completed(response);

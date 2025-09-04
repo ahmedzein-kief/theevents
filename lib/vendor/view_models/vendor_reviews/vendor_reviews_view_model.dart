@@ -55,7 +55,7 @@ class VendorReviewsViewModel with ChangeNotifier {
       if (_currentPage <= _lastPage) {
         setApiResponse = ApiResponse.loading();
         final ReviewsDataResponse response = await _myRepo.vendorReviews(
-            headers: headers, queryParams: queryParams);
+            headers: headers, queryParams: queryParams,);
         setLastPage(response);
         resetList(response);
         setApiResponse = ApiResponse.completed(response);

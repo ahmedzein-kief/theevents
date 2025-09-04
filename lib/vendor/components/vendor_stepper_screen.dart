@@ -1,3 +1,4 @@
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/models/vendor_models/response_models/meta_data_response.dart';
 import 'package:event_app/provider/vendor/vendor_sign_up_provider.dart';
 import 'package:event_app/vendor/components/vendor_custom_appBar.dart';
@@ -60,7 +61,7 @@ class _StepperScreenState extends State<VendorStepperScreen> {
       setState(() {
         if (metaResponse != null) {
           SecurePreferencesUtil.saveServerStep(
-              int.parse(metaResponse.data['step'] ?? '1'));
+              int.parse(metaResponse.data['step'] ?? '1'),);
           activeStep = int.parse(metaResponse.data['step'] ?? '1');
         } else {
           activeStep = 1;
@@ -77,7 +78,7 @@ class _StepperScreenState extends State<VendorStepperScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          AppStrings.joinUsSeller,
+          AppStrings.joinUsSeller.tr,
           style: joinSeller(),
         ),
         elevation: 0,
@@ -122,7 +123,7 @@ class _StepperScreenState extends State<VendorStepperScreen> {
                           final int serverStep =
                               await SecurePreferencesUtil.getServerStep() ?? 0;
                           print(
-                              'Tapped on step index ==> $index || activeStep==> $activeStep || serverStep==> $serverStep');
+                              'Tapped on step index ==> $index || activeStep==> $activeStep || serverStep==> $serverStep',);
                           if (index > 0 &&
                               index != activeStep &&
                               index <= serverStep) {
@@ -164,14 +165,14 @@ class _StepperScreenState extends State<VendorStepperScreen> {
               padding: EdgeInsets.only(
                   left: screenWidth * 0.03,
                   right: screenWidth * 0.03,
-                  bottom: screenHeight * 0.015),
+                  bottom: screenHeight * 0.015,),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisSize: MainAxisSize.max,
                 children: [
-                  Text(AppStrings.vendorHeading,
-                      style: vendorDescription(), textAlign: TextAlign.center)
+                  Text(AppStrings.vendorHeading.tr,
+                      style: vendorDescription(), textAlign: TextAlign.center,),
                 ],
               ),
             ),

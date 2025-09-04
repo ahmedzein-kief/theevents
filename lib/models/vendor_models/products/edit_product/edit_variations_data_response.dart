@@ -43,13 +43,13 @@ class Data {
         generateLicenseCode: json['generate_license_code'],
         productAttributeSets: List<ProductAttributeSet>.from(
             json['productAttributeSets']
-                .map((x) => ProductAttributeSet.fromJson(x))),
+                .map((x) => ProductAttributeSet.fromJson(x)),),
         product: VariationProduct.fromJson(json['product']),
         originalProduct: VariationProduct.fromJson(json['originalProduct']),
         attachments: List<Attachment>.from(
-            json['attachments'].map((x) => Attachment.fromJson(x))),
+            json['attachments'].map((x) => Attachment.fromJson(x)),),
         variationImages: List<VariationImages>.from(
-            json['variationImages'].map((x) => VariationImages.fromJson(x))),
+            json['variationImages'].map((x) => VariationImages.fromJson(x)),),
       );
 
   int? generateLicenseCode;
@@ -270,7 +270,7 @@ class ProductAttributeSet {
         updatedAt: json['updated_at'],
         displayLayout: json['display_layout'],
         attributes: List<EditAttributeData>.from(json['attributes']
-            .map((x) => EditAttributeData.fromJson(x, json['selected_id']))),
+            .map((x) => EditAttributeData.fromJson(x, json['selected_id'])),),
         id: json['id'],
         useImageFromProductVariation: json['use_image_from_product_variation'],
         slug: json['slug'],
@@ -310,7 +310,7 @@ class EditAttributeData {
   });
 
   factory EditAttributeData.fromJson(
-          Map<dynamic, dynamic> json, int? selectedId) =>
+          Map<dynamic, dynamic> json, int? selectedId,) =>
       EditAttributeData(
         attributeSetId: json['attribute_set_id'],
         color: json['color'],
@@ -339,7 +339,7 @@ enum Color { THE_333333, RGB_128128128, EMPTY }
 final colorValues = EnumValues({
   '': Color.EMPTY,
   'rgb(128, 128, 128)': Color.RGB_128128128,
-  '#333333': Color.THE_333333
+  '#333333': Color.THE_333333,
 });
 
 class EnumValues<T> {

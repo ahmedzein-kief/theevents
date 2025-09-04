@@ -21,11 +21,11 @@ class BackAppBarStyle extends StatelessWidget {
       children: [
         Padding(
           padding: EdgeInsets.symmetric(
-              horizontal: screenWidth * 0.02, vertical: screenHeight * 0.02),
+              horizontal: screenWidth * 0.02, vertical: screenHeight * 0.02,),
           child: GestureDetector(
             onTap: goBack ??
                 () => Navigator.pop(
-                    context), // Navigate back to the previous screen,
+                    context,), // Navigate back to the previous screen,
             child: Row(
               children: [
                 if (icon != null)
@@ -37,7 +37,7 @@ class BackAppBarStyle extends StatelessWidget {
                     style: GoogleFonts.inter(
                         fontSize: 18.0,
                         fontWeight:
-                            FontWeight.w400), // Customize text style as needed
+                            FontWeight.w400,), // Customize text style as needed
                   ),
               ],
             ),

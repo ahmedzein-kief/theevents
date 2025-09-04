@@ -1,3 +1,5 @@
+import 'package:event_app/core/constants/vendor_app_strings.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/services/shared_preferences_helper.dart';
 import 'package:event_app/core/utils/custom_toast.dart';
 import 'package:event_app/models/auth_models/get_user_models.dart';
@@ -62,13 +64,13 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                       ],
                     ),
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 24.0, vertical: 24.0),
+                        horizontal: 24.0, vertical: 24.0,),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Text(
-                          'Email Verification Pending!',
-                          style: TextStyle(
+                        Text(
+                          VendorAppStrings.emailVerificationPending.tr,
+                          style: const TextStyle(
                             fontSize: 20.0,
                             fontWeight: FontWeight.bold,
                           ),
@@ -78,7 +80,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                         Divider(color: Colors.grey.shade300, thickness: 1.0),
                         const SizedBox(height: 16.0),
                         Text(
-                          'Please verify your email address! and tap on verify.',
+                          VendorAppStrings.pleaseVerifyEmail.tr,
                           style: TextStyle(
                             fontSize: 18.0,
                             fontWeight: FontWeight.bold,
@@ -87,10 +89,10 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 8.0),
-                        const Text(
-                          'For verification of email address please check your inbox and spam folder!',
+                        Text(
+                          VendorAppStrings.checkInboxSpam.tr,
                           style:
-                              TextStyle(fontSize: 14.0, color: Colors.black87),
+                              const TextStyle(fontSize: 14.0, color: Colors.black87),
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 24.0),
@@ -104,7 +106,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                                     borderRadius: BorderRadius.circular(8.0),
                                   ),
                                   padding: const EdgeInsets.symmetric(
-                                      vertical: 16.0),
+                                      vertical: 16.0,),
                                 ),
                                 onPressed: () async {
                                   final resultVerified = await verifyEmail();
@@ -114,17 +116,20 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                                   if (resultVerified != null) {
                                     if (resultVerified.isVerified == true) {
                                       CustomSnackbar.showSuccess(context,
-                                          'Account has been verified.');
+                                          VendorAppStrings.accountVerified.tr,);
                                       final prefs =
                                           await SharedPreferences.getInstance();
                                       prefs.setBool(
-                                          SecurePreferencesUtil.verified, true);
+                                          SecurePreferencesUtil.verified, true,);
                                       setState(() {
                                         widget.onNext();
                                       });
                                     } else {
-                                      CustomSnackbar.showError(context,
-                                          'Email verification is pending.');
+                                      CustomSnackbar.showError(
+                                          context,
+                                          VendorAppStrings
+                                              .emailVerificationPendingStatus
+                                              .tr,);
                                     }
                                   }
                                 },
@@ -137,9 +142,9 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                                           strokeWidth: 2.0,
                                         ),
                                       )
-                                    : const Text(
-                                        'Verify',
-                                        style: TextStyle(
+                                    : Text(
+                                        VendorAppStrings.verify.tr,
+                                        style: const TextStyle(
                                           color: Colors.white,
                                           fontSize: 16.0,
                                           fontWeight: FontWeight.bold,
@@ -156,7 +161,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                                     borderRadius: BorderRadius.circular(8.0),
                                   ),
                                   padding: const EdgeInsets.symmetric(
-                                      vertical: 16.0),
+                                      vertical: 16.0,),
                                 ),
                                 onPressed: isResendLoading ? null : resendEmail,
                                 child: isResendLoading
@@ -168,9 +173,9 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                                           strokeWidth: 2.0,
                                         ),
                                       )
-                                    : const Text(
-                                        'Resend',
-                                        style: TextStyle(
+                                    : Text(
+                                        VendorAppStrings.resend.tr,
+                                        style: const TextStyle(
                                           color: Colors.white,
                                           fontSize: 16.0,
                                           fontWeight: FontWeight.bold,

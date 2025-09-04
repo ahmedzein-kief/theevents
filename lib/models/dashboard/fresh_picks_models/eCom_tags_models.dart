@@ -7,7 +7,7 @@ class SeoMeta {
       {required this.title,
       required this.description,
       required this.image,
-      required this.robots});
+      required this.robots,});
 
   factory SeoMeta.fromJson(Map<String, dynamic> json) => SeoMeta(
         title: json['title'] ?? '',
@@ -471,15 +471,15 @@ class Filters {
   Filters.fromJson(Map<String, dynamic> json) {
     if (json['categories'] != null) {
       categories = List<Categories>.from(
-          json['categories'].map((v) => Categories.fromJson(v)));
+          json['categories'].map((v) => Categories.fromJson(v)),);
     }
     if (json['tags'] != null) {
       tags = List<Categories>.from(
-          json['tags'].map((v) => Categories.fromJson(v)));
+          json['tags'].map((v) => Categories.fromJson(v)),);
     }
     if (json['brands'] != null) {
       brands = List<Categories>.from(
-          json['brands'].map((v) => Categories.fromJson(v)));
+          json['brands'].map((v) => Categories.fromJson(v)),);
     }
   }
   List<Categories>? categories;

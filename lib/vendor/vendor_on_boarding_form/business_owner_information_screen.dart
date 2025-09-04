@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:event_app/core/constants/vendor_app_strings.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/models/vendor_models/post_models/business_owner_info_post_data.dart';
 import 'package:event_app/vendor/common_dropdowns.dart';
 import 'package:file_picker/file_picker.dart';
@@ -17,6 +19,7 @@ class BusinessOwnerInformationScreen extends StatefulWidget {
     required this.boiModel,
     required this.onBOIModelUpdate,
   });
+
   final BusinessOwnerInfoPostData boiModel;
   final Function(BusinessOwnerInfoPostData) onBOIModelUpdate;
 
@@ -51,6 +54,7 @@ class _BusinessOwnerInformationScreenState
   Future<void> fetchCountryData() async {
     try {
       countryModel = await fetchCountries(context);
+
       if (countryModel != null) {
         setState(() {
           _nameController.text = widget.boiModel.companyDisplayName ?? '';
@@ -72,16 +76,16 @@ class _BusinessOwnerInformationScreenState
   String findCountryNameUsingCode(String code) {
     if (code.length > 3) {
       countryCode = countryModel?.data?.list
-              ?.firstWhere((countryData) => countryData.label == code)
-              .value ??
+              ?.firstWhere((countryData) => countryData.name == code)
+              .code ??
           '';
 
       return code;
     } else {
       countryCode = code;
       return countryModel?.data?.list
-              ?.firstWhere((countryData) => countryData.value == code)
-              .label ??
+              ?.firstWhere((countryData) => countryData.code == code)
+              .name ??
           '';
     }
   }
@@ -147,18 +151,18 @@ class _BusinessOwnerInformationScreenState
               elevation: 15,
               child: Padding(
                 padding: const EdgeInsets.only(
-                    top: 20, left: 10, right: 10, bottom: 30),
+                    top: 20, left: 10, right: 10, bottom: 30,),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                      'Business Owner Information',
+                      VendorAppStrings.businessOwnerInformation.tr,
                       style: loginHeading(),
                     ),
                     VendorCustomTextFields(
-                      labelText: 'Full Name',
-                      hintText: 'Enter Full Name',
+                      labelText: VendorAppStrings.fullName.tr,
+                      hintText: VendorAppStrings.enterFullName.tr,
                       textStar: ' *',
                       controller: _nameController,
                       keyboardType: TextInputType.name,
@@ -171,9 +175,9 @@ class _BusinessOwnerInformationScreenState
                       },
                     ),
                     VendorCustomTextFields(
-                      labelText: 'Phone Number',
-                      textStar: '*',
-                      hintText: 'Enter your number',
+                      labelText: VendorAppStrings.phoneNumber.tr,
+                      textStar: VendorAppStrings.asterick.tr,
+                      hintText: VendorAppStrings.enterYourNumber.tr,
                       controller: _phNumberController,
                       prefixIcon: Icons.keyboard_arrow_down_outlined,
                       prefixText: '+971',
@@ -187,8 +191,8 @@ class _BusinessOwnerInformationScreenState
                       },
                     ),
                     VendorCustomTextFields(
-                      labelText: 'Country',
-                      hintText: 'Please select country',
+                      labelText: VendorAppStrings.country.tr,
+                      hintText: VendorAppStrings.pleaseSelectCountry.tr,
                       textStar: ' *',
                       controller: _countryController,
                       isEditable: false,
@@ -204,7 +208,7 @@ class _BusinessOwnerInformationScreenState
                           final List<CountryList> filteredList = countryModel
                                   ?.data?.list
                                   ?.where((value) =>
-                                      value.value?.toLowerCase() == 'ae')
+                                      value.code?.toLowerCase() == '+971',)
                                   .toList() ??
                               [];
                           showDialog(
@@ -214,9 +218,9 @@ class _BusinessOwnerInformationScreenState
                               currentSelection: _countryController.text,
                               onCountrySelected: (selectedCountry) {
                                 setState(() {
-                                  countryCode = selectedCountry.value ?? '';
+                                  countryCode = selectedCountry.code ?? '';
                                   _countryController.text =
-                                      selectedCountry.label ?? '';
+                                      selectedCountry.name ?? '';
                                   widget.boiModel.country = countryCode;
                                   widget.onBOIModelUpdate(widget.boiModel);
                                 });
@@ -227,8 +231,8 @@ class _BusinessOwnerInformationScreenState
                       },
                     ),
                     VendorCustomTextFields(
-                      labelText: 'Region',
-                      hintText: 'Please select Region',
+                      labelText: VendorAppStrings.region.tr,
+                      hintText: VendorAppStrings.pleaseSelectRegion.tr,
                       textStar: ' *',
                       controller: _regionController,
                       isEditable: false,
@@ -240,7 +244,7 @@ class _BusinessOwnerInformationScreenState
                       validator: Validator.region,
                       onIconPressed: () async {
                         final region = await showRegionDropdown(
-                            context, _regionController.text);
+                            context, _regionController.text,);
                         if (region != null) {
                           _regionController.text = region;
                           widget.boiModel.region = region;
@@ -249,9 +253,9 @@ class _BusinessOwnerInformationScreenState
                       },
                     ),
                     VendorCustomTextFields(
-                      labelText: 'Emirates ID Number',
-                      hintText: 'Enter ID Number',
-                      textStar: ' *',
+                      labelText: VendorAppStrings.emiratesIdNumber.tr,
+                      hintText: VendorAppStrings.enterIdNumber.tr,
+                      textStar: VendorAppStrings.asterick.tr,
                       controller: _emiratesIdController,
                       keyboardType: TextInputType.number,
                       focusNode: _emiratesIdFocusNode,
@@ -263,9 +267,9 @@ class _BusinessOwnerInformationScreenState
                       },
                     ),
                     VendorCustomTextFields(
-                      labelText: 'Emirates ID Number Expiry Date',
-                      hintText: 'dd-MM-yyyy',
-                      textStar: ' *',
+                      labelText: VendorAppStrings.emiratesIdNumberExpiryDate.tr,
+                      hintText: VendorAppStrings.ddMmYyyy.tr,
+                      textStar: VendorAppStrings.asterick.tr,
                       controller: _emiratesExpireDateController,
                       keyboardType: TextInputType.name,
                       focusNode: _emiratesExpireDateFocusNode,
@@ -275,8 +279,8 @@ class _BusinessOwnerInformationScreenState
                       suffixIconColor: Colors.grey,
                       validator: Validator.emiratesIdNumberDate,
                       onIconPressed: () async {
-                        final result =
-                            await showDatePickerDialog(context, 'dd-MM-yyyy');
+                        final result = await showDatePickerDialog(
+                            context, VendorAppStrings.ddMmYyyy.tr,);
                         if (result != null) {
                           final date = result.toString().split(' ')[0];
                           _emiratesExpireDateController.text = date;
@@ -286,9 +290,9 @@ class _BusinessOwnerInformationScreenState
                       },
                     ),
                     VendorCustomTextFields(
-                      labelText: 'Upload EID (pdf)',
-                      hintText: 'No file Chosen',
-                      textStar: ' *',
+                      labelText: VendorAppStrings.uploadEidPdf.tr,
+                      hintText: VendorAppStrings.noFileChosenAlt.tr,
+                      textStar: VendorAppStrings.asterick.tr,
                       controller: _eidPdfController,
                       keyboardType: TextInputType.name,
                       focusNode: _eidPdfFocusNode,
@@ -323,9 +327,9 @@ class _BusinessOwnerInformationScreenState
                       },
                     ),
                     VendorCustomTextFields(
-                      labelText: 'Upload Passport (pdf)',
-                      hintText: 'No file Chosen',
-                      textStar: ' *',
+                      labelText: VendorAppStrings.uploadPassportPdf.tr,
+                      hintText: VendorAppStrings.noFileChosenAlt.tr,
+                      textStar: VendorAppStrings.asterick.tr,
                       controller: _passportController,
                       keyboardType: TextInputType.name,
                       focusNode: _passportFocusNode,

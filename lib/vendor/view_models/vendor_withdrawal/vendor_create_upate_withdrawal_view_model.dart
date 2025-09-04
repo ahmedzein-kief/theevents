@@ -39,7 +39,7 @@ class VendorCreateUpdateWithdrawalViewModel with ChangeNotifier {
       {required RequestType requestType,
       String? withdrawalID,
       required form,
-      required BuildContext context}) async {
+      required BuildContext context,}) async {
     try {
       setLoading(true);
       setApiResponse = ApiResponse.loading();
@@ -51,18 +51,18 @@ class VendorCreateUpdateWithdrawalViewModel with ChangeNotifier {
       final body = form;
 
       final url = _getCreateUpdateUrl(
-          requestType: requestType, withdrawalID: withdrawalID);
+          requestType: requestType, withdrawalID: withdrawalID,);
       final CommonPostRequestModel response = await _myRepo
           .vendorCreateUpdateWithdrawal(url: url, headers: headers, body: body);
       setApiResponse = ApiResponse.completed(response);
       AlertServices.showSuccessSnackBar(
-          message: response.message.toString(), context: context);
+          message: response.message.toString(), context: context,);
       setLoading(false);
       return true;
     } catch (error) {
       setApiResponse = ApiResponse.error(error.toString());
       AlertServices.showErrorSnackBar(
-          message: error.toString(), context: context);
+          message: error.toString(), context: context,);
       setLoading(false);
       return false;
     }
@@ -81,7 +81,7 @@ class VendorCreateUpdateWithdrawalViewModel with ChangeNotifier {
   Future<bool> vendorCancelWithdrawal(
       {required String withdrawalID,
       required form,
-      required BuildContext context}) async {
+      required BuildContext context,}) async {
     try {
       setLoading(true);
       setApiResponse = ApiResponse.loading();
@@ -95,13 +95,13 @@ class VendorCreateUpdateWithdrawalViewModel with ChangeNotifier {
           .vendorCancelWithdrawal(headers: headers, withdrawalID: withdrawalID);
       setApiResponse = ApiResponse.completed(response);
       AlertServices.showSuccessSnackBar(
-          message: response.message.toString(), context: context);
+          message: response.message.toString(), context: context,);
       setLoading(false);
       return true;
     } catch (error) {
       setApiResponse = ApiResponse.error(error.toString());
       AlertServices.showErrorSnackBar(
-          message: error.toString(), context: context);
+          message: error.toString(), context: context,);
       setLoading(false);
       return false;
     }

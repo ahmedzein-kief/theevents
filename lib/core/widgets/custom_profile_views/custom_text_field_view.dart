@@ -10,18 +10,19 @@ class CustomFieldProfileScreen extends StatefulWidget {
     required this.controller,
     this.suffixIcon,
     required this.focusNode,
-    this.labelText, // Initialize labelText
+    this.labelText,
     this.nextFocusNode,
     this.displayName,
     this.onChanged,
     this.keyboardType = TextInputType.text,
     this.maxWords,
     this.isEditable = true,
-    this.isObscureText = false, // Default to false
+    this.isObscureText = false,
     this.onTap,
     this.formFieldValidator,
     this.textInputFormatters,
   });
+
   final String hintText;
   final TextEditingController controller;
   final FocusNode focusNode;
@@ -31,9 +32,9 @@ class CustomFieldProfileScreen extends StatefulWidget {
   final ValueChanged<String>? onChanged;
   final TextInputType keyboardType;
   final int? maxWords;
-  final String? labelText; // New labelText field
+  final String? labelText;
   final bool isEditable;
-  final bool isObscureText; // New isObscureText property
+  final bool isObscureText;
   final VoidCallback? onTap;
   final FormFieldValidator<String>? formFieldValidator;
   final List<TextInputFormatter>? textInputFormatters;
@@ -47,99 +48,102 @@ class _CustomFieldProfileScreenState extends State<CustomFieldProfileScreen> {
   String? errorText;
 
   @override
-  void initState() {
-    super.initState();
-  }
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
-  @override
-  Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(left: 20, right: 20, top: 15),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (widget.labelText != null) // Conditionally show labelText
-              Padding(
-                padding: const EdgeInsets.only(bottom: 5.0),
-                child: Text(
-                  widget.labelText!,
-                  style: GoogleFonts.inter(
-                    color: Colors.black,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
+    return Padding(
+      padding: const EdgeInsets.only(left: 20, right: 20, top: 15),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (widget.labelText != null)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 5.0),
+              child: Text(
+                widget.labelText!,
+                style: GoogleFonts.inter(
+                  color: isDark ? Colors.white : Colors.black,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
-            TextFormField(
-              controller: widget.controller,
-              focusNode: widget.focusNode,
-              keyboardType: widget.keyboardType,
-              style: const TextStyle(color: Colors.black),
-              readOnly: !widget.isEditable,
-              obscureText: widget.isObscureText,
-              inputFormatters: widget.textInputFormatters,
-              validator: widget.formFieldValidator,
-              textInputAction: widget.nextFocusNode != null
-                  ? TextInputAction.next
-                  : TextInputAction.done,
-              onFieldSubmitted: (_) {
-                if (widget.nextFocusNode != null) {
-                  FocusScope.of(context).requestFocus(widget.nextFocusNode);
-                }
-              },
-              onChanged: (text) {
-                if (widget.maxWords != null) {
-                  final words = text.trim().split(RegExp(r'\s+'));
-                  if (words.length > widget.maxWords!) {
-                    widget.controller.text =
-                        words.take(widget.maxWords!).join(' ');
-                    widget.controller.selection = TextSelection.fromPosition(
-                      TextPosition(offset: widget.controller.text.length),
-                    );
-                  }
-                }
-                // If the form field passes the validation, reset the errorText
-                if (widget.formFieldValidator != null) {
-                  final error = widget.formFieldValidator!(text);
-                  setState(() {
-                    errorText =
-                        error; // Set error text from validator if any, otherwise null
-                  });
-                }
-                widget.onChanged?.call(text);
-              },
-              onTap: widget.onTap,
-              decoration: InputDecoration(
-                hintText:
-                    widget.controller.text.isEmpty ? widget.hintText : null,
-                hintStyle: const TextStyle(color: Colors.grey),
-                suffixIcon: widget.suffixIcon,
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: const BorderSide(color: Colors.grey),
-                ),
-                errorBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: const BorderSide(color: Colors.red),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: const BorderSide(color: AppColors.peachyPink),
-                ),
-                focusedErrorBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: const BorderSide(color: Colors.red),
-                ),
-                filled: true,
-                isDense: true,
-                errorText: null,
-                // Dynamically display error text
-                errorStyle: GoogleFonts.inter(
-                  color: Colors.red,
-                ),
-              ),
-              autovalidateMode: AutovalidateMode.onUserInteraction,
             ),
-          ],
-        ),
-      );
+          TextFormField(
+            controller: widget.controller,
+            focusNode: widget.focusNode,
+            keyboardType: widget.keyboardType,
+            style: TextStyle(
+              color: isDark ? Colors.white : Colors.black,
+            ),
+            readOnly: !widget.isEditable,
+            obscureText: widget.isObscureText,
+            inputFormatters: widget.textInputFormatters,
+            validator: widget.formFieldValidator,
+            textInputAction: widget.nextFocusNode != null
+                ? TextInputAction.next
+                : TextInputAction.done,
+            onFieldSubmitted: (_) {
+              if (widget.nextFocusNode != null) {
+                FocusScope.of(context).requestFocus(widget.nextFocusNode);
+              }
+            },
+            onChanged: (text) {
+              if (widget.maxWords != null) {
+                final words = text.trim().split(RegExp(r'\s+'));
+                if (words.length > widget.maxWords!) {
+                  widget.controller.text =
+                      words.take(widget.maxWords!).join(' ');
+                  widget.controller.selection = TextSelection.fromPosition(
+                    TextPosition(offset: widget.controller.text.length),
+                  );
+                }
+              }
+              if (widget.formFieldValidator != null) {
+                final error = widget.formFieldValidator!(text);
+                setState(() {
+                  errorText = error;
+                });
+              }
+              widget.onChanged?.call(text);
+            },
+            onTap: widget.onTap,
+            decoration: InputDecoration(
+              hintText: widget.controller.text.isEmpty ? widget.hintText : null,
+              hintStyle: TextStyle(
+                color: isDark ? Colors.grey[400] : Colors.grey[600],
+              ),
+              suffixIcon: widget.suffixIcon,
+              filled: true,
+              fillColor: isDark ? Colors.grey[900] : Colors.white,
+              isDense: true,
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(
+                  color: isDark ? Colors.grey[700]! : Colors.grey,
+                ),
+              ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(color: Colors.red),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(color: AppColors.peachyPink),
+              ),
+              focusedErrorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(color: Colors.red),
+              ),
+              errorText: null,
+              errorStyle: GoogleFonts.inter(
+                color: Colors.red,
+              ),
+            ),
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+          ),
+        ],
+      ),
+    );
+  }
 }

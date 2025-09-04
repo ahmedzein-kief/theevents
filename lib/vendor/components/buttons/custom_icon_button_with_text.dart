@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/styles/app_colors.dart';
 import '../../Components/utils/utils.dart';
 
 class CustomIconButtonWithText extends StatelessWidget {
@@ -38,30 +37,35 @@ class CustomIconButtonWithText extends StatelessWidget {
         elevation: 0,
         visualDensity: visualDensity ?? VisualDensity.standard,
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        color: color ?? Colors.transparent,
+        color: color ?? Theme.of(context).colorScheme.surface,
         padding: padding,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(borderRadius ?? 8.0),
-          side:
-              BorderSide(color: isLoading ? AppColors.lightCoral : borderColor),
+          side: BorderSide(
+              color: isLoading
+                  ? Theme.of(context).colorScheme.primary
+                  : borderColor ?? Theme.of(context).colorScheme.outline,),
         ),
         child: isLoading
             ? SizedBox(
                 height: 20,
                 width: 20,
                 child: Utils.pageLoadingIndicator(
-                    context: context, color: textColor))
+                    context: context,
+                    color: textColor ?? Theme.of(context).colorScheme.primary,),)
             : Row(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   icon,
-                  const SizedBox(
-                      width: 4), // Adds spacing between icon and text
+                  const SizedBox(width: 4),
                   Text(
                     text,
-                    style: TextStyle(fontSize: fontSize, color: textColor),
+                    style: TextStyle(
+                        fontSize: fontSize,
+                        color: textColor ??
+                            Theme.of(context).colorScheme.onPrimary,),
                   ),
                 ],
               ),

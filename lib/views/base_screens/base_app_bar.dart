@@ -29,7 +29,11 @@ class BaseAppBar extends StatefulWidget {
     this.color,
     this.textBack,
     this.title,
+    this.iconsColor,
+    this.leftTextStyle,
   });
+
+  final Color? iconsColor;
   final Widget? body;
   final String? leftIconPath;
   final String? firstRightIconPath;
@@ -45,6 +49,7 @@ class BaseAppBar extends StatefulWidget {
   final String? textBack;
   final Widget? customBackIcon;
   final String? title;
+  final TextStyle? leftTextStyle;
 
   @override
   State<BaseAppBar> createState() => _BaseScreenState();
@@ -73,7 +78,7 @@ class _BaseScreenState extends State<BaseAppBar> {
     final token = await SecurePreferencesUtil.getToken();
     final cartProvider = Provider.of<WishlistProvider>(context, listen: false);
     await cartProvider.fetchWishlist(
-        token ?? '', context); // Ensure the provider fetches cart data
+        token ?? '', context,); // Ensure the provider fetches cart data
   }
 
   @override
@@ -103,10 +108,12 @@ class _BaseScreenState extends State<BaseAppBar> {
 
     return Scaffold(
       appBar: CustomAppBar(
+        iconsColor: widget.iconsColor,
         firstRightIconPath: widget.firstRightIconPath,
         secondRightIconPath: widget.secondRightIconPath,
         thirdRightIconPath: widget.thirdRightIconPath,
         leftText: widget.textBack,
+        leftTextStyle: widget.leftTextStyle,
         customBackIcon: widget.customBackIcon,
         onBackIconPressed: widget.onBackPressed,
         onFirstRightIconPressed: _navigateToNotifications,

@@ -37,7 +37,7 @@ class Data {
 
   factory Data.fromJson(Map<dynamic, dynamic> json) => Data(
         paymentMethods: List<PaymentMethod>.from(
-            json['payment_methods'].map((x) => PaymentMethod.fromJson(x))),
+            json['payment_methods'].map((x) => PaymentMethod.fromJson(x)),),
         dataDefault: json['default'],
         currency: json['currency'],
         selecting: json['selecting'],
@@ -78,7 +78,7 @@ class PaymentMethod {
         name: json['name'],
         description: json['description'],
         subOptions: List<SubOption>.from(
-            json['sub_options'].map((x) => SubOption.fromJson(x))),
+            json['sub_options'].map((x) => SubOption.fromJson(x)),),
         label: json['label'],
         image1: json['image1'],
       );

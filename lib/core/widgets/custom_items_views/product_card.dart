@@ -1,11 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:event_app/core/constants/app_strings.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/views/auth_screens/auth_page_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../services/shared_preferences_helper.dart';
 import '../../styles/app_colors.dart';
@@ -30,6 +30,7 @@ class ProductCard extends StatefulWidget {
     required this.onOptionalIconTap, // Default to null
     required this.isOutOfStock, // Default to null
   });
+
   final String? imageUrl;
   final String? name;
   final String? storeName;
@@ -215,7 +216,7 @@ class _ProductCardState extends State<ProductCard> {
                           children: [
                             Container(
                               padding: const EdgeInsets.only(
-                                  left: 4, right: 8, top: 1, bottom: 1),
+                                  left: 4, right: 8, top: 1, bottom: 1,),
                               color: Colors.white,
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -230,13 +231,13 @@ class _ProductCardState extends State<ProductCard> {
                                     ),
                                   ),
                                   const Icon(Icons.star,
-                                      size: 13, color: Colors.yellow),
+                                      size: 13, color: Colors.yellow,),
                                   Container(
                                     height: 20,
                                     width: 1,
                                     color: AppColors.semiTransparentBlack,
                                     margin: const EdgeInsets.symmetric(
-                                        horizontal: 5),
+                                        horizontal: 5,),
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.only(left: 2),
@@ -288,14 +289,14 @@ class _ProductCardState extends State<ProductCard> {
                             color: Colors.white,
                             shape: BoxShape.circle,
                             border: Border.all(
-                                color: Colors.grey, width: 1), // Add a border
+                                color: Colors.grey, width: 1,), // Add a border
                           ),
                           child: SvgPicture.asset(
                             height: 18,
                             width: 18,
                             widget.isOutOfStock
-                                ? AppStrings.outOfStock
-                                : AppStrings.itemAddToCart,
+                                ? AppStrings.outOfStock.tr
+                                : AppStrings.itemAddToCart.tr,
                             color: widget.isOutOfStock ? Colors.red : null,
                           ),
                         ),
@@ -362,7 +363,7 @@ class _ProductCardState extends State<ProductCard> {
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(
-                                    color: Colors.orange, fontSize: 8),
+                                    color: Colors.orange, fontSize: 8,),
                               ),
                             ],
                           ),

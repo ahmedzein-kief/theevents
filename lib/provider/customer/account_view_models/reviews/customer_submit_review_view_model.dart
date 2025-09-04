@@ -32,7 +32,7 @@ class CustomerSubmitReviewViewModel with ChangeNotifier {
   }
 
   Future<bool> customerSubmitReview(
-      {required FormData form, required BuildContext context}) async {
+      {required FormData form, required BuildContext context,}) async {
     try {
       setLoading(true);
       setApiResponse = ApiResponse.loading();
@@ -46,7 +46,7 @@ class CustomerSubmitReviewViewModel with ChangeNotifier {
           await _myRepo.customerSubmitReview(headers: headers, form: form);
       setApiResponse = ApiResponse.completed(response);
       CustomSnackbar.showSuccess(
-          context, apiResponse.data?.message?.toString() ?? 'Success');
+          context, apiResponse.data?.message?.toString() ?? 'Success',);
       setLoading(false);
       return true;
     } catch (error) {

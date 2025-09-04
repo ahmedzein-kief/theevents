@@ -33,7 +33,7 @@ class CustomerDeleteReviewViewModel with ChangeNotifier {
   }
 
   Future<bool> customerDeleteReview(
-      {required reviewID, required BuildContext context}) async {
+      {required reviewID, required BuildContext context,}) async {
     try {
       setLoading(true);
       setApiResponse = ApiResponse.loading();
@@ -45,10 +45,10 @@ class CustomerDeleteReviewViewModel with ChangeNotifier {
 
       final CommonPostRequestModel response =
           await _myRepo.customerDeleteReview(
-              headers: headers, reviewID: reviewID.toString());
+              headers: headers, reviewID: reviewID.toString(),);
       setApiResponse = ApiResponse.completed(response);
       CustomSnackbar.showSuccess(
-          context, apiResponse.data?.message?.toString() ?? '');
+          context, apiResponse.data?.message?.toString() ?? '',);
       setLoading(false);
       return true;
     } catch (error) {

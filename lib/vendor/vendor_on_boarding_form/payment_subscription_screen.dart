@@ -1,4 +1,6 @@
 import 'package:event_app/core/constants/app_strings.dart';
+import 'package:event_app/core/constants/vendor_app_strings.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/utils/custom_toast.dart';
 import 'package:event_app/core/widgets/bottom_navigation_bar.dart';
 import 'package:event_app/models/dashboard/information_icons_models/gift_card_models/checkout_payment_model.dart';
@@ -100,13 +102,14 @@ class _PaymentScreenState extends State<PaymentSubscriptionScreen> {
                             elevation: 15,
                             child: Padding(
                               padding: const EdgeInsets.only(
-                                  top: 20, left: 10, right: 10, bottom: 30),
+                                  top: 20, left: 10, right: 10, bottom: 30,),
                               child: Column(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceAround,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Text('Payment', style: loginHeading()),
+                                  Text(VendorAppStrings.payment.tr,
+                                      style: loginHeading(),),
                                   const Divider(
                                     color: Colors.grey, // Line color
                                     thickness: 1, // Line thickness
@@ -115,7 +118,7 @@ class _PaymentScreenState extends State<PaymentSubscriptionScreen> {
                                   ),
                                   Padding(
                                     padding: EdgeInsets.only(
-                                        top: screenHeight * 0.03),
+                                        top: screenHeight * 0.03,),
                                     child: Text(
                                       subscriptionResponse?.data.heading ?? '',
                                       style: loginHeading(),
@@ -123,7 +126,7 @@ class _PaymentScreenState extends State<PaymentSubscriptionScreen> {
                                   ),
                                   Padding(
                                     padding: EdgeInsets.symmetric(
-                                        vertical: screenHeight * 0.03),
+                                        vertical: screenHeight * 0.03,),
                                     child: Text(
                                       subscriptionResponse?.data.subHeading ??
                                           '',
@@ -133,22 +136,26 @@ class _PaymentScreenState extends State<PaymentSubscriptionScreen> {
                                     ),
                                   ),
                                   Text(
-                                      'Now AED ${subscriptionResponse?.data.price}',
-                                      style: loginHeading()),
+                                      '${VendorAppStrings.nowAed.tr} ${subscriptionResponse?.data.price}',
+                                      style: loginHeading(),),
                                   const SizedBox(
                                     height: 20,
                                   ),
                                   PaymentMethods(
                                     subCardShow: false,
+                                    amount:
+                                        subscriptionResponse?.data.price ?? '',
+                                    paymentType: 'subscription',
                                     onSelectionChanged: (selectedMethod) {
                                       paymentMethod = selectedMethod;
                                     },
                                   ),
                                   Padding(
                                     padding: EdgeInsets.symmetric(
-                                        vertical: screenHeight * 0.03),
+                                        vertical: screenHeight * 0.03,),
                                     child: Text(
-                                      'You will be redirected to Telr/Tabby to complete payment',
+                                      VendorAppStrings
+                                          .youWillBeRedirectedToTelrTabby.tr,
                                       softWrap: true,
                                       textAlign: TextAlign.center,
                                       style: agreementAccept(),
@@ -169,7 +176,7 @@ class _PaymentScreenState extends State<PaymentSubscriptionScreen> {
               alignment: Alignment.bottomCenter,
               child: CustomVendorAuthButton(
                 isLoading: mainProvider.isLoading,
-                title: 'Pay Now',
+                title: VendorAppStrings.payNow.tr,
                 onPressed: () async {
                   pModel.cardAmount =
                       int.tryParse(subscriptionResponse?.data.price ?? '');
@@ -188,7 +195,8 @@ class _PaymentScreenState extends State<PaymentSubscriptionScreen> {
                     if (paymentResult) {
                       showCongratsDialog(context, screenWidth, screenHeight);
                     } else {
-                      CustomSnackbar.showError(context, 'Payment Failure');
+                      CustomSnackbar.showError(
+                          context, VendorAppStrings.paymentFailure.tr,);
                     }
                   }
                 },
@@ -212,7 +220,7 @@ class _PaymentScreenState extends State<PaymentSubscriptionScreen> {
   }
 
   void showCongratsDialog(
-      BuildContext context, double screenWidth, double screenHeight) {
+      BuildContext context, double screenWidth, double screenHeight,) {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -232,7 +240,7 @@ class _PaymentScreenState extends State<PaymentSubscriptionScreen> {
                 Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const BaseHomeScreen()));
+                        builder: (context) => const BaseHomeScreen(),),);
               },
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -268,7 +276,7 @@ class _PaymentScreenState extends State<PaymentSubscriptionScreen> {
                             size: 50,
                           ),
                           Text(
-                            'Congratulations!',
+                            VendorAppStrings.congratulations.tr,
                             style: congratulations(),
                           ),
                         ],
@@ -284,15 +292,15 @@ class _PaymentScreenState extends State<PaymentSubscriptionScreen> {
                       mainAxisSize: MainAxisSize.max,
                       children: [
                         Text(
-                          AppStrings.registrationDone,
+                          AppStrings.registrationDone.tr,
                           style: paymentHeading(),
                           textAlign: TextAlign.center,
                         ),
                         Padding(
                           padding: EdgeInsets.symmetric(
-                              vertical: screenHeight * 0.040),
+                              vertical: screenHeight * 0.040,),
                           child: Text(
-                            AppStrings.paymentDone,
+                            AppStrings.paymentDone.tr,
                             style: paymentDesc(),
                             textAlign: TextAlign.center,
                           ),
@@ -300,7 +308,7 @@ class _PaymentScreenState extends State<PaymentSubscriptionScreen> {
                         Padding(
                           padding: EdgeInsets.only(bottom: screenHeight * 0.04),
                           child: Text(
-                            AppStrings.paymentThanks,
+                            AppStrings.paymentThanks.tr,
                             style: vendorPayment(),
                             textAlign: TextAlign.center,
                           ),

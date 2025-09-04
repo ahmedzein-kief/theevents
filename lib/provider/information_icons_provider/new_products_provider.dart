@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/models/dashboard/information_icons_models/new_products_models.dart';
@@ -20,7 +19,7 @@ class NewProductsProvider extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
 
   Future<void> fetchProducts(BuildContext context) async {
-    // const newProductUrl = "https://api.staging.theevents.ae/api/v1/pages/products";
+    // const newProductUrl = "https://apistaging.theevents.ae/api/v1/pages/products";
     const newProductUrl = ApiEndpoints.newProductsBanner;
 
     print('URL $newProductUrl');
@@ -36,7 +35,7 @@ class NewProductsProvider extends ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        final jsonResponse = json.decode(response.body);
+        final jsonResponse = response.data;
         _product = Product.fromJson(jsonResponse['data']);
       } else {
         _errorMessage = '';
@@ -121,9 +120,9 @@ class NewProductsProvider extends ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
+        final jsonData = response.data;
         // final newProducts = NewProductsModels.fromJson(jsonData).data?.records ?? [];
-        final Map<String, dynamic> jsonResponse = json.decode(response.body);
+        final Map<String, dynamic> jsonResponse = response.data;
         print('json response $jsonResponse');
         final NewProductsModels apiResponse =
             NewProductsModels.fromJson(jsonResponse);

@@ -34,7 +34,7 @@ class Data {
         pagination: Pagination.fromJson(json['pagination']),
         star: json['star'],
         records: List<CustomerReviewRecord>.from(
-            json['records'].map((x) => CustomerReviewRecord.fromJson(x))),
+            json['records'].map((x) => CustomerReviewRecord.fromJson(x)),),
         productName: json['product_name'],
       );
 

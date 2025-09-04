@@ -1,3 +1,4 @@
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/views/base_screens/base_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -15,13 +16,13 @@ class EventsBazaarDetailScreen extends StatefulWidget {
     required this.titles,
     required this.title,
   });
+
   final String title;
   final List<String> imageUrls;
   final List<String> titles;
 
   @override
-  State<EventsBazaarDetailScreen> createState() =>
-      _EventsBazaarDetailScreenState();
+  State<EventsBazaarDetailScreen> createState() => _EventsBazaarDetailScreenState();
 }
 
 class _EventsBazaarDetailScreenState extends State<EventsBazaarDetailScreen> {
@@ -74,11 +75,11 @@ class _EventsBazaarDetailScreenState extends State<EventsBazaarDetailScreen> {
     final double screenWidth = MediaQuery.sizeOf(context).width;
     final double screenHeight = MediaQuery.sizeOf(context).height;
     return BaseAppBar(
-      textBack: AppStrings.back,
+      textBack: AppStrings.back.tr,
       customBackIcon: const Icon(Icons.arrow_back_ios_sharp, size: 16),
-      firstRightIconPath: AppStrings.firstRightIconPath,
-      secondRightIconPath: AppStrings.secondRightIconPath,
-      thirdRightIconPath: AppStrings.thirdRightIconPath,
+      firstRightIconPath: AppStrings.firstRightIconPath.tr,
+      secondRightIconPath: AppStrings.secondRightIconPath.tr,
+      thirdRightIconPath: AppStrings.thirdRightIconPath.tr,
       body: Scaffold(
         body: SafeArea(
           child: _isLoading
@@ -97,13 +98,14 @@ class _EventsBazaarDetailScreenState extends State<EventsBazaarDetailScreen> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           CustomSearchBar(
-                            hintText: 'Search ${widget.title}',
+                            hintText: AppStrings.searchEvents.tr,
                           ),
                           Padding(
                             padding: EdgeInsets.only(
-                                left: screenWidth * 0.02,
-                                right: screenWidth * 0.02,
-                                top: screenHeight * 0.02),
+                              left: screenWidth * 0.02,
+                              right: screenWidth * 0.02,
+                              top: screenHeight * 0.02,
+                            ),
                             child: SizedBox(
                               height: 100,
                               child: ClipRRect(
@@ -111,19 +113,20 @@ class _EventsBazaarDetailScreenState extends State<EventsBazaarDetailScreen> {
                                 child: Image.network(
                                   data ?? '',
                                   fit: BoxFit.contain,
-                                  errorBuilder: (context, provider, error) =>
-                                      const SizedBox.shrink(),
-                                  loadingBuilder:
-                                      (context, child, loadingProcessor) {
+                                  errorBuilder: (context, provider, error) => const SizedBox.shrink(),
+                                  loadingBuilder: (context, child, loadingProcessor) {
                                     if (loadingProcessor == null) return child;
                                     return Container(
                                       height: 100,
                                       width: double.infinity,
                                       decoration: const BoxDecoration(
-                                          gradient: LinearGradient(colors: [
-                                        Colors.grey,
-                                        Colors.black
-                                      ])),
+                                        gradient: LinearGradient(
+                                          colors: [
+                                            Colors.grey,
+                                            Colors.black,
+                                          ],
+                                        ),
+                                      ),
                                     );
                                   },
                                 ),
@@ -132,9 +135,10 @@ class _EventsBazaarDetailScreenState extends State<EventsBazaarDetailScreen> {
                           ),
                           Padding(
                             padding: EdgeInsets.only(
-                                top: screenHeight * 0.02,
-                                left: screenWidth * 0.04,
-                                right: screenWidth * 0.04),
+                              top: screenHeight * 0.02,
+                              left: screenWidth * 0.04,
+                              right: screenWidth * 0.04,
+                            ),
                             child: Text(
                               widget.title,
                               style: boldHomeTextStyle(),
@@ -142,21 +146,21 @@ class _EventsBazaarDetailScreenState extends State<EventsBazaarDetailScreen> {
                           ),
                           Padding(
                             padding: EdgeInsets.only(
-                                top: screenHeight * 0.005,
-                                left: screenWidth * 0.04,
-                                right: screenWidth * 0.04),
+                              top: screenHeight * 0.005,
+                              left: screenWidth * 0.04,
+                              right: screenWidth * 0.04,
+                            ),
                             child: GridView.builder(
-                              gridDelegate:
-                                  const SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: 3,
-                                      crossAxisSpacing: 18,
-                                      mainAxisSpacing: 15,
-                                      childAspectRatio: 0.8),
+                              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 3,
+                                crossAxisSpacing: 18,
+                                mainAxisSpacing: 15,
+                                childAspectRatio: 0.8,
+                              ),
                               itemCount: widget.imageUrls.length,
                               shrinkWrap: true,
                               physics: const BouncingScrollPhysics(),
-                              itemBuilder: (context, index) =>
-                                  GridItemsHomeSeeAll(
+                              itemBuilder: (context, index) => GridItemsHomeSeeAll(
                                 imageUrl: widget.imageUrls[index],
                                 name: widget.titles[index],
                                 textStyle: eventsBazaarDetail(context),

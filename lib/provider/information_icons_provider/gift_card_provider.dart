@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/core/services/shared_preferences_helper.dart';
 import 'package:event_app/models/dashboard/information_icons_models/gift_card_models/checkout_payment_model.dart';
@@ -34,7 +32,7 @@ class GiftCardInnerProvider with ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        _apiResponse = GiftCardPage.fromJson(json.decode(response.body));
+        _apiResponse = GiftCardPage.fromJson(response.data);
         _error = null;
       } else {
         _error = 'Failed to load data';
@@ -91,7 +89,7 @@ class CreateGiftCardProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         _error = null;
-        return CheckoutPaymentModel.fromJson(json.decode(response.body));
+        return CheckoutPaymentModel.fromJson(response.data);
       } else {
         _error = 'Failed to load data';
       }

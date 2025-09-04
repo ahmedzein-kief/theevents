@@ -1,4 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:event_app/core/constants/vendor_app_strings.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/models/vendor_models/products/create_product/vendor_search_product_data_response.dart';
 import 'package:event_app/models/vendor_models/products/holder_models/search_dropdown_model.dart';
 import 'package:event_app/vendor/components/text_fields/custom_text_form_field.dart';
@@ -13,6 +15,7 @@ class SearchDropdown extends StatefulWidget {
     required this.onSelected,
     required this.onSearchChanged,
   });
+
   final SearchDropdownModel searchDropdownModel;
   final String hint;
   final Function(SearchProductRecord) onSelected;
@@ -71,15 +74,16 @@ class _SearchDropdownState extends State<SearchDropdown> {
                   0.3, // Limits height to 30% of the screen
             ),
             child: _filteredOptions.isEmpty
-                ? const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Center(child: Text('No results found')),
+                ? Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child:
+                        Center(child: Text(VendorAppStrings.noResultsFound.tr)),
                   )
                 : ListView.separated(
                     shrinkWrap: true,
                     itemCount: _filteredOptions.length,
                     separatorBuilder: (context, index) => Divider(
-                        height: 1, color: Colors.grey.shade300), // Separator
+                        height: 1, color: Colors.grey.shade300,), // Separator
                     itemBuilder: (context, index) {
                       final option = _filteredOptions[index];
                       return ListTile(

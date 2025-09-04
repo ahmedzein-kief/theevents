@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/helper/validators/validator.dart';
 import 'package:event_app/views/base_screens/base_app_bar.dart';
 import 'package:event_app/views/cart_screens/stepper_payment_screen.dart';
@@ -11,21 +14,23 @@ import '../../core/styles/app_colors.dart';
 import '../../core/utils/custom_toast.dart';
 import '../../core/widgets/custom_items_views/custom_add_to_cart_button.dart';
 import '../../core/widgets/custom_items_views/custom_textField_saveaddress.dart';
+import '../../models/wishlist_models/states_cities_models.dart';
 import '../../provider/auth_provider/get_user_provider.dart';
 import '../../provider/checkout_provider/submit_checkout_information.dart';
 import '../../provider/payment_address/country_picks_provider.dart';
 import '../../provider/payment_address/create_address_provider.dart';
 import '../../provider/payment_address/customer_address.dart';
+import '../../provider/payment_address/customer_edit.dart';
 import '../country_picker/country_pick_screen.dart';
 
 class SaveAddressScreen extends StatefulWidget {
-  // New field for customer data
+  const SaveAddressScreen({
+    super.key,
+    required this.tracked_start_checkout,
+    this.isEditable = false,
+    this.addressModel,
+  });
 
-  const SaveAddressScreen(
-      {super.key,
-      required this.tracked_start_checkout,
-      this.isEditable = false,
-      this.addressModel});
   final bool isEditable;
   final String tracked_start_checkout;
   final AddressModel? addressModel;
@@ -35,16 +40,17 @@ class SaveAddressScreen extends StatefulWidget {
 }
 
 class _SaveAddressScreenState extends State<SaveAddressScreen> {
-  int? defaultAddressId; // Default constant addressId if null
+  int? defaultAddressId;
   String countryCode = '';
   bool _countryLoader = false;
-  bool _isNameEditable = false; // Initially editable
-  bool _isEmailEditable = false; // Initially editable
-  bool _isPhoneEditable = false; // Initially editable
-  bool _isCountryEditable = false; // Initially editable
-  bool _isCityEditable = false; // Initially editable
-  bool _isAddressEditable = false; // Initially editable
-  bool _isZipCodeEditable = false; // Initially editable
+  bool _isNameEditable = false;
+  bool _isEmailEditable = false;
+  bool _isPhoneEditable = false;
+  bool _isCountryEditable = false;
+  bool _isStateEditable = false;
+  bool _isCityEditable = false;
+  bool _isAddressEditable = false;
+  bool isNewAddress = false; // Tracks whether a new address is being added
 
   final _formKey = GlobalKey<FormState>();
 
@@ -55,7 +61,7 @@ class _SaveAddressScreenState extends State<SaveAddressScreen> {
   final _countryFocusNode = FocusNode();
   final _cityFocusNode = FocusNode();
   final _addressFocusNode = FocusNode();
-  final _zipCodeFocusNode = FocusNode();
+  final _stateFocusNode = FocusNode();
 
   final _newAddressController = TextEditingController();
   final _NamController = TextEditingController();
@@ -65,7 +71,6 @@ class _SaveAddressScreenState extends State<SaveAddressScreen> {
   final _cityController = TextEditingController();
   final _addressController = TextEditingController();
   final _stateController = TextEditingController();
-  final _zipCodeController = TextEditingController();
 
   late bool isLoggedIn = false;
   String? userName;
@@ -75,15 +80,23 @@ class _SaveAddressScreenState extends State<SaveAddressScreen> {
   bool _isFetchingMore = false;
   final ScrollController _scrollController = ScrollController();
 
-  /// +++++++++++++++++++ FUNCTION FOR POPULATE THE CUSTOMER ADDRESS ON THE BASIS OF /* isDefault = 1 */ FROM API   ============================
   CustomerAddressModels? customerAddresses;
   CustomerRecords? selectedAddress;
   CountryModels? countryModel;
+  int? selectedCountryId;
+
+  StateModels? stateModel;
+  CityModels? cityModel;
+  bool _stateLoader = false;
+  bool _cityLoader = false;
+  StateRecord? selectedState;
+  CityRecord? selectedCity;
 
   @override
   void initState() {
     super.initState();
     fetchCountryData();
+    isNewAddress = widget.addressModel == null; // Initialize based on addressModel
   }
 
   Future<void> fetchCountryData() async {
@@ -97,20 +110,64 @@ class _SaveAddressScreenState extends State<SaveAddressScreen> {
     }
   }
 
+  Future<void> fetchStateData(int countryId) async {
+    try {
+      setState(() {
+        _stateLoader = true;
+        _stateController.clear();
+        _cityController.clear();
+        selectedState = null;
+        selectedCity = null;
+        stateModel = null;
+        cityModel = null;
+      });
+
+      stateModel = await fetchStates(context, countryId);
+
+      setState(() {
+        _stateLoader = false;
+        _isStateEditable = true;
+      });
+    } catch (error) {
+      setState(() {
+        _stateLoader = false;
+      });
+    }
+  }
+
+  Future<void> fetchCityData(int stateId, int countryId) async {
+    try {
+      setState(() {
+        _cityLoader = true;
+        _cityController.clear();
+        selectedCity = null;
+        cityModel = null;
+      });
+
+      cityModel = await fetchCities(context, stateId, countryId);
+
+      setState(() {
+        _cityLoader = false;
+        _isCityEditable = true;
+      });
+    } catch (error) {
+      setState(() {
+        _cityLoader = false;
+      });
+    }
+  }
+
   void populateData() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      print('ads ==> ${widget.addressModel?.zipCode}');
-
       if (widget.addressModel != null) {
         _newAddressController.text = widget.addressModel?.address ?? '';
         _NamController.text = widget.addressModel?.name ?? '';
         _emailController.text = widget.addressModel?.email ?? '';
         _phoneController.text = widget.addressModel?.phone ?? '';
-        _countryController.text =
-            findCountryNameUsingCode(widget.addressModel?.country ?? '');
+        _countryController.text = widget.addressModel?.country ?? '';
+        _stateController.text = widget.addressModel?.state ?? '';
         _cityController.text = widget.addressModel?.city ?? '';
         _addressController.text = widget.addressModel?.address ?? '';
-        _zipCodeController.text = widget.addressModel?.zipCode ?? '';
 
         selectedAddress = CustomerRecords(
           id: int.parse(widget.addressModel!.id),
@@ -122,41 +179,37 @@ class _SaveAddressScreenState extends State<SaveAddressScreen> {
           country: widget.addressModel!.country,
           address: widget.addressModel!.address,
           state: widget.addressModel!.state,
-          zip_code: widget.addressModel!.zipCode,
         );
       }
 
       if (widget.addressModel == null) {
-        _isNameEditable = _isEmailEditable = _isPhoneEditable =
-            _isCountryEditable = _isCityEditable =
-                _isAddressEditable = _isZipCodeEditable = true;
+        _isNameEditable = _isEmailEditable =
+            _isPhoneEditable = _isCountryEditable = _isStateEditable = _isCityEditable = _isAddressEditable = true;
       }
 
       await fetchDataOfCustomer();
-      // _scrollController.addListener(_onScroll);
       await fetchUserData();
     });
   }
 
-  String findCountryNameUsingCode(String code) {
+  String findSt(String code) {
     countryCode = code;
     final country = countryModel?.data?.list
-            ?.firstWhere((countryData) =>
-                countryData.value?.toLowerCase() == code.toLowerCase())
-            .label ??
+            ?.firstWhere(
+              (countryData) => countryData.iso?.toLowerCase() == code.toLowerCase(),
+            )
+            .name ??
         '';
     return country;
   }
 
-  ///   +++++++++++++++++++++  FUNCTION FOR FETCH THE DATA OF CUSTOMER  ============================
   Future<void> fetchDataOfCustomer() async {
     try {
       setState(() {
         _isFetchingMore = true;
       });
       final token = await SecurePreferencesUtil.getToken();
-      final provider =
-          Provider.of<CustomerAddressProvider>(context, listen: false);
+      final provider = Provider.of<CustomerAddressProvider>(context, listen: false);
       final result = await provider.fetchCustomerAddresses(
         token ?? '',
         context,
@@ -170,24 +223,34 @@ class _SaveAddressScreenState extends State<SaveAddressScreen> {
 
           if (list.isNotEmpty) {
             final CustomerRecords address = list.firstWhere(
-              (address) => address.isDefault == true,
-              orElse: () => list[0],
+              (address) => address.isDefault == 1,
+              orElse: () => list.first,
             );
 
             selectedAddress = address;
-            _newAddressController.text =
-                address.fullAddress ?? 'Unknown Address';
-            _NamController.text = address.name ?? 'Unknown Name';
-            _emailController.text = address.email ?? 'Unknown Email';
-            _phoneController.text = address.phone ?? 'Unknown Phone';
-            _countryController.text =
-                findCountryNameUsingCode(address.country ?? '');
-            _cityController.text = address.city ?? 'Unknown City';
-            _addressController.text = address.address ?? 'Unknown Address';
-            _zipCodeController.text = address.zip_code ?? '';
-            _isNameEditable = _isEmailEditable = _isPhoneEditable =
-                _isCountryEditable =
-                    _isCityEditable = _isAddressEditable = false;
+            _newAddressController.text = address.fullAddress ?? AppStrings.unknownAddress.tr;
+            _NamController.text = address.name ?? AppStrings.unknownName.tr;
+            _emailController.text = address.email ?? AppStrings.unknownEmail.tr;
+            _phoneController.text = address.phone ?? AppStrings.unknownPhone.tr;
+            _countryController.text = address.country ?? '';
+            _stateController.text = address.state ?? '';
+            _cityController.text = address.city ?? '';
+            _addressController.text = address.address ?? AppStrings.unknownAddress.tr;
+
+            // Check if country is null or empty to enable country selection
+            final bool hasCountry = address.country != null && address.country!.isNotEmpty;
+            final bool hasState = address.state != null && address.state!.isNotEmpty;
+            final bool hasCity = address.city != null && address.city!.isNotEmpty;
+
+            _isNameEditable = false;
+            _isEmailEditable = false;
+            _isPhoneEditable = false;
+            _isCountryEditable = !hasCountry; // Enable if country is missing
+            _isStateEditable = !hasState; // Enable if state is missing
+            _isCityEditable = !hasCity; // Enable if city is missing
+            _isAddressEditable = false;
+
+            isNewAddress = false; // Existing address selected
           }
         });
       }
@@ -204,31 +267,82 @@ class _SaveAddressScreenState extends State<SaveAddressScreen> {
     }
   }
 
-  /// +++++++++++++++++++ FUNCTION FOR FETCHING THE USER ADDRESS FROM API   ============================
   Future<void> fetchUserData() async {
     final token = await SecurePreferencesUtil.getToken();
     final provider = Provider.of<UserProvider>(context, listen: false);
     provider.fetchUserData(token ?? '', context);
   }
 
+  Future<bool> _updateAddress(int addressId) async {
+    final AddressModel address = _createAddressModel();
+    final token = await SecurePreferencesUtil.getToken();
+    if (token == null) return false;
+
+    try {
+      final response =
+          await Provider.of<CustomerAddress>(context, listen: false).updateAddress(address, token, addressId, context);
+      if (response) {
+        // Refresh the address list after update
+        await _refreshAddressList();
+      }
+      return response;
+    } catch (error) {
+      log('Error updating address: $error');
+      return false;
+    }
+  }
+
+  // Add helper method to create AddressModel
+  AddressModel _createAddressModel() {
+    return AddressModel(
+      name: _NamController.text,
+      email: _emailController.text,
+      phone: _phoneController.text,
+      address: _addressController.text,
+      country: countryCode.isNotEmpty ? countryCode : _countryController.text,
+      city: selectedCity?.id?.toString() ?? _cityController.text,
+      state: selectedState?.id?.toString() ?? _stateController.text,
+      countryId: selectedCountryId?.toString() ?? _countryController.text,
+      stateId: selectedState?.id?.toString() ?? _stateController.text,
+      cityId: selectedCity?.id?.toString() ?? _cityController.text,
+      isDefault: selectedAddress?.isDefault == 1 ? true : false,
+    );
+  }
+
+// Add helper method to refresh address list
+  Future<void> _refreshAddressList() async {
+    final token = await SecurePreferencesUtil.getToken();
+    if (token == null) return;
+
+    final provider = Provider.of<CustomerAddressProvider>(context, listen: false);
+    await provider.fetchCustomerAddresses(token, context);
+
+    // Update selectedAddress with latest data if it exists
+    if (selectedAddress != null) {
+      final updatedAddress = provider.addresses.firstWhere(
+        (addr) => addr.id == selectedAddress!.id,
+        orElse: () => selectedAddress!,
+      );
+      selectedAddress = updatedAddress;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.sizeOf(context).width;
     final double screeHeight = MediaQuery.sizeOf(context).height;
-    final submitProvider =
-        Provider.of<SubMitCheckoutInformationProvider>(context, listen: true);
+    final submitProvider = Provider.of<SubMitCheckoutInformationProvider>(context, listen: true);
     final addressProvider = Provider.of<AddressProvider>(context, listen: true);
     final providerUser = Provider.of<UserProvider>(context, listen: false);
-    final customerAddressProvider =
-        Provider.of<CustomerAddressProvider>(context, listen: true);
+    final customerAddressProvider = Provider.of<CustomerAddressProvider>(context, listen: true);
     final user = providerUser.user;
 
     return BaseAppBar(
-      textBack: AppStrings.back,
+      textBack: AppStrings.back.tr,
       customBackIcon: const Icon(Icons.arrow_back_ios_sharp, size: 16),
-      firstRightIconPath: AppStrings.firstRightIconPath,
-      secondRightIconPath: AppStrings.secondRightIconPath,
-      thirdRightIconPath: AppStrings.thirdRightIconPath,
+      firstRightIconPath: AppStrings.firstRightIconPath.tr,
+      secondRightIconPath: AppStrings.secondRightIconPath.tr,
+      thirdRightIconPath: AppStrings.thirdRightIconPath.tr,
       body: Scaffold(
         body: SafeArea(
           child: Stack(
@@ -239,9 +353,8 @@ class _SaveAddressScreenState extends State<SaveAddressScreen> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     SizedBox(height: screeHeight * 0.02),
-                    // if (!widget.isEditable)
                     CustomFieldSaveAddress(
-                      hintText: 'Add new address',
+                      hintText: AppStrings.addNewAddress.tr,
                       focusNode: _newAddressFocusNode,
                       nextFocusNode: _NameFocusNode,
                       isEditable: false,
@@ -256,33 +369,32 @@ class _SaveAddressScreenState extends State<SaveAddressScreen> {
                       child: Column(
                         children: [
                           CustomFieldSaveAddress(
-                            hintText: 'Full Name',
+                            hintText: AppStrings.fullName.tr,
                             controller: _NamController,
                             focusNode: _NameFocusNode,
                             nextFocusNode: _emailFocusNode,
                             keyboardType: TextInputType.name,
-                            displayName: user?.name ?? 'loading...',
+                            displayName: user?.name ?? '${AppStrings.loading.tr}...',
                             isEditable: _isNameEditable,
                             formFieldValidator: (value) {
                               if (value == null || value.isEmpty) {
-                                return 'Name is required.';
+                                return AppStrings.nameIsRequired.tr;
                               }
                               return null;
                             },
                           ),
                           CustomFieldSaveAddress(
-                            hintText: 'Email',
-                            displayName: user?.email ?? 'loading...',
+                            hintText: AppStrings.email.tr,
+                            displayName: user?.email ?? '${AppStrings.loading.tr}...',
                             controller: _emailController,
                             focusNode: _emailFocusNode,
                             keyboardType: TextInputType.emailAddress,
                             nextFocusNode: _phoneFocusNode,
                             isEditable: _isEmailEditable,
-                            // Use the flag here
                             formFieldValidator: Validator.email,
                           ),
                           CustomFieldSaveAddress(
-                            hintText: 'Phone',
+                            hintText: AppStrings.phone.tr,
                             keyboardType: TextInputType.number,
                             controller: _phoneController,
                             focusNode: _phoneFocusNode,
@@ -291,68 +403,144 @@ class _SaveAddressScreenState extends State<SaveAddressScreen> {
                             formFieldValidator: Validator.phone,
                           ),
                           CustomFieldSaveAddress(
-                            hintText: 'Country',
+                            hintText: AppStrings.country.tr,
                             controller: _countryController,
                             focusNode: _countryFocusNode,
+                            nextFocusNode: _stateFocusNode,
+                            isEditable: false,
+                            formFieldValidator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return AppStrings.countryIsRequired.tr;
+                              }
+                              return null;
+                            },
+                            suffixIcon: const Icon(Icons.arrow_drop_down_outlined),
+                            onTap: () async {
+                              if (_isCountryEditable) {
+                                if (countryModel != null && countryModel?.data != null) {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => CountryPickerDialog(
+                                      countryList: countryModel?.data?.list ?? [],
+                                      currentSelection: _countryController.text,
+                                      onCountrySelected: (selectedCountry) {
+                                        setState(() {
+                                          countryCode = selectedCountry.code ?? '';
+                                          selectedCountryId = selectedCountry.id ?? 0;
+                                          _countryController.text = selectedCountry.name ?? '';
+                                        });
+
+                                        if (selectedCountryId != null) {
+                                          fetchStateData(selectedCountryId!);
+                                        }
+                                      },
+                                    ),
+                                  );
+                                }
+                              }
+                            },
+                          ),
+                          CustomFieldSaveAddress(
+                            hintText: AppStrings.state.tr,
+                            controller: _stateController,
+                            focusNode: _stateFocusNode,
                             nextFocusNode: _cityFocusNode,
                             isEditable: false,
                             formFieldValidator: (value) {
                               if (value == null || value.isEmpty) {
-                                return 'Country field is required.';
+                                return AppStrings.stateIsRequired.tr;
                               }
                               return null;
                             },
-                            suffixIcon:
-                                const Icon(Icons.arrow_drop_down_outlined),
+                            suffixIcon: _stateLoader
+                                ? const Center(
+                                    child: SizedBox(
+                                      width: 16,
+                                      height: 16,
+                                      child: CircularProgressIndicator(
+                                        backgroundColor: AppColors.peachyPink,
+                                      ),
+                                    ),
+                                  )
+                                : const Icon(Icons.arrow_drop_down_outlined),
                             onTap: () async {
-                              if (_isCountryEditable) {
-                                if (countryModel != null &&
-                                    countryModel?.data != null) {
+                              if (_isStateEditable) {
+                                if (countryModel != null && countryModel?.data != null) {
                                   showDialog(
                                     context: context,
-                                    builder: (context) => CountryPickerDialog(
-                                      countryList:
-                                          countryModel?.data?.list ?? [],
-                                      currentSelection: _countryController.text,
-                                      onCountrySelected: (selectedCountry) {
+                                    builder: (context) => StatePickerDialog(
+                                      stateList: stateModel?.data ?? [],
+                                      currentSelection: selectedState,
+                                      onStateSelected: (state) {
                                         setState(() {
-                                          countryCode =
-                                              selectedCountry.value ?? '';
-                                          _countryController.text =
-                                              selectedCountry.label ?? '';
+                                          selectedState = state;
+                                          _stateController.text = selectedState?.name ?? '';
+                                        });
+                                        if (selectedState != null &&
+                                            selectedState?.id != null &&
+                                            selectedCountryId != null) {
+                                          fetchCityData(
+                                            selectedState!.id!,
+                                            selectedCountryId!,
+                                          );
+                                        }
+                                      },
+                                    ),
+                                  );
+                                }
+                              }
+                            },
+                          ),
+                          CustomFieldSaveAddress(
+                            hintText: AppStrings.city.tr,
+                            controller: _cityController,
+                            focusNode: _cityFocusNode,
+                            nextFocusNode: _addressFocusNode,
+                            isEditable: _isCityEditable,
+                            formFieldValidator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return AppStrings.cityIsRequired.tr;
+                              }
+                              return null;
+                            },
+                            suffixIcon: _cityLoader
+                                ? const Center(
+                                    child: SizedBox(
+                                      width: 16,
+                                      height: 16,
+                                      child: CircularProgressIndicator(
+                                        backgroundColor: AppColors.peachyPink,
+                                      ),
+                                    ),
+                                  )
+                                : const Icon(Icons.arrow_drop_down_outlined),
+                            onTap: () async {
+                              if (_isCityEditable) {
+                                if (stateModel != null && stateModel?.data != null && selectedState != null) {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => CityPickerDialog(
+                                      cityList: cityModel?.data ?? [],
+                                      currentSelection: selectedCity,
+                                      onCitySelected: (city) {
+                                        setState(() {
+                                          selectedCity = city;
+                                          _cityController.text = selectedCity?.name ?? '';
                                         });
                                       },
                                     ),
                                   );
                                 }
-                              } else {}
+                              }
                             },
                           ),
                           CustomFieldSaveAddress(
-                            hintText: 'City',
-                            controller: _cityController,
-                            focusNode: _cityFocusNode,
-                            keyboardType: TextInputType.text,
-                            nextFocusNode: _addressFocusNode,
-                            isEditable: _isCityEditable,
-                            formFieldValidator: Validator.cityValidator,
-                          ),
-                          CustomFieldSaveAddress(
-                            hintText: 'Address',
+                            hintText: AppStrings.address.tr,
                             controller: _addressController,
                             focusNode: _addressFocusNode,
                             keyboardType: TextInputType.text,
-                            nextFocusNode: _addressFocusNode,
                             isEditable: _isAddressEditable,
                             formFieldValidator: Validator.addressValidator,
-                          ),
-                          CustomFieldSaveAddress(
-                            hintText: 'ZIP Code',
-                            controller: _zipCodeController,
-                            focusNode: _zipCodeFocusNode,
-                            keyboardType: TextInputType.text,
-                            isEditable: _isZipCodeEditable,
-                            formFieldValidator: Validator.zipCode,
                           ),
                         ],
                       ),
@@ -365,48 +553,70 @@ class _SaveAddressScreenState extends State<SaveAddressScreen> {
                               if (selectedAddress != null)
                                 Padding(
                                   padding: const EdgeInsets.only(
-                                      top: 20, left: 5, right: 5),
+                                    top: 20,
+                                    left: 5,
+                                    right: 5,
+                                  ),
                                   child: AppCustomButton(
-                                    title: 'Continue',
+                                    title: AppStrings.continueButton.tr,
                                     onPressed: () async {
-                                      final token = await SecurePreferencesUtil
-                                          .getToken();
-                                      // Ensure selectedAddress is set and use its ID
-                                      final int addressId = selectedAddress
-                                              ?.id ??
-                                          0; // Use the addressId from selectedAddress
-                                      final result = await Provider.of<
-                                                  SubMitCheckoutInformationProvider>(
-                                              context,
-                                              listen: false)
-                                          .submitCheckoutInformation(
+                                      final token = await SecurePreferencesUtil.getToken();
+
+                                      final bool needsUpdate = selectedAddress != null &&
+                                          ((selectedAddress!.country == null || selectedAddress!.country!.isEmpty) ||
+                                              (selectedAddress!.state == null || selectedAddress!.state!.isEmpty) ||
+                                              (selectedAddress!.city == null || selectedAddress!.city!.isEmpty));
+
+                                      if (needsUpdate && (_isCountryEditable || _isStateEditable || _isCityEditable)) {
+                                        // Validate the form first
+                                        if (!(_formKey.currentState?.validate() ?? false)) {
+                                          CustomSnackbar.showError(
+                                            context,
+                                            AppStrings.enterCorrectDetails.tr,
+                                          );
+                                          return;
+                                        }
+
+                                        // Update the existing address with new data
+                                        final updateSuccess = await _updateAddress(selectedAddress!.id!);
+
+                                        if (!updateSuccess) {
+                                          CustomSnackbar.showError(
+                                            context,
+                                            'Please Enter Valid Data', // Add this to your strings
+                                          );
+                                          return;
+                                        }
+                                      }
+
+                                      final int addressId = selectedAddress?.id ?? 0;
+                                      final result = await Provider.of<SubMitCheckoutInformationProvider>(
+                                        context,
+                                        listen: false,
+                                      ).submitCheckoutInformation(
                                         context: context,
                                         token: token ?? '',
-                                        tracked_start_checkout:
-                                            widget.tracked_start_checkout,
-                                        address_id: addressId.toString(),
+                                        trackedStartCheckout: widget.tracked_start_checkout,
+                                        addressId: addressId.toString(),
                                         name: _NamController.text,
                                         email: _emailController.text,
                                         city: _cityController.text,
+                                        state: _stateController.text,
                                         address: _addressController.text,
-                                        phone: int.tryParse(
-                                                _phoneController.text) ??
-                                            0,
+                                        phone: int.tryParse(_phoneController.text) ?? 0,
                                         country: countryCode,
                                         vendorId: 23,
                                         shippingMethod: 'default',
-                                        shippingOption:
-                                            '3', // Replace with actual shipping option
+                                        shippingOption: '3',
                                       );
 
                                       if (result != null) {
-                                        // Navigate to the next screen
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
                                             builder: (context) => StepperScreen(
-                                              tracked_start_checkout:
-                                                  widget.tracked_start_checkout,
+                                              isNewAddress: isNewAddress,
+                                              tracked_start_checkout: widget.tracked_start_checkout,
                                             ),
                                           ),
                                         );
@@ -417,19 +627,22 @@ class _SaveAddressScreenState extends State<SaveAddressScreen> {
                               else
                                 Padding(
                                   padding: const EdgeInsets.only(
-                                      top: 20, left: 5, right: 5),
+                                    top: 20,
+                                    left: 5,
+                                    right: 5,
+                                  ),
                                   child: Consumer<AddressProvider>(
-                                    builder: (context, provider, child) =>
-                                        AppCustomButton(
-                                      title: 'Save Address',
+                                    builder: (context, provider, child) => AppCustomButton(
+                                      title: AppStrings.saveAddress.tr,
                                       isLoading: provider.isLoading,
                                       onPressed: () async {
-                                        if (_formKey.currentState?.validate() ??
-                                            false) {
-                                          _saveAddress();
+                                        if (_formKey.currentState?.validate() ?? false) {
+                                          await _saveAddress();
                                         } else {
-                                          CustomSnackbar.showError(context,
-                                              'Please enter correct details.');
+                                          CustomSnackbar.showError(
+                                            context,
+                                            AppStrings.enterCorrectDetails.tr,
+                                          );
                                         }
                                       },
                                     ),
@@ -440,41 +653,39 @@ class _SaveAddressScreenState extends State<SaveAddressScreen> {
                         else
                           Padding(
                             padding: const EdgeInsets.only(
-                                top: 20, left: 5, right: 5),
+                              top: 20,
+                              left: 5,
+                              right: 5,
+                            ),
                             child: AppCustomButton(
                               onPressed: () async {
-                                final token =
-                                    await SecurePreferencesUtil.getToken();
+                                final token = await SecurePreferencesUtil.getToken();
 
-                                final result = await Provider.of<
-                                            SubMitCheckoutInformationProvider>(
-                                        context,
-                                        listen: false)
-                                    .submitCheckoutInformation(
+                                final result = await Provider.of<SubMitCheckoutInformationProvider>(
+                                  context,
+                                  listen: false,
+                                ).submitCheckoutInformation(
                                   context: context,
                                   token: token ?? '123456789',
-                                  tracked_start_checkout:
-                                      widget.tracked_start_checkout,
-                                  address_id:
-                                      selectedAddress?.id.toString() ?? 'new',
+                                  trackedStartCheckout: widget.tracked_start_checkout,
+                                  addressId: selectedAddress?.id.toString() ?? 'new',
                                   name: _NamController.text,
                                   email: _emailController.text,
                                   city: _cityController.text,
+                                  state: _stateController.text,
                                   address: _addressController.text,
-                                  phone:
-                                      int.tryParse(_phoneController.text) ?? 0,
+                                  phone: int.tryParse(_phoneController.text) ?? 0,
                                   country: countryCode,
                                   vendorId: 23,
                                   shippingMethod: 'default',
-                                  shippingOption:
-                                      '3', // Replace with actual shipping option
+                                  shippingOption: '3',
                                 );
 
                                 if (result != null) {
                                   Navigator.pop(context, true);
                                 }
                               },
-                              title: 'Update Address',
+                              title: AppStrings.updateAddress.tr,
                             ),
                           ),
                       ],
@@ -487,12 +698,10 @@ class _SaveAddressScreenState extends State<SaveAddressScreen> {
                   addressProvider.isLoading ||
                   customerAddressProvider.isLoadingAddresses)
                 Container(
-                  color: Colors.black
-                      .withOpacity(0.5), // Semi-transparent background
+                  color: Colors.black.withOpacity(0.5),
                   child: const Center(
                     child: CircularProgressIndicator(
-                      valueColor:
-                          AlwaysStoppedAnimation<Color>(AppColors.peachyPink),
+                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.peachyPink),
                     ),
                   ),
                 ),
@@ -508,19 +717,51 @@ class _SaveAddressScreenState extends State<SaveAddressScreen> {
       showDragHandle: true,
       context: context,
       shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(2))),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(2)),
+      ),
       builder: (BuildContext context) {
         final screenWidth = MediaQuery.sizeOf(context).width;
         final screenHeight = MediaQuery.sizeOf(context).height;
         return Column(
           children: [
+            if (!widget.isEditable)
+              ListTile(
+                title: Text(
+                  '${AppStrings.addNewAddressTitle.tr}...',
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
+                //
+                onTap: () {
+                  setState(() {
+                    selectedAddress = null;
+                    _newAddressController.clear();
+                    _NamController.clear();
+                    _emailController.clear();
+                    _phoneController.clear();
+                    _countryController.clear();
+                    _cityController.clear();
+                    _stateController.clear();
+                    _addressController.clear();
+
+                    _isNameEditable = _isEmailEditable = _isPhoneEditable =
+                        _isCountryEditable = _isStateEditable = _isCityEditable = _isAddressEditable = true;
+                    isNewAddress = true; // New address being added
+                  });
+                  Navigator.of(context).pop();
+                },
+              ),
             Consumer<CustomerAddressProvider>(
-              builder: (BuildContext context, CustomerAddressProvider provider,
-                  Widget? child) {
+              builder: (
+                BuildContext context,
+                CustomerAddressProvider provider,
+                Widget? child,
+              ) {
                 if (provider.isLoadingAddresses && _currentPage == 1) {
                   return const Center(
                     child: CircularProgressIndicator(
-                        color: Colors.black, strokeWidth: 0.5),
+                      color: Colors.black,
+                      strokeWidth: 0.5,
+                    ),
                   );
                 } else {
                   return Expanded(
@@ -530,76 +771,74 @@ class _SaveAddressScreenState extends State<SaveAddressScreen> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          if (!provider.isLoading &&
-                              provider.addresses.isNotEmpty)
+                          if (!provider.isLoading && provider.addresses.isNotEmpty)
                             ListView.builder(
-                              itemCount: provider.addresses.length +
-                                  (_isFetchingMore ? 1 : 0),
+                              itemCount: provider.addresses.length + (_isFetchingMore ? 1 : 0),
                               shrinkWrap: true,
                               physics: const NeverScrollableScrollPhysics(),
                               itemBuilder: (context, index) {
-                                if (_isFetchingMore &&
-                                    index == provider.addresses.length) {
+                                if (_isFetchingMore && index == provider.addresses.length) {
                                   return const Align(
                                     alignment: Alignment.center,
                                     child: CircularProgressIndicator(
-                                        color: Colors.black, strokeWidth: 0.5),
+                                      color: Colors.black,
+                                      strokeWidth: 0.5,
+                                    ),
                                   );
                                 }
 
                                 final address = provider.addresses[index];
                                 return ListTile(
                                   title: Text(
-                                      address.fullAddress ?? 'Unknown Address'),
+                                    address.fullAddress ?? 'Unknown Address',
+                                  ),
                                   onTap: () {
                                     setState(() {
                                       selectedAddress = address;
-                                      _newAddressController.text =
-                                          address.fullAddress ??
-                                              'Unknown Address';
-                                      _NamController.text =
-                                          address.name ?? 'Unknown Name';
-                                      _emailController.text =
-                                          address.email ?? 'Unknown Email';
-                                      _phoneController.text =
-                                          address.phone ?? 'Unknown Phone';
-                                      _countryController.text =
-                                          findCountryNameUsingCode(
-                                              address.country ?? '');
-                                      _cityController.text =
-                                          address.city ?? 'Unknown City';
-                                      _addressController.text =
-                                          address.address ?? 'Unknown Address';
-                                      _zipCodeController.text =
-                                          address.zip_code ??
-                                              'Unknown Zip code';
+                                      _newAddressController.text = address.fullAddress ?? AppStrings.unknownAddress.tr;
+                                      _NamController.text = address.name ?? AppStrings.unknownName.tr;
+                                      _emailController.text = address.email ?? AppStrings.unknownEmail.tr;
+                                      _phoneController.text = address.phone ?? AppStrings.unknownPhone.tr;
+                                      _countryController.text = address.country ?? '';
+                                      _cityController.text = address.city ?? '';
+                                      _stateController.text = address.state ?? '';
+                                      _addressController.text = address.address ?? AppStrings.unknownAddress.tr;
 
-                                      _isNameEditable = _isEmailEditable =
-                                          _isPhoneEditable =
-                                              _isCountryEditable =
-                                                  _isCityEditable =
-                                                      _isAddressEditable =
-                                                          _isZipCodeEditable =
-                                                              false;
+                                      // Check if country is null or empty to enable country selection
+                                      final bool hasCountry = address.country != null && address.country!.isNotEmpty;
+                                      final bool hasState = address.state != null && address.state!.isNotEmpty;
+                                      final bool hasCity = address.city != null && address.city!.isNotEmpty;
+
+                                      _isNameEditable = false;
+                                      _isEmailEditable = false;
+                                      _isPhoneEditable = false;
+                                      _isCountryEditable = !hasCountry; // Enable if country is missing
+                                      _isStateEditable = !hasState; // Enable if state is missing
+                                      _isCityEditable = !hasCity; // Enable if city is missing
+                                      _isAddressEditable = false;
+
+                                      isNewAddress = false; // Existing address selected
                                     });
-                                    Navigator.of(context)
-                                        .pop(); // Close the bottom sheet
+                                    Navigator.of(context).pop();
                                   },
                                 );
                               },
                             )
-                          else if (!provider.isLoading &&
-                              provider.addresses.isEmpty)
+                          else if (!provider.isLoading && provider.addresses.isEmpty)
                             Container(
                               width: screenWidth,
                               padding: EdgeInsets.symmetric(
-                                  vertical: screenHeight * 0.01,
-                                  horizontal: screenHeight * 0.02),
+                                vertical: screenHeight * 0.01,
+                                horizontal: screenHeight * 0.02,
+                              ),
                               color: AppColors.peachyPink.withOpacity(0.2),
-                              child: Text('No record found!',
-                                  style: GoogleFonts.inter(
-                                      color: Colors.brown.shade600,
-                                      fontWeight: FontWeight.w600)),
+                              child: Text(
+                                AppStrings.noRecordsFound.tr,
+                                style: GoogleFonts.inter(
+                                  color: Colors.brown.shade600,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                             ),
                         ],
                       ),
@@ -608,94 +847,76 @@ class _SaveAddressScreenState extends State<SaveAddressScreen> {
                 }
               },
             ),
-            if (!widget.isEditable)
-              ListTile(
-                title: const Text('Add New Address',
-                    style: TextStyle(color: AppColors.peachyPink)),
-                onTap: () {
-                  setState(() {
-                    selectedAddress =
-                        null; // Clear selected address for new entry
-                    _newAddressController.clear();
-                    _NamController.clear();
-                    _emailController.clear();
-                    _phoneController.clear();
-                    _countryController.clear();
-                    _cityController.clear();
-                    _addressController.clear();
-                    _zipCodeController.clear();
-
-                    _isNameEditable = _isEmailEditable = _isPhoneEditable =
-                        _isCountryEditable = _isCityEditable =
-                            _isAddressEditable = _isZipCodeEditable = true;
-                  });
-                  Navigator.of(context).pop(); // Close the bottom sheet
-                },
-              ),
           ],
         );
       },
     );
   }
 
-  ///  +++++++++++++++++++++++++++++  FUNCTION FOR SAVE THE NEW ADDRESS OF THE CUSTOMER --------------------------------
-
   Future<void> _saveAddress() async {
     final token = await SecurePreferencesUtil.getToken();
     if (token == null) return;
 
     if (_formKey.currentState!.validate()) {
+      if (selectedCity == null || selectedState == null) {
+        CustomSnackbar.showError(context, 'Please select city and state');
+        return;
+      }
       final AddressModel address = AddressModel(
         name: _NamController.text,
         email: _emailController.text,
         phone: _phoneController.text,
         address: _addressController.text,
-        country: countryCode,
-        city: _cityController.text,
-        state: _stateController.text,
-        zipCode: _zipCodeController.text,
+        country: _countryController.text,
+        city: selectedCity!.id.toString(),
+        state: selectedState!.id.toString(),
+        countryId: selectedCountryId.toString(),
+        stateId: selectedState!.id.toString(),
+        cityId: selectedCity!.id.toString(),
         isDefault: true,
       );
 
-      final result = await Provider.of<AddressProvider>(context, listen: false)
-          .saveAddress(address);
+      final result = await Provider.of<AddressProvider>(context, listen: false).saveAddress(address);
 
       if (result != null) {
-        final resultSubmit =
-            await Provider.of<SubMitCheckoutInformationProvider>(context,
-                    listen: false)
-                .submitCheckoutInformation(
+        final resultSubmit = await Provider.of<SubMitCheckoutInformationProvider>(
+          context,
+          listen: false,
+        ).submitCheckoutInformation(
           context: context,
-          token: token ?? '123456789',
-          tracked_start_checkout: widget.tracked_start_checkout,
-          address_id: result.toString(),
+          token: token,
+          trackedStartCheckout: widget.tracked_start_checkout,
+          addressId: result.toString(),
           name: _NamController.text,
           email: _emailController.text,
           city: _cityController.text,
+          state: _stateController.text,
           address: _addressController.text,
           phone: int.tryParse(_phoneController.text) ?? 0,
-          country: countryCode,
+          country: _countryController.text,
           vendorId: 23,
           shippingMethod: 'default',
-          shippingOption: '3', // Replace with actual shipping option
+          shippingOption: '3',
         );
 
         if (resultSubmit != null) {
-          // Navigate to the next screen
-          CustomSnackbar.showSuccess(context, 'Address saved successfully!');
+          CustomSnackbar.showSuccess(
+            context,
+            AppStrings.addressSavedSuccess.tr,
+          );
           Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => StepperScreen(
+                isNewAddress: isNewAddress,
                 tracked_start_checkout: widget.tracked_start_checkout,
               ),
             ),
           );
         }
       } else {
-        CustomSnackbar.showError(context, 'Please enter the valid details!');
+        CustomSnackbar.showError(context, AppStrings.enterValidDetails.tr);
       }
     }
-    /*}*/
   }
 }

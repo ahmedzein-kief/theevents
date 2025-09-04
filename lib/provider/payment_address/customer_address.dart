@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/core/services/shared_preferences_helper.dart';
 import 'package:event_app/provider/api_response_handler.dart';
@@ -17,6 +15,7 @@ class CustomerAddressModels {
     data = json['data'] != null ? Data.fromJson(json['data']) : null;
     message = json['message'];
   }
+
   bool? error;
   Data? data;
   Null message;
@@ -46,6 +45,7 @@ class Data {
       });
     }
   }
+
   AddressPagination? pagination;
   List<CustomerRecords>? records;
 
@@ -63,7 +63,7 @@ class Data {
 
 class AddressPagination {
   AddressPagination(
-      {this.total, this.lastPage, this.currentPage, this.perPage});
+      {this.total, this.lastPage, this.currentPage, this.perPage,});
 
   AddressPagination.fromJson(Map<String, dynamic> json) {
     total = json['total'];
@@ -71,6 +71,7 @@ class AddressPagination {
     currentPage = json['current_page'];
     perPage = json['per_page'];
   }
+
   int? total;
   int? lastPage;
   int? currentPage;
@@ -98,7 +99,7 @@ class CustomerRecords {
       this.city,
       this.address,
       this.zip_code,
-      this.state});
+      this.state,});
 
   CustomerRecords.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -113,6 +114,7 @@ class CustomerRecords {
     state = json['state'];
     zip_code = json['zip_code'];
   }
+
   int? id;
   String? name;
   int? isDefault;
@@ -134,8 +136,10 @@ class CustomerRecords {
     data['full_address'] = fullAddress;
     data['phone'] = phone;
     data['country'] = country;
-    data['country'] = city;
-    data['country'] = address;
+    data['city'] = city;
+    data['address'] = address;
+    data['state'] = state;
+    data['zip_code'] = zip_code;
     return data;
   }
 }
@@ -170,7 +174,7 @@ class CustomerAddressProvider with ChangeNotifier {
 
   Future<CustomerAddressModels?> fetchCustomerAddresses(
       String token, BuildContext context,
-      {int perPage = 12, page = 1}) async {
+      {int perPage = 12, page = 1,}) async {
     setStatus(ApiStatus.loading);
     if (page == 1) {
       _addresses.clear();
@@ -195,7 +199,7 @@ class CustomerAddressProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         setStatus(ApiStatus.completed);
         final CustomerAddressModels customerAddressModels =
-            CustomerAddressModels.fromJson(json.decode(response.body));
+            CustomerAddressModels.fromJson(response.data);
 
         if (page == 1) {
           _addresses = customerAddressModels.data?.records ?? [];
@@ -246,7 +250,7 @@ class CustomerAddressProvider with ChangeNotifier {
           await _apiResponseHandler.deleteRequest(url, headers: headers);
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+        final data = response.data;
         if (data['error'] == false) {
           CustomSnackbar.showSuccess(context, 'Address Delete successfully!');
 

@@ -3,7 +3,7 @@ library;
 
 class UpdateCartResponse {
   UpdateCartResponse(
-      {required this.error, required this.data, required this.message});
+      {required this.error, required this.data, required this.message,});
 
   factory UpdateCartResponse.fromJson(Map<String, dynamic> json) =>
       UpdateCartResponse(

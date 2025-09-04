@@ -1,4 +1,4 @@
-import 'dart:convert';
+import 'dart:developer';
 
 import 'package:event_app/provider/api_response_handler.dart';
 import 'package:flutter/cupertino.dart';
@@ -19,13 +19,14 @@ class VendorByTypesProvider with ChangeNotifier {
   HomeEventOrganiserModel? get eventOrganiser => _eventOrganiser;
   Map<int, List<Records>> recordsByTypeId = {};
 
-  Future<void> fetchEventOrganiser(BuildContext context,
-      {required data}) async {
+  Future<void> fetchEventOrganiser(
+    BuildContext context, {
+    required data,
+  }) async {
     final typeId = int.tryParse(data['attributes']['type_id'].toString()) ?? 0;
     final limit = data['attributes']['limit'].toString();
-    // final baseUrl = Uri.parse('https://api.staging.theevents.ae/api/v1/stores?$typeId');
-    final baseUrl =
-        'https://api.staging.theevents.ae/api/v1/customers-by-type/$typeId';
+    // final baseUrl = Uri.parse('https://apistaging.theevents.ae/api/v1/stores?$typeId');
+    final baseUrl = 'https://apistaging.theevents.ae/api/v1/customers-by-type/$typeId';
     final params = {
       'limit': limit,
       'type_id': typeId.toString(),
@@ -43,8 +44,8 @@ class VendorByTypesProvider with ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        _eventOrganiser =
-            HomeEventOrganiserModel.fromJson(json.decode(response.body));
+        log('response=>> ${response.data}');
+        _eventOrganiser = HomeEventOrganiserModel.fromJson(response.data);
         _isLoading = false;
         notifyListeners();
       } else {

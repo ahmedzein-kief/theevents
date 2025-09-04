@@ -206,7 +206,7 @@ class Data {
     generateLicenseCode = json['generate_license_code']?.toString() ?? '';
     if (json['attachments'] != null) {
       attachments = List<Attachment>.from(
-          json['attachments'].map((v) => Attachment.fromJson(v)));
+          json['attachments'].map((v) => Attachment.fromJson(v)),);
     }
   }
   int? id;
@@ -432,7 +432,7 @@ class Option {
         productId: json['product_id'],
         values: json['values'] != null
             ? List<ValueElement>.from(
-                json['values'].map((x) => ValueElement.fromJson(x)))
+                json['values'].map((x) => ValueElement.fromJson(x)),)
             : [],
         name: json['name'],
         createdAt: json['created_at'],

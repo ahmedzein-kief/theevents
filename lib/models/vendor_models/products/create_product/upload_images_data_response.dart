@@ -14,7 +14,7 @@ class UploadImagesDataResponse {
       UploadImagesDataResponse(
           data: json['data'] != null ? Data.fromJson(json['data']) : null,
           error: json['error'],
-          message: json['message']);
+          message: json['message'],);
 
   Data? data;
   bool error;

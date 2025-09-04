@@ -53,7 +53,7 @@ class _VendorProductSeoViewState extends State<VendorProductSeoView>
       // Initialize the text controllers with the values from the model (if available)
       _titleController.text = widget.vendorProductSeoModel?.title ?? '';
       _descriptionController.text = removeHtmlTags(
-          htmlString: widget.vendorProductSeoModel?.description ?? '');
+          htmlString: widget.vendorProductSeoModel?.description ?? '',);
 
       // Initialize the keywords controller with the items from the model
       if (widget.vendorProductSeoModel?.keywords != null) {
@@ -150,9 +150,12 @@ class _VendorProductSeoViewState extends State<VendorProductSeoView>
           onGoBack: _return,
         ),
         body: Utils.modelProgressHud(
+            context: context,
             processing: _isProcessing,
             child: Utils.pageRefreshIndicator(
-                child: _buildUi(context), onRefresh: _onRefresh)),
+                onRefresh: _onRefresh,
+                child: _buildUi(context),
+                context: context,),),
       ),
     );
   }
@@ -254,11 +257,11 @@ class _VendorProductSeoViewState extends State<VendorProductSeoView>
                                       text: 'Add',
                                       tooltipMessage: 'Add Keyword',
                                       onTap: () => _onAddAvailableKeyword(
-                                          keyword), // Wrap in a closure
+                                          keyword,), // Wrap in a closure
                                     ),
                                     title: Padding(
                                       padding: EdgeInsets.symmetric(
-                                          horizontal: kSmallPadding),
+                                          horizontal: kSmallPadding,),
                                       child: Text(keyword),
                                     ),
                                   );

@@ -20,6 +20,7 @@ class CustomFieldSaveAddress extends StatefulWidget {
     this.onTap,
     this.formFieldValidator,
   });
+
   final String hintText;
   final TextEditingController controller;
   final FocusNode focusNode;
@@ -42,69 +43,78 @@ class _CustomFieldSaveAddressState extends State<CustomFieldSaveAddress> {
   @override
   void initState() {
     super.initState();
-    // Set initial text if displayName is provided and controller is empty
     if (widget.displayName != null && widget.controller.text.isEmpty) {
       widget.controller.text = widget.displayName!;
     }
   }
 
   @override
-  Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(left: 20, right: 20, top: 15),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TextFormField(
-              controller: widget.controller,
-              focusNode: widget.focusNode,
-              keyboardType: widget.keyboardType,
-              style: const TextStyle(color: Colors.black),
-              autovalidateMode: AutovalidateMode.onUserInteraction,
-              readOnly: !widget.isEditable,
-              textInputAction: widget.nextFocusNode != null
-                  ? TextInputAction.next
-                  : TextInputAction.done,
-              onFieldSubmitted: (_) {
-                if (widget.nextFocusNode != null) {
-                  FocusScope.of(context).requestFocus(widget.nextFocusNode);
-                }
-              },
-              onChanged: (text) {
-                final words = text.trim().split(RegExp(r'\s+'));
-                if (widget.maxWords != null &&
-                    words.length > widget.maxWords!) {
-                  widget.controller.text =
-                      words.take(widget.maxWords!).join(' ');
-                  widget.controller.selection = TextSelection.fromPosition(
-                    TextPosition(offset: widget.controller.text.length),
-                  );
-                }
-                widget.onChanged?.call(widget.controller.text);
-              },
-              onTap: widget.onTap,
-              validator: widget.formFieldValidator,
-              decoration: InputDecoration(
-                hintText:
-                    widget.controller.text.isEmpty ? widget.hintText : null,
-                hintStyle: const TextStyle(color: Colors.grey),
-                suffixIcon: widget.suffixIcon,
-                enabledBorder: const OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    return Padding(
+      padding: const EdgeInsets.only(left: 20, right: 20, top: 15),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TextFormField(
+            controller: widget.controller,
+            focusNode: widget.focusNode,
+            keyboardType: widget.keyboardType,
+            style: TextStyle(color: isDark ? Colors.white : Colors.black),
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            readOnly: !widget.isEditable,
+            textInputAction: widget.nextFocusNode != null
+                ? TextInputAction.next
+                : TextInputAction.done,
+            onFieldSubmitted: (_) {
+              if (widget.nextFocusNode != null) {
+                FocusScope.of(context).requestFocus(widget.nextFocusNode!);
+              }
+            },
+            onChanged: (text) {
+              final words = text.trim().split(RegExp(r'\s+'));
+              if (widget.maxWords != null && words.length > widget.maxWords!) {
+                widget.controller.text = words.take(widget.maxWords!).join(' ');
+                widget.controller.selection = TextSelection.fromPosition(
+                  TextPosition(offset: widget.controller.text.length),
+                );
+              }
+              widget.onChanged?.call(widget.controller.text);
+            },
+            onTap: widget.onTap,
+            validator: widget.formFieldValidator,
+            decoration: InputDecoration(
+              hintText: widget.controller.text.isEmpty ? widget.hintText : null,
+              hintStyle: TextStyle(
+                color: isDark ? Colors.grey[400] : Colors.grey[600],
+              ),
+              suffixIcon: widget.suffixIcon,
+              filled: true,
+              fillColor: isDark ? Colors.grey[900] : Colors.white,
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: isDark ? Colors.grey[700]! : Colors.grey,
                 ),
-                errorBorder: const OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.red),
-                ),
-                focusedBorder: const OutlineInputBorder(
-                  borderSide: BorderSide(color: AppColors.peachyPink),
-                ),
-                focusedErrorBorder: const OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.red),
-                ),
-                filled: true,
-                errorStyle: GoogleFonts.inter(height: 0, color: Colors.red),
+              ),
+              errorBorder: const OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.red),
+              ),
+              focusedBorder: const OutlineInputBorder(
+                borderSide: BorderSide(color: AppColors.peachyPink),
+              ),
+              focusedErrorBorder: const OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.red),
+              ),
+              errorStyle: GoogleFonts.inter(
+                height: 0,
+                color: Colors.red,
               ),
             ),
-          ],
-        ),
-      );
+          ),
+        ],
+      ),
+    );
+  }
 }

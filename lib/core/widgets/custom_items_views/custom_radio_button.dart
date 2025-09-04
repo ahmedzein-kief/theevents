@@ -112,7 +112,7 @@ class CustomRadioListTile extends StatelessWidget {
               style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight
-                      .w300), // You can replace with your style (VendorAuth)
+                      .w300,), // You can replace with your style (VendorAuth)
             ),
             activeColor: Colors.black,
             value: value,

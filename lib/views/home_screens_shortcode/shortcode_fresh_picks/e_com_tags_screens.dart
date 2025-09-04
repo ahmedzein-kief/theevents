@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/widgets/items_empty_view.dart';
 import 'package:event_app/provider/shortcode_fresh_picks_provider/eCom_Tags_brands_Provider.dart';
 import 'package:event_app/views/base_screens/base_app_bar.dart';
@@ -16,9 +17,9 @@ import '../../../provider/cart_item_provider/cart_item_provider.dart';
 import '../../../provider/shortcode_fresh_picks_provider/eCom_tags_provider.dart';
 import '../../../provider/shortcode_fresh_picks_provider/fresh_picks_provider.dart';
 import '../../../provider/wishlist_items_provider/wishlist_provider.dart';
-import '../../filters/items_sorting.dart';
+import '../../filters/items_sorting_drop_down.dart';
 import '../../filters/product_filters_screen.dart';
-import '../../filters/product_sorting.dart';
+import '../../filters/sort_an_filter_widget.dart';
 import '../../product_detail_screens/product_detail_screen.dart';
 import '../shorcode_featured_brands/featured_brands_items_screen.dart';
 
@@ -27,6 +28,7 @@ class EComTagsScreens extends StatefulWidget {
     super.key,
     required this.slug,
   });
+
   final dynamic slug;
 
   @override
@@ -39,7 +41,7 @@ class _EComTagsScreensState extends State<EComTagsScreens> {
     'Brands': [],
     'Tags': [],
     'Prices': [],
-    'Colors': []
+    'Colors': [],
   };
 
   String _currentTab = 'Brands';
@@ -55,8 +57,7 @@ class _EComTagsScreensState extends State<EComTagsScreens> {
 
   void _onScrollPackages() {
     if (_isFetchingMorePackages) return;
-    if (_scrollController.offset >=
-            _scrollController.position.maxScrollExtent &&
+    if (_scrollController.offset >= _scrollController.position.maxScrollExtent &&
         !_scrollController.position.outOfRange) {
       _currentPagePackages++;
       _isFetchingMorePackages = true;
@@ -69,8 +70,7 @@ class _EComTagsScreensState extends State<EComTagsScreens> {
       setState(() {
         _isFetchingMorePackages = true;
       });
-      await Provider.of<EComTagProvider>(context, listen: false)
-          .fetchEComPackagesNew(
+      await Provider.of<EComTagProvider>(context, listen: false).fetchEComPackagesNew(
         slug: widget.slug,
         context,
         perPage: 12,
@@ -93,9 +93,7 @@ class _EComTagsScreensState extends State<EComTagsScreens> {
     setState(() {
       _selectedSortBy = newValue;
       _currentPagePackages = 1; // Reset to the first page
-      Provider.of<EComTagProvider>(context, listen: false)
-          .products
-          .clear(); // Clear existing products
+      Provider.of<EComTagProvider>(context, listen: false).products.clear(); // Clear existing products
     });
     fetchNewProductsItems();
   }
@@ -108,8 +106,7 @@ class _EComTagsScreensState extends State<EComTagsScreens> {
 
   void _onScrollProduct() {
     if (_isFetchingMoreProducts) return;
-    if (_scrollController.offset >=
-            _scrollController.position.maxScrollExtent &&
+    if (_scrollController.offset >= _scrollController.position.maxScrollExtent &&
         !_scrollController.position.outOfRange) {
       _currentPageProduct++;
       _isFetchingMoreProducts = true;
@@ -124,8 +121,7 @@ class _EComTagsScreensState extends State<EComTagsScreens> {
       setState(() {
         _isFetchingMoreProducts = true;
       });
-      await Provider.of<EComTagProvider>(context, listen: false)
-          .fetchEComProductsNew(
+      await Provider.of<EComTagProvider>(context, listen: false).fetchEComProductsNew(
         slug: widget.slug,
         context,
         perPage: 12,
@@ -152,9 +148,7 @@ class _EComTagsScreensState extends State<EComTagsScreens> {
       _selectedSortBy = newValue;
       _currentPageProduct = 1; // Reset to the first page
       // Provider.of<FiftyPercentDiscountProvider>(context, listen: false)
-      Provider.of<EComTagProvider>(context, listen: false)
-          .products
-          .clear(); // Clear existing products
+      Provider.of<EComTagProvider>(context, listen: false).products.clear(); // Clear existing products
     });
     fetchNewProductsItems();
   }
@@ -198,8 +192,7 @@ class _EComTagsScreensState extends State<EComTagsScreens> {
 
   /// ----------------------  BRANDS HERE --------------------------------
   Future<void> fetchBrands() async {
-    final brandId =
-        Provider.of<EComTagProvider>(context, listen: false).ecomTag;
+    final brandId = Provider.of<EComTagProvider>(context, listen: false).ecomTag;
     try {
       setState(() {
         _isFetchingMoreBrand = true; // Start loading state
@@ -223,8 +216,7 @@ class _EComTagsScreensState extends State<EComTagsScreens> {
 
   void _onScroll() {
     if (_isFetchingMoreBrand) return;
-    if (_scrollController.offset >=
-            _scrollController.position.maxScrollExtent &&
+    if (_scrollController.offset >= _scrollController.position.maxScrollExtent &&
         _scrollController.position.outOfRange) {
       _currentPageBrand++;
       _isFetchingMoreBrand = true;
@@ -255,11 +247,11 @@ class _EComTagsScreensState extends State<EComTagsScreens> {
     final double screenHeight = MediaQuery.sizeOf(context).height;
 
     return BaseAppBar(
-      textBack: AppStrings.back,
+      textBack: AppStrings.back.tr,
       customBackIcon: const Icon(Icons.arrow_back_ios_sharp, size: 16),
-      firstRightIconPath: AppStrings.firstRightIconPath,
-      secondRightIconPath: AppStrings.secondRightIconPath,
-      thirdRightIconPath: AppStrings.thirdRightIconPath,
+      firstRightIconPath: AppStrings.firstRightIconPath.tr,
+      secondRightIconPath: AppStrings.secondRightIconPath.tr,
+      thirdRightIconPath: AppStrings.thirdRightIconPath.tr,
       body: Scaffold(
         body: SafeArea(
           child: Consumer<EComTagProvider>(
@@ -277,7 +269,7 @@ class _EComTagsScreensState extends State<EComTagsScreens> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    const CustomSearchBar(hintText: 'Search cakes'),
+                    const CustomSearchBar(),
                     Expanded(
                       child: SingleChildScrollView(
                         controller: _scrollController,
@@ -287,9 +279,10 @@ class _EComTagsScreensState extends State<EComTagsScreens> {
                           children: [
                             Padding(
                               padding: EdgeInsets.only(
-                                  left: screenWidth * 0.02,
-                                  right: screenWidth * 0.02,
-                                  top: screenHeight * 0.02),
+                                left: screenWidth * 0.02,
+                                right: screenWidth * 0.02,
+                                top: screenHeight * 0.02,
+                              ),
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(5),
                                 child: CachedNetworkImage(
@@ -297,29 +290,21 @@ class _EComTagsScreensState extends State<EComTagsScreens> {
                                   height: screenHeight * 0.14,
                                   fit: BoxFit.cover,
                                   width: screenWidth,
-                                  placeholder:
-                                      (BuildContext context, String url) =>
-                                          Container(
-                                    height: MediaQuery.sizeOf(context).height *
-                                        0.28,
+                                  placeholder: (BuildContext context, String url) => Container(
+                                    height: MediaQuery.sizeOf(context).height * 0.28,
                                     width: double.infinity,
-                                    color: Colors
-                                        .blueGrey[300], // Background color
+                                    color: Colors.blueGrey[300], // Background color
                                     child: Stack(
                                       alignment: Alignment.center,
                                       children: [
                                         Image.asset(
                                           'assets/placeholder.png', // Replace with your actual image path
-                                          fit: BoxFit
-                                              .cover, // Adjust fit if needed
-                                          height: MediaQuery.sizeOf(context)
-                                                  .height *
-                                              0.28,
+                                          fit: BoxFit.cover, // Adjust fit if needed
+                                          height: MediaQuery.sizeOf(context).height * 0.28,
                                           width: double.infinity,
                                         ),
                                         const CupertinoActivityIndicator(
-                                          radius:
-                                              16, // Adjust size of the loader
+                                          radius: 16, // Adjust size of the loader
                                           animating: true,
                                         ),
                                       ],
@@ -332,14 +317,14 @@ class _EComTagsScreensState extends State<EComTagsScreens> {
                             ///  -------  TAB BAR BRANDS , PRODUCTS AND PACKAGES --------------------------------
                             Padding(
                               padding: EdgeInsets.only(
-                                  left: screenWidth * 0.02,
-                                  right: screenWidth * 0.02,
-                                  top: screenHeight * 0.02),
+                                left: screenWidth * 0.02,
+                                right: screenWidth * 0.02,
+                                top: screenHeight * 0.02,
+                              ),
                               child: Column(
                                 children: [
                                   Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: <Widget>[
                                       GestureDetector(
@@ -354,30 +339,24 @@ class _EComTagsScreensState extends State<EComTagsScreens> {
                                         child: Container(
                                           decoration: BoxDecoration(
                                             border: Border.all(
-                                                color: _currentTab == 'Brands'
-                                                    ? Colors.grey
-                                                    : Colors.transparent),
-                                            borderRadius:
-                                                const BorderRadius.only(
-                                                    topRight:
-                                                        Radius.circular(10),
-                                                    topLeft:
-                                                        Radius.circular(10)),
+                                              color: _currentTab == 'Brands' ? Colors.grey : Colors.transparent,
+                                            ),
+                                            borderRadius: const BorderRadius.only(
+                                              topRight: Radius.circular(10),
+                                              topLeft: Radius.circular(10),
+                                            ),
                                           ),
                                           child: Column(
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
                                               Padding(
-                                                padding:
-                                                    const EdgeInsets.all(4),
+                                                padding: const EdgeInsets.all(4),
                                                 child: Text(
-                                                  'Brands',
-                                                  style:
-                                                      topTabBarStyle(context),
+                                                  AppStrings.brands.tr,
+                                                  style: topTabBarStyle(context),
                                                 ),
                                               ),
-                                              if (_currentTab == 'Brands')
-                                                Container(),
+                                              if (_currentTab == 'Brands') Container(),
                                             ],
                                           ),
                                         ),
@@ -391,12 +370,9 @@ class _EComTagsScreensState extends State<EComTagsScreens> {
                                         child: Container(
                                           decoration: BoxDecoration(
                                             border: Border.all(
-                                              color: _currentTab == 'Products'
-                                                  ? Colors.grey
-                                                  : Colors.transparent,
+                                              color: _currentTab == 'Products' ? Colors.grey : Colors.transparent,
                                             ),
-                                            borderRadius:
-                                                const BorderRadius.only(
+                                            borderRadius: const BorderRadius.only(
                                               topRight: Radius.circular(10),
                                               topLeft: Radius.circular(10),
                                             ),
@@ -405,16 +381,13 @@ class _EComTagsScreensState extends State<EComTagsScreens> {
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
                                               Padding(
-                                                padding:
-                                                    const EdgeInsets.all(4),
+                                                padding: const EdgeInsets.all(4),
                                                 child: Text(
-                                                  'Products',
-                                                  style:
-                                                      topTabBarStyle(context),
+                                                  AppStrings.products.tr,
+                                                  style: topTabBarStyle(context),
                                                 ),
                                               ),
-                                              if (_currentTab == 'Products')
-                                                const SizedBox.shrink(),
+                                              if (_currentTab == 'Products') const SizedBox.shrink(),
                                             ],
                                           ),
                                         ),
@@ -429,12 +402,9 @@ class _EComTagsScreensState extends State<EComTagsScreens> {
                                           // padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                                           decoration: BoxDecoration(
                                             border: Border.all(
-                                              color: _currentTab == 'Packages'
-                                                  ? Colors.grey
-                                                  : Colors.transparent,
+                                              color: _currentTab == 'Packages' ? Colors.grey : Colors.transparent,
                                             ),
-                                            borderRadius:
-                                                const BorderRadius.only(
+                                            borderRadius: const BorderRadius.only(
                                               topRight: Radius.circular(10),
                                               topLeft: Radius.circular(10),
                                             ),
@@ -443,16 +413,13 @@ class _EComTagsScreensState extends State<EComTagsScreens> {
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
                                               Padding(
-                                                padding:
-                                                    const EdgeInsets.all(4),
+                                                padding: const EdgeInsets.all(4),
                                                 child: Text(
-                                                  'Packages',
-                                                  style:
-                                                      topTabBarStyle(context),
+                                                  AppStrings.packages.tr,
+                                                  style: topTabBarStyle(context),
                                                 ),
                                               ),
-                                              if (_currentTab == 'Packages')
-                                                const SizedBox.shrink(),
+                                              if (_currentTab == 'Packages') const SizedBox.shrink(),
                                             ],
                                           ),
                                         ),
@@ -498,8 +465,11 @@ class _EComTagsScreensState extends State<EComTagsScreens> {
         builder: (context, provider, child) {
           if (provider.isMoreLoadingBrands && _currentPageBrand == 1) {
             return const Center(
-                child: CircularProgressIndicator(
-                    color: Colors.black, strokeWidth: 0.5));
+              child: CircularProgressIndicator(
+                color: Colors.black,
+                strokeWidth: 0.5,
+              ),
+            );
           }
           return Column(
             crossAxisAlignment: CrossAxisAlignment.end,
@@ -522,24 +492,24 @@ class _EComTagsScreensState extends State<EComTagsScreens> {
               else
                 Padding(
                   padding: EdgeInsets.only(
-                      left: screenWidth * 0.02,
-                      right: screenWidth * 0.02,
-                      top: screenHeight * 0.02),
+                    left: screenWidth * 0.02,
+                    right: screenWidth * 0.02,
+                    top: screenHeight * 0.02,
+                  ),
                   child: GridView.builder(
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 3,
-                            childAspectRatio: 0.8,
-                            mainAxisSpacing: 2,
-                            crossAxisSpacing: 10),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      childAspectRatio: 0.8,
+                      mainAxisSpacing: 2,
+                      crossAxisSpacing: 10,
+                    ),
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     // itemCount: provider.records.length + (_isFetchingMoreBrand ? 1 : 0),
                     itemCount: provider.records.length,
                     itemBuilder: (context, index) {
                       final record = provider.records[index];
-                      if (_isFetchingMoreBrand &&
-                          index == provider.records.length) {
+                      if (_isFetchingMoreBrand && index == provider.records.length) {
                         return const Align(
                           alignment: Alignment.center,
                           child: Column(
@@ -580,11 +550,13 @@ class _EComTagsScreensState extends State<EComTagsScreens> {
                             child: GestureDetector(
                               onTap: () {
                                 Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (builder) =>
-                                            FeaturedBrandsItemsScreen(
-                                                slug: record.slug)));
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (builder) => FeaturedBrandsItemsScreen(
+                                      slug: record.slug,
+                                    ),
+                                  ),
+                                );
                               },
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -594,30 +566,21 @@ class _EComTagsScreensState extends State<EComTagsScreens> {
                                     imageUrl: record.image,
                                     height: 120,
                                     fit: BoxFit.fitWidth,
-                                    placeholder:
-                                        (BuildContext context, String url) =>
-                                            Container(
-                                      height:
-                                          MediaQuery.sizeOf(context).height *
-                                              0.28,
+                                    placeholder: (BuildContext context, String url) => Container(
+                                      height: MediaQuery.sizeOf(context).height * 0.28,
                                       width: double.infinity,
-                                      color: Colors
-                                          .blueGrey[300], // Background color
+                                      color: Colors.blueGrey[300], // Background color
                                       child: Stack(
                                         alignment: Alignment.center,
                                         children: [
                                           Image.asset(
                                             'assets/placeholder.png', // Replace with your actual image path
-                                            fit: BoxFit
-                                                .cover, // Adjust fit if needed
-                                            height: MediaQuery.sizeOf(context)
-                                                    .height *
-                                                0.28,
+                                            fit: BoxFit.cover, // Adjust fit if needed
+                                            height: MediaQuery.sizeOf(context).height * 0.28,
                                             width: double.infinity,
                                           ),
                                           const CupertinoActivityIndicator(
-                                            radius:
-                                                16, // Adjust size of the loader
+                                            radius: 16, // Adjust size of the loader
                                             animating: true,
                                           ),
                                         ],
@@ -648,15 +611,17 @@ class _EComTagsScreensState extends State<EComTagsScreens> {
   Widget _productsTab({required String slug}) {
     final double screenWidth = MediaQuery.sizeOf(context).width;
     final double screenHeight = MediaQuery.sizeOf(context).height;
-    final freshPicksProvider =
-        Provider.of<FreshPicksProvider>(context, listen: false);
+    final freshPicksProvider = Provider.of<FreshPicksProvider>(context, listen: false);
     return Center(
       child: Consumer<EComTagProvider>(
         builder: (ctx, provider, child) {
           if (provider.isMoreLoading) {
             return const Center(
-                child: CircularProgressIndicator(
-                    color: Colors.black, strokeWidth: 0.5));
+              child: CircularProgressIndicator(
+                color: Colors.black,
+                strokeWidth: 0.5,
+              ),
+            );
           } else {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.end,
@@ -664,16 +629,17 @@ class _EComTagsScreensState extends State<EComTagsScreens> {
               children: [
                 Padding(
                   padding: EdgeInsets.only(
-                      left: screenWidth * 0.02,
-                      right: screenWidth * 0.02,
-                      top: screenHeight * 0.02),
+                    left: screenWidth * 0.02,
+                    right: screenWidth * 0.02,
+                    top: screenHeight * 0.02,
+                  ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Text('title', style: boldHomeTextStyle()),
                       Flexible(
-                        child: SortAndFilterDropdown(
+                        child: SortAndFilterWidget(
                           selectedSortBy: _selectedSortBy,
                           onSortChanged: (newSortBy) {
                             _onSortChanged(newSortBy);
@@ -685,14 +651,15 @@ class _EComTagsScreensState extends State<EComTagsScreens> {
                               builder: (context) => FilterBottomSheet(
                                 filters: provider.productFilters,
                                 selectedIds: selectedFilters,
-                              ), // Show the filter bottom sheet
+                              ),
                             ).then((result) {
-                              setState(() {
-                                _currentPageProduct = 1;
-                                selectedFilters =
-                                    result; // Store the selected filter IDs
-                              });
-                              fetchNewProductsItems();
+                              if (result != null) {
+                                setState(() {
+                                  _currentPageProduct = 1;
+                                  selectedFilters = result; // Store the selected filter IDs
+                                });
+                                fetchNewProductsItems();
+                              }
                             });
                           },
                         ),
@@ -702,7 +669,9 @@ class _EComTagsScreensState extends State<EComTagsScreens> {
                 ),
                 Padding(
                   padding: EdgeInsets.only(
-                      left: screenWidth * 0.02, right: screenWidth * 0.02),
+                    left: screenWidth * 0.02,
+                    right: screenWidth * 0.02,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -711,19 +680,17 @@ class _EComTagsScreensState extends State<EComTagsScreens> {
                         const ItemsEmptyView()
                       else
                         GridView.builder(
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
-                                  childAspectRatio: 0.6,
-                                  mainAxisSpacing: 10,
-                                  crossAxisSpacing: 10),
-                          itemCount: provider.products.length +
-                              (_isFetchingMoreProducts ? 1 : 0),
+                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            childAspectRatio: 0.6,
+                            mainAxisSpacing: 10,
+                            crossAxisSpacing: 10,
+                          ),
+                          itemCount: provider.products.length + (_isFetchingMoreProducts ? 1 : 0),
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
                           itemBuilder: (context, index) {
-                            if (_isFetchingMoreProducts &&
-                                index == provider.products.length) {
+                            if (_isFetchingMoreProducts && index == provider.products.length) {
                               return const Align(
                                 alignment: Alignment.center,
                                 child: Column(
@@ -745,27 +712,24 @@ class _EComTagsScreensState extends State<EComTagsScreens> {
                             }
 
                             final product = provider.products[index];
-                            final wishlistProvider =
-                                Provider.of<WishlistProvider>(context,
-                                    listen: false);
+                            final wishlistProvider = Provider.of<WishlistProvider>(
+                              context,
+                              listen: false,
+                            );
                             final cartProvider = Provider.of<CartProvider>(
-                                context,
-                                listen: false);
+                              context,
+                              listen: false,
+                            );
 
                             /// Calculate the percentage off
                             /// Check if both frontSalePrice and price are non-null and non-zero to avoid division by zero
-                            final double? frontSalePrice =
-                                product.prices?.frontSalePrice?.toDouble();
-                            final double? price =
-                                product.prices?.price?.toDouble();
+                            final double? frontSalePrice = product.prices?.frontSalePrice?.toDouble();
+                            final double? price = product.prices?.price?.toDouble();
                             String offPercentage = '';
 
-                            if (frontSalePrice != null &&
-                                price != null &&
-                                price > 0) {
+                            if (frontSalePrice != null && price != null && price > 0) {
                               // Calculate the discount percentage
-                              final double discount =
-                                  100 - ((frontSalePrice / price) * 100);
+                              final double discount = 100 - ((frontSalePrice / price) * 100);
                               // offPercentage = discount.toStringAsFixed(0);
                               if (discount > 0) {
                                 offPercentage = discount.toStringAsFixed(0);
@@ -786,56 +750,55 @@ class _EComTagsScreensState extends State<EComTagsScreens> {
                               },
                               child: ProductCard(
                                 isOutOfStock: product.outOfStock ?? false,
-                                off: offPercentage.isNotEmpty
-                                    ? '$offPercentage%off'
-                                    : '',
+                                off: offPercentage.isNotEmpty ? '$offPercentage%off' : '',
                                 // Display the discount percentage
-                                priceWithTaxes:
-                                    (product.prices?.frontSalePrice ?? 0) <
-                                            (product.prices?.price ?? 0)
-                                        ? product.prices!.priceWithTaxes
-                                        : null,
+                                priceWithTaxes: (product.prices?.frontSalePrice ?? 0) < (product.prices?.price ?? 0)
+                                    ? product.prices!.priceWithTaxes
+                                    : null,
                                 itemsId: 0,
                                 imageUrl: product.image,
                                 optionalIcon: Icons.shopping_cart,
                                 onOptionalIconTap: () async {
-                                  final token =
-                                      await SecurePreferencesUtil.getToken();
+                                  final token = await SecurePreferencesUtil.getToken();
                                   if (token != null) {
                                     await cartProvider.addToCart(
-                                        product.id, context, 1);
+                                      product.id,
+                                      context,
+                                      1,
+                                    );
                                   }
                                 },
-                                frontSalePriceWithTaxes:
-                                    product.review?.average?.toString() ?? '0',
+                                frontSalePriceWithTaxes: product.review?.average?.toString() ?? '0',
                                 name: product.name,
                                 storeName: product.store!.name.toString(),
                                 price: product.prices!.price.toString(),
-                                reviewsCount:
-                                    product.review!.reviewsCount!.toInt(),
-                                isHeartObscure: wishlistProvider
-                                        .wishlist?.data?.products
-                                        .any((wishlistProduct) =>
-                                            wishlistProduct.id == product.id) ??
+                                reviewsCount: product.review!.reviewsCount!.toInt(),
+                                isHeartObscure: wishlistProvider.wishlist?.data?.products.any(
+                                      (wishlistProduct) => wishlistProduct.id == product.id,
+                                    ) ??
                                     false,
                                 onHeartTap: () async {
-                                  final token =
-                                      await SecurePreferencesUtil.getToken();
-                                  final bool isInWishlist = wishlistProvider
-                                          .wishlist?.data?.products
-                                          .any((wishlistProduct) =>
-                                              wishlistProduct.id ==
-                                              product.id) ??
+                                  final token = await SecurePreferencesUtil.getToken();
+                                  final bool isInWishlist = wishlistProvider.wishlist?.data?.products.any(
+                                        (wishlistProduct) => wishlistProduct.id == product.id,
+                                      ) ??
                                       false;
                                   if (isInWishlist) {
                                     await wishlistProvider.deleteWishlistItem(
-                                        product.id ?? 0, context, token ?? '');
+                                      product.id ?? 0,
+                                      context,
+                                      token ?? '',
+                                    );
                                   } else {
                                     await freshPicksProvider.handleHeartTap(
-                                        context, product.id ?? 0);
+                                      context,
+                                      product.id ?? 0,
+                                    );
                                   }
                                   await wishlistProvider.fetchWishlist(
-                                      token ?? '', context);
+                                    token ?? '',
+                                    context,
+                                  );
                                 },
                               ),
                             );
@@ -861,23 +824,28 @@ class _EComTagsScreensState extends State<EComTagsScreens> {
         builder: (ctx, provider, child) {
           if (provider.isPackagesLoading) {
             return const Center(
-                child: CircularProgressIndicator(
-                    color: Colors.black, strokeWidth: 0.5));
+              child: CircularProgressIndicator(
+                color: Colors.black,
+                strokeWidth: 0.5,
+              ),
+            );
           } else if (provider.packages.isEmpty) {
             return Padding(
               padding: EdgeInsets.only(
-                  left: screenWidth * 0.02,
-                  right: screenWidth * 0.02,
-                  top: screenHeight * 0.02),
+                left: screenWidth * 0.02,
+                right: screenWidth * 0.02,
+                top: screenHeight * 0.02,
+              ),
               child: Container(
                 width: double.infinity,
                 decoration: const BoxDecoration(
                   color: AppColors.lightCoral,
                 ),
                 height: 50,
-                child: const Align(
-                    alignment: Alignment.center,
-                    child: Text('No records found!')),
+                child: Align(
+                  alignment: Alignment.center,
+                  child: Text(AppStrings.noRecordsFound.tr),
+                ),
               ),
             );
           } else {
@@ -896,39 +864,68 @@ class _EComTagsScreensState extends State<EComTagsScreens> {
                     },
                     items: [
                       DropdownMenuItem(
-                          value: 'default_sorting',
-                          child: Text('Default Sorting',
-                              style: sortingStyle(context))),
+                        value: 'default_sorting',
+                        child: Text(
+                          AppStrings.sortByDefault.tr,
+                          style: sortingStyle(context),
+                        ),
+                      ),
                       DropdownMenuItem(
-                          value: 'date_asc',
-                          child: Text('Oldest', style: sortingStyle(context))),
+                        value: 'date_asc',
+                        child: Text(
+                          AppStrings.sortByOldest.tr,
+                          style: sortingStyle(context),
+                        ),
+                      ),
                       DropdownMenuItem(
-                          value: 'date_desc',
-                          child: Text('Newest', style: sortingStyle(context))),
+                        value: 'date_desc',
+                        child: Text(
+                          AppStrings.sortByNewest.tr,
+                          style: sortingStyle(context),
+                        ),
+                      ),
                       DropdownMenuItem(
-                          value: 'name_asc',
-                          child:
-                              Text('Name: A-Z', style: sortingStyle(context))),
+                        value: 'name_asc',
+                        child: Text(
+                          AppStrings.sortByNameAz.tr,
+                          style: sortingStyle(context),
+                        ),
+                      ),
                       DropdownMenuItem(
-                          value: 'name_desc',
-                          child:
-                              Text('Name: Z-A', style: sortingStyle(context))),
+                        value: 'name_desc',
+                        child: Text(
+                          AppStrings.sortByNameZa.tr,
+                          style: sortingStyle(context),
+                        ),
+                      ),
                       DropdownMenuItem(
-                          value: 'price_asc',
-                          child: Text('Price: low to high',
-                              style: sortingStyle(context))),
+                        value: 'price_asc',
+                        child: Text(
+                          AppStrings.sortByPriceLowToHigh.tr,
+                          style: sortingStyle(context),
+                        ),
+                      ),
                       DropdownMenuItem(
-                          value: 'price_desc',
-                          child: Text('Price: high to low',
-                              style: sortingStyle(context))),
+                        value: 'price_desc',
+                        child: Text(
+                          AppStrings.sortByPriceHighToLow.tr,
+                          style: sortingStyle(context),
+                        ),
+                      ),
                       DropdownMenuItem(
-                          value: 'rating_asc',
-                          child: Text('Rating: low to high',
-                              style: sortingStyle(context))),
+                        value: 'rating_asc',
+                        child: Text(
+                          AppStrings.sortByRatingLowToHigh.tr,
+                          style: sortingStyle(context),
+                        ),
+                      ),
                       DropdownMenuItem(
-                          value: 'rating_desc',
-                          child: Text('Rating: high to low',
-                              style: sortingStyle(context))),
+                        value: 'rating_desc',
+                        child: Text(
+                          AppStrings.sortByRatingHighToLow.tr,
+                          style: sortingStyle(context),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -937,27 +934,26 @@ class _EComTagsScreensState extends State<EComTagsScreens> {
 
                 Padding(
                   padding: EdgeInsets.only(
-                      left: screenWidth * 0.02,
-                      right: screenWidth * 0.02,
-                      top: screenHeight * 0.02),
+                    left: screenWidth * 0.02,
+                    right: screenWidth * 0.02,
+                    top: screenHeight * 0.02,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       GridView.builder(
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                                childAspectRatio: 0.6,
-                                mainAxisSpacing: 10,
-                                crossAxisSpacing: 10),
-                        itemCount: provider.packages.length +
-                            (_isFetchingMorePackages ? 1 : 0),
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 0.6,
+                          mainAxisSpacing: 10,
+                          crossAxisSpacing: 10,
+                        ),
+                        itemCount: provider.packages.length + (_isFetchingMorePackages ? 1 : 0),
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
                         itemBuilder: (context, index) {
-                          if (_isFetchingMorePackages &&
-                              index == provider.packages.length) {
+                          if (_isFetchingMorePackages && index == provider.packages.length) {
                             return const Align(
                               alignment: Alignment.center,
                               child: Column(
@@ -976,24 +972,20 @@ class _EComTagsScreensState extends State<EComTagsScreens> {
                           }
 
                           final product = provider.packages[index];
-                          final wishlistProvider =
-                              Provider.of<WishlistProvider>(context,
-                                  listen: false);
+                          final wishlistProvider = Provider.of<WishlistProvider>(
+                            context,
+                            listen: false,
+                          );
 
                           /// Calculate the percentage off
                           /// Check if both frontSalePrice and price are non-null and non-zero to avoid division by zero
-                          final double? frontSalePrice =
-                              product.prices?.frontSalePrice?.toDouble();
-                          final double? price =
-                              product.prices?.price?.toDouble();
+                          final double? frontSalePrice = product.prices?.frontSalePrice?.toDouble();
+                          final double? price = product.prices?.price?.toDouble();
                           String offPercentage = '';
 
-                          if (frontSalePrice != null &&
-                              price != null &&
-                              price > 0) {
+                          if (frontSalePrice != null && price != null && price > 0) {
                             // Calculate the discount percentage
-                            final double discount =
-                                100 - ((frontSalePrice / price) * 100);
+                            final double discount = 100 - ((frontSalePrice / price) * 100);
                             // offPercentage = discount.toStringAsFixed(0);
                             if (discount > 0) {
                               offPercentage = discount.toStringAsFixed(0);
@@ -1014,60 +1006,59 @@ class _EComTagsScreensState extends State<EComTagsScreens> {
                             },
                             child: ProductCard(
                               isOutOfStock: product.outOfStock ?? false,
-                              off: offPercentage.isNotEmpty
-                                  ? '$offPercentage%off'
-                                  : '',
+                              off: offPercentage.isNotEmpty ? '$offPercentage%off' : '',
                               // Display the discount percentage
-                              priceWithTaxes:
-                                  (product.prices?.frontSalePrice ?? 0) <
-                                          (product.prices?.price ?? 0)
-                                      ? product.prices!.priceWithTaxes
-                                      : null,
+                              priceWithTaxes: (product.prices?.frontSalePrice ?? 0) < (product.prices?.price ?? 0)
+                                  ? product.prices!.priceWithTaxes
+                                  : null,
                               optionalIcon: Icons.shopping_cart,
                               onOptionalIconTap: () async {
-                                final token =
-                                    await SecurePreferencesUtil.getToken();
+                                final token = await SecurePreferencesUtil.getToken();
                                 final cartProvider = Provider.of<CartProvider>(
-                                    context,
-                                    listen: false);
+                                  context,
+                                  listen: false,
+                                );
                                 if (token != null) {
                                   await cartProvider.addToCart(
-                                      product.id, context, 1);
+                                    product.id,
+                                    context,
+                                    1,
+                                  );
                                 }
                               },
                               itemsId: product.id,
                               imageUrl: product.image,
-                              frontSalePriceWithTaxes: product
-                                      .prices?.frontSalePriceWithTaxes
-                                      .toString() ??
-                                  '',
+                              frontSalePriceWithTaxes: product.prices?.frontSalePriceWithTaxes.toString() ?? '',
                               name: product.name,
                               storeName: product.store!.name.toString(),
                               price: product.prices!.price.toString(),
-                              reviewsCount:
-                                  product.review!.reviewsCount!.toInt(),
-                              isHeartObscure: wishlistProvider
-                                      .wishlist?.data?.products
-                                      .any((wishlistProduct) =>
-                                          wishlistProduct.id == product.id) ??
+                              reviewsCount: product.review!.reviewsCount!.toInt(),
+                              isHeartObscure: wishlistProvider.wishlist?.data?.products.any(
+                                    (wishlistProduct) => wishlistProduct.id == product.id,
+                                  ) ??
                                   false,
                               onHeartTap: () async {
-                                final token =
-                                    await SecurePreferencesUtil.getToken();
-                                final bool isInWishlist = wishlistProvider
-                                        .wishlist?.data?.products
-                                        .any((wishlistProduct) =>
-                                            wishlistProduct.id == product.id) ??
+                                final token = await SecurePreferencesUtil.getToken();
+                                final bool isInWishlist = wishlistProvider.wishlist?.data?.products.any(
+                                      (wishlistProduct) => wishlistProduct.id == product.id,
+                                    ) ??
                                     false;
                                 if (isInWishlist) {
                                   await wishlistProvider.deleteWishlistItem(
-                                      product.id ?? 0, context, token ?? '');
+                                    product.id ?? 0,
+                                    context,
+                                    token ?? '',
+                                  );
                                 } else {
                                   await freshPicksProvider.handleHeartTap(
-                                      context, product.id ?? 0);
+                                    context,
+                                    product.id ?? 0,
+                                  );
                                 }
                                 await wishlistProvider.fetchWishlist(
-                                    token ?? '', context);
+                                  token ?? '',
+                                  context,
+                                );
                               },
                             ),
                           );
@@ -1082,15 +1073,11 @@ class _EComTagsScreensState extends State<EComTagsScreens> {
         },
       ),
     );
-    return Container(
-      child: Text(slug),
-    );
   }
 
   @override
   void dispose() {
-    _scrollController
-        .removeListener(_onScroll); // Remove the listener in dispose
+    _scrollController.removeListener(_onScroll); // Remove the listener in dispose
     _scrollController.dispose();
     super.dispose();
   }

@@ -31,7 +31,7 @@ class VendorGetSelectedAttributesViewModel with ChangeNotifier {
       _attributeSetsApiResponse;
 
   set setAttributeSetsApiResponse(
-      ApiResponse<AttributeSetsDataResponse> response) {
+      ApiResponse<AttributeSetsDataResponse> response,) {
     _attributeSetsApiResponse = response;
     notifyListeners();
   }
@@ -48,7 +48,7 @@ class VendorGetSelectedAttributesViewModel with ChangeNotifier {
       };
       final AttributeSetsDataResponse response =
           await _myRepo.vendorGetSelectedProductAttributes(
-              headers: headers, productID: productID);
+              headers: headers, productID: productID,);
       setAttributeSetsApiResponse = ApiResponse.completed(response);
       setLoading(false);
       return true;

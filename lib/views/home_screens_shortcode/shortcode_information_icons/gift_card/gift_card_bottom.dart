@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:event_app/core/constants/app_strings.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/styles/custom_text_styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -19,8 +20,7 @@ class GiftCardBottom extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 CachedNetworkImage(
-                  imageUrl:
-                      'https://theevents.ae/assets/frontend/img/gift-card.png',
+                  imageUrl: 'https://theevents.ae/assets/frontend/img/gift_card.webp',
                   width: double.infinity,
                   fit: BoxFit.cover,
                   errorWidget: (context, child, loadingProcessor) => Container(
@@ -32,11 +32,15 @@ class GiftCardBottom extends StatelessWidget {
                         end: Alignment.bottomRight,
                       ),
                       borderRadius: BorderRadius.circular(
-                          12), // Optional: to round the corners
+                        12,
+                      ), // Optional: to round the corners
                     ),
                     child: const Center(
                       child: CupertinoActivityIndicator(
-                          color: Colors.black, radius: 10, animating: true),
+                        color: Colors.black,
+                        radius: 10,
+                        animating: true,
+                      ),
                     ),
                   ),
                 ),
@@ -50,16 +54,18 @@ class GiftCardBottom extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  AppStrings.description,
+                  AppStrings.description.tr,
                   style: headingStyleText(context),
                   softWrap: true,
                 ),
                 Padding(
-                    padding: const EdgeInsets.only(top: 25),
-                    child: Text(
-                        softWrap: true,
-                        style: headingDescriptionStyleText(context),
-                        AppStrings.descriptionGiftCard)),
+                  padding: const EdgeInsets.only(top: 25),
+                  child: Text(
+                    softWrap: true,
+                    style: headingDescriptionStyleText(context),
+                    AppStrings.descriptionGiftCard.tr,
+                  ),
+                ),
               ],
             ),
           ),
@@ -70,16 +76,18 @@ class GiftCardBottom extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  AppStrings.termsConditions,
+                  AppStrings.termsAndConditions.tr,
                   style: headingStyleText(context),
                   softWrap: true,
                 ),
                 Padding(
-                    padding: const EdgeInsets.only(top: 25),
-                    child: Text(
-                        softWrap: true,
-                        style: headingDescriptionStyleText(context),
-                        AppStrings.termsAndConditions)),
+                  padding: const EdgeInsets.only(top: 25),
+                  child: Text(
+                    softWrap: true,
+                    style: headingDescriptionStyleText(context),
+                    AppStrings.termsAndConditionsText.tr,
+                  ),
+                ),
               ],
             ),
           ),
@@ -90,29 +98,29 @@ class GiftCardBottom extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SelectableText(
-                  AppStrings.buyAndRedeem,
+                  AppStrings.buyAndRedeem.tr,
                   style: headingStyleText(context),
                 ),
                 const SizedBox(height: 25),
                 _buildCircleWithText(
                   context,
-                  AppStrings.redeemFirstLine,
+                  AppStrings.redeemFirstLine.tr,
                 ),
                 _buildCircleWithText(
                   context,
-                  AppStrings.redeemSecondLine,
+                  AppStrings.redeemSecondLine.tr,
                 ),
                 _buildCircleWithText(
                   context,
-                  AppStrings.redeemThirdLine,
+                  AppStrings.redeemThirdLine.tr,
                 ),
                 _buildCircleWithText(
                   context,
-                  AppStrings.redeemForthLine,
+                  AppStrings.redeemForthLine.tr,
                 ),
                 _buildCircleWithText(
                   context,
-                  AppStrings.redeemFifthLine,
+                  AppStrings.redeemFifthLine.tr,
                 ),
               ],
             ),

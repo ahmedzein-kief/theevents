@@ -1,15 +1,17 @@
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../core/constants/vendor_app_strings.dart';
 import '../core/styles/app_colors.dart';
 
 Future<String?> showGenderDropdown(
-    BuildContext context, String currentSelection) async {
+    BuildContext context, String currentSelection,) async {
   const genderOptions = ['Male', 'Female', 'Not to say'];
   return showDialog<String>(
     context: context,
     builder: (context) => AlertDialog(
-      title: const Text('Select Gender'),
+      title: Text(VendorAppStrings.selectGender.tr),
       content: SizedBox(
         width: double.maxFinite,
         child: ListView.builder(
@@ -38,7 +40,7 @@ Future<String?> showGenderDropdown(
 }
 
 Future<String?> showRegionDropdown(
-    BuildContext context, String currentSelection) async {
+    BuildContext context, String currentSelection,) async {
   const regionOptions = [
     'Abu Dhabi',
     'Dubai',
@@ -51,7 +53,7 @@ Future<String?> showRegionDropdown(
   return showDialog<String>(
     context: context,
     builder: (context) => AlertDialog(
-      title: const Text('Select Region'),
+      title: Text(VendorAppStrings.selectRegion.tr),
       content: SizedBox(
         width: double.maxFinite,
         child: ListView.builder(
@@ -80,24 +82,23 @@ Future<String?> showRegionDropdown(
 }
 
 Future<String?> showCompanyCategoryType(
-    BuildContext context, String currentSelection) async {
-  const regionOptions = [
-    'Vendor',
-    'Event Organizer',
-    'Makeup Artist',
-    'Celebrity',
-  ];
+  BuildContext context,
+  String currentSelection,
+  List<Map<String, dynamic>>? vendorTypes,
+) async {
+  final regionOptions = vendorTypes ?? [];
+
   return showDialog<String>(
     context: context,
     builder: (context) => AlertDialog(
-      title: const Text('Select CC Type'),
+      title: Text(VendorAppStrings.selectCcType.tr),
       content: SizedBox(
         width: double.maxFinite,
         child: ListView.builder(
           shrinkWrap: true,
           itemCount: regionOptions.length,
           itemBuilder: (context, index) {
-            final region = regionOptions[index];
+            final region = regionOptions[index]['name'] as String;
             return ListTile(
               title: Text(
                 region,
@@ -119,7 +120,7 @@ Future<String?> showCompanyCategoryType(
 }
 
 Future<String?> showDatePickerDialog(
-    BuildContext context, String format) async {
+    BuildContext context, String format,) async {
   final now = DateTime.now();
   final firstDate = now.add(const Duration(days: 1));
   final initialDate = now.isBefore(firstDate) ? firstDate : now;

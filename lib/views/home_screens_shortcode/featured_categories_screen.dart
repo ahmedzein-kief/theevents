@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/views/home_screens_shortcode/shortcode_featured_categories/featured_categories_items_screen.dart';
 import 'package:event_app/views/home_screens_shortcode/shortcode_featured_categories/featured_categories_viewall_inner.dart';
 import 'package:flutter/cupertino.dart';
@@ -7,12 +8,13 @@ import 'package:provider/provider.dart';
 
 import '../../core/constants/app_strings.dart';
 import '../../core/styles/custom_text_styles.dart';
-import '../../core/widgets/custom_auto_slider_home.dart';
+import '../../core/widgets/custom_auto_slider_home.dart'; // For SimpleBazaarAutoSlider
 import '../../core/widgets/custom_home_views/custom_home_text_row.dart';
 import '../../provider/shortcode_featured_categories_provider/featured_categories_provider.dart';
 
 class FeaturedCategoriesScreen extends StatefulWidget {
   const FeaturedCategoriesScreen({super.key, required this.data});
+
   final dynamic data;
 
   @override
@@ -29,8 +31,7 @@ class _GiftByOccasionViewState extends State<FeaturedCategoriesScreen> {
   }
 
   Future<void> fetchGiftData() async {
-    final provider =
-        Provider.of<FeaturedCategoriesProvider>(context, listen: false);
+    final provider = Provider.of<FeaturedCategoriesProvider>(context, listen: false);
     await provider.fetchGiftsByOccasion(data: widget.data, context);
   }
 
@@ -42,6 +43,14 @@ class _GiftByOccasionViewState extends State<FeaturedCategoriesScreen> {
     return Consumer<FeaturedCategoriesProvider>(
       builder: (context, provider, child) {
         if (provider.gifts != null && provider.gifts?.data != null) {
+          // Fixed calculation to show exactly 3 complete items
+          const double screenHorizontalPadding = 16.0; // Main screen padding
+          const double itemMargin = 5.0; // Each item margin on both sides
+          const double totalItemMargins = itemMargin * 6; // 3 items × 2 margins each
+
+          final double availableWidth = screenWidth - (screenHorizontalPadding * 2) - totalItemMargins;
+          final double exactItemWidth = availableWidth / 3;
+
           return Column(
             children: [
               Padding(
@@ -50,91 +59,74 @@ class _GiftByOccasionViewState extends State<FeaturedCategoriesScreen> {
                   title: widget.data['attributes']['title'],
                   onTap: () {
                     Navigator.push(
-                        context,
-                        CupertinoPageRoute(
-                            builder: (context) => FeaturedCategoriesItemsScreen(
-                                data: widget.data)));
+                      context,
+                      CupertinoPageRoute(
+                        builder: (context) => FeaturedCategoriesItemsScreen(
+                          data: widget.data,
+                        ),
+                      ),
+                    );
                   },
-                  seeAll: AppStrings.viewAll,
+                  seeAll: AppStrings.viewAll.tr,
                 ),
               ),
-              SizedBox(
-                height: MediaQuery.of(context).size.height *
-                    (115 / MediaQuery.of(context).size.height),
-                child: AutoScrollingSlider(
-                  itemWidth: 110,
-                  children: provider.gifts!.data!
-                      .map(
-                        (gift) => GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    FeaturedCategoriesViewAllInner(
-                                  // FeaturedCategoryDetailScreen(
-                                  data: gift, isCategory: true,
-                                ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: SizedBox(
+                  height: 115,
+                  child: SimpleBazaarAutoSlider(
+                    itemWidth: exactItemWidth + (itemMargin * 2),
+                    snapToItems: true,
+                    items: provider.gifts!.data!.map((gift) {
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => FeaturedCategoriesViewAllInner(
+                                data: gift,
+                                isCategory: true,
                               ),
-                            );
-                          },
-                          child: Container(
-                            margin: const EdgeInsets.symmetric(horizontal: 5),
-                            child: Column(
-                              children: [
-                                ClipRRect(
+                            ),
+                          );
+                        },
+                        child: Container(
+                          margin: EdgeInsets.symmetric(horizontal: itemMargin),
+                          width: exactItemWidth,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                flex: 3,
+                                child: ClipRRect(
                                   borderRadius: BorderRadius.circular(8),
                                   child: CachedNetworkImage(
                                     imageUrl: gift.image ?? '',
                                     fit: BoxFit.cover,
-                                    width: screenWidth * (110 / screenWidth),
-                                    height: screenHeight *
-                                        (115 / screenHeight) *
-                                        0.75,
-                                    errorWidget: (context, object, _) =>
-                                        Image.asset(
-                                      'assets/placeholder.png', // Replace with your actual image path
-                                      fit: BoxFit.cover, // Adjust fit if needed
-                                      height:
-                                          MediaQuery.sizeOf(context).height *
-                                              0.28,
+                                    width: double.infinity,
+                                    height: 80,
+                                    errorWidget: (context, object, _) => Image.asset(
+                                      'assets/placeholder.png',
+                                      fit: BoxFit.cover,
+                                      height: 80,
                                       width: double.infinity,
                                     ),
-                                    errorListener: (object) {
-                                      Image.asset(
-                                        'assets/placeholder.png', // Replace with your actual image path
-                                        fit: BoxFit
-                                            .cover, // Adjust fit if needed
-                                        height:
-                                            MediaQuery.sizeOf(context).height *
-                                                0.28,
-                                        width: double.infinity,
-                                      );
-                                    },
-                                    placeholder:
-                                        (BuildContext context, String url) =>
-                                            Container(
-                                      height:
-                                          MediaQuery.sizeOf(context).height *
-                                              0.28,
+                                    placeholder: (BuildContext context, String url) => Container(
+                                      height: 80,
                                       width: double.infinity,
-                                      color: Colors
-                                          .blueGrey[300], // Background color
+                                      color: Colors.blueGrey[300],
                                       child: Stack(
                                         alignment: Alignment.center,
                                         children: [
                                           Image.asset(
-                                            'assets/placeholder.png', // Replace with your actual image path
-                                            fit: BoxFit
-                                                .cover, // Adjust fit if needed
-                                            height: MediaQuery.sizeOf(context)
-                                                    .height *
-                                                0.28,
+                                            'assets/placeholder.png',
+                                            fit: BoxFit.cover,
+                                            height: 80,
                                             width: double.infinity,
                                           ),
                                           const CupertinoActivityIndicator(
-                                            radius:
-                                                16, // Adjust size of the loader
+                                            radius: 16,
                                             animating: true,
                                           ),
                                         ],
@@ -142,20 +134,26 @@ class _GiftByOccasionViewState extends State<FeaturedCategoriesScreen> {
                                     ),
                                   ),
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 8),
-                                  child: Text(gift.name ?? 'Name',
-                                      overflow: TextOverflow.ellipsis,
-                                      softWrap: true,
-                                      textAlign: TextAlign.center,
-                                      style: homeItemsStyle(context)),
+                              ),
+                              const SizedBox(height: 2),
+                              Flexible(
+                                flex: 1,
+                                child: Text(
+                                  gift.name ?? AppStrings.name.tr,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                  textAlign: TextAlign.center,
+                                  style: homeItemsStyle(context).copyWith(
+                                    fontSize: 12,
+                                  ),
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ),
-                      )
-                      .toList(),
+                      );
+                    }).toList(),
+                  ),
                 ),
               ),
             ],

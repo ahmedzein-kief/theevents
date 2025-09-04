@@ -11,7 +11,7 @@ import 'package:provider/provider.dart';
 
 class VendorProductShippingView extends StatefulWidget {
   const VendorProductShippingView(
-      {super.key, required this.vendorProductDimensionsModel});
+      {super.key, required this.vendorProductDimensionsModel,});
   final VendorProductDimensionsModel? vendorProductDimensionsModel;
 
   @override

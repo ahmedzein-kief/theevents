@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -18,6 +19,7 @@ import 'fresh_picks_detail_screen.dart';
 
 class FreshPicksScreen extends StatefulWidget {
   const FreshPicksScreen({super.key, required this.data});
+
   final dynamic data;
 
   @override
@@ -83,13 +85,13 @@ class _FreshPicksViewState extends State<FreshPicksScreen> {
                 padding: EdgeInsets.only(top: screenHeight * 0.02),
                 child: CustomTextRow(
                   title: widget.data['attributes']['title'],
-                  seeAll: AppStrings.viewAll,
+                  seeAll: AppStrings.viewAll.tr,
                   onTap: () {
                     Navigator.push(
                         context,
                         CupertinoPageRoute(
                             builder: (context) => FreshPicksDetailScreen(
-                                data: widget.data['attributes']['title'])));
+                                data: widget.data['attributes']['title'],),),);
                   },
                 ),
               ),
@@ -103,7 +105,7 @@ class _FreshPicksViewState extends State<FreshPicksScreen> {
                         left: screenWidth * 0.02,
                         right: screenWidth * 0.02,
                         top: screenHeight * 0.02,
-                        bottom: screenHeight * 0.02),
+                        bottom: screenHeight * 0.02,),
                     child: SizedBox(
                       child: GridView.builder(
                         itemCount: records?.length ?? 0,
@@ -153,7 +155,7 @@ class _FreshPicksViewState extends State<FreshPicksScreen> {
                             child: ProductCard(
                               isOutOfStock: record?.outOfStock ?? false,
                               off: offPercentage.isNotEmpty
-                                  ? '$offPercentage%off'
+                                  ? '$offPercentage${AppStrings.percentOff.tr}'
                                   : '',
                               priceWithTaxes:
                                   (record?.prices?.frontSalePrice ?? 0) <
@@ -174,13 +176,13 @@ class _FreshPicksViewState extends State<FreshPicksScreen> {
                                     await SecurePreferencesUtil.getToken();
                                 if (token != null && mounted) {
                                   await cartProvider.addToCart(
-                                      record?.id, context, 1);
+                                      record?.id, context, 1,);
                                 }
                               }),
                               isHeartObscure: wishlistProvider
                                       .wishlist?.data?.products
                                       .any((wishlistProduct) =>
-                                          wishlistProduct.id == item?.id) ??
+                                          wishlistProduct.id == item?.id,) ??
                                   false,
                               onHeartTap: () => safeAsyncCall(() async {
                                 final token =
@@ -190,20 +192,20 @@ class _FreshPicksViewState extends State<FreshPicksScreen> {
                                 final bool isInWishlist = wishlistProvider
                                         .wishlist?.data?.products
                                         .any((wishlistProduct) =>
-                                            wishlistProduct.id == item?.id) ??
+                                            wishlistProduct.id == item?.id,) ??
                                     false;
 
                                 if (isInWishlist) {
                                   await wishlistProvider.deleteWishlistItem(
-                                      item?.id ?? 0, context, token ?? '');
+                                      item?.id ?? 0, context, token ?? '',);
                                 } else {
                                   await freshPicksProvider.handleHeartTap(
-                                      context, item?.id ?? 0);
+                                      context, item?.id ?? 0,);
                                 }
 
                                 if (mounted) {
                                   await wishlistProvider.fetchWishlist(
-                                      token ?? '', context);
+                                      token ?? '', context,);
                                 }
                               }),
                             ),

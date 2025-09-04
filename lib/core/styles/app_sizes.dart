@@ -67,7 +67,7 @@ WidgetStateProperty<Color?> get kDataRowColor =>
 SizedBox kCancelButton(
         {required screenWidth,
         double? borderRadius,
-        required BuildContext context}) =>
+        required BuildContext context,}) =>
     SizedBox(
       width: screenWidth * 0.25,
       child: CustomAppButton(

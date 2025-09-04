@@ -30,7 +30,7 @@ class Data {
       this.tabletImageUrl,
       this.mobileImageUrl,
       this.randomHash,
-      this.key});
+      this.key,});
 
   Data.fromJson(Map<String, dynamic> json) {
     id = json['id'];

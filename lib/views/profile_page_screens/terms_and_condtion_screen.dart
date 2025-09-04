@@ -194,7 +194,7 @@
 //         Uri.parse(ApiEndpoints.termsAndConditions));
 //
 //       if (response.statusCode == 200) {
-//         final responseBody = jsonDecode(response.body);
+//         final responseBody = response.data;
 //         _privacyPolicyData = TermsConditionsModels.fromJson(responseBody['data']);
 //
 //         log('Fetched Content: ${_privacyPolicyData?.content}'); // Log content
@@ -248,16 +248,17 @@
 //   },
 // ),
 
-import 'dart:convert';
 import 'dart:developer';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
-import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../core/helper/di/locator.dart';
 import '../../core/network/api_endpoints/api_end_point.dart';
+import '../../core/widgets/custom_app_views/default_app_bar.dart';
 import '../../core/widgets/custom_back_icon.dart';
 
 class TermsAndCondtionScreen extends StatefulWidget {
@@ -285,10 +286,8 @@ class _TermsAndConditionScreenState extends State<TermsAndCondtionScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          backgroundColor:
-              Colors.white, // Customize the app bar background color
-          leading: const BackIcon(),
+        appBar: const DefaultAppBar(
+          leading: BackIcon(),
           leadingWidth: 100,
         ),
         body: SafeArea(
@@ -350,10 +349,10 @@ class TermsAndConditionProvider with ChangeNotifier {
 
     try {
       final response =
-          await http.get(Uri.parse(ApiEndpoints.termsAndConditions));
+          await locator.get<Dio>().get(ApiEndpoints.termsAndConditions);
 
       if (response.statusCode == 200) {
-        final responseBody = jsonDecode(response.body);
+        final responseBody = response.data;
         _privacyPolicyData =
             TermsConditionsModels.fromJson(responseBody['data']);
       } else {

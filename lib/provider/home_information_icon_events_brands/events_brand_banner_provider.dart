@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:event_app/provider/api_response_handler.dart';
 import 'package:flutter/material.dart';
 
@@ -26,9 +24,9 @@ class Data {
     required this.name,
     this.description,
     required this.slug,
-    required this.image,
-    required this.thumb,
-    required this.coverImage,
+    this.image,
+    this.thumb,
+    this.coverImage,
     required this.items,
     this.website,
     required this.isFeatured,
@@ -48,13 +46,14 @@ class Data {
         isFeatured: json['is_featured'],
         seoMeta: SeoMeta.fromJson(json['seo_meta']),
       );
+
   int id;
   String name;
   String? description;
   String slug;
-  String image;
-  String thumb;
-  String coverImage;
+  String? image;
+  String? thumb;
+  String? coverImage;
   int items;
   String? website;
   int isFeatured;
@@ -64,20 +63,21 @@ class Data {
 class SeoMeta {
   SeoMeta({
     required this.title,
-    required this.description,
-    required this.image,
+    this.description,
+    this.image,
     required this.robots,
   });
 
   factory SeoMeta.fromJson(Map<String, dynamic> json) => SeoMeta(
-        title: json['title'],
+        title: json['title'] ?? '',
         description: json['description'],
         image: json['image'],
-        robots: json['robots'],
+        robots: json['robots'] ?? '',
       );
+
   String title;
-  String description;
-  String image;
+  String? description;
+  String? image;
   String robots;
 }
 
@@ -88,8 +88,7 @@ class EventsBrandProvider extends ChangeNotifier {
   final ApiResponseHandler _apiResponseHandler = ApiResponseHandler();
 
   Future<void> fetchEventsBrand(BuildContext context) async {
-    const url =
-        'https://api.staging.theevents.ae/api/v1/collections/events-brand';
+    const url = 'https://apistaging.theevents.ae/api/v1/collections/events-brand';
 
     try {
       isLoading = true;
@@ -101,7 +100,7 @@ class EventsBrandProvider extends ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+        final data = response.data;
         eventsBrand = EventsBrand.fromJson(data);
         errorMessage = '';
       } else {

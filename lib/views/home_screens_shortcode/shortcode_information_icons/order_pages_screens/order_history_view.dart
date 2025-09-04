@@ -1,13 +1,14 @@
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/models/orders/order_history_model.dart';
 import 'package:event_app/views/home_screens_shortcode/shortcode_information_icons/order_pages_screens/order_detail_screen.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../core/constants/app_strings.dart';
 import '../../../product_detail_screens/product_detail_screen.dart';
 
 class OrderHistoryView extends StatefulWidget {
-  // Replace `dynamic` with your order model type
-
   const OrderHistoryView({super.key, required this.order});
+
   final OrderProduct order;
 
   @override
@@ -15,7 +16,8 @@ class OrderHistoryView extends StatefulWidget {
 }
 
 class _OrderHistoryViewState extends State<OrderHistoryView> {
-  bool isOrderViewed = false; // Example state to track user interaction
+  bool isOrderViewed = false;
+
   Color _getStatusColor(String? status) {
     switch (status?.toLowerCase()) {
       case 'pending':
@@ -54,7 +56,7 @@ class _OrderHistoryViewState extends State<OrderHistoryView> {
                           widget.order.orderRecord?.statusArr.label ?? '',
                           style: TextStyle(
                             color: _getStatusColor(
-                                widget.order.orderRecord?.statusArr.label),
+                                widget.order.orderRecord?.statusArr.label,),
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
                           ),
@@ -79,29 +81,25 @@ class _OrderHistoryViewState extends State<OrderHistoryView> {
                   ],
                 ),
                 const SizedBox(height: 16),
-                // Product Information
+                // Product Info
                 Row(
                   children: [
-                    // Product Image
                     Container(
                       width: 80,
                       height: 80,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: Colors.grey[
-                              300]!, // Light stroke color (adjust as needed)
-                          width: 2, // Stroke width
+                          color: Colors.grey[300]!,
+                          width: 2,
                         ),
                         image: DecorationImage(
-                          image: NetworkImage(widget
-                              .order.imageUrl), // Replace with actual image URL
+                          image: NetworkImage(widget.order.imageUrl),
                           fit: BoxFit.cover,
                         ),
                       ),
                     ),
                     const SizedBox(width: 16),
-                    // Product Details
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -127,16 +125,13 @@ class _OrderHistoryViewState extends State<OrderHistoryView> {
                 ),
                 const SizedBox(height: 16),
                 const Divider(),
-                // Buttons Section
+
+                // Buttons
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     ElevatedButton(
                       onPressed: () {
-                        /*setState(() {
-                        isOrderViewed = true; // Example state change
-                      });*/
-
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -146,13 +141,17 @@ class _OrderHistoryViewState extends State<OrderHistoryView> {
                             ),
                           ),
                         );
+                        setState(() {
+                          isOrderViewed = true;
+                        });
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor:
                             isOrderViewed ? Colors.grey : Colors.black,
                       ),
-                      child:
-                          Text(isOrderViewed ? 'Order Viewed' : 'View Order'),
+                      child: Text(isOrderViewed
+                          ? AppStrings.orderViewed.tr
+                          : AppStrings.viewOrder.tr,),
                     ),
                     ElevatedButton(
                       onPressed: () {
@@ -160,93 +159,60 @@ class _OrderHistoryViewState extends State<OrderHistoryView> {
                           context,
                           MaterialPageRoute(
                             builder: (context) => ProductDetailScreen(
-                                slug: widget.order.productSlug),
+                                slug: widget.order.productSlug,),
                           ),
                         );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.black,
                       ),
-                      child: const Text('View Product'),
+                      child: Text(AppStrings.viewProduct.tr),
                     ),
                   ],
                 ),
                 const SizedBox(height: 16),
+
                 // Review Section
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Column(
                       children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: Colors.grey[
-                                  300]!, // Light stroke color (adjust as needed)
-                              width: 2, // Stroke width
-                            ),
-                          ),
-                          child: CircleAvatar(
-                            radius: 24,
-                            backgroundColor: Colors.grey[200],
-                            child: ClipOval(
-                              child: Image.network(
-                                widget.order.orderRecord?.store.thumb ??
-                                    '', // Replace with your image URL
-                                fit: BoxFit
-                                    .cover, // Ensures the image covers the CircleAvatar area
-                                errorBuilder: (context, error, stackTrace) {
-                                  return const Icon(Icons.error,
-                                      size: 24,
-                                      color: Colors
-                                          .red); // Placeholder in case of error
-                                },
-                              ),
-                            ),
-                          ),
-                        ),
+                        _buildCircleAvatar(
+                            widget.order.orderRecord?.store.thumb ?? '',),
                         const SizedBox(height: 4),
-                        const Text('Review Seller'),
+                        Text(AppStrings.reviewSeller.tr),
                       ],
                     ),
                     Column(
                       children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: Colors.grey[
-                                  300]!, // Light stroke color (adjust as needed)
-                              width: 2, // Stroke width
-                            ),
-                          ),
-                          child: CircleAvatar(
-                            radius: 24,
-                            backgroundColor: Colors.grey[200],
-                            child: ClipOval(
-                              child: Image.network(
-                                widget.order.imageThumb ??
-                                    '', // Replace with your image URL
-                                fit: BoxFit
-                                    .cover, // Ensures the image covers the CircleAvatar area
-                                errorBuilder: (context, error, stackTrace) {
-                                  return const Icon(Icons.error,
-                                      size: 24,
-                                      color: Colors
-                                          .red); // Placeholder in case of error
-                                },
-                              ),
-                            ),
-                          ),
-                        ),
+                        _buildCircleAvatar(widget.order.imageThumb ?? ''),
                         const SizedBox(height: 4),
-                        const Text('Review Product'),
+                        Text(AppStrings.reviewProduct.tr),
                       ],
                     ),
                   ],
                 ),
               ],
+            ),
+          ),
+        ),
+      );
+
+  Widget _buildCircleAvatar(String imageUrl) => Container(
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(color: Colors.grey[300]!, width: 2),
+        ),
+        child: CircleAvatar(
+          radius: 24,
+          backgroundColor: Colors.grey[200],
+          child: ClipOval(
+            child: Image.network(
+              imageUrl,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) =>
+                  const Icon(Icons.error, size: 24, color: Colors.red),
             ),
           ),
         ),

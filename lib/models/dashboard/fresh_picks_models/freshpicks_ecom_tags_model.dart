@@ -30,7 +30,7 @@ class Data {
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
         pagination: PaginationEComTag.fromJson(
-            json['pagination'] as Map<String, dynamic>),
+            json['pagination'] as Map<String, dynamic>,),
         records: (json['records'] as List<dynamic>)
             .map((item) => Record.fromJson(item as Map<String, dynamic>))
             .toList(),

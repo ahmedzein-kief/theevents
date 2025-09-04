@@ -88,7 +88,7 @@ class CustomIconContainer extends StatelessWidget {
                   color: isBackgroundColored
                       ? Colors.white
                       : Theme.of(context).colorScheme.onPrimary,
-                  size: 16), // Suffix Icon
+                  size: 16,), // Suffix Icon
           ],
         ),
       ),

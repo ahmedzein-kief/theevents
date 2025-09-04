@@ -1,4 +1,4 @@
-import 'dart:convert';
+import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
@@ -23,8 +23,7 @@ class OrderDataProvider with ChangeNotifier {
 
   OrderHistoryModel? get orderHistoryModel => _orderHistoryModel;
 
-  OrderHistoryModel? get completedOrderHistoryModel =>
-      _completedOrderHistoryModel;
+  OrderHistoryModel? get completedOrderHistoryModel => _completedOrderHistoryModel;
 
   OrderDetailModel? _orderDetailModel;
 
@@ -44,13 +43,12 @@ class OrderDataProvider with ChangeNotifier {
     final token = await SecurePreferencesUtil.getToken();
     var url = '';
     if (isPending) {
-      url =
-          '${ApiEndpoints.customerOrders}?per-page=10&page=1&only-pending=true';
+      url = '${ApiEndpoints.customerOrders}?per-page=10&page=1&only-pending=true';
     } else {
       url = '${ApiEndpoints.customerOrders}?per-page=10&page=1';
     }
 
-    final headers = {'Authorization': 'Bearer $token'};
+    final headers = {'Authorization': token ?? ''};
 
     notifyListeners();
     try {
@@ -60,12 +58,14 @@ class OrderDataProvider with ChangeNotifier {
         context: context,
       );
       if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
+        final jsonData = response.data;
         if (isPending) {
           _orderHistoryModel = OrderHistoryModel.fromJson(jsonData);
         } else {
           _completedOrderHistoryModel = OrderHistoryModel.fromJson(jsonData);
         }
+
+        log('getOrders jsonData: $jsonData');
         _isLoading = false;
         notifyListeners();
       } else {
@@ -89,7 +89,7 @@ class OrderDataProvider with ChangeNotifier {
     final token = await SecurePreferencesUtil.getToken();
     final url = '${ApiEndpoints.customerOrdersView}/$orderID';
 
-    final headers = {'Authorization': 'Bearer $token'};
+    final headers = {'Authorization': token ?? ''};
 
     notifyListeners();
     try {
@@ -99,7 +99,7 @@ class OrderDataProvider with ChangeNotifier {
         context: context,
       );
       if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
+        final jsonData = response.data;
         _orderDetailModel = OrderDetailModel.fromJson(jsonData);
         _isLoading = false;
         notifyListeners();
@@ -123,7 +123,7 @@ class OrderDataProvider with ChangeNotifier {
     final token = await SecurePreferencesUtil.getToken();
     final url = '${ApiEndpoints.customerOrdersCancel}/$orderID';
 
-    final headers = {'Authorization': 'Bearer $token'};
+    final headers = {'Authorization': token ?? ''};
 
     notifyListeners();
     try {
@@ -150,14 +150,17 @@ class OrderDataProvider with ChangeNotifier {
     }
   }
 
-  Future<CommonDataResponse?> uploadProof(BuildContext context, String filePath,
-      String fileName, String orderId) async {
+  Future<CommonDataResponse?> uploadProof(
+    BuildContext context,
+    String filePath,
+    String fileName,
+    String orderId,
+  ) async {
     _isLoading = true;
     final token = await SecurePreferencesUtil.getToken();
-    final url =
-        '${ApiEndpoints.customerOrders}/$orderId/${ApiEndpoints.uploadProof}';
+    final url = '${ApiEndpoints.customerOrders}/$orderId/${ApiEndpoints.uploadProof}';
 
-    final headers = {'Authorization': 'Bearer $token'};
+    final headers = {'Authorization': token ?? ''};
 
     notifyListeners();
 
@@ -201,10 +204,9 @@ class OrderDataProvider with ChangeNotifier {
   Future<String?> downloadProof(BuildContext context, String orderId) async {
     _isLoading = true;
     final token = await SecurePreferencesUtil.getToken();
-    final url =
-        '${ApiEndpoints.customerOrders}/$orderId/${ApiEndpoints.downloadProof}';
+    final url = '${ApiEndpoints.customerOrders}/$orderId/${ApiEndpoints.downloadProof}';
 
-    final headers = {'Authorization': 'Bearer $token'};
+    final headers = {'Authorization': token ?? ''};
 
     notifyListeners();
     try {
@@ -216,7 +218,7 @@ class OrderDataProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         _isLoading = false;
         notifyListeners();
-        return response.body;
+        return response.data;
       } else {
         _isLoading = false;
         notifyListeners();
@@ -236,7 +238,7 @@ class OrderDataProvider with ChangeNotifier {
     final token = await SecurePreferencesUtil.getToken();
     final url = '${ApiEndpoints.customerOrdersPrint}/$orderID';
 
-    final headers = {'Authorization': 'Bearer $token'};
+    final headers = {'Authorization': token ?? ''};
 
     notifyListeners();
     try {
@@ -248,7 +250,7 @@ class OrderDataProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         _isLoading = false;
         notifyListeners();
-        return response.body;
+        return response.data;
       } else {
         _isLoading = false;
         notifyListeners();

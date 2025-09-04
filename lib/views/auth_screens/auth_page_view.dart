@@ -117,6 +117,7 @@
 //   }
 // }
 
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/constants/app_strings.dart';
@@ -126,7 +127,9 @@ import 'signup_screen.dart';
 
 class AuthScreen extends StatelessWidget {
   AuthScreen({super.key, this.initialIndex = 0});
+
   int initialIndex;
+
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.sizeOf(context).width;
@@ -147,21 +150,21 @@ class AuthScreen extends StatelessWidget {
                     padding: EdgeInsets.only(
                         top: screenHeight * 0.099,
                         left: screenWidth * 0.0,
-                        right: screenWidth * 0.0),
+                        right: screenWidth * 0.0,),
                     child: TabBar(
                       // indicatorColor: AppColors.peachyPink, // Tab indicator color
                       labelColor: Theme.of(context).colorScheme.onPrimary,
                       unselectedLabelColor: Colors.grey,
                       labelStyle: const TextStyle(
-                          fontSize: 22, fontWeight: FontWeight.w700),
+                          fontSize: 22, fontWeight: FontWeight.w700,),
                       dividerColor: Colors.transparent,
                       indicator: const BoxDecoration(
                           border: Border(
                               bottom: BorderSide(
-                                  color: AppColors.peachyPink, width: 2.0))),
-                      tabs: const [
-                        Tab(text: AppStrings.signIn),
-                        Tab(text: AppStrings.signUp),
+                                  color: AppColors.peachyPink, width: 2.0,),),),
+                      tabs: [
+                        Tab(text: AppStrings.signIn.tr),
+                        Tab(text: AppStrings.signUp.tr),
                       ],
                     ),
                   ),
@@ -183,13 +186,13 @@ class AuthScreen extends StatelessWidget {
                 right: screenWidth * 0.05,
                 child: GestureDetector(
                   onTap: () => Navigator.pop(context),
-                  child: const Row(
+                  child: Row(
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Icon(Icons.arrow_back_ios_new_rounded),
-                      Text('Back')
+                      const Icon(Icons.arrow_back_ios_new_rounded),
+                      Text(AppStrings.back.tr),
                     ],
                   ),
                 ),

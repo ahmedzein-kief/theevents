@@ -43,7 +43,7 @@ class VendorCreateUpdateVariationViewModel with ChangeNotifier {
   Future<bool> vendorCreateProductVariation(
       {required BuildContext context,
       required String productID,
-      required ProductPostDataModel productPostDataModel}) async {
+      required ProductPostDataModel productPostDataModel,}) async {
     try {
       setLoading(true);
       _setVendorCreateVariationApiResponse = ApiResponse.loading();
@@ -72,7 +72,7 @@ class VendorCreateUpdateVariationViewModel with ChangeNotifier {
       _setVendorCreateVariationApiResponse =
           ApiResponse.error(error.toString());
       AlertServices.showErrorSnackBar(
-          message: error.toString(), context: context);
+          message: error.toString(), context: context,);
       setLoading(false);
       return false;
     }
@@ -127,7 +127,7 @@ class VendorCreateUpdateVariationViewModel with ChangeNotifier {
       _setVendorUpdateVariationApiResponse =
           ApiResponse.error(error.toString());
       AlertServices.showErrorSnackBar(
-          message: error.toString(), context: context);
+          message: error.toString(), context: context,);
       setLoading(false);
       return false;
     }

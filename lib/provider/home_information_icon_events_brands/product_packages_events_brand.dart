@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:event_app/models/product_packages_models/product_filters_model.dart';
 import 'package:event_app/provider/api_response_handler.dart';
@@ -73,7 +72,7 @@ class EventsBrandProductProvider extends ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> jsonResponse = json.decode(response.body);
+        final Map<String, dynamic> jsonResponse = response.data;
         final TopBrandsProducts apiResponse =
             TopBrandsProducts.fromJson(jsonResponse);
 
@@ -157,7 +156,7 @@ class EventsBrandProductProvider extends ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> jsonResponse = json.decode(response.body);
+        final Map<String, dynamic> jsonResponse = response.data;
         final TopBrandsProducts apiResponse =
             TopBrandsProducts.fromJson(jsonResponse);
 
@@ -192,6 +191,7 @@ class TopBrandsProducts {
     data = json['data'] != null ? Data.fromJson(json['data']) : null;
     message = json['message'];
   }
+
   bool? error;
   Data? data;
   String? message;
@@ -225,6 +225,7 @@ class Data {
         ? ProductFiltersModel.fromJson(json['filters'])
         : null;
   }
+
   Parent? parent;
   BrandsPagination? pagination;
   List<ProductRecords>? records;
@@ -257,7 +258,7 @@ class Parent {
       this.coverImage,
       this.description,
       this.website,
-      this.slug});
+      this.slug,});
 
   Parent.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -269,6 +270,7 @@ class Parent {
     website = json['website'];
     slug = json['slug'];
   }
+
   int? id;
   String? name;
   String? image;
@@ -301,6 +303,7 @@ class BrandsPagination {
     currentPage = json['current_page'];
     perPage = json['per_page'];
   }
+
   int? total;
   int? lastPage;
   int? currentPage;
@@ -361,6 +364,7 @@ class ProductRecords {
       });
     }
   }
+
   dynamic id;
   String? name;
   String? slug;
@@ -419,6 +423,7 @@ class Review {
     rating = json['rating']?.toDouble();
     reviewsCount = json['reviews_count'];
   }
+
   double? rating;
   int? reviewsCount;
 
@@ -435,7 +440,7 @@ class Prices {
       {this.frontSalePrice,
       this.price,
       this.frontSalePriceWithTaxes,
-      this.priceWithTaxes});
+      this.priceWithTaxes,});
 
   Prices.fromJson(Map<String, dynamic> json) {
     frontSalePrice = json['front_sale_price'];
@@ -443,6 +448,7 @@ class Prices {
     frontSalePriceWithTaxes = json['front_sale_price_with_taxes'];
     priceWithTaxes = json['price_with_taxes'];
   }
+
   dynamic frontSalePrice;
   dynamic price;
   dynamic frontSalePriceWithTaxes;
@@ -465,6 +471,7 @@ class Store {
     name = json['name'];
     slug = json['slug'];
   }
+
   String? name;
   String? slug;
 
@@ -487,7 +494,7 @@ class Filters {
       this.brandRequest,
       this.tagRequest,
       this.priceRange,
-      this.rating});
+      this.rating,});
 
   Filters.fromJson(Map<String, dynamic> json) {
     if (json['categories'] != null) {
@@ -524,6 +531,7 @@ class Filters {
         : null;
     rating = json['rating'] != null ? List<String>.from(json['rating']) : null;
   }
+
   List<Categories>? categories;
   List<Brands>? brands;
   List<Tags>? tags;
@@ -566,6 +574,7 @@ class Categories {
     slug = json['slug'];
     image = json['image'];
   }
+
   int? id;
   String? name;
   String? slug;
@@ -589,6 +598,7 @@ class Brands {
     name = json['name'];
     slug = json['slug'];
   }
+
   int? id;
   String? name;
   String? slug;
@@ -610,6 +620,7 @@ class Tags {
     name = json['name'];
     slug = json['slug'];
   }
+
   int? id;
   String? name;
   String? slug;

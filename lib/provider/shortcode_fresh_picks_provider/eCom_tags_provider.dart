@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/models/product_packages_models/product_filters_model.dart';
@@ -33,7 +32,7 @@ class EComTagProvider with ChangeNotifier {
         context: context,
       );
       if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
+        final jsonData = response.data;
         _ecomTag = EcomTag.fromJson(jsonData['data']);
       } else {}
     } finally {
@@ -104,10 +103,10 @@ class EComTagProvider with ChangeNotifier {
         context: context,
       );
       if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
+        final jsonData = response.data;
         // final jsonResponse = NewProductsModels.fromJson(jsonData).data?.records ?? [];
 
-        final Map<String, dynamic> jsonResponse = json.decode(response.body);
+        final Map<String, dynamic> jsonResponse = response.data;
         final EComProductsModels apiResponse =
             EComProductsModels.fromJson(jsonResponse);
 
@@ -147,7 +146,7 @@ class EComTagProvider with ChangeNotifier {
     _isPackagesLoading = true;
     notifyListeners();
 
-    // final url = Uri.parse('https://api.staging.theevents.ae/api/v1/tag-packages/$slug?per-page=$perPage&page=$page&sort-by=$sortBy');
+    // final url = Uri.parse('https://apistaging.theevents.ae/api/v1/tag-packages/$slug?per-page=$perPage&page=$page&sort-by=$sortBy');
     final url =
         '${ApiEndpoints.packagesECom}$slug?per-page=$perPage&page=$page&sort-by=$sortBy';
 
@@ -157,10 +156,10 @@ class EComTagProvider with ChangeNotifier {
         context: context,
       );
       if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
+        final jsonData = response.data;
         // final jsonResponse = NewProductsModels.fromJson(jsonData).data?.records ?? [];
 
-        final Map<String, dynamic> jsonResponse = json.decode(response.body);
+        final Map<String, dynamic> jsonResponse = response.data;
         final EComProductsModels apiResponse =
             EComProductsModels.fromJson(jsonResponse);
 

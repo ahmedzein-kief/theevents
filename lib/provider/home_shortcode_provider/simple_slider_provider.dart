@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/provider/api_response_handler.dart';
 import 'package:flutter/material.dart';
@@ -19,11 +17,14 @@ class TopSliderProvider with ChangeNotifier {
 
   String? get errorMessage => _errorMessage;
 
+  // [log] TopSliderProvider fetchSliders home-slider
+  // [log] BottomSliderProvider fetchSliders home-brand-slider
+
   Future<void> fetchSliders(BuildContext context, {required data}) async {
     _isLoading = true;
     notifyListeners();
 
-    // const baseUrl = 'https://api.staging.theevents.ae/api/v1/simple-slider'; // Replace with your API endpoint
+    // const baseUrl = 'https://apistaging.theevents.ae/api/v1/simple-slider'; // Replace with your API endpoint
     const baseUrl = ApiEndpoints.homeSlider; // Replace with your API endpoint
     final url =
         '$baseUrl?key=${data['attributes']['key']}'; // Add query parameters here
@@ -35,7 +36,7 @@ class TopSliderProvider with ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
+        final data = response.data;
         _homeBanner = HomeBannerModels.fromJson(data);
         _errorMessage = null; // Clear any previous error message
       } else {
@@ -67,7 +68,7 @@ class BottomSliderProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    // const baseUrl = 'https://api.staging.theevents.ae/api/v1/simple-slider'; // Replace with your API endpoint
+    // const baseUrl = 'https://apistaging.theevents.ae/api/v1/simple-slider'; // Replace with your API endpoint
     const baseUrl = ApiEndpoints.homeSlider; // Replace with your API endpoint
     final url =
         '$baseUrl?key=${data['attributes']['key']}'; // Add query parameters here
@@ -79,7 +80,7 @@ class BottomSliderProvider with ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
+        final data = response.data;
         _homeBanner = HomeBannerModels.fromJson(data);
         _errorMessage = null; // Clear any previous error message
       } else {

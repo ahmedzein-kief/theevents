@@ -1,5 +1,5 @@
-import 'dart:developer';
-
+import 'package:event_app/core/constants/app_strings.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../../core/styles/custom_text_styles.dart';
@@ -8,6 +8,7 @@ import '../home_screens_shortcode/shortcode_information_icons/gift_card/payments
 
 class ShippingAddressScreen extends StatefulWidget {
   const ShippingAddressScreen({super.key, required this.onNext});
+
   final void Function(Map<String, String> paymentMethod) onNext;
 
   @override
@@ -31,17 +32,21 @@ class _ShippingAddressScreenState extends State<ShippingAddressScreen> {
                 children: [
                   Padding(
                     padding: EdgeInsets.only(
-                        top: screenHeight * 0.08,
-                        right: screenWidth * 0.02,
-                        left: screenHeight * 0.02),
+                      top: screenHeight * 0.08,
+                      right: screenWidth * 0.02,
+                      left: screenHeight * 0.02,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Choose a Payment Method',
-                            style: chooseStyle(context)),
                         Text(
-                            'You will not be charged until you review this order on the next page.',
-                            style: description(context)),
+                          AppStrings.choosePaymentMethod.tr,
+                          style: chooseStyle(context),
+                        ),
+                        Text(
+                          AppStrings.shippingAddressDescription.tr,
+                          style: description(context),
+                        ),
                         SizedBox(height: screenHeight * 0.04),
                         PaymentMethods(
                           onSelectionChanged: (selectedMethod) {
@@ -61,11 +66,10 @@ class _ShippingAddressScreenState extends State<ShippingAddressScreen> {
             padding: EdgeInsets.symmetric(vertical: screenHeight * 0.01),
             child: AppCustomButton(
               onPressed: () {
-                log('paymentMethod: $paymentMethod');
                 widget.onNext(paymentMethod);
               },
               icon: CupertinoIcons.forward,
-              title: 'Continue To Payment',
+              title: AppStrings.continueToPayment.tr,
             ),
           ),
         ],

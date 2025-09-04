@@ -32,7 +32,7 @@ class VendorGetPackageGeneralSettingsViewModel with ChangeNotifier {
       get generalSettingsApiResponse => _generalSettingsApiResponse;
 
   set setPackageGeneralSettingsApiResponse(
-      ApiResponse<VendorGetPackageGeneralSettingsModel> response) {
+      ApiResponse<VendorGetPackageGeneralSettingsModel> response,) {
     _generalSettingsApiResponse = response;
     notifyListeners();
   }

@@ -8,7 +8,7 @@ class GridItemsHomeSeeAll extends StatelessWidget {
       required this.imageUrl,
       required this.name,
       required this.onTap,
-      required this.textStyle});
+      required this.textStyle,});
   final String imageUrl;
   final String name;
   final VoidCallback onTap;

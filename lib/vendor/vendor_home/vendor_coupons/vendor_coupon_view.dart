@@ -1,3 +1,4 @@
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/helper/mixins/media_query_mixin.dart';
 import 'package:event_app/core/styles/app_sizes.dart';
 import 'package:event_app/data/vendor/data/response/apis_status.dart';
@@ -10,6 +11,7 @@ import 'package:event_app/vendor/view_models/vendor_coupons/vendor_delete_coupon
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/constants/vendor_app_strings.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/styles/app_colors.dart';
 import '../../../models/vendor_models/vendor_coupons_models/vendor_get_coupons_model.dart';
@@ -26,8 +28,7 @@ class VendorCouponView extends StatefulWidget {
   State<VendorCouponView> createState() => _VendorCouponViewState();
 }
 
-class _VendorCouponViewState extends State<VendorCouponView>
-    with MediaQueryMixin {
+class _VendorCouponViewState extends State<VendorCouponView> with MediaQueryMixin {
   /// To show modal progress hud
   bool _isProcessing = false;
 
@@ -45,8 +46,7 @@ class _VendorCouponViewState extends State<VendorCouponView>
 
   Future _onRefresh() async {
     try {
-      final provider =
-          Provider.of<VendorGetCouponsViewModel>(context, listen: false);
+      final provider = Provider.of<VendorGetCouponsViewModel>(context, listen: false);
 
       /// clear list on refresh
       provider.clearList();
@@ -58,10 +58,8 @@ class _VendorCouponViewState extends State<VendorCouponView>
 
   Future<void> _loadMoreData() async {
     // Load more data here
-    if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent) {
-      final provider =
-          Provider.of<VendorGetCouponsViewModel>(context, listen: false);
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent) {
+      final provider = Provider.of<VendorGetCouponsViewModel>(context, listen: false);
       if (provider.apiResponse.status != ApiStatus.LOADING) {
         await provider.vendorGetCoupons(search: _searchController.text);
       }
@@ -91,11 +89,15 @@ class _VendorCouponViewState extends State<VendorCouponView>
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        backgroundColor: AppColors.bgColor,
         body: Utils.modelProgressHud(
-            processing: _isProcessing,
-            child: Utils.pageRefreshIndicator(
-                onRefresh: _onRefresh, child: _buildUi(context))),
+          context: context,
+          processing: _isProcessing,
+          child: Utils.pageRefreshIndicator(
+            context: context,
+            onRefresh: _onRefresh,
+            child: _buildUi(context),
+          ),
+        ),
       );
 
   Widget _buildUi(BuildContext context) => Padding(
@@ -117,8 +119,9 @@ class _VendorCouponViewState extends State<VendorCouponView>
                   }
                   if (apiStatus == ApiStatus.ERROR) {
                     return ListView(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        children: [Utils.somethingWentWrong()]);
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      children: [Utils.somethingWentWrong()],
+                    );
                   }
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -128,10 +131,8 @@ class _VendorCouponViewState extends State<VendorCouponView>
                       VendorDataListBuilder(
                         scrollController: _scrollController,
                         listLength: provider.list.length,
-                        loadingMoreData:
-                            provider.apiResponse.status == ApiStatus.LOADING,
-                        contentBuilder: (context) =>
-                            _buildRecordsList(provider: provider),
+                        loadingMoreData: provider.apiResponse.status == ApiStatus.LOADING,
+                        contentBuilder: (context) => _buildRecordsList(provider: provider),
                       ),
                     ],
                   );
@@ -142,16 +143,13 @@ class _VendorCouponViewState extends State<VendorCouponView>
         ),
       );
 
-  Widget _buildRecordsList({required VendorGetCouponsViewModel provider}) =>
-      ListView.builder(
+  Widget _buildRecordsList({required VendorGetCouponsViewModel provider}) => ListView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         itemCount: provider.list.length,
         itemBuilder: (context, index) {
           final coupon = provider.list[index];
-          final totalQuantity = coupon.quantity != null
-              ? "/${coupon.quantity?.toString() ?? ''}"
-              : '';
+          final totalQuantity = coupon.quantity != null ? "/${coupon.quantity?.toString() ?? ''}" : '';
           return Column(
             children: [
               RecordListTile(
@@ -161,16 +159,14 @@ class _VendorCouponViewState extends State<VendorCouponView>
                   style: dataRowTextStyle(),
                 ),
                 status: '${coupon.totalUsed?.toString()}$totalQuantity',
-                tileColor: coupon.isExpired ?? false
-                    ? AppColors.lavenderHaze
-                    : Colors.white,
+                tileColor: coupon.isExpired ?? false ? AppColors.lavenderHaze : Colors.white,
                 statusTextStyle: const TextStyle(fontSize: 13),
                 title: coupon.code.toString(),
-                titleTextStyle: dataRowTextStyle()
-                    .copyWith(fontSize: 15, color: AppColors.lightCoral),
+                titleTextStyle: dataRowTextStyle().copyWith(fontSize: 15, color: AppColors.lightCoral),
                 subtitle: CouponViewUtils.generateCouponHelperText(
-                    typeOption: coupon.typeOption.toString(),
-                    value: double.tryParse(coupon.value.toString())),
+                  typeOption: coupon.typeOption.toString(),
+                  value: double.tryParse(coupon.value.toString()),
+                ),
                 actionCell: VendorActionCell(
                   mainAxisSize: MainAxisSize.min,
                   isDeleting: coupon.isDeleting,
@@ -200,12 +196,10 @@ class _VendorCouponViewState extends State<VendorCouponView>
                     }
                   },
                   textEditingController: _searchController,
-                  onChanged: (value) =>
-                      debouncedSearch<VendorGetCouponsViewModel>(
+                  onChanged: (value) => debouncedSearch<VendorGetCouponsViewModel>(
                     context: context,
                     value: value,
-                    providerGetter: (context) =>
-                        context.read<VendorGetCouponsViewModel>(),
+                    providerGetter: (context) => context.read<VendorGetCouponsViewModel>(),
                     refreshFunction: _onRefresh,
                   ),
                 ),
@@ -213,8 +207,7 @@ class _VendorCouponViewState extends State<VendorCouponView>
               kExtraSmallSpace,
               VendorToolbarWidgets.vendorCreateButton(
                 onTap: () {
-                  Navigator.of(context)
-                      .pushNamed(AppRoutes.vendorCreateCouponView);
+                  Navigator.of(context).pushNamed(AppRoutes.vendorCreateCouponView);
                 },
                 isLoading: false,
               ),
@@ -243,11 +236,11 @@ class _VendorCouponViewState extends State<VendorCouponView>
       );
 
   /// on row tap show full description
-  void _onRowTap(
-      {required BuildContext context, required CouponRecords rowData}) {
-    final totalQuantity = rowData.quantity != null
-        ? "/${rowData.quantity?.toString() ?? ''}"
-        : '';
+  void _onRowTap({
+    required BuildContext context,
+    required CouponRecords rowData,
+  }) {
+    final totalQuantity = rowData.quantity != null ? "/${rowData.quantity?.toString() ?? ''}" : '';
 
     /// showing through bottom sheet
     showModalBottomSheet(
@@ -256,29 +249,44 @@ class _VendorCouponViewState extends State<VendorCouponView>
         onClosing: () {},
         builder: (context) => Container(
           decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(kCardRadius)),
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(kCardRadius),
+          ),
           child: SafeArea(
             child: Padding(
               padding: EdgeInsets.symmetric(
-                  vertical: kPadding, horizontal: kSmallPadding),
+                vertical: kPadding,
+                horizontal: kSmallPadding,
+              ),
               child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    buildRow('ID', rowData.id?.toString()),
-                    buildRow('Coupon Code', rowData.code?.toString()),
-                    buildRow('Coupon Name', rowData.title?.toString()),
-                    buildRow('Discount', rowData.value?.toString()),
-                    buildRow('Start Date', rowData.startDate?.toString()),
-                    buildRow('End Date', rowData.endDate?.toString()),
+                    buildRow(VendorAppStrings.id.tr, rowData.id?.toString()),
+                    buildRow(
+                      VendorAppStrings.couponCode.tr,
+                      rowData.code?.toString(),
+                    ),
+                    buildRow(
+                      VendorAppStrings.couponName.tr,
+                      rowData.title?.toString(),
+                    ),
+                    buildRow(
+                      VendorAppStrings.discount.tr,
+                      rowData.value?.toString(),
+                    ),
+                    buildRow(
+                      VendorAppStrings.startDate.tr,
+                      rowData.startDate?.toString(),
+                    ),
+                    buildRow(
+                      VendorAppStrings.endDate.tr,
+                      rowData.endDate?.toString(),
+                    ),
                     buildStatusRow(
                       label: 'Status',
-                      buttonText:
-                          rowData.isExpired ?? false ? 'Expired' : 'Valid',
-                      color: rowData.isExpired ?? false
-                          ? AppColors.pumpkinOrange
-                          : AppColors.success,
+                      buttonText: rowData.isExpired ?? false ? 'Expired' : 'Valid',
+                      color: rowData.isExpired ?? false ? AppColors.pumpkinOrange : AppColors.success,
                     ),
                   ],
                 ),
@@ -296,10 +304,8 @@ class _VendorCouponViewState extends State<VendorCouponView>
       context: context,
       onDelete: () async {
         try {
-          final vendorCouponsProvider =
-              context.read<VendorGetCouponsViewModel>();
-          final deleteCouponProvider =
-              context.read<VendorDeleteCouponViewModel>();
+          final vendorCouponsProvider = context.read<VendorGetCouponsViewModel>();
+          final deleteCouponProvider = context.read<VendorDeleteCouponViewModel>();
 
           // Indicate that deletion is in progress
           _setDeletionProcessing(rowData: rowData, processing: true);
@@ -311,8 +317,7 @@ class _VendorCouponViewState extends State<VendorCouponView>
             couponId: rowData.id.toString(),
           );
 
-          if (isDeleted &&
-              deleteCouponProvider.apiResponse.status == ApiStatus.COMPLETED) {
+          if (isDeleted && deleteCouponProvider.apiResponse.status == ApiStatus.COMPLETED) {
             // Remove the deleted item from the provider list
             vendorCouponsProvider.removeElementFromList(id: rowData.id);
           }

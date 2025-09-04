@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:event_app/provider/api_response_handler.dart';
 import 'package:flutter/material.dart';
 
@@ -13,8 +11,8 @@ class FeaturedBrandsItemsProvider with ChangeNotifier {
   bool hasError = false;
 
   Future<HomeBrandsTypesModels?> fetchHomeBrands(
-      List<int> ids, BuildContext context) async {
-    const String url = 'https://api.staging.theevents.ae/api/v1/ecom-tags';
+      List<int> ids, BuildContext context,) async {
+    const String url = 'https://apistaging.theevents.ae/api/v1/ecom-tags';
     final queryParameters = {
       'ids': ids.map((id) => id.toString()).join(','), // Join IDs with a comma
       // Add any other parameters needed, for example:
@@ -32,8 +30,7 @@ class FeaturedBrandsItemsProvider with ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        homeBrandsTypes =
-            HomeBrandsTypesModels.fromJson(json.decode(response.body));
+        homeBrandsTypes = HomeBrandsTypesModels.fromJson(response.data);
         isLoading = false;
         hasError = false;
         notifyListeners();
@@ -43,7 +40,7 @@ class FeaturedBrandsItemsProvider with ChangeNotifier {
         hasError = true;
         notifyListeners();
         throw Exception(
-            'Failed to load data with status code: ${response.statusCode}');
+            'Failed to load data with status code: ${response.statusCode}',);
       }
     } catch (e) {
       isLoading = false;

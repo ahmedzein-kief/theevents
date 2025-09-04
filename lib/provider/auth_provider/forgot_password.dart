@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/provider/api_response_handler.dart';
@@ -30,7 +29,7 @@ class ForgotPasswordProvider with ChangeNotifier {
       final response = await _apiResponseHandler
           .postRequest(url, headers: headers, body: {'email': email});
 
-      final responseData = json.decode(response.body);
+      final responseData = response.data;
       if (response.statusCode == 200) {
         final ForgotPasswordResponse forgotPasswordResponse =
             ForgotPasswordResponse.fromJson(responseData);

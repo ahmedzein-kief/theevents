@@ -1,41 +1,45 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:logger/logger.dart';
 
+import '../../../../../core/helper/di/locator.dart';
 import '../../app_exceptions.dart';
 import 'DioBaseApiServices.dart';
 
 class DioNetworkApiServices extends DioBaseApiServices {
-  DioNetworkApiServices() {
-    // Initialize Logger
-    _dio.interceptors.add(
-      InterceptorsWrapper(
-        onRequest: (options, handler) {
-          logger.i('Request: ${options.method} ${options.uri}');
-          logger.i('Request Headers: ${options.headers}');
-          logger.d('Request Data: ${options.data}');
-          return handler.next(options);
-        },
-        onResponse: (response, handler) {
-          logger.d('Response Status: ${response.statusCode}');
-          logger.d('Response Data: ${response.data}');
-          return handler.next(response);
-        },
-        onError: (DioException e, handler) {
-          logger.e('Error: ${e.message}');
-          if (e.response != null) {
-            logger.e('Error Response Status: ${e.response?.statusCode}');
-            logger.e('Error Response Data: ${e.response?.data}');
-          }
-          return handler.next(e);
-        },
-      ),
-    );
-  }
-  final Dio _dio = Dio();
+  // DioNetworkApiServices() {
+  //   // Initialize Logger
+  //   _dio.interceptors.add(
+  //     InterceptorsWrapper(
+  //       onRequest: (options, handler) {
+  //         logger.i('Request: ${options.method} ${options.uri}');
+  //         logger.i('Request Headers: ${options.headers}');
+  //         logger.d('Request Data: ${options.data}');
+  //         return handler.next(options);
+  //       },
+  //       onResponse: (response, handler) {
+  //         logger.d('Response Status: ${response.statusCode}');
+  //         logger.d('Response Data: ${response.data}');
+  //         return handler.next(response);
+  //       },
+  //       onError: (DioException e, handler) {
+  //         logger.e('Error: ${e.message}');
+  //         if (e.response != null) {
+  //           logger.e('Error Response Status: ${e.response?.statusCode}');
+  //           logger.e('Error Response Data: ${e.response?.data}');
+  //         }
+  //         return handler.next(e);
+  //       },
+  //     ),
+  //   );
+  // }
 
-  final logger = Logger();
+  // final Dio _dio = Dio();
+
+  // final logger = Logger();
+
+  DioNetworkApiServices({Dio? dio}) : _dio = dio ?? locator.get<Dio>();
+  final Dio _dio;
 
   @override
   Future<dynamic> dioGetApiService({
@@ -185,7 +189,7 @@ class DioNetworkApiServices extends DioBaseApiServices {
         throw InternalServerErrorException(_errorMessage(response));
       default:
         throw FetchDataException(
-            'Error occurred while communicating with server with status code ${response.statusCode}');
+            'Error occurred while communicating with server with status code ${response.statusCode}',);
     }
   }
 
@@ -205,7 +209,7 @@ class DioNetworkApiServices extends DioBaseApiServices {
             return ValidationException(_errorMessage(error.response!));
           }
           return FetchDataException(
-              'Received invalid status code: ${error.response?.statusCode}');
+              'Received invalid status code: ${error.response?.statusCode}',);
         case DioExceptionType.cancel:
           return FetchDataException('Request cancelled');
         case DioExceptionType.badCertificate:

@@ -23,7 +23,7 @@ class ProductOptionsModel {
         optionType: json['option_type'],
         productId: json['product_id'],
         values: List<OptionValuesModel>.from(
-            json['values'].map((x) => OptionValuesModel.fromJson(x))),
+            json['values'].map((x) => OptionValuesModel.fromJson(x)),),
         name: json['name'],
         id: json['id'],
         required: json['required'],

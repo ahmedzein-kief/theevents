@@ -1,13 +1,16 @@
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/provider/shortcode_fresh_picks_provider/eCom_Tags_brands_Provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/constants/app_strings.dart';
 import '../../../core/styles/app_colors.dart';
 import '../../../core/styles/custom_text_styles.dart';
 import '../shorcode_featured_brands/featured_brands_items_screen.dart';
 
 class EComTagsBrandsScreen extends StatefulWidget {
   const EComTagsBrandsScreen({super.key, required this.id});
+
   final dynamic id;
 
   @override
@@ -92,14 +95,14 @@ class _EComTagsBrandsScreenState extends State<EComTagsBrandsScreen> {
           if (provider.isMoreLoadingBrands) {
             return const Center(
                 child: CircularProgressIndicator(
-                    color: Colors.black, strokeWidth: 0.5));
+                    color: Colors.black, strokeWidth: 0.5,),);
           }
           return provider.records.isEmpty
               ? Padding(
                   padding: EdgeInsets.only(
                       left: screenWidth * 0.02,
                       right: screenWidth * 0.02,
-                      top: screenHeight * 0.02),
+                      top: screenHeight * 0.02,),
                   child: Container(
                     width: double.infinity,
                     decoration:
@@ -107,7 +110,7 @@ class _EComTagsBrandsScreenState extends State<EComTagsBrandsScreen> {
                     height: 50,
                     child: const Align(
                         alignment: Alignment.center,
-                        child: Text('No records found!')),
+                        child: Text('No records found!'),),
                   ),
                 )
               : SingleChildScrollView(
@@ -127,25 +130,30 @@ class _EComTagsBrandsScreenState extends State<EComTagsBrandsScreen> {
                           },
                           items: [
                             DropdownMenuItem(
-                                value: 'default_sorting',
-                                child: Text('Default Sorting',
-                                    style: sortingStyle(context))),
+                              value: 'default_sorting',
+                              child: Text(AppStrings.sortByDefault.tr,
+                                  style: sortingStyle(context),),
+                            ),
                             DropdownMenuItem(
-                                value: 'date_asc',
-                                child: Text('Oldest',
-                                    style: sortingStyle(context))),
+                              value: 'date_asc',
+                              child: Text(AppStrings.sortByOldest.tr,
+                                  style: sortingStyle(context),),
+                            ),
                             DropdownMenuItem(
-                                value: 'date_desc',
-                                child: Text('Newest',
-                                    style: sortingStyle(context))),
+                              value: 'date_desc',
+                              child: Text(AppStrings.sortByNewest.tr,
+                                  style: sortingStyle(context),),
+                            ),
                             DropdownMenuItem(
-                                value: 'name_asc',
-                                child: Text('Name: A-Z',
-                                    style: sortingStyle(context))),
+                              value: 'name_asc',
+                              child: Text(AppStrings.sortByNameAz.tr,
+                                  style: sortingStyle(context),),
+                            ),
                             DropdownMenuItem(
-                                value: 'name_desc',
-                                child: Text('Name: Z-A',
-                                    style: sortingStyle(context))),
+                              value: 'name_desc',
+                              child: Text(AppStrings.sortByNameZa.tr,
+                                  style: sortingStyle(context),),
+                            ),
                           ],
                         ),
                       ),
@@ -153,7 +161,7 @@ class _EComTagsBrandsScreenState extends State<EComTagsBrandsScreen> {
                         padding: EdgeInsets.only(
                             left: screenWidth * 0.02,
                             right: screenWidth * 0.02,
-                            top: screenHeight * 0.02),
+                            top: screenHeight * 0.02,),
                         child: GridView.builder(
                           key: ValueKey(_currentPage),
                           // Add this line
@@ -162,7 +170,7 @@ class _EComTagsBrandsScreenState extends State<EComTagsBrandsScreen> {
                                   crossAxisCount: 3,
                                   childAspectRatio: 0.7,
                                   mainAxisSpacing: 10,
-                                  crossAxisSpacing: 10),
+                                  crossAxisSpacing: 10,),
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
                           itemCount: provider.records.length +

@@ -15,7 +15,7 @@ class PermissionHandler {
       if ((await DeviceInfoPlugin().androidInfo).version.sdkInt >= 30) {
         final Map<Permission, PermissionStatus> status = await [
           Permission.camera,
-          Permission.manageExternalStorage
+          Permission.manageExternalStorage,
         ].request();
 
         if (status[Permission.camera] == PermissionStatus.granted &&
@@ -71,7 +71,7 @@ class PermissionHandler {
       builder: (context) => AlertDialog(
         title: const Text('Permission Required'),
         content: const Text(
-            'Please enable the required permissions in app settings.'),
+            'Please enable the required permissions in app settings.',),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -111,7 +111,7 @@ class PermissionHandler {
           'Permission Required',
           style: TextStyle(
               fontSize: 16,
-              fontWeight: FontWeight.bold), // Use your custom style method
+              fontWeight: FontWeight.bold,), // Use your custom style method
         ),
         actions: [
           GestureDetector(

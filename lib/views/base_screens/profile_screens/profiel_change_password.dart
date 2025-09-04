@@ -1,8 +1,10 @@
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/helper/validators/validator.dart';
 import 'package:event_app/core/services/shared_preferences_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/constants/app_strings.dart';
 import '../../../core/network/api_status/api_status.dart';
 import '../../../core/utils/custom_toast.dart';
 import '../../../core/widgets/custom_items_views/custom_add_to_cart_button.dart';
@@ -35,9 +37,9 @@ class ChangePasswordScreen extends StatelessWidget {
         child: Consumer<ChangePasswordProvider>(
           builder: (context, provider, _) => Column(
             children: [
-              const BackAppBarStyle(
+              BackAppBarStyle(
                 icon: Icons.arrow_back_ios,
-                text: 'My Account',
+                text: AppStrings.myAccount.tr,
               ),
               SizedBox(height: screenHeight * 0.04),
               Form(
@@ -49,26 +51,26 @@ class ChangePasswordScreen extends StatelessWidget {
                         CustomFieldProfileScreen(
                           isObscureText: true,
                           // Set this to true for password fields
-                          hintText: 'Enter Current Password',
+                          hintText: AppStrings.enterCurrentPassword.tr,
                           controller: _currentPasswordController,
                           focusNode: _currentPasswordFocusNode,
                           nextFocusNode: _changePasswordFocusNode,
                           formFieldValidator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Current Password cannot be empty.';
+                              return AppStrings.currentPasswordCannotBeEmpty.tr;
                             }
                             return null;
                           },
-                          labelText: 'Current Password',
+                          labelText: AppStrings.currentPassword.tr,
                         ),
                         CustomFieldProfileScreen(
                           isObscureText: true,
                           // Set this to true for password fields
-                          hintText: 'Enter Change Password',
+                          hintText: AppStrings.enterChangePassword.tr,
                           controller: _changePasswordController,
                           focusNode: _changePasswordFocusNode,
                           nextFocusNode: _reEnterPasswordFocusNode,
-                          labelText: 'Change Password',
+                          labelText: AppStrings.changePassword.tr,
                           formFieldValidator:
                               Validator.signUpPasswordValidation,
                         ),
@@ -76,17 +78,17 @@ class ChangePasswordScreen extends StatelessWidget {
                           isObscureText: true,
                           // Set this to true for password fields
                           keyboardType: TextInputType.visiblePassword,
-                          hintText: 'Enter Re-Enter Password',
+                          hintText: AppStrings.enterReEnterPassword.tr,
                           controller: _reEnterPasswordController,
                           focusNode: _reEnterPasswordFocusNode,
                           nextFocusNode: _reEnterPasswordFocusNode,
-                          labelText: 'Re-Enter Password',
+                          labelText: AppStrings.reEnterPassword.tr,
                           formFieldValidator:
                               Validator.signUpPasswordValidation,
                         ),
                         SizedBox(height: screenHeight * 0.04),
                         AppCustomButton(
-                          title: 'Update',
+                          title: AppStrings.update.tr,
                           isLoading: context
                                   .watch<ChangePasswordProvider>()
                                   .status ==
@@ -95,10 +97,10 @@ class ChangePasswordScreen extends StatelessWidget {
                           onPressed: () async {
                             if (_formKey.currentState?.validate() ?? false) {
                               await forChangePassword(
-                                  context); // Call the password change function
+                                  context,); // Call the password change function
                             } else {
                               CustomSnackbar.showError(
-                                  context, 'Please enter Fields');
+                                  context, AppStrings.pleaseEnterFields.tr,);
                             }
                           },
                         ),

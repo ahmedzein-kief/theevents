@@ -26,20 +26,20 @@ class ProductFiltersModel {
             : [],
         brands: json['brands'] != null
             ? List<FilterBrand>.from(
-                json['brands'].map((x) => FilterBrand.fromJson(x)))
+                json['brands'].map((x) => FilterBrand.fromJson(x)),)
             : [],
         maxPrice: json['max_price'] ?? 0,
         categoryId: json['category_id'] ?? 0,
         categories: json['categories'] != null
             ? List<ProductFiltersModelCategory>.from(json['categories']
-                .map((x) => ProductFiltersModelCategory.fromJson(x)))
+                .map((x) => ProductFiltersModelCategory.fromJson(x)),)
             : [],
         tags: json['tags'] != null
             ? List<Tag>.from(json['tags'].map((x) => Tag.fromJson(x)))
             : [],
         attributesSet: json['attributeSets'] != null
             ? List<AttributeSet>.from(
-                json['attributeSets'].map((x) => AttributeSet.fromJson(x)))
+                json['attributeSets'].map((x) => AttributeSet.fromJson(x)),)
             : [],
       );
 
@@ -227,7 +227,7 @@ class FilterBrand {
         id: json['id'],
         coverImage: json['cover_image'],
         categories: List<BrandCategory>.from(
-            json['categories'].map((x) => BrandCategory.fromJson(x))),
+            json['categories'].map((x) => BrandCategory.fromJson(x)),),
         isFeatured: json['is_featured'],
         status: Status.fromJson(json['status']),
         order: json['order'],
@@ -361,7 +361,7 @@ final referenceTypeValues = EnumValues(
     'Botble\\Ecommerce\\Models\\Brand':
         ReferenceType.BOTBLE_ECOMMERCE_MODELS_BRAND,
     'Botble\\Ecommerce\\Models\\ProductTag':
-        ReferenceType.BOTBLE_ECOMMERCE_MODELS_PRODUCT_TAG
+        ReferenceType.BOTBLE_ECOMMERCE_MODELS_PRODUCT_TAG,
   },
 );
 

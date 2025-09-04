@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/widgets/items_empty_view.dart';
 import 'package:event_app/views/base_screens/base_app_bar.dart';
 import 'package:event_app/views/product_detail_screens/product_detail_screen.dart';
@@ -11,7 +12,6 @@ import '../../../core/network/api_endpoints/api_end_point.dart';
 import '../../../core/services/shared_preferences_helper.dart';
 import '../../../core/styles/app_colors.dart';
 import '../../../core/styles/custom_text_styles.dart';
-import '../../../core/widgets/custom_app_views/search_bar.dart';
 import '../../../core/widgets/custom_items_views/custom_packages_view.dart';
 import '../../../core/widgets/custom_items_views/product_card.dart';
 import '../../../provider/cart_item_provider/cart_item_provider.dart';
@@ -20,7 +20,7 @@ import '../../../provider/product_package_provider/product_provider.dart';
 import '../../../provider/shortcode_fresh_picks_provider/fresh_picks_provider.dart';
 import '../../../provider/wishlist_items_provider/wishlist_provider.dart';
 import '../../filters/product_filters_screen.dart';
-import '../../filters/product_sorting.dart';
+import '../../filters/sort_an_filter_widget.dart';
 
 class UserTypeInnerPageScreen extends StatefulWidget {
   const UserTypeInnerPageScreen({
@@ -30,14 +30,14 @@ class UserTypeInnerPageScreen extends StatefulWidget {
     this.storeId,
     this.id,
   });
+
   final dynamic typeId;
   final dynamic title;
   final dynamic id;
   final dynamic storeId;
 
   @override
-  State<UserTypeInnerPageScreen> createState() =>
-      _UserTypeInnerPageScreenState();
+  State<UserTypeInnerPageScreen> createState() => _UserTypeInnerPageScreenState();
 }
 
 class _UserTypeInnerPageScreenState extends State<UserTypeInnerPageScreen> {
@@ -77,8 +77,7 @@ class _UserTypeInnerPageScreenState extends State<UserTypeInnerPageScreen> {
 
   void _onScrollPackages() {
     if (_isFetchingMorePackages) return;
-    if (_scrollController.offset >=
-            _scrollController.position.maxScrollExtent &&
+    if (_scrollController.offset >= _scrollController.position.maxScrollExtent &&
         !_scrollController.position.outOfRange) {
       setState(() {
         _currentPagePackages++;
@@ -90,16 +89,16 @@ class _UserTypeInnerPageScreenState extends State<UserTypeInnerPageScreen> {
 
   Future<void> fetchUserByTypePackages() async {
     try {
-      final userTypeProvider =
-          Provider.of<UsersByTypeProvider>(context, listen: false);
+      final userTypeProvider = Provider.of<UsersByTypeProvider>(context, listen: false);
       final userData = userTypeProvider.userData;
 
       await Provider.of<ProductProvider>(context, listen: false).fetchPackages(
-          storeId: userData!.storeId,
-          context,
-          perPage: 12,
-          page: _currentPage,
-          sortBy: CommonVariables.selectedSortBy);
+        storeId: userData!.storeId,
+        context,
+        perPage: 12,
+        page: _currentPage,
+        sortBy: CommonVariables.selectedSortBy,
+      );
       setState(() {
         _isFetchingMorePackages = false;
       });
@@ -126,8 +125,7 @@ class _UserTypeInnerPageScreenState extends State<UserTypeInnerPageScreen> {
 
   void _onScroll() {
     if (CommonVariables.isFetchingMore) return;
-    if (_scrollController.offset >=
-            _scrollController.position.maxScrollExtent &&
+    if (_scrollController.offset >= _scrollController.position.maxScrollExtent &&
         !_scrollController.position.outOfRange) {
       CommonVariables.currentPage++;
       CommonVariables.isFetchingMore = true;
@@ -140,8 +138,7 @@ class _UserTypeInnerPageScreenState extends State<UserTypeInnerPageScreen> {
       setState(() {
         CommonVariables.isFetchingMore = true;
       });
-      final userTypeProvider =
-          Provider.of<UsersByTypeProvider>(context, listen: false);
+      final userTypeProvider = Provider.of<UsersByTypeProvider>(context, listen: false);
       final userData = userTypeProvider.userData;
 
       await Provider.of<ProductProvider>(context, listen: false).fetchProducts(
@@ -167,16 +164,13 @@ class _UserTypeInnerPageScreenState extends State<UserTypeInnerPageScreen> {
   void _onSortChanged(String newValue) {
     CommonVariables.selectedSortBy = newValue;
     CommonVariables.currentPage = 1;
-    Provider.of<ProductProvider>(context, listen: false)
-        .products
-        .clear(); // Clear existing products
+    Provider.of<ProductProvider>(context, listen: false).products.clear(); // Clear existing products
     fetchUserByTypeProducts();
   }
 
   ///  TODO : LIST TYPE
   Future<void> fetchDataVendor() async {
-    final userTypeProvider =
-        Provider.of<UsersByTypeProvider>(context, listen: false);
+    final userTypeProvider = Provider.of<UsersByTypeProvider>(context, listen: false);
     await userTypeProvider.fetchUserData(context, widget.id);
 
     /// -----++++++  FETCH THE DATA OF THE PRODUCTS  --------------------+++++++++++++
@@ -207,18 +201,16 @@ class _UserTypeInnerPageScreenState extends State<UserTypeInnerPageScreen> {
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.sizeOf(context).height;
     final double screenWidth = MediaQuery.sizeOf(context).width;
-    final wishlistProvider =
-        Provider.of<WishlistProvider>(context, listen: true);
-    final freshListProvider =
-        Provider.of<FreshPicksProvider>(context, listen: true);
+    final wishlistProvider = Provider.of<WishlistProvider>(context, listen: true);
+    final freshListProvider = Provider.of<FreshPicksProvider>(context, listen: true);
     final cartProvider = Provider.of<CartProvider>(context, listen: true);
 
     return BaseAppBar(
-      textBack: AppStrings.back,
+      textBack: AppStrings.back.tr,
       customBackIcon: const Icon(Icons.arrow_back_ios_sharp, size: 16),
-      firstRightIconPath: AppStrings.firstRightIconPath,
-      secondRightIconPath: AppStrings.secondRightIconPath,
-      thirdRightIconPath: AppStrings.thirdRightIconPath,
+      firstRightIconPath: AppStrings.firstRightIconPath.tr,
+      secondRightIconPath: AppStrings.secondRightIconPath.tr,
+      thirdRightIconPath: AppStrings.thirdRightIconPath.tr,
       body: Scaffold(
         body: SafeArea(
           child: Stack(
@@ -239,7 +231,6 @@ class _UserTypeInnerPageScreenState extends State<UserTypeInnerPageScreen> {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        const CustomSearchBar(hintText: 'Search Events'),
                         Expanded(
                           child: SingleChildScrollView(
                             controller: _scrollController,
@@ -247,24 +238,21 @@ class _UserTypeInnerPageScreenState extends State<UserTypeInnerPageScreen> {
                               children: [
                                 Padding(
                                   padding: EdgeInsets.only(
-                                      left: screenWidth * 0.02,
-                                      right: screenWidth * 0.02,
-                                      top: screenHeight * 0.02,
-                                      bottom: screenHeight * 0.02),
+                                    left: screenWidth * 0.02,
+                                    right: screenWidth * 0.02,
+                                    top: screenHeight * 0.02,
+                                    bottom: screenHeight * 0.02,
+                                  ),
                                   child: Stack(
                                     children: [
                                       Container(
                                         height: screenHeight * 0.25,
                                         decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .primary,
+                                          borderRadius: BorderRadius.circular(8),
+                                          color: Theme.of(context).colorScheme.primary,
                                           boxShadow: [
                                             BoxShadow(
-                                              color:
-                                                  Colors.black.withOpacity(0.2),
+                                              color: Colors.black.withOpacity(0.2),
                                               spreadRadius: 1,
                                               blurRadius: 5,
                                               offset: const Offset(0, 3),
@@ -272,74 +260,58 @@ class _UserTypeInnerPageScreenState extends State<UserTypeInnerPageScreen> {
                                           ],
                                         ),
                                         child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          mainAxisAlignment: MainAxisAlignment.start,
                                           children: [
                                             ClipRRect(
-                                              borderRadius:
-                                                  const BorderRadius.only(
+                                              borderRadius: const BorderRadius.only(
                                                 topRight: Radius.circular(8),
                                                 topLeft: Radius.circular(8),
                                               ),
                                               child: CachedNetworkImage(
-                                                imageUrl:
-                                                    userData?.coverImage ?? '',
+                                                imageUrl: userData?.coverImage ?? '',
                                                 height: screenHeight * 0.17,
                                                 fit: BoxFit.fill,
                                                 errorListener: (object) {
                                                   Image.asset(
                                                     'assets/placeholder.png', // Replace with your actual image path
-                                                    fit: BoxFit
-                                                        .cover, // Adjust fit if needed
+                                                    fit: BoxFit.cover, // Adjust fit if needed
                                                     height: MediaQuery.sizeOf(
-                                                                context)
-                                                            .height *
+                                                          context,
+                                                        ).height *
                                                         0.28,
                                                     width: double.infinity,
                                                   );
                                                 },
-                                                errorWidget:
-                                                    (context, object, error) =>
-                                                        Image.asset(
+                                                errorWidget: (context, object, error) => Image.asset(
                                                   'assets/placeholder.png', // Replace with your actual image path
-                                                  fit: BoxFit
-                                                      .cover, // Adjust fit if needed
-                                                  height:
-                                                      MediaQuery.sizeOf(context)
-                                                              .height *
-                                                          0.28,
+                                                  fit: BoxFit.cover, // Adjust fit if needed
+                                                  height: MediaQuery.sizeOf(context).height * 0.28,
                                                   width: double.infinity,
                                                 ),
-                                                placeholder:
-                                                    (BuildContext context,
-                                                            String url) =>
-                                                        Container(
-                                                  height:
-                                                      MediaQuery.sizeOf(context)
-                                                              .height *
-                                                          0.28,
+                                                placeholder: (
+                                                  BuildContext context,
+                                                  String url,
+                                                ) =>
+                                                    Container(
+                                                  height: MediaQuery.sizeOf(context).height * 0.28,
                                                   width: double.infinity,
-                                                  color: Colors.blueGrey[
-                                                      300], // Background color
+                                                  color: Colors.blueGrey[300], // Background color
                                                   child: Stack(
                                                     alignment: Alignment.center,
                                                     children: [
                                                       Image.asset(
-                                                        'assets/placeholder.png', // Replace with your actual image path
-                                                        fit: BoxFit
-                                                            .cover, // Adjust fit if needed
-                                                        height:
-                                                            MediaQuery.sizeOf(
-                                                                        context)
-                                                                    .height *
-                                                                0.28,
+                                                        'assets/placeholder.png',
+                                                        // Replace with your actual image path
+                                                        fit: BoxFit.cover, // Adjust fit if needed
+                                                        height: MediaQuery.sizeOf(
+                                                              context,
+                                                            ).height *
+                                                            0.28,
                                                         width: double.infinity,
                                                       ),
                                                       const CupertinoActivityIndicator(
-                                                        radius:
-                                                            16, // Adjust size of the loader
+                                                        radius: 16, // Adjust size of the loader
                                                         animating: true,
                                                       ),
                                                     ],
@@ -355,10 +327,8 @@ class _UserTypeInnerPageScreenState extends State<UserTypeInnerPageScreen> {
                                         left: 10,
                                         right: 10,
                                         child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.end,
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          crossAxisAlignment: CrossAxisAlignment.end,
                                           children: [
                                             Container(
                                               height: screenHeight * 0.12,
@@ -367,21 +337,18 @@ class _UserTypeInnerPageScreenState extends State<UserTypeInnerPageScreen> {
                                               decoration: BoxDecoration(
                                                 color: Colors.white,
                                                 // Background color
-                                                borderRadius:
-                                                    BorderRadius.circular(12),
+                                                borderRadius: BorderRadius.circular(12),
                                                 // Rounded corners
                                                 border: Border.all(
-                                                    width: 2,
-                                                    color: Colors
-                                                        .white), // Optional: border for better visibility
+                                                  width: 2,
+                                                  color: Colors.white,
+                                                ), // Optional: border for better visibility
                                               ),
                                               child: ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
+                                                borderRadius: BorderRadius.circular(10),
                                                 // Same radius as the container
                                                 child: CachedNetworkImage(
-                                                  imageUrl:
-                                                      userData?.avatar ?? '',
+                                                  imageUrl: userData?.avatar ?? '',
                                                   height: screenHeight * 0.15,
                                                   width: screenHeight * 0.15,
                                                   // Ensure it fills the container
@@ -390,58 +357,55 @@ class _UserTypeInnerPageScreenState extends State<UserTypeInnerPageScreen> {
                                                   errorListener: (object) {
                                                     Image.asset(
                                                       'assets/placeholder.png', // Replace with your actual image path
-                                                      fit: BoxFit
-                                                          .cover, // Adjust fit if needed
+                                                      fit: BoxFit.cover, // Adjust fit if needed
                                                       height: MediaQuery.sizeOf(
-                                                                  context)
-                                                              .height *
+                                                            context,
+                                                          ).height *
                                                           0.28,
                                                       width: double.infinity,
                                                     );
                                                   },
-                                                  errorWidget: (context, object,
-                                                          error) =>
+                                                  errorWidget: (
+                                                    context,
+                                                    object,
+                                                    error,
+                                                  ) =>
                                                       Image.asset(
                                                     'assets/placeholder.png', // Replace with your actual image path
-                                                    fit: BoxFit
-                                                        .cover, // Adjust fit if needed
+                                                    fit: BoxFit.cover, // Adjust fit if needed
                                                     height: MediaQuery.sizeOf(
-                                                                context)
-                                                            .height *
+                                                          context,
+                                                        ).height *
                                                         0.28,
                                                     width: double.infinity,
                                                   ),
 
-                                                  placeholder:
-                                                      (BuildContext context,
-                                                              String url) =>
-                                                          Container(
+                                                  placeholder: (
+                                                    BuildContext context,
+                                                    String url,
+                                                  ) =>
+                                                      Container(
                                                     height: MediaQuery.sizeOf(
-                                                                context)
-                                                            .height *
+                                                          context,
+                                                        ).height *
                                                         0.28,
                                                     width: double.infinity,
-                                                    color: Colors.blueGrey[
-                                                        300], // Background color
+                                                    color: Colors.blueGrey[300], // Background color
                                                     child: Stack(
-                                                      alignment:
-                                                          Alignment.center,
+                                                      alignment: Alignment.center,
                                                       children: [
                                                         Image.asset(
-                                                          'assets/placeholder.png', // Replace with your actual image path
-                                                          fit: BoxFit
-                                                              .cover, // Adjust fit if needed
-                                                          height:
-                                                              MediaQuery.sizeOf(
-                                                                          context)
-                                                                      .height *
-                                                                  0.28,
-                                                          width:
-                                                              double.infinity,
+                                                          'assets/placeholder.png',
+                                                          // Replace with your actual image path
+                                                          fit: BoxFit.cover, // Adjust fit if needed
+                                                          height: MediaQuery.sizeOf(
+                                                                context,
+                                                              ).height *
+                                                              0.28,
+                                                          width: double.infinity,
                                                         ),
                                                         const CupertinoActivityIndicator(
-                                                          radius:
-                                                              16, // Adjust size of the loader
+                                                          radius: 16, // Adjust size of the loader
                                                           animating: true,
                                                         ),
                                                       ],
@@ -453,34 +417,29 @@ class _UserTypeInnerPageScreenState extends State<UserTypeInnerPageScreen> {
                                             Expanded(
                                               child: Padding(
                                                 padding: const EdgeInsets.only(
-                                                    left: 10),
+                                                  left: 10,
+                                                ),
                                                 child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.end,
+                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                  crossAxisAlignment: CrossAxisAlignment.end,
                                                   children: [
                                                     Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment.end,
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      mainAxisAlignment: MainAxisAlignment.end,
                                                       children: [
                                                         Text(
                                                           userData?.name ?? '',
                                                           softWrap: true,
-                                                          style:
-                                                              holderNameTextStyle(
-                                                                  context),
+                                                          style: holderNameTextStyle(
+                                                            context,
+                                                          ),
                                                         ),
                                                         Text(
                                                           userData?.type ?? '',
                                                           softWrap: true,
-                                                          style:
-                                                              holderTypeTextStyle(
-                                                                  context),
+                                                          style: holderTypeTextStyle(
+                                                            context,
+                                                          ),
                                                         ),
                                                       ],
                                                     ),
@@ -525,14 +484,15 @@ class _UserTypeInnerPageScreenState extends State<UserTypeInnerPageScreen> {
                                 if (listingType == 'both')
                                   Padding(
                                     padding: const EdgeInsets.only(
-                                        top: 25, left: 10, right: 10),
+                                      top: 25,
+                                      left: 10,
+                                      right: 10,
+                                    ),
                                     child: Column(
                                       children: [
                                         Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          mainAxisAlignment: MainAxisAlignment.start,
                                           children: <Widget>[
                                             GestureDetector(
                                               onTap: () {
@@ -544,36 +504,32 @@ class _UserTypeInnerPageScreenState extends State<UserTypeInnerPageScreen> {
                                                 // padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
                                                 decoration: BoxDecoration(
                                                   border: Border.all(
-                                                      color: _currentTab ==
-                                                              'Products'
-                                                          ? Colors.grey
-                                                          : Colors.transparent),
-                                                  borderRadius:
-                                                      const BorderRadius.only(
-                                                          topRight:
-                                                              Radius.circular(
-                                                                  10),
-                                                          topLeft:
-                                                              Radius.circular(
-                                                                  10)),
+                                                    color: _currentTab == 'Products' ? Colors.grey : Colors.transparent,
+                                                  ),
+                                                  borderRadius: const BorderRadius.only(
+                                                    topRight: Radius.circular(
+                                                      10,
+                                                    ),
+                                                    topLeft: Radius.circular(
+                                                      10,
+                                                    ),
+                                                  ),
                                                 ),
                                                 child: Column(
-                                                  mainAxisSize:
-                                                      MainAxisSize.min,
+                                                  mainAxisSize: MainAxisSize.min,
                                                   children: [
                                                     Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              4),
+                                                      padding: const EdgeInsets.all(
+                                                        4,
+                                                      ),
                                                       child: Text(
-                                                        'Products',
+                                                        AppStrings.products.tr,
                                                         style: topTabBarStyle(
-                                                            context),
+                                                          context,
+                                                        ),
                                                       ),
                                                     ),
-                                                    if (_currentTab ==
-                                                        'Products')
-                                                      Container(),
+                                                    if (_currentTab == 'Products') Container(),
                                                   ],
                                                 ),
                                               ),
@@ -588,36 +544,28 @@ class _UserTypeInnerPageScreenState extends State<UserTypeInnerPageScreen> {
                                                 // padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                                                 decoration: BoxDecoration(
                                                   border: Border.all(
-                                                    color: _currentTab ==
-                                                            'Packages'
-                                                        ? Colors.grey
-                                                        : Colors.transparent,
+                                                    color: _currentTab == 'Packages' ? Colors.grey : Colors.transparent,
                                                   ),
-                                                  borderRadius:
-                                                      const BorderRadius.only(
-                                                    topRight:
-                                                        Radius.circular(10),
-                                                    topLeft:
-                                                        Radius.circular(10),
+                                                  borderRadius: const BorderRadius.only(
+                                                    topRight: Radius.circular(10),
+                                                    topLeft: Radius.circular(10),
                                                   ),
                                                 ),
                                                 child: Column(
-                                                  mainAxisSize:
-                                                      MainAxisSize.min,
+                                                  mainAxisSize: MainAxisSize.min,
                                                   children: [
                                                     Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              4),
+                                                      padding: const EdgeInsets.all(
+                                                        4,
+                                                      ),
                                                       child: Text(
-                                                        'Packages',
+                                                        AppStrings.packages.tr,
                                                         style: topTabBarStyle(
-                                                            context),
+                                                          context,
+                                                        ),
                                                       ),
                                                     ),
-                                                    if (_currentTab ==
-                                                        'Packages')
-                                                      const SizedBox.shrink(),
+                                                    if (_currentTab == 'Packages') const SizedBox.shrink(),
                                                   ],
                                                 ),
                                               ),
@@ -640,12 +588,12 @@ class _UserTypeInnerPageScreenState extends State<UserTypeInnerPageScreen> {
                                 ///======  TAB PAGES VIEW =================================
                                 if (_currentTab == 'Products')
                                   _ProductsView(
-                                      storeId:
-                                          userData?.storeId.toString() ?? '')
+                                    storeId: userData?.storeId.toString() ?? '',
+                                  )
                                 else
                                   _PackagesView(
-                                      storeId:
-                                          userData?.storeId.toString() ?? ''),
+                                    storeId: userData?.storeId.toString() ?? '',
+                                  ),
                               ],
                             ),
                           ),
@@ -655,16 +603,12 @@ class _UserTypeInnerPageScreenState extends State<UserTypeInnerPageScreen> {
                   }
                 },
               ),
-              if (wishlistProvider.isLoading ||
-                  freshListProvider.isLoading ||
-                  cartProvider.isLoading)
+              if (wishlistProvider.isLoading || freshListProvider.isLoading || cartProvider.isLoading)
                 Container(
-                  color: Colors.black
-                      .withOpacity(0.5), // Semi-transparent background
+                  color: Colors.black.withOpacity(0.5), // Semi-transparent background
                   child: const Center(
                     child: CircularProgressIndicator(
-                      valueColor:
-                          AlwaysStoppedAnimation<Color>(AppColors.peachyPink),
+                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.peachyPink),
                     ),
                   ),
                 ),
@@ -679,8 +623,7 @@ class _UserTypeInnerPageScreenState extends State<UserTypeInnerPageScreen> {
     final double screenHeight = MediaQuery.sizeOf(context).height;
     final double screenWidth = MediaQuery.sizeOf(context).width;
     final freshPicksProvider = Provider.of<FreshPicksProvider>(context);
-    final wishlistProvider =
-        Provider.of<WishlistProvider>(context, listen: false);
+    final wishlistProvider = Provider.of<WishlistProvider>(context, listen: false);
     final cartProvider = Provider.of<CartProvider>(context);
     return Column(
       children: [
@@ -688,12 +631,17 @@ class _UserTypeInnerPageScreenState extends State<UserTypeInnerPageScreen> {
           builder: (context, productProvider, child) {
             if (productProvider.isLoadingProducts && _currentPage == 1) {
               return const Center(
-                  child: CircularProgressIndicator(
-                      color: Colors.black, strokeWidth: 0.5));
+                child: CircularProgressIndicator(
+                  color: Colors.black,
+                  strokeWidth: 0.5,
+                ),
+              );
             } else {
               return Padding(
                 padding: EdgeInsets.only(
-                    left: screenWidth * 0.02, right: screenWidth * 0.02),
+                  left: screenWidth * 0.02,
+                  right: screenWidth * 0.02,
+                ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   crossAxisAlignment: CrossAxisAlignment.end,
@@ -703,7 +651,7 @@ class _UserTypeInnerPageScreenState extends State<UserTypeInnerPageScreen> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Flexible(
-                          child: SortAndFilterDropdown(
+                          child: SortAndFilterWidget(
                             selectedSortBy: _selectedSortBy,
                             onSortChanged: (newSortBy) {
                               _onSortChanged(newSortBy);
@@ -715,14 +663,15 @@ class _UserTypeInnerPageScreenState extends State<UserTypeInnerPageScreen> {
                                 builder: (context) => FilterBottomSheet(
                                   filters: productProvider.productFilters,
                                   selectedIds: selectedFilters,
-                                ), // Show the filter bottom sheet
+                                ),
                               ).then((result) {
-                                setState(() {
-                                  _currentPage = 1;
-                                  selectedFilters =
-                                      result; // Store the selected filter IDs
-                                });
-                                fetchUserByTypeProducts();
+                                if (result != null) {
+                                  setState(() {
+                                    _currentPage = 1;
+                                    selectedFilters = result; // Store the selected filter IDs
+                                  });
+                                  fetchUserByTypeProducts();
+                                }
                               });
                             },
                           ),
@@ -737,14 +686,13 @@ class _UserTypeInnerPageScreenState extends State<UserTypeInnerPageScreen> {
                           const ItemsEmptyView()
                         else
                           GridView.builder(
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 2,
-                                    childAspectRatio: 0.6,
-                                    mainAxisSpacing: 10,
-                                    crossAxisSpacing: 10),
-                            itemCount: productProvider.products.length +
-                                (CommonVariables.isFetchingMore ? 1 : 0),
+                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              childAspectRatio: 0.6,
+                              mainAxisSpacing: 10,
+                              crossAxisSpacing: 10,
+                            ),
+                            itemCount: productProvider.products.length + (CommonVariables.isFetchingMore ? 1 : 0),
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
                             itemBuilder: (context, index) {
@@ -755,15 +703,15 @@ class _UserTypeInnerPageScreenState extends State<UserTypeInnerPageScreen> {
                                   alignment: Alignment.center,
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
                                     children: [
                                       Center(
                                         child: SizedBox(
                                           height: 25,
                                           width: 25,
                                           child: CircularProgressIndicator(
-                                              color: Colors.black),
+                                            color: Colors.black,
+                                          ),
                                         ),
                                       ),
                                     ],
@@ -774,18 +722,13 @@ class _UserTypeInnerPageScreenState extends State<UserTypeInnerPageScreen> {
 
                               /// Calculate the percentage off
                               /// Check if both frontSalePrice and price are non-null and non-zero to avoid division by zero
-                              final double? frontSalePrice =
-                                  product.prices?.frontSalePrice?.toDouble();
-                              final double? price =
-                                  product.prices?.price?.toDouble();
+                              final double? frontSalePrice = product.prices?.frontSalePrice?.toDouble();
+                              final double? price = product.prices?.price?.toDouble();
                               String offPercentage = '';
 
-                              if (frontSalePrice != null &&
-                                  price != null &&
-                                  price > 0) {
+                              if (frontSalePrice != null && price != null && price > 0) {
                                 // Calculate the discount percentage
-                                final double discount =
-                                    100 - ((frontSalePrice / price) * 100);
+                                final double discount = 100 - ((frontSalePrice / price) * 100);
                                 // offPercentage = discount.toStringAsFixed(0);
                                 if (discount > 0) {
                                   offPercentage = discount.toStringAsFixed(0);
@@ -806,59 +749,55 @@ class _UserTypeInnerPageScreenState extends State<UserTypeInnerPageScreen> {
                                 },
                                 child: ProductCard(
                                   isOutOfStock: product.outOfStock ?? false,
-                                  off: offPercentage.isNotEmpty
-                                      ? '$offPercentage%off'
-                                      : '',
+                                  off: offPercentage.isNotEmpty ? '$offPercentage%off' : '',
                                   // Display the discount percentage
-                                  priceWithTaxes:
-                                      (product.prices?.frontSalePrice ?? 0) <
-                                              (product.prices?.price ?? 0)
-                                          ? product.prices!.priceWithTaxes
-                                          : null,
+                                  priceWithTaxes: (product.prices?.frontSalePrice ?? 0) < (product.prices?.price ?? 0)
+                                      ? product.prices!.priceWithTaxes
+                                      : null,
                                   itemsId: product.id,
                                   imageUrl: product.image,
-                                  frontSalePriceWithTaxes:
-                                      product.review?.rating?.toString() ?? '0',
+                                  frontSalePriceWithTaxes: product.review?.rating?.toString() ?? '0',
                                   name: product.name,
                                   storeName: product.store!.name.toString(),
                                   price: product.prices!.price.toString(),
                                   optionalIcon: Icons.shopping_cart,
                                   onOptionalIconTap: () async {
-                                    final token =
-                                        await SecurePreferencesUtil.getToken();
+                                    final token = await SecurePreferencesUtil.getToken();
                                     if (token != null) {
                                       await cartProvider.addToCart(
-                                          product.id, context, 1);
+                                        product.id,
+                                        context,
+                                        1,
+                                      );
                                     }
                                   },
-                                  reviewsCount:
-                                      product.review!.reviewsCount!.toInt(),
-                                  isHeartObscure: wishlistProvider
-                                          .wishlist?.data?.products
-                                          .any((wishlistProduct) =>
-                                              wishlistProduct.id ==
-                                              product.id) ??
+                                  reviewsCount: product.review!.reviewsCount!.toInt(),
+                                  isHeartObscure: wishlistProvider.wishlist?.data?.products.any(
+                                        (wishlistProduct) => wishlistProduct.id == product.id,
+                                      ) ??
                                       false,
                                   onHeartTap: () async {
-                                    final token =
-                                        await SecurePreferencesUtil.getToken();
-                                    final bool isInWishlist = wishlistProvider
-                                            .wishlist?.data?.products
-                                            .any((wishlistProduct) =>
-                                                wishlistProduct.id ==
-                                                product.id) ??
+                                    final token = await SecurePreferencesUtil.getToken();
+                                    final bool isInWishlist = wishlistProvider.wishlist?.data?.products.any(
+                                          (wishlistProduct) => wishlistProduct.id == product.id,
+                                        ) ??
                                         false;
                                     if (isInWishlist) {
                                       await wishlistProvider.deleteWishlistItem(
-                                          product.id ?? 0,
-                                          context,
-                                          token ?? '');
+                                        product.id ?? 0,
+                                        context,
+                                        token ?? '',
+                                      );
                                     } else {
                                       await freshPicksProvider.handleHeartTap(
-                                          context, product.id ?? 0);
+                                        context,
+                                        product.id ?? 0,
+                                      );
                                     }
                                     await wishlistProvider.fetchWishlist(
-                                        token ?? '', context);
+                                      token ?? '',
+                                      context,
+                                    );
                                   },
                                 ),
                               );
@@ -880,33 +819,36 @@ class _UserTypeInnerPageScreenState extends State<UserTypeInnerPageScreen> {
     final double screenHeight = MediaQuery.sizeOf(context).height;
     final double screenWidth = MediaQuery.sizeOf(context).width;
     final cartProvider = Provider.of<CartProvider>(context, listen: false);
-    final productProvider =
-        Provider.of<ProductProvider>(context, listen: false);
+    final productProvider = Provider.of<ProductProvider>(context, listen: false);
     return Column(
       children: [
         Consumer<ProductProvider>(
           builder: (context, packageProductProvider, child) {
-            if (packageProductProvider.isLoadingPackages &&
-                _currentPagePackages == 1) {
+            if (packageProductProvider.isLoadingPackages && _currentPagePackages == 1) {
               return const Center(
-                  child: CircularProgressIndicator(
-                      color: Colors.black, strokeWidth: 0.5));
-            } else if (packageProductProvider.records.isEmpty &&
-                !CommonVariables.isFetchingMore) {
+                child: CircularProgressIndicator(
+                  color: Colors.black,
+                  strokeWidth: 0.5,
+                ),
+              );
+            } else if (packageProductProvider.records.isEmpty && !CommonVariables.isFetchingMore) {
               return Padding(
                 padding: EdgeInsets.only(
-                    left: screenWidth * 0.02,
-                    right: screenWidth * 0.02,
-                    top: screenHeight * 0.02),
+                  left: screenWidth * 0.02,
+                  right: screenWidth * 0.02,
+                  top: screenHeight * 0.02,
+                ),
                 child: Container(
                   width: double.infinity,
                   decoration: BoxDecoration(
-                      color: AppColors.lightCoral,
-                      borderRadius: BorderRadius.circular(5)),
+                    color: AppColors.lightCoral,
+                    borderRadius: BorderRadius.circular(5),
+                  ),
                   height: 50,
                   child: const Align(
-                      alignment: Alignment.center,
-                      child: Text('No records found!')),
+                    alignment: Alignment.center,
+                    child: Text('No records found!'),
+                  ),
                 ),
               );
             } else {
@@ -927,43 +869,71 @@ class _UserTypeInnerPageScreenState extends State<UserTypeInnerPageScreen> {
                               _onSortChangedPackages(newValue);
                             }
                           },
+                          // Your refactored list of DropdownMenuItems
                           items: [
                             DropdownMenuItem(
-                                value: 'default_sorting',
-                                child: Text('Default Sorting',
-                                    style: sortingStyle(context))),
+                              value: 'default_sorting',
+                              child: Text(
+                                AppStrings.sortByDefault.tr,
+                                style: sortingStyle(context),
+                              ),
+                            ),
                             DropdownMenuItem(
-                                value: 'date_asc',
-                                child: Text('Oldest',
-                                    style: sortingStyle(context))),
+                              value: 'date_asc',
+                              child: Text(
+                                AppStrings.sortByOldest.tr,
+                                style: sortingStyle(context),
+                              ),
+                            ),
                             DropdownMenuItem(
-                                value: 'date_desc',
-                                child: Text('Newest',
-                                    style: sortingStyle(context))),
+                              value: 'date_desc',
+                              child: Text(
+                                AppStrings.sortByNewest.tr,
+                                style: sortingStyle(context),
+                              ),
+                            ),
                             DropdownMenuItem(
-                                value: 'name_asc',
-                                child: Text('Name: A-Z',
-                                    style: sortingStyle(context))),
+                              value: 'name_asc',
+                              child: Text(
+                                AppStrings.sortByNameAz.tr,
+                                style: sortingStyle(context),
+                              ),
+                            ),
                             DropdownMenuItem(
-                                value: 'name_desc',
-                                child: Text('Name: Z-A',
-                                    style: sortingStyle(context))),
+                              value: 'name_desc',
+                              child: Text(
+                                AppStrings.sortByNameZa.tr,
+                                style: sortingStyle(context),
+                              ),
+                            ),
                             DropdownMenuItem(
-                                value: 'price_asc',
-                                child: Text('Price: low to high',
-                                    style: sortingStyle(context))),
+                              value: 'price_asc',
+                              child: Text(
+                                AppStrings.sortByPriceLowToHigh.tr,
+                                style: sortingStyle(context),
+                              ),
+                            ),
                             DropdownMenuItem(
-                                value: 'price_desc',
-                                child: Text('Price: high to low',
-                                    style: sortingStyle(context))),
+                              value: 'price_desc',
+                              child: Text(
+                                AppStrings.sortByPriceHighToLow.tr,
+                                style: sortingStyle(context),
+                              ),
+                            ),
                             DropdownMenuItem(
-                                value: 'rating_asc',
-                                child: Text('Rating: low to high',
-                                    style: sortingStyle(context))),
+                              value: 'rating_asc',
+                              child: Text(
+                                AppStrings.sortByRatingLowToHigh.tr,
+                                style: sortingStyle(context),
+                              ),
+                            ),
                             DropdownMenuItem(
-                                value: 'rating_desc',
-                                child: Text('Rating: high to low',
-                                    style: sortingStyle(context))),
+                              value: 'rating_desc',
+                              child: Text(
+                                AppStrings.sortByRatingHighToLow.tr,
+                                style: sortingStyle(context),
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -971,7 +941,9 @@ class _UserTypeInnerPageScreenState extends State<UserTypeInnerPageScreen> {
                   ),
                   Padding(
                     padding: EdgeInsets.only(
-                        left: screenWidth * 0.02, right: screenWidth * 0.02),
+                      left: screenWidth * 0.02,
+                      right: screenWidth * 0.02,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -999,8 +971,7 @@ class _UserTypeInnerPageScreenState extends State<UserTypeInnerPageScreen> {
                               );
                             }
 
-                            final product =
-                                packageProductProvider.records[index];
+                            final product = packageProductProvider.records[index];
 
                             final List<Color> colors = [
                               AppColors.packagesBackground,
@@ -1009,12 +980,14 @@ class _UserTypeInnerPageScreenState extends State<UserTypeInnerPageScreen> {
                               AppColors.packagesBackgroundS.withOpacity(0.09),
                             ];
 
-                            final freshPicksProvider =
-                                Provider.of<FreshPicksProvider>(context,
-                                    listen: false);
-                            final wishlistProvider =
-                                Provider.of<WishlistProvider>(context,
-                                    listen: false);
+                            final freshPicksProvider = Provider.of<FreshPicksProvider>(
+                              context,
+                              listen: false,
+                            );
+                            final wishlistProvider = Provider.of<WishlistProvider>(
+                              context,
+                              listen: false,
+                            );
 
                             return GestureDetector(
                               onTap: () async {
@@ -1035,42 +1008,47 @@ class _UserTypeInnerPageScreenState extends State<UserTypeInnerPageScreen> {
                                 productName: product.name.toString(),
                                 price: product.prices?.price.toString() ?? '',
                                 addInCart: () async {
-                                  final token =
-                                      await SecurePreferencesUtil.getToken();
+                                  final token = await SecurePreferencesUtil.getToken();
                                   if (token != null) {
                                     await cartProvider.addToCart(
-                                        product.id, context, 1);
+                                      product.id,
+                                      context,
+                                      1,
+                                    );
                                   }
                                 },
-                                isHeartObscure: wishlistProvider
-                                        .wishlist?.data?.products
-                                        .any((wishlistProduct) =>
-                                            wishlistProduct.id == product.id) ??
+                                isHeartObscure: wishlistProvider.wishlist?.data?.products.any(
+                                      (wishlistProduct) => wishlistProduct.id == product.id,
+                                    ) ??
                                     false,
                                 // isHeartObscure: true,
                                 onHeartTap: () async {
-                                  final token =
-                                      await SecurePreferencesUtil.getToken();
-                                  final bool isInWishlist = wishlistProvider
-                                          .wishlist?.data?.products
-                                          .any((wishlistProduct) =>
-                                              wishlistProduct.id ==
-                                              product.id) ??
+                                  final token = await SecurePreferencesUtil.getToken();
+                                  final bool isInWishlist = wishlistProvider.wishlist?.data?.products.any(
+                                        (wishlistProduct) => wishlistProduct.id == product.id,
+                                      ) ??
                                       false;
 
                                   if (isInWishlist) {
                                     // Remove from wishlist
                                     await wishlistProvider.deleteWishlistItem(
-                                        product.id, context, token ?? '');
+                                      product.id,
+                                      context,
+                                      token ?? '',
+                                    );
                                   } else {
                                     // Add to wishlist
                                     await freshPicksProvider.handleHeartTap(
-                                        context, product.id);
+                                      context,
+                                      product.id,
+                                    );
                                   }
 
                                   // Refresh wishlist after action
                                   await wishlistProvider.fetchWishlist(
-                                      token ?? '', context);
+                                    token ?? '',
+                                    context,
+                                  );
                                 },
                               ),
                             );

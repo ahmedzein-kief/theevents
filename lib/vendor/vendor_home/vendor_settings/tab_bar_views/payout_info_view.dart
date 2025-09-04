@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/helper/validators/validator.dart';
 import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/core/styles/app_sizes.dart';
@@ -19,6 +20,8 @@ import 'package:event_app/vendor/view_models/vendor_settings/vendor_settings_vie
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../core/constants/vendor_app_strings.dart';
+
 class PayoutInfoView extends StatefulWidget {
   const PayoutInfoView({super.key});
 
@@ -34,8 +37,7 @@ class _PayoutInfoViewState extends State<PayoutInfoView> {
   final TextEditingController paymentMethodController = TextEditingController();
   final TextEditingController bankNameController = TextEditingController();
   final TextEditingController ifscController = TextEditingController();
-  final TextEditingController accountHolderNameController =
-      TextEditingController();
+  final TextEditingController accountHolderNameController = TextEditingController();
   final TextEditingController accountNumberController = TextEditingController();
   final TextEditingController paypalIdController = TextEditingController();
   final TextEditingController upiIdController = TextEditingController();
@@ -96,22 +98,21 @@ class _PayoutInfoViewState extends State<PayoutInfoView> {
   }
 
   Future _onRefresh() async {
-    final VendorGetSettingsViewModel vendorGetSettingsProvider =
-        context.read<VendorGetSettingsViewModel>();
+    final VendorGetSettingsViewModel vendorGetSettingsProvider = context.read<VendorGetSettingsViewModel>();
     await vendorGetSettingsProvider.vendorGetSettings();
     if (vendorGetSettingsProvider.apiResponse.status == ApiStatus.COMPLETED) {
       createPaymentMethodMenuItemsList(
-          paymentMethodOptions: vendorGetSettingsProvider
-              .apiResponse.data?.data?.paymentMethodOptions);
+        paymentMethodOptions: vendorGetSettingsProvider.apiResponse.data?.data?.paymentMethodOptions,
+      );
       _initializeTheField(vendorGetSettingsProvider: vendorGetSettingsProvider);
     }
   }
 
-  void _initializeTheField(
-      {required VendorGetSettingsViewModel vendorGetSettingsProvider}) {
+  void _initializeTheField({
+    required VendorGetSettingsViewModel vendorGetSettingsProvider,
+  }) {
     final bankInfo = vendorGetSettingsProvider.apiResponse.data?.data?.bankInfo;
-    final paymentMethod =
-        vendorGetSettingsProvider.apiResponse.data?.data?.paymentMethod;
+    final paymentMethod = vendorGetSettingsProvider.apiResponse.data?.data?.paymentMethod;
     paymentMethodController.text = paymentMethod?.toString() ?? 'bank_transfer';
     isBankTransfer = paymentMethodController.text.trim() == 'bank_transfer';
 
@@ -129,8 +130,9 @@ class _PayoutInfoViewState extends State<PayoutInfoView> {
   bool isBankTransfer = false;
 
   // Method to create dropdown items
-  void createPaymentMethodMenuItemsList(
-      {required PaymentMethodOptions? paymentMethodOptions}) {
+  void createPaymentMethodMenuItemsList({
+    required PaymentMethodOptions? paymentMethodOptions,
+  }) {
     try {
       if (paymentMethodOptions == null) return;
 
@@ -146,35 +148,43 @@ class _PayoutInfoViewState extends State<PayoutInfoView> {
               value: entry.key,
               child: Text(
                 entry.value.toString(),
-                style: const TextStyle(color: Colors.black, fontSize: 15),
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface,
+                  fontSize: 15,
+                ),
               ),
             ),
           )
           .toList();
     } catch (e, stackTrace) {
-      log('Error while creating payment method dropdown menu items list: $e',
-          stackTrace: stackTrace);
+      log(
+        'Error while creating payment method dropdown menu items list: $e',
+        stackTrace: stackTrace,
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) => Scaffold(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         body: Utils.modelProgressHud(
+          context: context,
           processing: false,
           child: Utils.pageRefreshIndicator(
+            context: context,
             onRefresh: _onRefresh,
             child: Consumer<VendorGetSettingsViewModel>(
               builder: (context, vendorGetSettingsProvider, _) {
                 /// Show loading if refreshing
-                if (vendorGetSettingsProvider.apiResponse.status ==
-                    ApiStatus.LOADING)
+                if (vendorGetSettingsProvider.apiResponse.status == ApiStatus.LOADING) {
                   return Utils.pageLoadingIndicator(context: context);
+                }
 
                 /// return ui if loading ends
                 return ListView(
                   physics: const AlwaysScrollableScrollPhysics(),
                   children: [
-                    _buildUi(),
+                    _buildUi(context),
                   ],
                 );
               },
@@ -183,25 +193,28 @@ class _PayoutInfoViewState extends State<PayoutInfoView> {
         ),
       );
 
-  Widget _buildUi() => SimpleCard(
+  Widget _buildUi(BuildContext context) => SimpleCard(
+        color: Theme.of(context).colorScheme.surface,
         expandedContent: Form(
           key: _formKey,
           child: Column(
             children: [
               /// payment Method
-              fieldTitle(text: 'Payment Method', required: true),
+              fieldTitle(text: VendorAppStrings.selectPaymentMethod.tr, required: true),
               kExtraSmallSpace,
               CustomDropdown(
-                hintText: 'Select payment method',
+                hintText: VendorAppStrings.selectPaymentMethod.tr,
                 value: paymentMethodController.text,
-                textStyle: const TextStyle(color: Colors.grey, fontSize: 15),
+                textStyle: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface,
+                  fontSize: 15,
+                ),
                 menuItemsList: paymentMethodsMenuItemsList,
                 validator: Validator.fieldCannotBeEmpty,
                 onChanged: (value) {
                   setState(() {
                     paymentMethodController.text = value;
-                    isBankTransfer =
-                        paymentMethodController.text == 'bank_transfer';
+                    isBankTransfer = paymentMethodController.text == 'bank_transfer';
                   });
                 },
               ),
@@ -213,9 +226,9 @@ class _PayoutInfoViewState extends State<PayoutInfoView> {
                   children: [
                     /// Bank Name
                     CustomTextFormField(
-                      labelText: 'Bank Name',
+                      labelText: VendorAppStrings.bankName.tr,
                       required: false,
-                      hintText: 'Enter bank name',
+                      hintText: VendorAppStrings.enterBankNameField.tr,
                       controller: bankNameController,
                       nextFocusNode: ifscFocusNode,
                       focusNode: bankNameFocusNode,
@@ -225,9 +238,9 @@ class _PayoutInfoViewState extends State<PayoutInfoView> {
 
                     /// Bank Code/IFSC
                     CustomTextFormField(
-                      labelText: 'Bank Code/IFSC',
+                      labelText: VendorAppStrings.bankCodeIfsc.tr,
                       required: false,
-                      hintText: 'Enter bank code/IFSC',
+                      hintText: VendorAppStrings.enterBankCodeIfsc.tr,
                       controller: ifscController,
                       nextFocusNode: accountHolderNameFocusNode,
                       focusNode: ifscFocusNode,
@@ -238,9 +251,9 @@ class _PayoutInfoViewState extends State<PayoutInfoView> {
 
                     /// Account Holder Name
                     CustomTextFormField(
-                      labelText: 'Account Holder Name',
+                      labelText: VendorAppStrings.accountHolderName.tr,
                       required: false,
-                      hintText: 'Enter account holder name',
+                      hintText: VendorAppStrings.enterAccountHolderName.tr,
                       controller: accountHolderNameController,
                       nextFocusNode: accountNumberFocusNode,
                       focusNode: accountHolderNameFocusNode,
@@ -250,9 +263,9 @@ class _PayoutInfoViewState extends State<PayoutInfoView> {
 
                     /// Account Number
                     CustomTextFormField(
-                      labelText: 'Account Number',
+                      labelText: VendorAppStrings.accountNumber.tr,
                       required: false,
-                      hintText: 'Enter account number',
+                      hintText: VendorAppStrings.enterAccountNumberField.tr,
                       controller: accountNumberController,
                       nextFocusNode: paypalIdFocusNode,
                       focusNode: accountNumberFocusNode,
@@ -266,9 +279,9 @@ class _PayoutInfoViewState extends State<PayoutInfoView> {
 
                     /// UPI ID
                     CustomTextFormField(
-                      labelText: 'UPI ID',
+                      labelText: VendorAppStrings.upiId.tr,
                       required: false,
-                      hintText: 'Enter UPI ID',
+                      hintText: VendorAppStrings.enterUpiId.tr,
                       controller: upiIdController,
                       nextFocusNode: descriptionFocusNode,
                       focusNode: upiIdFocusNode,
@@ -278,9 +291,9 @@ class _PayoutInfoViewState extends State<PayoutInfoView> {
 
                     /// Description
                     CustomTextFormField(
-                      labelText: 'Description',
+                      labelText: VendorAppStrings.description.tr,
                       required: false,
-                      hintText: 'Enter description',
+                      hintText: VendorAppStrings.enterDescriptionFieldAlt.tr,
                       controller: descriptionController,
                       focusNode: descriptionFocusNode,
                       keyboardType: TextInputType.multiline,
@@ -296,7 +309,7 @@ class _PayoutInfoViewState extends State<PayoutInfoView> {
               /// Save Button
               Consumer<VendorSettingsViewModel>(
                 builder: (context, provider, _) => CustomAppButton(
-                  buttonText: 'Save Settings',
+                  buttonText: VendorAppStrings.save.tr,
                   borderRadius: kButtonRadius,
                   mainAxisSize: MainAxisSize.max,
                   buttonColor: AppColors.lightCoral,
@@ -307,14 +320,12 @@ class _PayoutInfoViewState extends State<PayoutInfoView> {
                         print('Form is valid');
                         setProcessing(true);
                         _createForm();
-                        final vendorSettingsProvider =
-                            context.read<VendorSettingsViewModel>();
-                        final result =
-                            await vendorSettingsProvider.vendorSettings(
-                                vendorSettingsType:
-                                    VendorSettingType.payoutInfo,
-                                form: form,
-                                context: context);
+                        final vendorSettingsProvider = context.read<VendorSettingsViewModel>();
+                        final result = await vendorSettingsProvider.vendorSettings(
+                          vendorSettingsType: VendorSettingType.payoutInfo,
+                          form: form,
+                          context: context,
+                        );
                         if (result) {
                           setProcessing(false);
                           await _onRefresh();
@@ -325,8 +336,9 @@ class _PayoutInfoViewState extends State<PayoutInfoView> {
                     } catch (e) {
                       setProcessing(false);
                       AlertServices.showErrorSnackBar(
-                          message: 'Oops! something went wrong..',
-                          context: context);
+                        message: VendorAppStrings.error.tr + 'Oops! something went wrong..',
+                        context: context,
+                      );
                     }
                   },
                 ),

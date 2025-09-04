@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/provider/api_response_handler.dart';
 import 'package:flutter/cupertino.dart';
@@ -32,8 +30,7 @@ class BannerAdsProvider with ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        _homeBannerModels =
-            HomeBottomBannerModels.fromJson(json.decode(response.body));
+        _homeBannerModels = HomeBottomBannerModels.fromJson(response.data);
       } else {
         _hasError = true;
       }

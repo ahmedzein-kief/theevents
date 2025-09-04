@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
@@ -35,9 +34,11 @@ import 'package:event_app/models/vendor_models/vendor_settings_models/vendor_set
 import 'package:event_app/models/vendor_models/vendor_withdrawals_model/vendor_get_withdrawals_model.dart';
 import 'package:event_app/models/vendor_models/vendor_withdrawals_model/vendor_show_withdrawal_model.dart';
 
+import '../../core/helper/di/locator.dart';
+import '../../models/rejection_history_model.dart';
+
 class VendorRepository {
   final DioBaseApiServices _dioBaseApiServices = DioNetworkApiServices();
-  final Dio dio = Dio();
 
   Future<CommonDataResponse> vendorDeleteProductVariation({
     required String productVariationId,
@@ -116,7 +117,7 @@ class VendorRepository {
     final response = await _dioBaseApiServices.dioPostApiService(
         url: VendorApiEndpoints.vendorGenerateCouponCode,
         headers: headers,
-        body: null);
+        body: null,);
 
     // Map the response to the model
     return VendorGenerateCouponCodeModel.fromJson(response);
@@ -137,7 +138,7 @@ class VendorRepository {
     final response = await _dioBaseApiServices.dioPostApiService(
         url: VendorApiEndpoints.vendorCreateCoupon,
         headers: headers,
-        body: body);
+        body: body,);
 
     // Map the response to the model
     return VendorCreateCouponModel.fromJson(response);
@@ -179,7 +180,7 @@ class VendorRepository {
   }) async {
     // API call
     final response = await _dioBaseApiServices.dioMultipartApiService(
-        method: 'POST', url: url, headers: headers, data: body);
+        method: 'POST', url: url, headers: headers, data: body,);
     // Map the response to the model
     return VendorSettingsModel.fromJson(response);
   }
@@ -233,17 +234,17 @@ class VendorRepository {
     required String orderId,
   }) async {
     try {
-      final response = await dio.get(
-        VendorApiEndpoints.vendorGenerateOrderInvoice + orderId,
-        options: Options(
-          headers: headers,
-          responseType:
-              ResponseType.bytes, // Receive the response as bytes (binary data)
-          extra: {
-            'cache': true, // Enable cache for this request
-          },
-        ),
-      );
+      final response = await locator.get<Dio>().get(
+            VendorApiEndpoints.vendorGenerateOrderInvoice + orderId,
+            options: Options(
+              headers: headers,
+              responseType: ResponseType
+                  .bytes, // Receive the response as bytes (binary data)
+              extra: {
+                'cache': true, // Enable cache for this request
+              },
+            ),
+          );
 
       // Check if the response contains the expected PDF data as bytes
       if (response.data is List<int>) {
@@ -345,7 +346,7 @@ class VendorRepository {
     final response = await _dioBaseApiServices.dioPostApiService(
         url: VendorApiEndpoints.vendorUpdateShippingStatus + shipmentID,
         headers: headers,
-        body: body);
+        body: body,);
 
     // Map the response to the model
     return VendorUpdateShipmentStatusModel.fromJson(response);
@@ -360,7 +361,7 @@ class VendorRepository {
     final response = await _dioBaseApiServices.dioPostApiService(
         url: VendorApiEndpoints.vendorUpdateOrder + orderID,
         headers: headers,
-        body: body);
+        body: body,);
     // Map the response to the model
     return CommonPostRequestModel.fromJson(response);
   }
@@ -683,6 +684,37 @@ class VendorRepository {
     return CommonPostRequestModel.fromJson(response);
   }
 
+  Future<RejectionHistoryResponse> rejectionHistoryWithFullResponse({
+    required Map<String, String> headers,
+    required String productID,
+  }) async {
+    try {
+      // API call
+      final response = await _dioBaseApiServices.dioGetApiService(
+        url: VendorApiEndpoints.rejectionHistory + productID,
+        headers: headers,
+      );
+
+      // Validate response structure
+      if (response == null) {
+        throw Exception('Empty response from server');
+      }
+
+      // Parse the complete response using the RejectionHistoryResponse model
+      final rejectionResponse = RejectionHistoryResponse.fromJson(response);
+
+      // Check if API returned an error
+      if (rejectionResponse.error) {
+        throw Exception(rejectionResponse.message ?? 'API returned an error');
+      }
+
+      return rejectionResponse;
+    } catch (e) {
+      // Handle any parsing or network errors
+      throw Exception('Failed to load rejection history: ${e.toString()}');
+    }
+  }
+
   /// Vendor package general settings
   Future<VendorGetPackageGeneralSettingsModel> vendorGetPackageGeneralSettings({
     required Map<String, String> headers,
@@ -704,7 +736,7 @@ class VendorRepository {
         url: VendorApiEndpoints.vendorCreatePackage,
         headers: headers,
         data: body,
-        method: 'POST');
+        method: 'POST',);
     // Map the response to the model
     return CreateProductDataResponse.fromJson(response);
   }
@@ -746,7 +778,7 @@ class VendorRepository {
         url: VendorApiEndpoints.vendorUpdatePackage + packageID,
         headers: headers,
         data: body,
-        method: 'POST');
+        method: 'POST',);
     // Map the response to the model
     return CommonPostRequestModel.fromJson(response);
   }
@@ -834,7 +866,7 @@ class VendorRepository {
         url: VendorApiEndpoints.vendorCreateProductVariation + productID,
         headers: headers,
         data: body,
-        method: 'POST');
+        method: 'POST',);
     // Map the response to the model
     return CommonPostRequestModel.fromJson(response);
   }
@@ -850,7 +882,7 @@ class VendorRepository {
             productVariationID,
         headers: headers,
         data: body,
-        method: 'POST');
+        method: 'POST',);
     // Map the response to the model
     return CommonPostRequestModel.fromJson(response);
   }
@@ -868,7 +900,7 @@ class VendorRepository {
         message = errorData['message'];
       }
     } else {
-      final jsonData = json.decode(response.body);
+      final jsonData = response.data;
       if (response != null) {
         errors = jsonData['errors'];
         error = jsonData['error'];

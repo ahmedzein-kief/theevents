@@ -16,6 +16,7 @@ class ResponsiveProductCard extends StatefulWidget {
     this.priceWithTaxes,
     this.discountPercentage,
   });
+
   final String? imageUrl;
   final int reviewsCount;
   final String frontSalePriceWithTaxes;
@@ -61,7 +62,7 @@ class _ResponsiveProductCardState extends State<ResponsiveProductCard> {
                     LayoutBuilder(
                       builder: (context, constraints) => Image.network(
                         widget.imageUrl ??
-                            'https://api.staging.theevents.ae/storage/products/tobacco-rose-600x600.png',
+                            'https://apistaging.theevents.ae/storage/products/tobacco-rose-600x600.png',
                         fit: BoxFit.cover,
                         height: constraints.maxHeight,
                         width: constraints.maxWidth,
@@ -93,7 +94,7 @@ class _ResponsiveProductCardState extends State<ResponsiveProductCard> {
                               ),
                             ),
                             const Icon(Icons.star,
-                                size: 13, color: Colors.yellow),
+                                size: 13, color: Colors.yellow,),
                             Container(
                               height: 15,
                               width: 1,
@@ -121,7 +122,7 @@ class _ResponsiveProductCardState extends State<ResponsiveProductCard> {
                             shape: BoxShape.circle,
                           ),
                           child: const Icon(Icons.shopping_cart_outlined,
-                              size: 20),
+                              size: 20,),
                         ),
                       ),
                     ),

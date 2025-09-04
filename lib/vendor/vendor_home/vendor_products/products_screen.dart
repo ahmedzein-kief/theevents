@@ -5,7 +5,6 @@ import '../../components/custom_actions_view.dart';
 import '../../components/custom_all_product_heading.dart';
 import '../../components/custom_search_bar.dart';
 import '../../components/vendor_dashboard_appbar.dart';
-import '../../components/vendor_text_style.dart';
 
 class ProductsScreen extends StatefulWidget {
   const ProductsScreen({super.key});
@@ -23,7 +22,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: VendorColors.vendorAppBackground,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       key: _scaffoldKey,
       appBar: const CustomAppBarVendor(
         titleText: 'Products',
@@ -39,7 +38,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 padding: EdgeInsets.only(
                     top: screenHeight * 0.02,
                     left: screenWidth * 0.02,
-                    right: screenHeight * 0.02),
+                    right: screenHeight * 0.02,),
                 child: Column(
                   children: [
                     _actionAndSearchBar(),

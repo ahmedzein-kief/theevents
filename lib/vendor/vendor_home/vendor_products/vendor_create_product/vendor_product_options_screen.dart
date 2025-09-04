@@ -1,3 +1,5 @@
+import 'package:event_app/core/constants/vendor_app_strings.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/core/styles/app_sizes.dart';
 import 'package:event_app/core/widgets/custom_auth_views/app_custom_button.dart';
@@ -18,6 +20,7 @@ class VendorProductOptionsScreen extends StatefulWidget {
     required this.selectedOptions,
     required this.globalOptions,
   });
+
   final List<GlobalOptionsData> selectedOptions;
   final List<GlobalOptions> globalOptions;
 
@@ -129,6 +132,7 @@ class _VendorProductOptionsScreenState
       );
 
   Widget _buildUI() => Utils.modelProgressHud(
+        context: context,
         processing: _isProcessing,
         child: ListView.builder(
           padding:
@@ -163,7 +167,7 @@ class _VendorProductOptionsScreenState
                             });
                           },
                         ),
-                        const Text('Required'),
+                        Text(VendorAppStrings.required.tr),
                         const Spacer(),
                         IconButton(
                           icon: const Icon(Icons.delete, color: Colors.red),
@@ -175,7 +179,7 @@ class _VendorProductOptionsScreenState
                       labelText: '',
                       showTitle: false,
                       required: false,
-                      hintText: 'Enter name',
+                      hintText: VendorAppStrings.enterNameField.tr,
                       controller: productOptions[sectionIndex].nameController,
                     ),
                     const SizedBox(height: 8),
@@ -184,7 +188,7 @@ class _VendorProductOptionsScreenState
                       readOnly: true,
                       showTitle: false,
                       required: false,
-                      hintText: 'Enter name',
+                      hintText: VendorAppStrings.enterNameField.tr,
                       controller:
                           productOptions[sectionIndex].optionTypeController,
                     ),
@@ -199,7 +203,7 @@ class _VendorProductOptionsScreenState
                             ),
                             child: GenericDropdown<String>(
                               textStyle: const TextStyle(
-                                  color: Colors.grey, fontSize: 15),
+                                  color: Colors.grey, fontSize: 15,),
                               value: priceType.first,
                               menuItemsList: priceType,
                               displayItem: (String priceType) => priceType,
@@ -234,7 +238,7 @@ class _VendorProductOptionsScreenState
                                     children: [
                                       Expanded(
                                         child: CustomTextFormField(
-                                          labelText: 'Price',
+                                          labelText: VendorAppStrings.price.tr,
                                           showTitle: false,
                                           keyboardType: TextInputType.number,
                                           controller:
@@ -243,7 +247,7 @@ class _VendorProductOptionsScreenState
                                                   .priceController,
                                           onChanged: (value) {
                                             print(
-                                                'value  ==> $sectionIndex || $rowIndex || $value');
+                                                'value  ==> $sectionIndex || $rowIndex || $value',);
                                             if (value is String) {
                                               productOptions[sectionIndex]
                                                       .values[rowIndex]
@@ -255,7 +259,7 @@ class _VendorProductOptionsScreenState
                                             // setState(() {});
                                           },
                                           required: false,
-                                          hintText: 'Price',
+                                          hintText: VendorAppStrings.price.tr,
                                         ),
                                       ),
                                     ],
@@ -291,7 +295,8 @@ class _VendorProductOptionsScreenState
                                     children: [
                                       Expanded(
                                         child: CustomTextFormField(
-                                          labelText: 'Label',
+                                          labelText:
+                                              VendorAppStrings.enterLabel.tr,
                                           showTitle: false,
                                           controller: section.values[rowIndex]
                                               .optionValueController,
@@ -303,7 +308,8 @@ class _VendorProductOptionsScreenState
                                             });
                                           },
                                           required: false,
-                                          hintText: 'Label',
+                                          hintText:
+                                              VendorAppStrings.enterLabel.tr,
                                         ),
                                       ),
                                       IconButton(

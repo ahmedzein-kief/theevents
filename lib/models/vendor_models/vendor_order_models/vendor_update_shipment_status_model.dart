@@ -1,11 +1,11 @@
 import 'dart:convert';
 
 VendorUpdateShipmentStatusModel vendorUpdateShipmentStatusModelFromJson(
-        String str) =>
+        String str,) =>
     VendorUpdateShipmentStatusModel.fromJson(json.decode(str));
 
 String vendorUpdateShipmentStatusModelToJson(
-        VendorUpdateShipmentStatusModel data) =>
+        VendorUpdateShipmentStatusModel data,) =>
     json.encode(data.toJson());
 
 class VendorUpdateShipmentStatusModel {

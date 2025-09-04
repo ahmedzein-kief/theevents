@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/models/dashboard/user_by_type_model/user_type_inner_page_banner_models.dart';
 import 'package:event_app/provider/api_response_handler.dart';
@@ -19,13 +17,11 @@ class UsersByTypeProvider with ChangeNotifier {
   Future<void> fetchCelebrities(BuildContext context, {required data}) async {
     final typeId = int.tryParse(data['attributes']['type_id'].toString()) ?? 0;
     final limit = data['attributes']['limit'].toString();
-    // final url = Uri.parse('https://api.staging.theevents.ae/api/v1/customers-by-type/$typeId');
-    final url = '${ApiEndpoints.homeUserStores}?$typeId';
+    // final url = Uri.parse('https://apistaging.theevents.ae/api/v1/customers-by-type/$typeId');
+    final url = '${ApiEndpoints.customerByType}/$typeId';
 
-    final params = {
-      'limit': limit,
-      'type_id': typeId.toString(),
-    };
+    // final params = {'limit': limit};
+    final params = {'limit': '6'};
 
     notifyListeners();
 
@@ -37,11 +33,9 @@ class UsersByTypeProvider with ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> responseData = json.decode(response.body);
-        final HomeCelebratiesModels homeCelebratiesModels =
-            HomeCelebratiesModels.fromJson(responseData);
-        final List<Records> fetchedRecords =
-            homeCelebratiesModels.data?.records ?? [];
+        final Map<String, dynamic> responseData = response.data;
+        final HomeCelebratiesModels homeCelebratiesModels = HomeCelebratiesModels.fromJson(responseData);
+        final List<Records> fetchedRecords = homeCelebratiesModels.data?.records ?? [];
 
         // Save data based on type_id
         recordsByTypeId[typeId] = fetchedRecords;
@@ -78,7 +72,7 @@ class UsersByTypeProvider with ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        final json = jsonDecode(response.body);
+        final json = response.data;
         _userData = UserModel.fromJson(json).data;
       } else {
         // Handle error

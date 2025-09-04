@@ -112,7 +112,7 @@ class _VendorCustomTextFieldsState extends State<VendorCustomTextFields> {
                     ? Container(
                         padding: const EdgeInsets.only(left: 10),
                         margin: const EdgeInsets.only(
-                            left: 1, top: 1, bottom: 1, right: 8),
+                            left: 1, top: 1, bottom: 1, right: 8,),
                         decoration: BoxDecoration(
                           color: widget.isPrefixFilled &&
                                   widget.prefixContainerColor != null
@@ -146,7 +146,7 @@ class _VendorCustomTextFieldsState extends State<VendorCustomTextFields> {
                                 child: IconButton(
                                   icon: Icon(widget.prefixIcon,
                                       color: widget.prefixIconColor ??
-                                          Colors.grey),
+                                          Colors.grey,),
                                   onPressed: widget.onIconPressed,
                                 ),
                               ),
@@ -191,13 +191,13 @@ class _VendorCustomTextFieldsState extends State<VendorCustomTextFields> {
                 ),
                 errorStyle: GoogleFonts.inter(height: 0, color: Colors.red),
                 contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16.0, vertical: 12.0),
+                    horizontal: 16.0, vertical: 12.0,),
                 suffixIcon: widget.suffixWidget ??
                     (widget.suffixIcon != null
                         ? IconButton(
                             icon: Icon(widget.suffixIcon,
                                 color: widget.suffixIconColor ?? Colors.grey,
-                                size: 18),
+                                size: 18,),
                             onPressed: widget.onIconPressed,
                           )
                         : null),

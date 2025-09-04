@@ -1,5 +1,8 @@
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/models/product_packages_models/product_options_model.dart';
 import 'package:flutter/material.dart';
+
+import '../../../core/constants/app_strings.dart';
 
 class TextAreaWidget extends StatelessWidget {
   // New parameter for error handling
@@ -11,6 +14,7 @@ class TextAreaWidget extends StatelessWidget {
     required this.onChanged,
     this.errorMessage, // Initialize it
   });
+
   final ProductOptionsModel option;
   final String? message;
   final Function(String) onChanged;
@@ -36,9 +40,9 @@ class TextAreaWidget extends StatelessWidget {
               onChanged: onChanged,
               maxLines: 4, // Set maximum lines to make it multiline
               decoration: InputDecoration(
-                hintText: 'Enter your message here',
+                hintText: AppStrings.enterYourMessage.tr,
                 contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 12.0, vertical: 12.0),
+                    horizontal: 12.0, vertical: 12.0,),
                 // Adjust vertical padding for height
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8.0), // Rounded corners
@@ -58,7 +62,7 @@ class TextAreaWidget extends StatelessWidget {
                 // Display the error message if not null
                 errorStyle: const TextStyle(
                     color: Colors.red,
-                    fontSize: 10.0), // Customize error message style
+                    fontSize: 10.0,), // Customize error message style
               ),
             ),
           ],

@@ -1,6 +1,9 @@
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/models/product_packages_models/product_options_model.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
+import '../../../core/constants/app_strings.dart';
 
 class DatePickerWidget extends StatelessWidget {
   // Optional error message for validation
@@ -12,6 +15,7 @@ class DatePickerWidget extends StatelessWidget {
     required this.onDateSelected,
     this.errorMessage, // Add an optional errorMessage parameter
   });
+
   final ProductOptionsModel option;
   final DateTime? selectedDate; // Make it nullable
   final Function(DateTime) onDateSelected;
@@ -50,13 +54,13 @@ class DatePickerWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
         margin: const EdgeInsets.only(
-            top: 12.0), // Adding margin to the date picker
+            top: 12.0,), // Adding margin to the date picker
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
               padding: const EdgeInsets.only(
-                  bottom: 8.0), // Padding around the label text
+                  bottom: 8.0,), // Padding around the label text
               child: Text(
                 option.name,
                 style: const TextStyle(
@@ -85,8 +89,9 @@ class DatePickerWidget extends StatelessWidget {
                   ),
                   child: Text(
                     selectedDate == null
-                        ? 'Select Date' // Placeholder text if no date is selected
-                        : "Selected Date: ${DateFormat('dd-MM-yyyy').format(selectedDate!)}",
+                        ? AppStrings.selectDate
+                            .tr // Placeholder text if no date is selected
+                        : "${AppStrings.selectedDate.tr}: ${DateFormat('dd-MM-yyyy').format(selectedDate!)}",
                     style: const TextStyle(fontSize: 16),
                   ),
                 ),
@@ -98,7 +103,7 @@ class DatePickerWidget extends StatelessWidget {
                 child: Text(
                   errorMessage!,
                   style: const TextStyle(
-                      color: Colors.red, fontSize: 12.0), // Red text for error
+                      color: Colors.red, fontSize: 12.0,), // Red text for error
                 ),
               ),
           ],

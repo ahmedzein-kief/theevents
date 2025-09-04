@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 void showCupertinoDateTimePicker(
     {required BuildContext context,
     CupertinoDatePickerMode? mode,
-    required Function(DateTime) onDateTimeChanged}) {
+    required Function(DateTime) onDateTimeChanged,}) {
   showCupertinoModalPopup<void>(
     context: context,
     builder: (BuildContext context) => Container(

@@ -16,31 +16,44 @@ class Utils {
   //*------Common Loading Indicators Start------*/
 
   /// Material Loading Indicator
-  static Widget materialLoadingIndicator({color = Colors.white}) =>
-      Center(child: CircularProgressIndicator(color: color, strokeWidth: 1.5));
+  static Widget materialLoadingIndicator(
+          {color, required BuildContext context,}) =>
+      Center(
+          child: CircularProgressIndicator(
+              color: color ?? Theme.of(context).colorScheme.primary,
+              strokeWidth: 1.5,),);
 
   /// Cupertino Loading Indicator
-  static Widget cupertinoLoadingIndicator({color = AppColors.lightCoral}) =>
-      Center(child: CupertinoActivityIndicator(color: color));
+  static Widget cupertinoLoadingIndicator(
+          {color, required BuildContext context,}) =>
+      Center(
+          child: CupertinoActivityIndicator(
+              color: color ?? Theme.of(context).colorScheme.primary,),);
 
   /// Page loading indicator
-  static Widget pageLoadingIndicator(
-          {color = AppColors.lightCoral, required context}) =>
+  static Widget pageLoadingIndicator({color, required BuildContext context}) =>
       Center(
           child: Platform.isAndroid
               ? SizedBox(
                   width: 20,
                   height: 20,
-                  child: Utils.materialLoadingIndicator(color: color))
-              : Utils.cupertinoLoadingIndicator(color: color));
+                  child: Utils.materialLoadingIndicator(
+                      color: color ?? Theme.of(context).colorScheme.primary,
+                      context: context,),)
+              : Utils.cupertinoLoadingIndicator(
+                  color: color ?? Theme.of(context).colorScheme.primary,
+                  context: context,),);
 
   /// Page Refresh Indicator
-  static Widget pageRefreshIndicator({required child, required onRefresh}) =>
+  static Widget pageRefreshIndicator(
+          {required child,
+          required onRefresh,
+          required BuildContext context,}) =>
       RefreshIndicator(
-          color: Colors.white,
-          backgroundColor: AppColors.lightCoral,
+          color: Theme.of(context).colorScheme.primary,
+          backgroundColor: Theme.of(context).colorScheme.secondary,
           onRefresh: onRefresh,
-          child: child);
+          child: child,);
 
   /// Spin kit three dots bounce
   static Widget spinKitThreeBounce() => const Center(
@@ -54,7 +67,8 @@ class Utils {
       );
 
   /// Model Progress Hud
-  static Widget modelProgressHud({bool processing = true, child}) {
+  static Widget modelProgressHud(
+      {required BuildContext context, bool processing = true, child,}) {
     final Widget progressIndicator = Container(
       height: 60,
       width: 60,
@@ -65,8 +79,10 @@ class Utils {
       ),
       padding: const EdgeInsets.all(10),
       child: Platform.isAndroid
-          ? Utils.materialLoadingIndicator(color: AppColors.lightCoral)
-          : Utils.cupertinoLoadingIndicator(color: AppColors.lightCoral),
+          ? Utils.materialLoadingIndicator(
+              color: AppColors.lightCoral, context: context,)
+          : Utils.cupertinoLoadingIndicator(
+              color: AppColors.lightCoral, context: context,),
     );
     return ModalProgressHUD(
       color: Colors.blueGrey,
@@ -79,7 +95,8 @@ class Utils {
     );
   }
 
-  static Widget modelProgressDashboardHud({bool processing = true, child}) {
+  static Widget modelProgressDashboardHud(
+      {required BuildContext context, bool processing = true, child,}) {
     final Widget progressIndicator = Container(
       height: 60,
       width: 60,
@@ -90,8 +107,10 @@ class Utils {
       ),
       padding: const EdgeInsets.all(10),
       child: Platform.isAndroid
-          ? Utils.materialLoadingIndicator(color: AppColors.lightCoral)
-          : Utils.cupertinoLoadingIndicator(color: AppColors.lightCoral),
+          ? Utils.materialLoadingIndicator(
+              color: AppColors.lightCoral, context: context,)
+          : Utils.cupertinoLoadingIndicator(
+              color: AppColors.lightCoral, context: context,),
     );
     return ModalProgressHUD(
       color: Colors.blueGrey,
@@ -169,7 +188,7 @@ class Utils {
       if (Platform.isAndroid) {
         return await getApplicationDocumentsDirectory();
       } else if (Platform.isIOS) {
-        return await getApplicationDocumentsDirectory(); // For iOS, it’s the same or getApplicationCacheDirectory
+        return await getApplicationDocumentsDirectory(); // For iOS, it's the same or getApplicationCacheDirectory
       } else {
         throw UnsupportedError('Unsupported platform for file storage');
       }
@@ -216,7 +235,7 @@ class Utils {
 
   // make phone call
   static Future<void> makePhoneCall(
-      {required String phoneNumber, required BuildContext context}) async {
+      {required String phoneNumber, required BuildContext context,}) async {
     final Uri launchUri = Uri(
       scheme: 'tel',
       path: phoneNumber,
@@ -244,7 +263,7 @@ class Utils {
             SizedBox(
                 width: 16,
                 height: 16,
-                child: Utils.pageLoadingIndicator(context: context)),
+                child: Utils.pageLoadingIndicator(context: context),),
             const SizedBox(width: 8),
             const Text('Searching...', style: TextStyle(color: Colors.grey)),
           ],

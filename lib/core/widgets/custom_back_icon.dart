@@ -1,3 +1,4 @@
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:flutter/material.dart';
 
 import '../constants/app_strings.dart';
@@ -13,13 +14,18 @@ class BackIcon extends StatelessWidget {
         child: Container(
           width: double.infinity, // Makes the button take the full width
           padding: const EdgeInsets.all(8), // Padding around the icon and text
-          child: const Row(
+          child: Row(
             mainAxisAlignment:
                 MainAxisAlignment.center, // Centers the content in the row
             children: [
-              Icon(Icons.arrow_back_ios_sharp, size: 16), // Back icon
-              SizedBox(width: 5),
-              Text(AppStrings.back), // Back text
+              Icon(Icons.arrow_back_ios_sharp,
+                  size: 16,
+                  color: Theme.of(context).colorScheme.onPrimary,), // Back icon
+              const SizedBox(width: 5),
+              Text(AppStrings.back.tr,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  ),), // Back text
             ],
           ),
         ),

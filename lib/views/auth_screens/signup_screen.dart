@@ -1,3 +1,4 @@
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/services/shared_preferences_helper.dart';
 import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/views/auth_screens/auth_page_view.dart';
@@ -19,6 +20,7 @@ import '../profile_page_screens/privacy_policy_screen.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key, this.onSignUpTap});
+
   final VoidCallback? onSignUpTap;
 
   @override
@@ -61,24 +63,24 @@ class _SignupScreenState extends State<SignupScreen> {
                           child: CustomTextFields(
                             leftIcon: SvgPicture.asset(
                                 color: Theme.of(context).colorScheme.onPrimary,
-                                AppStrings.profileName,
-                                height: screeHeight * 0.025),
+                                AppStrings.profileName.tr,
+                                height: screeHeight * 0.025,),
                             textEditingController: _nameController,
                             inputType: TextInputType.name,
                             formFieldValidator: Validator.name,
-                            hintText: 'Full Name',
+                            hintText: AppStrings.fullName.tr,
                             hintStyle: GoogleFonts.inter(
                                 fontWeight: FontWeight.w400,
                                 fontSize: 16,
                                 color:
-                                    Theme.of(context).colorScheme.onSecondary),
+                                    Theme.of(context).colorScheme.onSecondary,),
                           ),
                         ),
                         CustomTextFields(
                           leftIcon: SvgPicture.asset(
                               color: Theme.of(context).colorScheme.onPrimary,
-                              AppStrings.emailIcon,
-                              height: screeHeight * 0.02),
+                              AppStrings.emailIcon.tr,
+                              height: screeHeight * 0.02,),
                           hintStyle: GoogleFonts.inter(
                             fontWeight: FontWeight.w400, fontSize: 16,
                             color: Theme.of(context).colorScheme.onSecondary,
@@ -87,13 +89,13 @@ class _SignupScreenState extends State<SignupScreen> {
                           textEditingController: _emailController,
                           formFieldValidator: Validator.email,
                           inputType: TextInputType.emailAddress,
-                          hintText: 'Enter your Email',
+                          hintText: AppStrings.enterYourEmail.tr,
                         ),
                         CustomTextFields(
                           leftIcon: SvgPicture.asset(
                               color: Theme.of(context).colorScheme.onPrimary,
-                              AppStrings.passwordIcon,
-                              height: screeHeight * 0.025),
+                              AppStrings.passwordIcon.tr,
+                              height: screeHeight * 0.025,),
                           hintStyle: GoogleFonts.inter(
                             fontWeight: FontWeight.w400,
                             fontSize: 16,
@@ -105,18 +107,18 @@ class _SignupScreenState extends State<SignupScreen> {
                           formFieldValidator:
                               Validator.signUpPasswordValidation,
                           isObsecureText: true,
-                          hintText: 'Enter your password',
+                          hintText: AppStrings.enterYourPassword.tr,
                         ),
                         CustomTextFields(
                           leftIcon: SvgPicture.asset(
                             color: Theme.of(context).colorScheme.onPrimary,
-                            AppStrings.passwordIcon,
+                            AppStrings.passwordIcon.tr,
                             height: screeHeight * 0.025,
                           ),
                           hintStyle: GoogleFonts.inter(
                               fontWeight: FontWeight.w400,
                               color: Theme.of(context).colorScheme.onSecondary,
-                              fontSize: 16),
+                              fontSize: 16,),
                           textEditingController: _confirmPasswordController,
                           inputType: TextInputType.visiblePassword,
                           formFieldValidator:
@@ -133,16 +135,16 @@ class _SignupScreenState extends State<SignupScreen> {
                               fit: BoxFit.cover,
                               color: Theme.of(context).colorScheme.onPrimary,
                               _passShowNot
-                                  ? AppStrings.hideEye
-                                  : AppStrings.showEye,
+                                  ? AppStrings.hideEye.tr
+                                  : AppStrings.showEye.tr,
                             ),
                           ),
-                          hintText: 'Confirm Password',
+                          hintText: AppStrings.confirmPassword.tr,
                         ),
                         Padding(
                           padding: const EdgeInsets.only(top: 25),
                           child: Text(
-                            'Password must Contain minimum 9 characters , at least one upper case and one is lower case ',
+                            AppStrings.passwordValidation.tr,
                             softWrap: true,
                             maxLines: 4,
                             style: signupPasswordConditionStyle(context),
@@ -228,8 +230,8 @@ class _SignupScreenState extends State<SignupScreen> {
                             text: TextSpan(
                               children: [
                                 TextSpan(
-                                    text: 'By continuing,I agree the ',
-                                    style: loginTermsConditionStyle(context)),
+                                    text: AppStrings.agreement.tr,
+                                    style: loginTermsConditionStyle(context),),
                                 TextSpan(
                                   recognizer: TapGestureRecognizer()
                                     ..onTap = () {
@@ -241,7 +243,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                         ),
                                       );
                                     },
-                                  text: 'Terms of Use',
+                                  text: AppStrings.terms.tr,
                                   style: GoogleFonts.inter(
                                     color: AppColors.vividRed,
                                     fontWeight: FontWeight.w500,
@@ -250,7 +252,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                 ),
                                 TextSpan(
                                     text: ' & ',
-                                    style: loginTermsConditionStyle(context)),
+                                    style: loginTermsConditionStyle(context),),
                                 TextSpan(
                                   recognizer: TapGestureRecognizer()
                                     ..onTap = () {
@@ -262,7 +264,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                         ),
                                       );
                                     },
-                                  text: 'Privacy Policy',
+                                  text: AppStrings.privacyPolicy.tr,
                                   style: GoogleFonts.inter(
                                     color: AppColors.vividRed,
                                     fontWeight: FontWeight.w500,
@@ -283,8 +285,8 @@ class _SignupScreenState extends State<SignupScreen> {
                                   builder: (context, authProvider, child) =>
                                       CustomAuthButton(
                                     title: authProvider.isLoading
-                                        ? 'SignUp....'
-                                        : 'SignUp',
+                                        ? '${AppStrings.signUp.tr}....'
+                                        : AppStrings.signUp.tr,
                                     isLoading: authProvider.isLoading,
                                     // title: 'Sign Up',
                                     onPressed: () async {
@@ -296,19 +298,19 @@ class _SignupScreenState extends State<SignupScreen> {
                                                 _emailController.text,
                                                 _passwordController.text,
                                                 _confirmPasswordController.text,
-                                                context);
+                                                context,);
                                         if (result != null) {
                                           await SecurePreferencesUtil
                                               .saveUserName(
-                                                  result.data?.name ?? '');
+                                                  result.data?.name ?? '',);
                                           await SecurePreferencesUtil
                                               .saveUserMail(
-                                                  result.data?.email ?? '');
+                                                  result.data?.email ?? '',);
                                           Navigator.pushReplacement(
                                               context,
                                               CupertinoPageRoute(
                                                   builder: (context) =>
-                                                      AuthScreen()));
+                                                      AuthScreen(),),);
                                         }
                                       }
                                     },

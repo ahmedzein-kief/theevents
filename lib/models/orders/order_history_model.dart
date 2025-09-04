@@ -39,7 +39,7 @@ class Data {
   factory Data.fromJson(Map<dynamic, dynamic> json) => Data(
         pagination: Pagination.fromJson(json['pagination']),
         records: List<OrderRecord>.from(
-            json['records'].map((x) => OrderRecord.fromJson(x))),
+            json['records'].map((x) => OrderRecord.fromJson(x)),),
       );
 
   Pagination pagination;
@@ -104,7 +104,7 @@ class OrderRecord {
         store: Store.fromJson(json['store']),
         status: json['status'],
         products: List<OrderProduct>.from(
-            json['products'].map((x) => OrderProduct.fromJson(x))),
+            json['products'].map((x) => OrderProduct.fromJson(x)),),
       );
 
   int total;

@@ -1,7 +1,9 @@
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/services/shared_preferences_helper.dart';
 import 'package:event_app/core/widgets/bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
 
+import '../../core/constants/app_strings.dart';
 import '../../core/styles/app_colors.dart';
 import '../../core/styles/custom_text_styles.dart';
 import '../../core/widgets/custom_items_views/custom_add_to_cart_button.dart';
@@ -27,10 +29,10 @@ class _EmptyCartScreenState extends State<EmptyCartScreen> {
                   Image.asset('assets/emptyCart.png'),
                   Padding(
                     padding: const EdgeInsets.only(top: 25),
-                    child: Text('Cart Is Empty \n Start adding to your cart ',
+                    child: Text(AppStrings.cartIsEmpty.tr,
                         style: cartTextStyle(context),
                         softWrap: true,
-                        textAlign: TextAlign.center),
+                        textAlign: TextAlign.center,),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 20),
@@ -44,9 +46,9 @@ class _EmptyCartScreenState extends State<EmptyCartScreen> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) =>
-                                        const WishListScreen()));
+                                        const WishListScreen(),),);
                           },
-                          title: 'Go To Wishlist',
+                          title: AppStrings.gotoWishlist.tr,
                         ),
                         GestureDetector(
                           onTap: () async {
@@ -59,7 +61,7 @@ class _EmptyCartScreenState extends State<EmptyCartScreen> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          const BaseHomeScreen()));
+                                          const BaseHomeScreen(),),);
                             }
                             // PersistentNavBarNavigator.pushNewScreen(
                             //   context,
@@ -76,10 +78,10 @@ class _EmptyCartScreenState extends State<EmptyCartScreen> {
                               mainAxisSize: MainAxisSize.min,
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Text('Continue Shopping',
+                                Text(AppStrings.continueShopping.tr,
                                     softWrap: true,
                                     maxLines: 1,
-                                    style: addToCartText(context)),
+                                    style: addToCartText(context),),
                               ],
                             ),
                           ),

@@ -20,7 +20,7 @@ import 'package:event_app/vendor/components/status_constants/order_status_consta
 import 'package:event_app/vendor/components/status_constants/payment_status_constants.dart';
 import 'package:event_app/vendor/components/status_constants/shipment_status_constants.dart';
 import 'package:event_app/vendor/components/text_fields/custom_text_form_field.dart';
-import 'package:event_app/vendor/components/utils/utils.dart';
+import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/vendor/vendor_home/vendor_orders/vendor_update_shipping_address_bottom_sheet_view.dart';
 import 'package:event_app/vendor/view_models/vendor_orders/vendor_cancel_order.dart';
 import 'package:event_app/vendor/view_models/vendor_orders/vendor_confirm_order_view_model.dart';
@@ -43,8 +43,7 @@ class VendorEditOrderView extends StatefulWidget {
   State<VendorEditOrderView> createState() => _VendorEditOrderViewState();
 }
 
-class _VendorEditOrderViewState extends State<VendorEditOrderView>
-    with MediaQueryMixin {
+class _VendorEditOrderViewState extends State<VendorEditOrderView> with MediaQueryMixin {
   /// create history stepper list
   List<StepperData> stepperData = [];
 
@@ -53,14 +52,19 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
     stepperData = history
         .map(
           (element) => StepperData(
-            title: StepperText(element.historyVariables?.toString() ?? '',
-                textStyle: detailsTitleStyle,),
-            subtitle: StepperText(element.createdAt?.toString() ?? '',
-                textStyle: detailsDescriptionStyle,),
+            title: StepperText(
+              element.historyVariables?.toString() ?? '',
+              textStyle: detailsTitleStyle,
+            ),
+            subtitle: StepperText(
+              element.createdAt?.toString() ?? '',
+              textStyle: detailsDescriptionStyle,
+            ),
             iconWidget: Container(
               decoration: const BoxDecoration(
-                  color: AppColors.lightCoral,
-                  borderRadius: BorderRadius.all(Radius.circular(30)),),
+                color: AppColors.lightCoral,
+                borderRadius: BorderRadius.all(Radius.circular(30)),
+              ),
               child: kShowVoid,
             ),
           ),
@@ -98,38 +102,42 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: const VendorCommonAppBar(title: 'Orders'),
-        body: Utils.modelProgressHud(
+        body: AppUtils.modelProgressHud(
+          context: context,
+          processing: _isProcessing,
+          child: AppUtils.pageRefreshIndicator(
+            onRefresh: _onRefresh,
+            child: _buildUi(context),
             context: context,
-            processing: _isProcessing,
-            child: Utils.pageRefreshIndicator(
-                onRefresh: _onRefresh,
-                child: _buildUi(context),
-                context: context,),),
+          ),
+        ),
         backgroundColor: AppColors.bgColor,
       );
 
   final _noteController = TextEditingController();
   final _shipmentStatusController = TextEditingController();
 
-  Widget _buildUi(BuildContext context) =>
-      Consumer<VendorGetOrderDetailsViewModel>(
+  Widget _buildUi(BuildContext context) => Consumer<VendorGetOrderDetailsViewModel>(
         builder: (context, provider, _) {
           /// current api status
           final ApiStatus? apiStatus = provider.apiResponse.status;
           if (apiStatus == ApiStatus.LOADING) {
-            return Utils.pageLoadingIndicator(context: context);
+            return AppUtils.pageLoadingIndicator(context: context);
           }
           if (apiStatus == ApiStatus.ERROR) {
             return ListView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                children: [Utils.somethingWentWrong()],);
+              physics: const AlwaysScrollableScrollPhysics(),
+              children: [AppUtils.somethingWentWrong()],
+            );
           }
           return _orderDetails(context: context, provider: provider);
         },
       );
 
-  Widget _orderDetails(
-      {required context, required VendorGetOrderDetailsViewModel provider,}) {
+  Widget _orderDetails({
+    required context,
+    required VendorGetOrderDetailsViewModel provider,
+  }) {
     final orderData = provider.apiResponse.data?.data;
     return SingleChildScrollView(
       child: Padding(
@@ -154,8 +162,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
             ),
 
             /// Shipment history
-            if (orderData?.history != null && stepperData.isNotEmpty)
-              _shipmentHistory(provider: provider),
+            if (orderData?.history != null && stepperData.isNotEmpty) _shipmentHistory(provider: provider),
 
             /// Custom Details
             _customerInformation(provider: provider),
@@ -191,13 +198,16 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                     text: TextSpan(
                       children: [
                         const TextSpan(
-                            text: 'Order Information ',
-                            style: TextStyle(color: Colors.black),),
+                          text: 'Order Information ',
+                          style: TextStyle(color: Colors.black),
+                        ),
                         TextSpan(
-                            text: orderData?.code.toString() ?? '--',
-                            style: const TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.w500,),),
+                          text: orderData?.code.toString() ?? '--',
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -214,12 +224,12 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                     ),
                     borderColor: Colors.transparent,
                     color: AppColors.getOrderStatusColor(
-                        orderData?.orderStatus?.value,),
+                      orderData?.orderStatus?.value,
+                    ),
                     textColor: Colors.white,
                     borderRadius: kExtraSmallCardRadius,
                     visualDensity: VisualDensity.compact,
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 20, vertical: 2),
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 2),
                     onPressed: () {},
                   ),
               ],
@@ -247,9 +257,13 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(item?.name?.toString() ?? '--',
-                            style: const TextStyle(
-                                color: AppColors.lightCoral, fontSize: 17,),),
+                        Text(
+                          item?.name?.toString() ?? '--',
+                          style: const TextStyle(
+                            color: AppColors.lightCoral,
+                            fontSize: 17,
+                          ),
+                        ),
                         kMinorSpace,
 
                         /// SKU
@@ -260,16 +274,19 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                               //     text: "(",
                               //     style: TextStyle(color: Colors.black)),
                               const TextSpan(
-                                  text: 'SKU: ',
-                                  style: TextStyle(
-                                      color: Colors.black, fontSize: 13,),),
+                                text: 'SKU: ',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 13,
+                                ),
+                              ),
                               TextSpan(
-                                text: item?.sku?.toString() ??
-                                    '--', // Dynamic SKU
+                                text: item?.sku?.toString() ?? '--', // Dynamic SKU
                                 style: const TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,),
+                                  color: Colors.black,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
                               // TextSpan(
                               //     text: ")",
@@ -287,12 +304,16 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                                 TextSpan(
                                   text: "${item?.qty?.toString() ?? ''} ",
                                   style: const TextStyle(
-                                      color: AppColors.stoneGray, fontSize: 12,),
+                                    color: AppColors.stoneGray,
+                                    fontSize: 12,
+                                  ),
                                 ),
                                 const TextSpan(
                                   text: 'Completed',
                                   style: TextStyle(
-                                      color: AppColors.stoneGray, fontSize: 12,),
+                                    color: AppColors.stoneGray,
+                                    fontSize: 12,
+                                  ),
                                 ),
                               ],
                             ),
@@ -314,16 +335,17 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                                   const TextSpan(
                                     text: 'Shipping ',
                                     style: TextStyle(
-                                        color: Colors.black, fontSize: 11,),
+                                      color: Colors.black,
+                                      fontSize: 11,
+                                    ),
                                   ),
                                   TextSpan(
-                                    text:
-                                        item?.shippingMethodName?.toString() ??
-                                            '',
+                                    text: item?.shippingMethodName?.toString() ?? '',
                                     style: const TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.w600,),
+                                      color: Colors.black,
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -340,11 +362,13 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                             RichText(
                               text: TextSpan(
                                 style: const TextStyle(
-                                    color: Colors.black, fontSize: 12,),
+                                  color: Colors.black,
+                                  fontSize: 12,
+                                ),
                                 children: [
                                   TextSpan(
-                                      text:
-                                          item?.priceFormat?.toString() ?? '',),
+                                    text: item?.priceFormat?.toString() ?? '',
+                                  ),
                                   const WidgetSpan(
                                     child: SizedBox(width: 8),
                                   ),
@@ -357,8 +381,8 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                                     child: SizedBox(width: 8),
                                   ),
                                   TextSpan(
-                                      text:
-                                          item?.totalAmountFormat?.toString(),),
+                                    text: item?.totalAmountFormat?.toString(),
+                                  ),
                                 ],
                               ),
                             ),
@@ -367,8 +391,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                       ],
                     ),
                   ),
-                  if (index < (orderData?.items?.length ?? 0) - 1)
-                    const Divider(thickness: 0.1),
+                  if (index < (orderData?.items?.length ?? 0) - 1) const Divider(thickness: 0.1),
                 ],
               );
             },
@@ -440,15 +463,18 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                 ),
                 children: [
                   _buildCell(
-                      text: 'Paid Amount', isEndAligned: true, isBold: true,),
+                    text: 'Paid Amount',
+                    isEndAligned: true,
+                    isBold: true,
+                  ),
 
                   /// show full amount here if payment status is completed
                   _buildCell(
-                      text: orderData?.paymentStatus?.value ==
-                              PaymentStatusConst.COMPLETED
-                          ? orderData?.amountFormat?.toString() ?? '--'
-                          : '--',
-                      isBold: true,),
+                    text: orderData?.paymentStatus?.value == PaymentStatusConst.COMPLETED
+                        ? orderData?.amountFormat?.toString() ?? '--'
+                        : '--',
+                    isBold: true,
+                  ),
                 ],
               ),
             ],
@@ -462,19 +488,18 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 Consumer<VendorGenerateOrderInvoiceViewModel>(
-                  builder: (context, generateInvoiceProvider, _) =>
-                      CustomIconButtonWithText(
+                  builder: (context, generateInvoiceProvider, _) => CustomIconButtonWithText(
                     text: 'Download Invoice',
                     icon: const Icon(
                       CupertinoIcons.down_arrow,
                       size: 12,
                     ),
                     borderRadius: kExtraSmallButtonRadius,
-                    isLoading: generateInvoiceProvider.apiResponse.status ==
-                        ApiStatus.LOADING,
+                    isLoading: generateInvoiceProvider.apiResponse.status == ApiStatus.LOADING,
                     onPressed: () async {
                       await generateInvoiceProvider.vendorGenerateOrderInvoice(
-                          orderId: widget.orderID.toString(),);
+                        orderId: widget.orderID.toString(),
+                      );
                     },
                   ),
                 ),
@@ -502,8 +527,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                 ChangeNotifierProvider(
                   create: (context) => VendorUpdateOrderViewModel(),
                   child: Consumer<VendorUpdateOrderViewModel>(
-                    builder: (context, vendorUpdateOrderProvider, _) =>
-                        CustomAppButton(
+                    builder: (context, vendorUpdateOrderProvider, _) => CustomAppButton(
                       buttonText: 'Save',
                       textStyle: const TextStyle(color: Colors.black),
                       borderColor: AppColors.stoneGray,
@@ -511,19 +535,23 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                       buttonColor: Colors.transparent,
                       loadingIndicatorColor: AppColors.lightCoral,
                       padding: EdgeInsets.symmetric(
-                          horizontal: kPadding, vertical: kExtraSmallPadding,),
-                      isLoading: vendorUpdateOrderProvider.apiResponse.status ==
-                          ApiStatus.LOADING,
+                        horizontal: kPadding,
+                        vertical: kExtraSmallPadding,
+                      ),
+                      isLoading: vendorUpdateOrderProvider.apiResponse.status == ApiStatus.LOADING,
                       onTap: () async {
                         try {
                           if (_noteController.text.isEmpty) {
                             AlertServices.showErrorSnackBar(
-                                message: 'Please add note.', context: context,);
+                              message: 'Please add note.',
+                              context: context,
+                            );
                           } else {
                             await vendorUpdateOrderProvider.vendorUpdateOrder(
-                                orderID: widget.orderID.toString(),
-                                description: _noteController.text,
-                                context: context,);
+                              orderID: widget.orderID.toString(),
+                              description: _noteController.text,
+                              context: context,
+                            );
                           }
                         } catch (e) {}
                       },
@@ -548,7 +576,8 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                   children: [
                     StatusLabel(
                       label: showOrderConfirmationLabel(
-                          !(orderData?.isConfirmed ?? false),),
+                        !(orderData?.isConfirmed ?? false),
+                      ),
                       icon: CupertinoIcons.checkmark_alt,
                       iconColor: !(orderData?.isConfirmed ?? false)
                           ? AppColors.stoneGray
@@ -558,29 +587,28 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                       ChangeNotifierProvider(
                         create: (context) => VendorConfirmOrderViewModel(),
                         child: Consumer<VendorConfirmOrderViewModel>(
-                          builder: (context, vendorConfirmOrderProvider, _) =>
-                              CustomAppButton(
+                          builder: (context, vendorConfirmOrderProvider, _) => CustomAppButton(
                             buttonText: 'Confirm',
                             buttonColor: Colors.blue,
                             padding: const EdgeInsets.symmetric(
-                                vertical: 4, horizontal: 10,),
+                              vertical: 4,
+                              horizontal: 10,
+                            ),
                             borderRadius: kSmallButtonRadius,
                             textStyle: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w500,),
-                            isLoading:
-                                vendorConfirmOrderProvider.apiResponse.status ==
-                                    ApiStatus.LOADING,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w500,
+                            ),
+                            isLoading: vendorConfirmOrderProvider.apiResponse.status == ApiStatus.LOADING,
                             onTap: () async {
                               try {
-                                final result = await vendorConfirmOrderProvider
-                                    .vendorConfirmOrder(
-                                        orderID: widget.orderID.toString(),
-                                        context: context,);
+                                final result = await vendorConfirmOrderProvider.vendorConfirmOrder(
+                                  orderID: widget.orderID.toString(),
+                                  context: context,
+                                );
                                 if (result) {
                                   await _onRefresh();
-                                  final vendorAllOrdersProvider =
-                                      context.read<VendorGetOrdersViewModel>();
+                                  final vendorAllOrdersProvider = context.read<VendorGetOrdersViewModel>();
                                   vendorAllOrdersProvider.clearList();
 
                                   /// clear all orders list first.
@@ -641,9 +669,11 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                 ),
                 kExtraSmallSpace,
                 showStatusBox(
-                    statusText: shipment?.status?.label ?? '',
-                    color: AppColors.getShipmentStatusColor(
-                        shipment?.status?.value,),),
+                  statusText: shipment?.status?.label ?? '',
+                  color: AppColors.getShipmentStatusColor(
+                    shipment?.status?.value,
+                  ),
+                ),
 
                 kMediumSpace,
 
@@ -673,8 +703,11 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                   style: dataColumnTextStyle(),
                 ),
                 kExtraSmallSpace,
-                Text(Utils.formatTimestamp(
-                    shipment?.updatedAt?.toString() ?? '',),),
+                Text(
+                  AppUtils.formatTimestamp(
+                    shipment?.updatedAt?.toString() ?? '',
+                  ),
+                ),
               ],
             ),
           ),
@@ -685,10 +718,13 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
               isShipmentStatusValid(shipment?.status?.value))
             Container(
               padding: EdgeInsets.symmetric(
-                  horizontal: kPadding, vertical: kSmallPadding,),
+                horizontal: kPadding,
+                vertical: kSmallPadding,
+              ),
               decoration: BoxDecoration(
-                  color: Colors.grey.shade200,
-                  border: Border(top: BorderSide(color: Colors.grey.shade300)),),
+                color: Colors.grey.shade200,
+                border: Border(top: BorderSide(color: Colors.grey.shade300)),
+              ),
               child: Row(
                 children: [
                   CustomIconButtonWithText(
@@ -709,13 +745,17 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                         builder: (context) => AlertDialog(
                           backgroundColor: Colors.white,
                           shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(kCardRadius),),
+                            borderRadius: BorderRadius.circular(kCardRadius),
+                          ),
                           title: Container(
                             padding: const EdgeInsets.only(bottom: 5),
                             decoration: BoxDecoration(
-                                border: Border(
-                                    bottom: BorderSide(
-                                        color: Colors.grey.shade300,),),),
+                              border: Border(
+                                bottom: BorderSide(
+                                  color: Colors.grey.shade300,
+                                ),
+                              ),
+                            ),
                             child: Text(
                               'Update Shipping Status',
                               style: detailsTitleStyle.copyWith(fontSize: 16),
@@ -728,15 +768,15 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                               CustomDropdown(
                                 hintText: 'Select shipment status',
                                 textStyle: const TextStyle(color: Colors.black),
-                                menuItemsList: provider.apiResponse.data?.data
-                                        ?.shippingStatuses
+                                menuItemsList: provider.apiResponse.data?.data?.shippingStatuses
                                         ?.map(
                                           (element) => DropdownMenuItem(
                                             value: element.value?.toString(),
                                             child: Text(
                                               element.label?.toString() ?? '',
                                               style: const TextStyle(
-                                                  color: Colors.black,),
+                                                color: Colors.black,
+                                              ),
                                             ),
                                           ),
                                         )
@@ -756,7 +796,9 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                               buttonColor: Colors.white,
                               borderRadius: kSmallButtonRadius,
                               padding: const EdgeInsets.symmetric(
-                                  vertical: 5, horizontal: 10,),
+                                vertical: 5,
+                                horizontal: 10,
+                              ),
                               textStyle: TextStyle(color: Colors.grey.shade900),
                               borderColor: Colors.grey,
                               onTap: () {
@@ -764,41 +806,29 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                               },
                             ),
                             ChangeNotifierProvider(
-                              create: (context) =>
-                                  VendorUpdateShipmentStatusViewModel(),
-                              child:
-                                  Consumer<VendorUpdateShipmentStatusViewModel>(
-                                builder: (context, updateStatusProvider, _) =>
-                                    CustomAppButton(
+                              create: (context) => VendorUpdateShipmentStatusViewModel(),
+                              child: Consumer<VendorUpdateShipmentStatusViewModel>(
+                                builder: (context, updateStatusProvider, _) => CustomAppButton(
                                   buttonText: 'Update',
                                   buttonColor: AppColors.lightCoral,
                                   borderRadius: kSmallButtonRadius,
                                   padding: const EdgeInsets.symmetric(
-                                      vertical: 5, horizontal: 10,),
-                                  textStyle:
-                                      const TextStyle(color: Colors.white),
-                                  isLoading:
-                                      updateStatusProvider.apiResponse.status ==
-                                          ApiStatus.LOADING,
+                                    vertical: 5,
+                                    horizontal: 10,
+                                  ),
+                                  textStyle: const TextStyle(color: Colors.white),
+                                  isLoading: updateStatusProvider.apiResponse.status == ApiStatus.LOADING,
                                   onTap: () async {
                                     try {
-                                      if (_shipmentStatusController
-                                          .text.isEmpty) {
+                                      if (_shipmentStatusController.text.isEmpty) {
                                         AlertServices.showErrorSnackBar(
-                                            message:
-                                                'Please Select shipment status',
-                                            context: context,);
+                                          message: 'Please Select shipment status',
+                                          context: context,
+                                        );
                                       } else {
-                                        final bool result =
-                                            await updateStatusProvider
-                                                .vendorUpdateShipmentStatus(
-                                          shipmentID:
-                                              shipment?.id?.toString().trim() ??
-                                                  '',
-                                          shipmentStatus:
-                                              _shipmentStatusController.text
-                                                  .toString()
-                                                  .trim(),
+                                        final bool result = await updateStatusProvider.vendorUpdateShipmentStatus(
+                                          shipmentID: shipment?.id?.toString().trim() ?? '',
+                                          shipmentStatus: _shipmentStatusController.text.toString().trim(),
                                           context: context,
                                         );
                                         if (result) {
@@ -836,10 +866,11 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
             children: [
               Padding(
                 padding: EdgeInsets.only(
-                    top: kPadding,
-                    left: kPadding,
-                    right: kPadding,
-                    bottom: kExtraSmallPadding,),
+                  top: kPadding,
+                  left: kPadding,
+                  right: kPadding,
+                  bottom: kExtraSmallPadding,
+                ),
                 child: Text(
                   'History',
                   style: titleTextStyle(),
@@ -867,41 +898,37 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
 
               /// Resend email button
               if (history.isNotEmpty == true &&
-                  history.any((element) =>
-                          element.action?.toString() ==
-                          'send_order_confirmation_email',) ==
+                  history.any(
+                        (element) => element.action?.toString() == 'send_order_confirmation_email',
+                      ) ==
                       true)
                 Padding(
                   padding: EdgeInsets.only(
-                      left: kPadding, right: kPadding, bottom: kPadding,),
+                    left: kPadding,
+                    right: kPadding,
+                    bottom: kPadding,
+                  ),
                   child: Row(
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       ChangeNotifierProvider(
-                        create: (context) =>
-                            VendorSendConfirmationEmailViewModel(),
+                        create: (context) => VendorSendConfirmationEmailViewModel(),
                         child: Consumer<VendorSendConfirmationEmailViewModel>(
-                          builder:
-                              (context, sendConfirmationEmailProvider, _) =>
-                                  CustomAppButton(
+                          builder: (context, sendConfirmationEmailProvider, _) => CustomAppButton(
                             buttonText: 'Resend Email',
                             buttonColor: Colors.transparent,
-                            textStyle:
-                                const TextStyle(color: AppColors.lightCoral),
+                            textStyle: const TextStyle(color: AppColors.lightCoral),
                             borderRadius: kSmallButtonRadius,
                             borderColor: AppColors.lightCoral,
                             loadingIndicatorColor: AppColors.lightCoral,
-                            isLoading: sendConfirmationEmailProvider
-                                    .apiResponse.status ==
-                                ApiStatus.LOADING,
+                            isLoading: sendConfirmationEmailProvider.apiResponse.status == ApiStatus.LOADING,
                             onTap: () async {
                               try {
-                                final bool result =
-                                    await sendConfirmationEmailProvider
-                                        .vendorSendConfirmationEmail(
-                                            orderID: widget.orderID.toString(),
-                                            context: context,);
+                                final bool result = await sendConfirmationEmailProvider.vendorSendConfirmationEmail(
+                                  orderID: widget.orderID.toString(),
+                                  context: context,
+                                );
                                 if (result) {
                                   await _onRefresh();
                                 }
@@ -922,8 +949,9 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
   }
 
   /// custom details
-  Widget _customerInformation(
-      {required VendorGetOrderDetailsViewModel provider,}) {
+  Widget _customerInformation({
+    required VendorGetOrderDetailsViewModel provider,
+  }) {
     final orderData = provider.apiResponse.data?.data;
     final customer = provider.apiResponse.data?.data?.customer;
     final shipping = provider.apiResponse.data?.data?.shipping;
@@ -938,10 +966,11 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
             children: [
               Padding(
                 padding: EdgeInsets.only(
-                    left: kPadding,
-                    right: kPadding,
-                    top: kPadding,
-                    bottom: kSmallPadding,),
+                  left: kPadding,
+                  right: kPadding,
+                  top: kPadding,
+                  bottom: kSmallPadding,
+                ),
                 child: Text('Customer', style: titleTextStyle()),
               ),
             ],
@@ -952,7 +981,9 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
 
           Padding(
             padding: EdgeInsets.symmetric(
-                horizontal: kPadding, vertical: kSmallPadding,),
+              horizontal: kPadding,
+              vertical: kSmallPadding,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -962,23 +993,28 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                   // Half of width/height (50/2)
                   backgroundColor: AppColors.lightCoral,
                   // Optional: background color
-                  backgroundImage: customer?.avatarUrl != null &&
-                          customer!.avatarUrl!.isNotEmpty
+                  backgroundImage: customer?.avatarUrl != null && customer!.avatarUrl!.isNotEmpty
                       ? NetworkImage(customer.avatarUrl!)
                       : null,
                   onBackgroundImageError: (_, __) {},
                   // Handles image errors gracefully
-                  child: (customer?.avatarUrl == null ||
-                          customer!.avatarUrl!.isEmpty)
-                      ? const Icon(Icons.person,
-                          color: Colors.grey, size: 30,) // Placeholder icon
+                  child: (customer?.avatarUrl == null || customer!.avatarUrl!.isEmpty)
+                      ? const Icon(
+                          Icons.person,
+                          color: Colors.grey,
+                          size: 30,
+                        ) // Placeholder icon
                       : null,
                 ),
 
                 kExtraSmallSpace,
-                Text(customer?.name?.toString() ?? '',
-                    style: const TextStyle(
-                        fontSize: 15, fontWeight: FontWeight.normal,),),
+                Text(
+                  customer?.name?.toString() ?? '',
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.normal,
+                  ),
+                ),
                 kMinorSpace,
                 // number of orders
                 Row(
@@ -995,7 +1031,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                 /// email
                 GestureDetector(
                   onTap: () async {
-                    await Utils.launchEmail(customer?.email?.toString() ?? '');
+                    await AppUtils.launchEmail(customer?.email?.toString() ?? '');
                   },
                   child: Text(
                     customer?.email?.toString() ?? '',
@@ -1014,7 +1050,11 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
           ),
           Padding(
             padding: EdgeInsets.only(
-                left: kPadding, right: kPadding, top: kSmallPadding, bottom: 0,),
+              left: kPadding,
+              right: kPadding,
+              top: kSmallPadding,
+              bottom: 0,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -1025,7 +1065,9 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                       child: Text(
                         'Shipping Information',
                         style: detailsTitleStyle.copyWith(
-                            fontSize: 17, fontWeight: FontWeight.w500,),
+                          fontSize: 17,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
                     if (isOrderStatusValid(orderData?.orderStatus?.value))
@@ -1036,10 +1078,11 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                             context: context,
                             isScrollControlled: true,
                             shape: const RoundedRectangleBorder(
-                                borderRadius: BorderRadius.vertical(
-                                    top: Radius.circular(4),),),
-                            builder: (context) =>
-                                VendorUpdateShippingAddressBottomSheetView(
+                              borderRadius: BorderRadius.vertical(
+                                top: Radius.circular(4),
+                              ),
+                            ),
+                            builder: (context) => VendorUpdateShippingAddressBottomSheetView(
                               orderId: widget.orderID.toString(),
                               shipmentId: shipping?.id?.toString() ?? '',
                               formKey: GlobalKey<FormState>(),
@@ -1075,9 +1118,13 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                 kExtraSmallSpace,
 
                 /// name
-                Text(shipping?.name?.toString() ?? '',
-                    style: const TextStyle(
-                        fontSize: 15, fontWeight: FontWeight.normal,),),
+                Text(
+                  shipping?.name?.toString() ?? '',
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.normal,
+                  ),
+                ),
                 kMinorSpace,
 
                 /// phone number
@@ -1093,9 +1140,10 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                     Expanded(
                       child: GestureDetector(
                         onTap: () async {
-                          await Utils.makePhoneCall(
-                              phoneNumber: shipping?.phone?.toString() ?? '',
-                              context: context,);
+                          await AppUtils.makePhoneCall(
+                            phoneNumber: shipping?.phone?.toString() ?? '',
+                            context: context,
+                          );
                         },
                         child: Text(
                           shipping?.phone?.toString() ?? '',
@@ -1110,7 +1158,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
                 /// email
                 GestureDetector(
                   onTap: () async {
-                    await Utils.launchEmail(shipping?.email?.toString() ?? '');
+                    await AppUtils.launchEmail(shipping?.email?.toString() ?? '');
                   },
                   child: Text(
                     shipping?.email?.toString() ?? '',
@@ -1143,43 +1191,44 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
             Container(
               width: double.infinity,
               padding: EdgeInsets.only(
-                  left: kPadding,
-                  right: kPadding,
-                  top: kExtraSmallPadding,
-                  bottom: kExtraSmallPadding,),
+                left: kPadding,
+                right: kPadding,
+                top: kExtraSmallPadding,
+                bottom: kExtraSmallPadding,
+              ),
               decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
-                  border: Border(top: BorderSide(color: Colors.grey.shade300)),),
+                color: Colors.grey.shade100,
+                border: Border(top: BorderSide(color: Colors.grey.shade300)),
+              ),
               child: Row(
                 children: [
                   ChangeNotifierProvider(
                     create: (context) => VendorCancelOrderViewModel(),
                     child: Consumer<VendorCancelOrderViewModel>(
-                      builder: (context, cancelOrderProvider, _) =>
-                          CustomAppButton(
+                      builder: (context, cancelOrderProvider, _) => CustomAppButton(
                         buttonText: 'Cancel',
                         borderColor: AppColors.stoneGray,
                         borderRadius: kSmallButtonRadius,
                         buttonColor: Colors.white,
                         loadingIndicatorColor: AppColors.lightCoral,
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 7,),
+                          horizontal: 10,
+                          vertical: 7,
+                        ),
                         textStyle: const TextStyle(color: Colors.black),
-                        isLoading: cancelOrderProvider.apiResponse.status ==
-                            ApiStatus.LOADING,
+                        isLoading: cancelOrderProvider.apiResponse.status == ApiStatus.LOADING,
                         onTap: () async {
                           deleteItemAlertDialog(
                             context: context,
-                            descriptionText:
-                                'Are you sure you want to cancel this order?',
+                            descriptionText: 'Are you sure you want to cancel this order?',
                             buttonText: 'Cancel',
                             onDelete: () async {
                               try {
                                 Navigator.of(context).pop();
-                                final result =
-                                    await cancelOrderProvider.vendorCancelOrder(
-                                        orderID: widget.orderID.toString(),
-                                        context: context,);
+                                final result = await cancelOrderProvider.vendorCancelOrder(
+                                  orderID: widget.orderID.toString(),
+                                  context: context,
+                                );
                                 if (result) {
                                   await _onRefresh();
                                 }
@@ -1199,11 +1248,12 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView>
   }
 }
 
-Widget _buildCell(
-        {Widget? customText,
-        String? text,
-        bool isBold = false,
-        bool isEndAligned = false,}) =>
+Widget _buildCell({
+  Widget? customText,
+  String? text,
+  bool isBold = false,
+  bool isEndAligned = false,
+}) =>
     Padding(
       padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8.0),
       // Horizontal padding for spacing between columns
@@ -1219,8 +1269,7 @@ Widget _buildCell(
           ),
     );
 
-TextStyle titleTextStyle() =>
-    detailsTitleStyle.copyWith(fontSize: 16, fontWeight: FontWeight.w600);
+TextStyle titleTextStyle() => detailsTitleStyle.copyWith(fontSize: 16, fontWeight: FontWeight.w600);
 
 class StatusLabel extends StatelessWidget {
   const StatusLabel({
@@ -1262,6 +1311,5 @@ bool isOrderStatusValid(String? status) {
   return validStatuses.contains(status);
 }
 
-String showOrderConfirmationLabel(bool isConfirmed) => !isConfirmed
-    ? OrderConfirmationConst.ORDER_WAS_CONFIRMED
-    : OrderConfirmationConst.CONFIRM_ORDER;
+String showOrderConfirmationLabel(bool isConfirmed) =>
+    !isConfirmed ? OrderConfirmationConst.ORDER_WAS_CONFIRMED : OrderConfirmationConst.CONFIRM_ORDER;

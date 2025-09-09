@@ -1,4 +1,3 @@
-
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/models/product_packages_models/product_filters_model.dart';
 import 'package:event_app/provider/api_response_handler.dart';
@@ -66,11 +65,8 @@ class ProductProvider with ChangeNotifier {
       }
     }).join('&');
 
-    final baseUrl =
-        '${ApiEndpoints.userByTypeProducts}?per-page=$perPage&page=$page&sort-by=$sortBy&store_id=$storeId';
-    final url = filtersQuery.isNotEmpty
-        ? '$baseUrl&$filtersQuery&allcategories=1'
-        : baseUrl;
+    final baseUrl = '${ApiEndpoints.userByTypeProducts}?per-page=$perPage&page=$page&sort-by=$sortBy&store_id=$storeId';
+    final url = filtersQuery.isNotEmpty ? '$baseUrl&$filtersQuery&allcategories=1' : baseUrl;
 
     try {
       final response = await _apiResponseHandler.getRequest(
@@ -130,8 +126,7 @@ class ProductProvider with ChangeNotifier {
     }
     notifyListeners();
 
-    final url =
-        '${ApiEndpoints.userByTypePackages}?per-page=$perPage&page=$page&sort-by=$sortBy&store_id=$storeId';
+    final url = '${ApiEndpoints.userByTypePackages}?per-page=$perPage&page=$page&sort-by=$sortBy&store_id=$storeId';
 
     try {
       final response = await _apiResponseHandler.getRequest(
@@ -143,8 +138,7 @@ class ProductProvider with ChangeNotifier {
         final data = response.data;
 
         final Map<String, dynamic> jsonResponse = response.data;
-        final TopBrandsProducts apiResponse =
-            TopBrandsProducts.fromJson(jsonResponse);
+        final TopBrandsProducts apiResponse = TopBrandsProducts.fromJson(jsonResponse);
 
         if (page == 1) {
           _records = apiResponse.data?.records ?? [];

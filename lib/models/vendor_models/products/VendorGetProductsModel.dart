@@ -4,11 +4,9 @@ import 'dart:convert';
 /// data : {"pagination":{"total":2,"last_page":1,"current_page":1,"per_page":10},"records":[{"id":3113,"name":"Test Product 2","order":0,"status":{"value":"pending","label":"Pending"},"sku":"MF-2443-XLVBV","image":"https://apistaging.theevents.ae/storage/stores/apple/1024-1024-image-1-250x250.jpg","price":100,"price_format":"AED100.00","sale_price":100,"sale_price_format":"AED100.00","start_date":null,"end_date":null,"quantity":null,"with_storehouse_management":false,"created_at":"2025-01-24 09:28:53"},{"id":3112,"name":"Test Product","order":0,"status":{"value":"published","label":"Published"},"sku":"MF-2443-JXODU","image":"https://apistaging.theevents.ae/vendor/core/core/base/images/placeholder.png","price":10,"price_format":"AED10.00","sale_price":10,"sale_price_format":"AED10.00","start_date":null,"end_date":null,"quantity":1000,"with_storehouse_management":true,"created_at":"2025-01-24 09:24:38"}]}
 /// message : null
 
-VendorGetProductsModel vendorGetProductsModelFromJson(String str) =>
-    VendorGetProductsModel.fromJson(json.decode(str));
+VendorGetProductsModel vendorGetProductsModelFromJson(String str) => VendorGetProductsModel.fromJson(json.decode(str));
 
-String vendorGetProductsModelToJson(VendorGetProductsModel data) =>
-    json.encode(data.toJson());
+String vendorGetProductsModelToJson(VendorGetProductsModel data) => json.encode(data.toJson());
 
 class VendorGetProductsModel {
   VendorGetProductsModel({
@@ -76,9 +74,7 @@ class Data {
   }
 
   Data.fromJson(json) {
-    _pagination = json['pagination'] != null
-        ? Pagination.fromJson(json['pagination'])
-        : null;
+    _pagination = json['pagination'] != null ? Pagination.fromJson(json['pagination']) : null;
     if (json['records'] != null) {
       _records = [];
       json['records'].forEach((v) {
@@ -115,8 +111,7 @@ class Data {
   }
 }
 
-GetProductRecords recordsFromJson(String str) =>
-    GetProductRecords.fromJson(json.decode(str));
+GetProductRecords recordsFromJson(String str) => GetProductRecords.fromJson(json.decode(str));
 
 String recordsToJson(GetProductRecords data) => json.encode(data.toJson());
 
@@ -226,8 +221,7 @@ class GetProductRecords {
         startDate: startDate ?? _startDate,
         endDate: endDate ?? _endDate,
         quantity: quantity ?? _quantity,
-        withStorehouseManagement:
-            withStorehouseManagement ?? _withStorehouseManagement,
+        withStorehouseManagement: withStorehouseManagement ?? _withStorehouseManagement,
         createdAt: createdAt ?? _createdAt,
       );
 
@@ -346,8 +340,7 @@ class Status {
 /// current_page : 1
 /// per_page : 10
 
-Pagination paginationFromJson(String str) =>
-    Pagination.fromJson(json.decode(str));
+Pagination paginationFromJson(String str) => Pagination.fromJson(json.decode(str));
 
 String paginationToJson(Pagination data) => json.encode(data.toJson());
 

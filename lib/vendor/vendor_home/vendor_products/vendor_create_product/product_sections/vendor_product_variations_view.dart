@@ -16,7 +16,7 @@ import 'package:event_app/vendor/components/dialogs/delete_item_alert_dialog.dar
 import 'package:event_app/vendor/components/list_tiles/custom_records_list_tile.dart';
 import 'package:event_app/vendor/components/radio_buttons/custom_radio_button.dart';
 import 'package:event_app/vendor/components/services/alert_services.dart';
-import 'package:event_app/vendor/components/utils/utils.dart';
+import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/vendor/components/vendor_tool_bar_widgets/vendor_tool_bar_widgets.dart';
 import 'package:event_app/vendor/vendor_home/vendor_products/vendor_create_product/product_sections/vendor_edit_variations.dart';
 import 'package:event_app/vendor/view_models/vendor_products/vendor_create_product_view_model.dart';
@@ -34,15 +34,14 @@ import '../../../../components/generics/debouced_search.dart';
 
 class VendorProductHasVariationsView extends StatefulWidget {
   const VendorProductHasVariationsView({super.key, this.productID});
+
   final String? productID;
 
   @override
-  State<VendorProductHasVariationsView> createState() =>
-      _VendorProductHasVariationsViewState();
+  State<VendorProductHasVariationsView> createState() => _VendorProductHasVariationsViewState();
 }
 
-class _VendorProductHasVariationsViewState
-    extends State<VendorProductHasVariationsView> with MediaQueryMixin {
+class _VendorProductHasVariationsViewState extends State<VendorProductHasVariationsView> with MediaQueryMixin {
   /// To show modal progress hud
   bool _isProcessing = false;
 
@@ -61,15 +60,18 @@ class _VendorProductHasVariationsViewState
   Future _onRefresh() async {
     try {
       // setProcessing(true);
-      final provider = Provider.of<VendorGetProductVariationsViewModel>(context,
-          listen: false,);
+      final provider = Provider.of<VendorGetProductVariationsViewModel>(
+        context,
+        listen: false,
+      );
 
       /// clear list on refresh
       provider.clearList();
       setState(() {});
       await provider.vendorGetProductVariations(
-          productID: widget.productID ?? '',
-          searchString: _searchController.text,);
+        productID: widget.productID ?? '',
+        searchString: _searchController.text,
+      );
 
       if (provider.list.isEmpty && _searchController.text.isEmpty) {
         Navigator.pop(context, null);
@@ -77,8 +79,7 @@ class _VendorProductHasVariationsViewState
       }
 
       /// ******** Get attributes set start **********
-      final vendorGetAttributesSetProvider =
-          Provider.of<VendorCreateProductViewModel>(context, listen: false);
+      final vendorGetAttributesSetProvider = Provider.of<VendorCreateProductViewModel>(context, listen: false);
       await vendorGetAttributesSetProvider.getAttributeSetsData();
 
       /// ******** Get attributes set end **********
@@ -94,14 +95,16 @@ class _VendorProductHasVariationsViewState
   /// load more data
   Future<void> _loadMoreData() async {
     // Load more data here
-    if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent) {
-      final provider = Provider.of<VendorGetProductVariationsViewModel>(context,
-          listen: false,);
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent) {
+      final provider = Provider.of<VendorGetProductVariationsViewModel>(
+        context,
+        listen: false,
+      );
       if (provider.apiResponse.status != ApiStatus.LOADING) {
         await provider.vendorGetProductVariations(
-            productID: widget.productID ?? '',
-            searchString: _searchController.text,);
+          productID: widget.productID ?? '',
+          searchString: _searchController.text,
+        );
       }
     }
   }
@@ -144,13 +147,15 @@ class _VendorProductHasVariationsViewState
               Navigator.pop(context);
             },
           ),
-          body: Utils.modelProgressHud(
+          body: AppUtils.modelProgressHud(
+            context: context,
+            processing: _isProcessing,
+            child: AppUtils.pageRefreshIndicator(
+              onRefresh: _onRefresh,
+              child: _buildUi(context),
               context: context,
-              processing: _isProcessing,
-              child: Utils.pageRefreshIndicator(
-                  onRefresh: _onRefresh,
-                  child: _buildUi(context),
-                  context: context,),),
+            ),
+          ),
         ),
       );
 
@@ -169,12 +174,12 @@ class _VendorProductHasVariationsViewState
                   /// current api status
                   final ApiStatus? apiStatus = provider.apiResponse.status;
                   if (apiStatus == ApiStatus.LOADING && provider.list.isEmpty) {
-                    return Utils.pageLoadingIndicator(context: context);
+                    return AppUtils.pageLoadingIndicator(context: context);
                   }
                   if (apiStatus == ApiStatus.ERROR) {
                     return ListView(
                       children: [
-                        Utils.somethingWentWrong(),
+                        AppUtils.somethingWentWrong(),
                       ],
                     );
                   }
@@ -182,10 +187,8 @@ class _VendorProductHasVariationsViewState
                     child: VendorDataListBuilder(
                       scrollController: _scrollController,
                       listLength: provider.list.length,
-                      loadingMoreData:
-                          provider.apiResponse.status == ApiStatus.LOADING,
-                      contentBuilder: (context) =>
-                          _buildRecordsList(provider: provider),
+                      loadingMoreData: provider.apiResponse.status == ApiStatus.LOADING,
+                      contentBuilder: (context) => _buildRecordsList(provider: provider),
                     ),
                   );
                 },
@@ -195,8 +198,9 @@ class _VendorProductHasVariationsViewState
         ),
       );
 
-  Widget _buildRecordsList(
-          {required VendorGetProductVariationsViewModel provider,}) =>
+  Widget _buildRecordsList({
+    required VendorGetProductVariationsViewModel provider,
+  }) =>
       ListView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
@@ -207,8 +211,7 @@ class _VendorProductHasVariationsViewState
             mainAxisSize: MainAxisSize.min,
             children: [
               CustomRecordListTile(
-                onTap: () =>
-                    _onRowTap(rowData: productVariation, context: context),
+                onTap: () => _onRowTap(rowData: productVariation, context: context),
                 imageAddress: productVariation.imagePath.toString(),
                 title: productVariation.id.toString(),
                 subtitleAsWidget: Column(
@@ -221,21 +224,20 @@ class _VendorProductHasVariationsViewState
                           const TextSpan(
                             text: 'Quantity: ',
                             style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 12,
-                                color: AppColors.peachyPink,),
+                              fontWeight: FontWeight.w500,
+                              fontSize: 12,
+                              color: AppColors.peachyPink,
+                            ),
                           ),
                           TextSpan(
-                            text: productVariation.quantity
-                                        ?.toString()
-                                        .trim() ==
-                                    '&#8734;'
+                            text: productVariation.quantity?.toString().trim() == '&#8734;'
                                 ? '\u221E'
                                 : productVariation.quantity?.toString() ?? '--',
                             style: const TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 13,
-                                color: Colors.black,), // Add emphasis if needed
+                              fontWeight: FontWeight.w500,
+                              fontSize: 13,
+                              color: Colors.black,
+                            ), // Add emphasis if needed
                           ),
                         ],
                       ),
@@ -246,15 +248,18 @@ class _VendorProductHasVariationsViewState
                       value: productVariation.isDefault,
                       groupValue: provider.list.any((p) => p.isDefault == true)
                           ? provider.list
-                              .firstWhere((p) => p.isDefault ?? false,
-                                  orElse: () => provider.list.first,)
+                              .firstWhere(
+                                (p) => p.isDefault ?? false,
+                                orElse: () => provider.list.first,
+                              )
                               .isDefault
                           : null,
                       // Set null if no item is default
                       padding: EdgeInsets.zero,
                       onChanged: (value) => _setDefaultVariation(
-                          productVariation: productVariation,
-                          provider: provider,),
+                        productVariation: productVariation,
+                        provider: provider,
+                      ),
                       title: 'Is Default',
                       textStyle: dataColumnTextStyle(),
                     ),
@@ -265,43 +270,47 @@ class _VendorProductHasVariationsViewState
                   mainAxisAlignment: MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    if ((productVariation.fileInternalCount?.toString() ?? '')
-                        .isNotEmpty)
+                    if ((productVariation.fileInternalCount?.toString() ?? '').isNotEmpty)
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            productVariation.fileInternalCount?.toString() ??
-                                '',
+                            productVariation.fileInternalCount?.toString() ?? '',
                             style: const TextStyle(
-                                fontSize: 16, color: Colors.black,),
+                              fontSize: 16,
+                              color: Colors.black,
+                            ),
                           ),
-                          const Icon(Icons.attach_file,
-                              color: Colors.black, size: 20,),
+                          const Icon(
+                            Icons.attach_file,
+                            color: Colors.black,
+                            size: 20,
+                          ),
                         ],
                       )
                     else
                       kShowVoid,
                     kSmallSpace, // Optional spacing between items
-                    if ((productVariation.fileExternalCount?.toString() ?? '')
-                        .isNotEmpty)
+                    if ((productVariation.fileExternalCount?.toString() ?? '').isNotEmpty)
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            productVariation.fileExternalCount?.toString() ??
-                                '',
+                            productVariation.fileExternalCount?.toString() ?? '',
                             style: const TextStyle(
-                                fontSize: 13, color: Colors.black,),
+                              fontSize: 13,
+                              color: Colors.black,
+                            ),
                           ),
                           Transform.rotate(
-                            angle: 135 *
-                                3.1415927 /
-                                180, // Rotate the icon 45 degrees to make it diagonal
-                            child: const Icon(Icons.link_outlined,
-                                color: Colors.black, size: 20,),
+                            angle: 135 * 3.1415927 / 180, // Rotate the icon 45 degrees to make it diagonal
+                            child: const Icon(
+                              Icons.link_outlined,
+                              color: Colors.black,
+                              size: 20,
+                            ),
                           ),
                         ],
                       )
@@ -311,20 +320,16 @@ class _VendorProductHasVariationsViewState
                 ),
                 multiplePrice: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
-                  mainAxisSize: MainAxisSize
-                      .min, // Prevents Column from taking full height
+                  mainAxisSize: MainAxisSize.min, // Prevents Column from taking full height
                   children: [
-                    if ((productVariation.price ?? 0) >
-                        (productVariation.salePrice ?? 0)) ...{
+                    if ((productVariation.price ?? 0) > (productVariation.salePrice ?? 0)) ...{
                       Text(
                         productVariation.salePriceFormat?.toString() ?? '--',
                         style: dataRowTextStyle().copyWith(color: Colors.black),
                       ),
                       Text(
                         productVariation.priceFormat?.toString() ?? '--',
-                        style: dataRowTextStyle()
-                            .copyWith(color: Colors.red)
-                            .copyWith(
+                        style: dataRowTextStyle().copyWith(color: Colors.red).copyWith(
                               decoration: TextDecoration.lineThrough,
                               decorationColor: Colors.red,
                             ),
@@ -375,12 +380,10 @@ class _VendorProductHasVariationsViewState
                     }
                   },
                   textEditingController: _searchController,
-                  onChanged: (value) =>
-                      debouncedSearch<VendorGetProductsViewModel>(
+                  onChanged: (value) => debouncedSearch<VendorGetProductsViewModel>(
                     context: context,
                     value: value,
-                    providerGetter: (context) =>
-                        context.read<VendorGetProductsViewModel>(),
+                    providerGetter: (context) => context.read<VendorGetProductsViewModel>(),
                     refreshFunction: _onRefresh,
                   ),
                 ),
@@ -419,17 +422,14 @@ class _VendorProductHasVariationsViewState
                   /// ******** Get selected attributes set start **********
                   setProcessing(true);
 
-                  final vendorGetSelectedAttributesSetProvider =
-                      context.read<VendorGetSelectedAttributesViewModel>();
-                  final result = await vendorGetSelectedAttributesSetProvider
-                      .vendorGetSelectedProductAttributes(
-                          productID: widget.productID!,);
+                  final vendorGetSelectedAttributesSetProvider = context.read<VendorGetSelectedAttributesViewModel>();
+                  final result = await vendorGetSelectedAttributesSetProvider.vendorGetSelectedProductAttributes(
+                    productID: widget.productID!,
+                  );
 
                   if (result) {
                     _selectedAttributesSet =
-                        vendorGetSelectedAttributesSetProvider
-                                .attributeSetsApiResponse.data?.data ??
-                            [];
+                        vendorGetSelectedAttributesSetProvider.attributeSetsApiResponse.data?.data ?? [];
                   }
                   setProcessing(false);
 
@@ -438,29 +438,28 @@ class _VendorProductHasVariationsViewState
                   showDraggableModalBottomSheet(
                     context: context,
                     builder: (scrollController) {
-                      final vendorGetAttributesSetProvider =
-                          context.read<VendorCreateProductViewModel>();
-                      final attributesSet = vendorGetAttributesSetProvider
-                              .attributeSetsApiResponse.data?.data ??
-                          [];
+                      final vendorGetAttributesSetProvider = context.read<VendorCreateProductViewModel>();
+                      final attributesSet = vendorGetAttributesSetProvider.attributeSetsApiResponse.data?.data ?? [];
 
                       return StatefulBuilder(
-                        builder: (context, setModalState) =>
-                            SingleChildScrollView(
+                        builder: (context, setModalState) => SingleChildScrollView(
                           controller: scrollController,
                           child: Column(
                             children: [
-                              Utils.dragHandle(context: context),
+                              AppUtils.dragHandle(context: context),
                               kFormFieldSpace,
                               const Center(
-                                child: Text('Select Attributes',
-                                    style: TextStyle(fontSize: 20),),
+                                child: Text(
+                                  'Select Attributes',
+                                  style: TextStyle(fontSize: 20),
+                                ),
                               ),
                               kFormFieldSpace,
                               const Divider(
-                                  color: Colors.grey,
-                                  thickness: 0.3,
-                                  height: 1,),
+                                color: Colors.grey,
+                                thickness: 0.3,
+                                height: 1,
+                              ),
 
                               /// Attributes selection
                               Padding(
@@ -473,9 +472,9 @@ class _VendorProductHasVariationsViewState
                                   alignment: WrapAlignment.start,
                                   runAlignment: WrapAlignment.start,
                                   children: attributesSet.map((attribute) {
-                                    final bool isSelected =
-                                        _selectedAttributesSet.any((selected) =>
-                                            selected.id == attribute.id,);
+                                    final bool isSelected = _selectedAttributesSet.any(
+                                      (selected) => selected.id == attribute.id,
+                                    );
 
                                     return CustomCheckboxWithTitle(
                                       isTitleExpanded: false,
@@ -484,13 +483,11 @@ class _VendorProductHasVariationsViewState
                                       onChanged: (value) {
                                         setModalState(() {
                                           if (value == true) {
-                                            _selectedAttributesSet
-                                                .add(attribute);
+                                            _selectedAttributesSet.add(attribute);
                                           } else {
                                             _selectedAttributesSet.removeWhere(
-                                                (selected) =>
-                                                    selected.id ==
-                                                    attribute.id,);
+                                              (selected) => selected.id == attribute.id,
+                                            );
                                           }
                                         });
                                       },
@@ -503,7 +500,8 @@ class _VendorProductHasVariationsViewState
                               if (_selectedAttributesSet.isEmpty)
                                 Padding(
                                   padding: EdgeInsets.symmetric(
-                                      horizontal: kPadding + kPadding,),
+                                    horizontal: kPadding + kPadding,
+                                  ),
                                   child: const Align(
                                     alignment: Alignment.centerLeft,
                                     child: Text(
@@ -518,50 +516,44 @@ class _VendorProductHasVariationsViewState
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   kCancelButton(
-                                      screenWidth: screenWidth,
-                                      context: context,),
+                                    screenWidth: screenWidth,
+                                    context: context,
+                                  ),
                                   kLargeSpace,
 
                                   /// save button
                                   ChangeNotifierProvider(
-                                    create: (context) =>
-                                        VendorEditProductAttributesViewModel(),
-                                    child: Consumer<
-                                        VendorEditProductAttributesViewModel>(
-                                      builder: (context, editAttributesProvider,
-                                              _,) =>
+                                    create: (context) => VendorEditProductAttributesViewModel(),
+                                    child: Consumer<VendorEditProductAttributesViewModel>(
+                                      builder: (
+                                        context,
+                                        editAttributesProvider,
+                                        _,
+                                      ) =>
                                           SizedBox(
                                         width: screenWidth * 0.25,
                                         child: CustomAppButton(
                                           buttonText: 'Save',
                                           buttonColor: AppColors.lightCoral,
-                                          isLoading: editAttributesProvider
-                                                  .apiResponse.status ==
-                                              ApiStatus.LOADING,
+                                          isLoading: editAttributesProvider.apiResponse.status == ApiStatus.LOADING,
                                           onTap: () async {
-                                            if (_selectedAttributesSet
-                                                .isEmpty) {
+                                            if (_selectedAttributesSet.isEmpty) {
                                               AlertServices.showErrorSnackBar(
-                                                  message:
-                                                      'Please select at least 1 attribute.',
-                                                  context: context,);
+                                                message: 'Please select at least 1 attribute.',
+                                                context: context,
+                                              );
                                               Navigator.pop(context);
                                               return;
                                             }
 
                                             try {
-                                              final List<int> attributesIDsSet =
-                                                  [];
+                                              final List<int> attributesIDsSet = [];
 
                                               /// add all attribute ids
-                                              for (final attribute
-                                                  in _selectedAttributesSet) {
-                                                attributesIDsSet
-                                                    .add(attribute.id);
+                                              for (final attribute in _selectedAttributesSet) {
+                                                attributesIDsSet.add(attribute.id);
                                               }
-                                              final result =
-                                                  await editAttributesProvider
-                                                      .vendorEditProductAttributes(
+                                              final result = await editAttributesProvider.vendorEditProductAttributes(
                                                 productID: widget.productID,
                                                 attributesSet: attributesIDsSet,
                                                 context: context,
@@ -594,8 +586,7 @@ class _VendorProductHasVariationsViewState
                 },
               ),
               ChangeNotifierProvider(
-                create: (context) =>
-                    VendorGenerateAllProductVariationsViewModel(),
+                create: (context) => VendorGenerateAllProductVariationsViewModel(),
                 child: Consumer<VendorGenerateAllProductVariationsViewModel>(
                   builder: (context, provider, _) => CustomIconButtonWithText(
                     text: 'Generate All Variations',
@@ -610,8 +601,7 @@ class _VendorProductHasVariationsViewState
                         context: context,
                         buttonColor: AppColors.cornflowerBlue,
                         buttonText: 'Generate',
-                        descriptionText:
-                            'Are you sure you want to generate all variations for this product?',
+                        descriptionText: 'Are you sure you want to generate all variations for this product?',
                         buttonIcon: const Icon(
                           Icons.all_out_outlined,
                           color: Colors.white,
@@ -620,10 +610,10 @@ class _VendorProductHasVariationsViewState
                           try {
                             Navigator.pop(context);
                             setProcessing(true);
-                            final result = await provider
-                                .vendorGenerateAllProductVariations(
-                                    productID: widget.productID,
-                                    context: context,);
+                            final result = await provider.vendorGenerateAllProductVariations(
+                              productID: widget.productID,
+                              context: context,
+                            );
 
                             /// TODO: REPLACE PRODUCT ID WITH ORIGINAL PRODUCT ID
                             if (result) {
@@ -653,9 +643,10 @@ class _VendorProductHasVariationsViewState
         ],
       );
 
-  void _onRowTap(
-      {required BuildContext context,
-      required ProductVariationRecord rowData,}) {
+  void _onRowTap({
+    required BuildContext context,
+    required ProductVariationRecord rowData,
+  }) {
     /// showing through bottom sheet
     showDraggableModalBottomSheet(
       context: context,
@@ -663,11 +654,12 @@ class _VendorProductHasVariationsViewState
         controller: scrollController,
         child: Column(
           children: [
-            Utils.dragHandle(context: context),
+            AppUtils.dragHandle(context: context),
             Container(
               decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(kCardRadius),),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(kCardRadius),
+              ),
               child: SafeArea(
                 child: Padding(
                   padding: EdgeInsets.all(kSmallPadding),
@@ -678,35 +670,35 @@ class _VendorProductHasVariationsViewState
                         Container(
                           height: 200,
                           decoration: BoxDecoration(
-                            borderRadius:
-                                BorderRadius.circular(kExtraSmallCardRadius),
+                            borderRadius: BorderRadius.circular(kExtraSmallCardRadius),
                             image: DecorationImage(
                               image: NetworkImage(
                                 rowData.imagePath.toString(),
                               ),
-                              fit: BoxFit.fill,
+                              fit: BoxFit.cover,
                             ),
                           ),
                         ),
                         kFormFieldSpace,
                         buildRow('ID', rowData.id?.toString()),
                         buildRow(
-                            'Quantity',
-                            rowData.quantity?.toString().trim() == '&#8734;'
-                                ? '\u221E'
-                                : rowData.quantity?.toString() ?? '--',),
+                          'Quantity',
+                          rowData.quantity?.toString().trim() == '&#8734;'
+                              ? '\u221E'
+                              : rowData.quantity?.toString() ?? '--',
+                        ),
                         ListView.builder(
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
-                          itemCount:
-                              rowData.selectedAttributeSets?.keys.length ?? 0,
+                          itemCount: rowData.selectedAttributeSets?.keys.length ?? 0,
                           itemBuilder: (context, index) {
-                            final entries =
-                                rowData.selectedAttributeSets?.entries.toList();
+                            final entries = rowData.selectedAttributeSets?.entries.toList();
                             return buildRow(
-                                getAttributeName(
-                                    entries?[index].key.toString() ?? '',),
-                                entries?[index].value.toString() ?? '',);
+                              getAttributeName(
+                                entries?[index].key.toString() ?? '',
+                              ),
+                              entries?[index].value.toString() ?? '',
+                            );
                           },
                         ),
                       ],
@@ -733,16 +725,16 @@ class _VendorProductHasVariationsViewState
     );
   }
 
-  Future<void> _onDeleteRecord(
-      {required ProductVariationRecord rowData,}) async {
+  Future<void> _onDeleteRecord({
+    required ProductVariationRecord rowData,
+  }) async {
     deleteItemAlertDialog(
       context: context,
       onDelete: () async {
         _setDeletionProcessing(rowData: rowData, processing: true);
         Navigator.pop(context);
 
-        final VendorGetProductsViewModel provider =
-            Provider.of<VendorGetProductsViewModel>(context, listen: false);
+        final VendorGetProductsViewModel provider = Provider.of<VendorGetProductsViewModel>(context, listen: false);
 
         final result = await provider.deleteVariation(rowData.id.toString());
 
@@ -756,11 +748,11 @@ class _VendorProductHasVariationsViewState
   }
 
   /// set product variation as default variation
-  void _setDefaultVariation(
-      {required ProductVariationRecord productVariation,
-      required VendorGetProductVariationsViewModel provider,}) {
-    final vendorSetDefaultProductVariationProvider =
-        context.read<VendorSetDefaultProductVariationViewModel>();
+  void _setDefaultVariation({
+    required ProductVariationRecord productVariation,
+    required VendorGetProductVariationsViewModel provider,
+  }) {
+    final vendorSetDefaultProductVariationProvider = context.read<VendorSetDefaultProductVariationViewModel>();
 
     if (!(productVariation.isDefault ?? false)) {
       deleteItemAlertDialog(
@@ -769,17 +761,21 @@ class _VendorProductHasVariationsViewState
           text: TextSpan(
             children: [
               const TextSpan(
-                  text: 'Do you want to set product variation with id',
-                  style: TextStyle(color: Colors.black, fontSize: 12),),
+                text: 'Do you want to set product variation with id',
+                style: TextStyle(color: Colors.black, fontSize: 12),
+              ),
               TextSpan(
-                  text: ''' "${productVariation.id}" ''',
-                  style: const TextStyle(
-                      color: AppColors.peachyPink,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,),),
+                text: ''' "${productVariation.id}" ''',
+                style: const TextStyle(
+                  color: AppColors.peachyPink,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                ),
+              ),
               const TextSpan(
-                  text: 'to default.',
-                  style: TextStyle(color: Colors.black, fontSize: 12),),
+                text: 'to default.',
+                style: TextStyle(color: Colors.black, fontSize: 12),
+              ),
             ],
           ),
         ),
@@ -794,10 +790,10 @@ class _VendorProductHasVariationsViewState
           try {
             Navigator.pop(context);
             setProcessing(true);
-            final result = await vendorSetDefaultProductVariationProvider
-                .vendorSetDefaultProductVariation(
-                    productVariationID: productVariation.id.toString(),
-                    context: context,);
+            final result = await vendorSetDefaultProductVariationProvider.vendorSetDefaultProductVariation(
+              productVariationID: productVariation.id.toString(),
+              context: context,
+            );
             if (result) {
               setState(() {
                 for (final p in provider.list) {
@@ -818,8 +814,10 @@ class _VendorProductHasVariationsViewState
   }
 
   /// maintain the deletion indicator visibility by calling setState.
-  void _setDeletionProcessing(
-      {required ProductVariationRecord rowData, required bool processing,}) {
+  void _setDeletionProcessing({
+    required ProductVariationRecord rowData,
+    required bool processing,
+  }) {
     setState(() {
       rowData.isDeleting = processing;
       // setProcessing(processing); /// To show model progress hud. toggle this if don't want to show progress hud.
@@ -829,13 +827,11 @@ class _VendorProductHasVariationsViewState
   /// function to get the attribute name
   String getAttributeName(String attributeID) {
     try {
-      final vendorGetAttributesSetProvider =
-          context.read<VendorCreateProductViewModel>();
-      final attributesSet =
-          vendorGetAttributesSetProvider.attributeSetsApiResponse.data?.data ??
-              [];
+      final vendorGetAttributesSetProvider = context.read<VendorCreateProductViewModel>();
+      final attributesSet = vendorGetAttributesSetProvider.attributeSetsApiResponse.data?.data ?? [];
       final attribute = attributesSet.firstWhere(
-          (attribute) => attribute.id.toString() == attributeID.toString(),);
+        (attribute) => attribute.id.toString() == attributeID.toString(),
+      );
       return attribute.title.toString();
     } catch (e) {
       print('Error: $e');

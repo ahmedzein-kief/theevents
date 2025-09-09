@@ -10,7 +10,6 @@ import 'package:provider/provider.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/styles/app_colors.dart';
 import '../../../core/styles/custom_text_styles.dart';
-import '../../../core/widgets/custom_app_views/search_bar.dart';
 import '../../../core/widgets/custom_home_views/custom_grid_items.dart';
 import '../../../provider/locale_provider.dart';
 import '../../../provider/shortcode_featured_categories_provider/featured_categories_provider.dart';
@@ -41,10 +40,12 @@ class _HomeAllGiftItemsState extends State<FeaturedCategoriesItemsScreen> {
   Locale? _currentLocale;
   bool _isRefreshing = false;
   Timer? _debounceTimer;
+  late final TextEditingController _searchController;
 
   @override
   void initState() {
     super.initState();
+    _searchController = TextEditingController();
     _currentLocale = Provider.of<LocaleProvider>(context, listen: false).locale;
 
     WidgetsBinding.instance.addPostFrameCallback((callback) async {
@@ -57,6 +58,7 @@ class _HomeAllGiftItemsState extends State<FeaturedCategoriesItemsScreen> {
   void dispose() {
     _scrollController.dispose();
     _debounceTimer?.cancel();
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -180,6 +182,9 @@ class _HomeAllGiftItemsState extends State<FeaturedCategoriesItemsScreen> {
       firstRightIconPath: AppStrings.firstRightIconPath.tr,
       secondRightIconPath: AppStrings.secondRightIconPath.tr,
       thirdRightIconPath: AppStrings.thirdRightIconPath.tr,
+      showSearchBar: true,
+      searchController: _searchController,
+      searchHintText: AppStrings.searchGifts.tr,
       body: Stack(
         children: [
           Scaffold(
@@ -218,154 +223,140 @@ class _HomeAllGiftItemsState extends State<FeaturedCategoriesItemsScreen> {
                     return RefreshIndicator(
                       color: Theme.of(context).colorScheme.onPrimary,
                       onRefresh: _refreshHomePage,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          CustomSearchBar(hintText: AppStrings.searchGifts.tr),
-                          Expanded(
-                            child: SingleChildScrollView(
-                              controller: _scrollController,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment: MainAxisAlignment.start,
+                      child: SingleChildScrollView(
+                        controller: _scrollController,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.only(
+                                left: screenWidth * 0.02,
+                                right: screenWidth * 0.02,
+                                top: screenHeight * 0.02,
+                              ),
+                              child: CachedNetworkImage(
+                                imageUrl: provider.pageData?.coverImage ?? '',
+                                fit: BoxFit.cover,
+                                width: double.infinity,
+                                errorWidget: (context, _, error) => Container(
+                                  height: 100,
+                                  width: double.infinity,
+                                  decoration: const BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [Colors.grey, Colors.black],
+                                    ),
+                                  ),
+                                  child: const CupertinoActivityIndicator(
+                                    color: Colors.black,
+                                    radius: 10,
+                                    animating: true,
+                                  ),
+                                ),
+                                placeholder: (BuildContext context, String url) => Container(
+                                  height: 100,
+                                  width: double.infinity,
+                                  decoration: const BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [Colors.grey, Colors.black],
+                                    ),
+                                  ),
+                                  child: const CupertinoActivityIndicator(
+                                    color: Colors.black,
+                                    radius: 10,
+                                    animating: true,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(
+                                top: screenHeight * 0.02,
+                                left: screenWidth * 0.04,
+                                right: screenWidth * 0.04,
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Padding(
-                                    padding: EdgeInsets.only(
-                                      left: screenWidth * 0.02,
-                                      right: screenWidth * 0.02,
-                                      top: screenHeight * 0.02,
-                                    ),
-                                    child: SizedBox(
-                                      height: 100,
-                                      width: double.infinity,
-                                      child: CachedNetworkImage(
-                                        imageUrl: provider.pageData?.coverImage ?? '',
-                                        height: 10,
-                                        fit: BoxFit.cover,
-                                        width: double.infinity,
-                                        errorWidget: (context, _, error) => Container(
-                                          height: 100,
-                                          width: double.infinity,
-                                          decoration: const BoxDecoration(
-                                            gradient: LinearGradient(
-                                              colors: [Colors.grey, Colors.black],
-                                            ),
-                                          ),
-                                          child: const CupertinoActivityIndicator(
-                                            color: Colors.black,
-                                            radius: 10,
-                                            animating: true,
-                                          ),
-                                        ),
-                                        placeholder: (BuildContext context, String url) => Container(
-                                          height: 100,
-                                          width: double.infinity,
-                                          decoration: const BoxDecoration(
-                                            gradient: LinearGradient(
-                                              colors: [Colors.grey, Colors.black],
-                                            ),
-                                          ),
-                                          child: const CupertinoActivityIndicator(
-                                            color: Colors.black,
-                                            radius: 10,
-                                            animating: true,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
+                                  Text(
+                                    widget.data != null && widget.data['attributes'] != null
+                                        ? widget.data['attributes']['title'] ?? AppStrings.giftsByOccasion.tr
+                                        : AppStrings.giftsByOccasion.tr,
+                                    style: boldHomeTextStyle(),
                                   ),
-                                  Padding(
-                                    padding: EdgeInsets.only(
-                                      top: screenHeight * 0.02,
-                                      left: screenWidth * 0.04,
-                                      right: screenWidth * 0.04,
-                                    ),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          widget.data != null && widget.data['attributes'] != null
-                                              ? widget.data['attributes']['title'] ?? AppStrings.giftsByOccasion.tr
-                                              : AppStrings.giftsByOccasion.tr,
-                                          style: boldHomeTextStyle(),
-                                        ),
-                                        Row(
-                                          children: [
-                                            ItemsSortingDropDown(
-                                              selectedSortBy: _selectedSortBy,
-                                              onSortChanged: (newValue) {
-                                                _onSortChanged(newValue);
-                                              },
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: EdgeInsets.only(
-                                      top: screenHeight * 0.02,
-                                      left: screenWidth * 0.04,
-                                      bottom: screenHeight * 0.02,
-                                      right: screenWidth * 0.04,
-                                    ),
-                                    child: GridView.builder(
-                                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                                        crossAxisCount: 3,
-                                        crossAxisSpacing: 8.0,
-                                        mainAxisSpacing: 8.0,
-                                        childAspectRatio: 0.95,
+                                  Row(
+                                    children: [
+                                      ItemsSortingDropDown(
+                                        selectedSortBy: _selectedSortBy,
+                                        onSortChanged: (newValue) {
+                                          _onSortChanged(newValue);
+                                        },
                                       ),
-                                      shrinkWrap: true,
-                                      physics: const NeverScrollableScrollPhysics(),
-                                      scrollDirection: Axis.vertical,
-                                      itemCount: provider.categories.length + (_isFetchingMore ? 1 : 0),
-                                      itemBuilder: (context, index) {
-                                        if (_isFetchingMore && index == provider.categories.length) {
-                                          return const Align(
-                                            alignment: Alignment.center,
-                                            child: Column(
-                                              mainAxisAlignment: MainAxisAlignment.center,
-                                              crossAxisAlignment: CrossAxisAlignment.center,
-                                              children: [
-                                                Center(
-                                                  child: CircularProgressIndicator(
-                                                    color: Colors.black,
-                                                    strokeWidth: 0.5,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          );
-                                        }
-
-                                        final category = provider.categories[index];
-
-                                        return GridItemsHomeSeeAll(
-                                          imageUrl: category.image ?? '',
-                                          name: category.name ?? '',
-                                          textStyle: homeItemsStyle(context),
-                                          onTap: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) => FeaturedCategoriesViewAllInner(
-                                                  data: category,
-                                                ),
-                                              ),
-                                            );
-                                          },
-                                        );
-                                      },
-                                    ),
+                                    ],
                                   ),
                                 ],
                               ),
                             ),
-                          ),
-                        ],
+                            Padding(
+                              padding: EdgeInsets.only(
+                                top: screenHeight * 0.02,
+                                left: screenWidth * 0.04,
+                                bottom: screenHeight * 0.02,
+                                right: screenWidth * 0.04,
+                              ),
+                              child: GridView.builder(
+                                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 3,
+                                  crossAxisSpacing: 8.0,
+                                  mainAxisSpacing: 8.0,
+                                  childAspectRatio: 0.95,
+                                ),
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                scrollDirection: Axis.vertical,
+                                itemCount: provider.categories.length + (_isFetchingMore ? 1 : 0),
+                                itemBuilder: (context, index) {
+                                  if (_isFetchingMore && index == provider.categories.length) {
+                                    return const Align(
+                                      alignment: Alignment.center,
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: [
+                                          Center(
+                                            child: CircularProgressIndicator(
+                                              color: Colors.black,
+                                              strokeWidth: 0.5,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  }
+
+                                  final category = provider.categories[index];
+
+                                  return GridItemsHomeSeeAll(
+                                    imageUrl: category.image ?? '',
+                                    name: category.name ?? '',
+                                    textStyle: homeItemsStyle(context),
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => FeaturedCategoriesViewAllInner(
+                                            data: category,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     );
                   }
@@ -379,7 +370,7 @@ class _HomeAllGiftItemsState extends State<FeaturedCategoriesItemsScreen> {
             Positioned.fill(
               child: IgnorePointer(
                 child: Container(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withAlpha((0.1 * 255).toInt()),
                   child: const Center(
                     child: CircularProgressIndicator(),
                   ),

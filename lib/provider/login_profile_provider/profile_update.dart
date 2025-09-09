@@ -1,4 +1,3 @@
-
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/core/utils/custom_toast.dart';
 import 'package:event_app/provider/api_response_handler.dart';
@@ -19,19 +18,25 @@ class ProfileUpdateProvider with ChangeNotifier {
   }
 
   Future<void> editProfileDetails(
-      String token, ProfileUpdateResponse request, BuildContext context,) async {
+    String token,
+    ProfileUpdateResponse request,
+    BuildContext context,
+  ) async {
     const urlChangePassword = ApiEndpoints.editAccount;
     const url = urlChangePassword;
     final headers = {
-      'Authorization': 'Bearer $token',
+      'Authorization': token,
       'Accept': 'application/json',
     };
 
     setStatus(ApiStatus.loading); // Set status to loading before the API call
 
     try {
-      final response = await _apiResponseHandler.postRequest(url,
-          headers: headers, body: request.toJson(),);
+      final response = await _apiResponseHandler.postRequest(
+        url,
+        headers: headers,
+        body: request.toJson(),
+      );
 
       final responseData = response.data;
       if (response.statusCode == 200) {
@@ -50,7 +55,7 @@ class ProfileUpdateProvider with ChangeNotifier {
     const urlChangePassword = ApiEndpoints.customerDelete;
     const url = urlChangePassword;
     final headers = {
-      'Authorization': 'Bearer $token',
+      'Authorization': token,
       'Accept': 'application/json',
     };
 
@@ -80,10 +85,11 @@ class ProfileUpdateProvider with ChangeNotifier {
 }
 
 class ProfileUpdateResponse {
-  ProfileUpdateResponse(
-      {required this.fullName,
-      required this.fullEmail,
-      required this.phoneNumber,});
+  ProfileUpdateResponse({
+    required this.fullName,
+    required this.fullEmail,
+    required this.phoneNumber,
+  });
 
   String fullName;
   String fullEmail;

@@ -160,8 +160,8 @@ class _NewProductPageScreenState extends State<NewProductPageScreen> {
                                     borderRadius: BorderRadius.circular(5),
                                     child: CachedNetworkImage(
                                       imageUrl: product.coverImage,
-                                      fit: BoxFit.fill,
-                                      height: 100,
+                                      height: screenHeight * 0.14,
+                                      fit: BoxFit.cover,
                                       placeholder: (BuildContext context, String url) => Container(
                                         height: MediaQuery.sizeOf(context).height * 0.28,
                                         width: double.infinity,
@@ -366,7 +366,7 @@ class _NewProductPageScreenState extends State<NewProductPageScreen> {
               ),
               if (wishlistProvider.isLoading || freshPicksProvider.isLoading || cartProvider.isLoading)
                 Container(
-                  color: Colors.black.withOpacity(0.5), // Semi-transparent background
+                  color: Colors.black.withAlpha((0.5 * 255).toInt()), // Semi-transparent background
                   child: const Center(
                     child: CircularProgressIndicator(
                       valueColor: AlwaysStoppedAnimation<Color>(AppColors.peachyPink),

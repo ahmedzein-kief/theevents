@@ -7,7 +7,7 @@ import 'package:event_app/models/vendor_models/products/create_product/global_op
 import 'package:event_app/models/vendor_models/products/vendor_get_product_general_settings_model.dart';
 import 'package:event_app/vendor/components/dropdowns/generic_dropdown.dart';
 import 'package:event_app/vendor/components/text_fields/custom_text_form_field.dart';
-import 'package:event_app/vendor/components/utils/utils.dart';
+import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/vendor/components/vendor_text_style.dart';
 import 'package:event_app/vendor/view_models/vendor_products/vendor_create_product_view_model.dart';
 import 'package:flutter/cupertino.dart';
@@ -25,12 +25,10 @@ class VendorProductOptionsScreen extends StatefulWidget {
   final List<GlobalOptions> globalOptions;
 
   @override
-  _VendorProductOptionsScreenState createState() =>
-      _VendorProductOptionsScreenState();
+  _VendorProductOptionsScreenState createState() => _VendorProductOptionsScreenState();
 }
 
-class _VendorProductOptionsScreenState
-    extends State<VendorProductOptionsScreen> {
+class _VendorProductOptionsScreenState extends State<VendorProductOptionsScreen> {
   List<GlobalOptionsData> productOptions = [];
   List<String> priceType = ['Fixed', 'Percent'];
 
@@ -46,8 +44,7 @@ class _VendorProductOptionsScreenState
     try {
       print('Inside fetch options ');
       setProcessing(true);
-      final provider =
-          Provider.of<VendorCreateProductViewModel>(context, listen: false);
+      final provider = Provider.of<VendorCreateProductViewModel>(context, listen: false);
       final result = await provider.getGlobalOptions(optionId);
       if (result?.data != null) {
         setState(() {
@@ -76,9 +73,7 @@ class _VendorProductOptionsScreenState
 
   void addNewRow(int sectionIndex) {
     setState(() {
-      productOptions[sectionIndex]
-          .values
-          .add(GlobalOptionsValues.defaultData());
+      productOptions[sectionIndex].values.add(GlobalOptionsValues.defaultData());
     });
   }
 
@@ -131,12 +126,11 @@ class _VendorProductOptionsScreenState
         ),
       );
 
-  Widget _buildUI() => Utils.modelProgressHud(
+  Widget _buildUI() => AppUtils.modelProgressHud(
         context: context,
         processing: _isProcessing,
         child: ListView.builder(
-          padding:
-              const EdgeInsets.only(left: 16, right: 16, bottom: 80, top: 16),
+          padding: const EdgeInsets.only(left: 16, right: 16, bottom: 80, top: 16),
           itemCount: productOptions.length,
           itemBuilder: (context, sectionIndex) {
             final section = productOptions[sectionIndex];
@@ -144,10 +138,8 @@ class _VendorProductOptionsScreenState
               id: section.id,
               value: section.name,
             );
-            productOptions[sectionIndex].nameController.text =
-                productOptions[sectionIndex].name;
-            productOptions[sectionIndex].optionTypeController.text =
-                productOptions[sectionIndex].getType();
+            productOptions[sectionIndex].nameController.text = productOptions[sectionIndex].name;
+            productOptions[sectionIndex].optionTypeController.text = productOptions[sectionIndex].getType();
             return Card(
               margin: const EdgeInsets.only(bottom: 16),
               elevation: 3,
@@ -162,8 +154,7 @@ class _VendorProductOptionsScreenState
                           value: section.required == 1,
                           onChanged: (value) {
                             setState(() {
-                              productOptions[sectionIndex].required =
-                                  value == true ? 1 : 0;
+                              productOptions[sectionIndex].required = value == true ? 1 : 0;
                             });
                           },
                         ),
@@ -189,12 +180,10 @@ class _VendorProductOptionsScreenState
                       showTitle: false,
                       required: false,
                       hintText: VendorAppStrings.enterNameField.tr,
-                      controller:
-                          productOptions[sectionIndex].optionTypeController,
+                      controller: productOptions[sectionIndex].optionTypeController,
                     ),
                     const SizedBox(height: 10),
-                    if (section.getType().toString().toLowerCase() !=
-                        'location')
+                    if (section.getType().toString().toLowerCase() != 'location')
                       Column(
                         children: [
                           Padding(
@@ -203,15 +192,15 @@ class _VendorProductOptionsScreenState
                             ),
                             child: GenericDropdown<String>(
                               textStyle: const TextStyle(
-                                  color: Colors.grey, fontSize: 15,),
+                                color: Colors.grey,
+                                fontSize: 15,
+                              ),
                               value: priceType.first,
                               menuItemsList: priceType,
                               displayItem: (String priceType) => priceType,
                               onChanged: (String? value) {
                                 /// TODO: set the affect type here 0 for fixed and 1 for percentage
-                                productOptions[sectionIndex]
-                                        .values[0]
-                                        .affectType =
+                                productOptions[sectionIndex].values[0].affectType =
                                     value?.toLowerCase() == 'percent' ? 1 : 0;
                                 setState(() {});
                               },
@@ -222,16 +211,9 @@ class _VendorProductOptionsScreenState
                               left: 8,
                             ),
                             child: Column(
-                              children: List.generate(section.values.length,
-                                  (rowIndex) {
-                                productOptions[sectionIndex]
-                                        .values[rowIndex]
-                                        .priceController
-                                        .text =
-                                    productOptions[sectionIndex]
-                                        .values[rowIndex]
-                                        .affectPrice
-                                        .toString();
+                              children: List.generate(section.values.length, (rowIndex) {
+                                productOptions[sectionIndex].values[rowIndex].priceController.text =
+                                    productOptions[sectionIndex].values[rowIndex].affectPrice.toString();
                                 return Padding(
                                   padding: const EdgeInsets.only(top: 4),
                                   child: Row(
@@ -241,20 +223,14 @@ class _VendorProductOptionsScreenState
                                           labelText: VendorAppStrings.price.tr,
                                           showTitle: false,
                                           keyboardType: TextInputType.number,
-                                          controller:
-                                              productOptions[sectionIndex]
-                                                  .values[rowIndex]
-                                                  .priceController,
+                                          controller: productOptions[sectionIndex].values[rowIndex].priceController,
                                           onChanged: (value) {
                                             print(
-                                                'value  ==> $sectionIndex || $rowIndex || $value',);
+                                              'value  ==> $sectionIndex || $rowIndex || $value',
+                                            );
                                             if (value is String) {
-                                              productOptions[sectionIndex]
-                                                      .values[rowIndex]
-                                                      .affectPrice =
-                                                  value.isNotEmpty
-                                                      ? int.parse(value)
-                                                      : 0;
+                                              productOptions[sectionIndex].values[rowIndex].affectPrice =
+                                                  value.isNotEmpty ? int.parse(value) : 0;
                                             }
                                             // setState(() {});
                                           },
@@ -270,8 +246,7 @@ class _VendorProductOptionsScreenState
                           ),
                         ],
                       ),
-                    if (section.getType().toString().toLowerCase() ==
-                        'location')
+                    if (section.getType().toString().toLowerCase() == 'location')
                       Column(
                         children: [
                           Padding(
@@ -279,15 +254,9 @@ class _VendorProductOptionsScreenState
                               left: 8,
                             ),
                             child: Column(
-                              children: List.generate(section.values.length,
-                                  (rowIndex) {
-                                productOptions[sectionIndex]
-                                    .values[rowIndex]
-                                    .optionValueController
-                                    .text = productOptions[sectionIndex]
-                                        .values[rowIndex]
-                                        .optionValue ??
-                                    '';
+                              children: List.generate(section.values.length, (rowIndex) {
+                                productOptions[sectionIndex].values[rowIndex].optionValueController.text =
+                                    productOptions[sectionIndex].values[rowIndex].optionValue ?? '';
 
                                 return Padding(
                                   padding: const EdgeInsets.only(top: 4),
@@ -295,21 +264,16 @@ class _VendorProductOptionsScreenState
                                     children: [
                                       Expanded(
                                         child: CustomTextFormField(
-                                          labelText:
-                                              VendorAppStrings.enterLabel.tr,
+                                          labelText: VendorAppStrings.enterLabel.tr,
                                           showTitle: false,
-                                          controller: section.values[rowIndex]
-                                              .optionValueController,
+                                          controller: section.values[rowIndex].optionValueController,
                                           onChanged: (value) {
                                             setState(() {
-                                              productOptions[sectionIndex]
-                                                  .values[rowIndex]
-                                                  .optionValue = value;
+                                              productOptions[sectionIndex].values[rowIndex].optionValue = value;
                                             });
                                           },
                                           required: false,
-                                          hintText:
-                                              VendorAppStrings.enterLabel.tr,
+                                          hintText: VendorAppStrings.enterLabel.tr,
                                         ),
                                       ),
                                       IconButton(
@@ -318,8 +282,7 @@ class _VendorProductOptionsScreenState
                                           color: Colors.grey,
                                           size: 24,
                                         ),
-                                        onPressed: () =>
-                                            deleteRow(sectionIndex, rowIndex),
+                                        onPressed: () => deleteRow(sectionIndex, rowIndex),
                                       ),
                                     ],
                                   ),
@@ -368,8 +331,7 @@ class _VendorProductOptionsScreenState
               topLeft: Radius.circular(kSmallCardRadius),
             ),
           ),
-          padding:
-              EdgeInsets.symmetric(horizontal: kPadding, vertical: kPadding),
+          padding: EdgeInsets.symmetric(horizontal: kPadding, vertical: kPadding),
           child: Material(
             child: Wrap(
               children: [
@@ -386,14 +348,12 @@ class _VendorProductOptionsScreenState
                     ),
                     kMediumSpace,
                     GenericDropdown<GlobalOptions>(
-                      textStyle:
-                          const TextStyle(color: Colors.grey, fontSize: 15),
+                      textStyle: const TextStyle(color: Colors.grey, fontSize: 15),
                       menuItemsList: widget.globalOptions,
                       displayItem: (GlobalOptions option) => option.value ?? '',
                       onChanged: (GlobalOptions? selectedOption) {
                         setState(() {
-                          newGlobalOptionID =
-                              selectedOption?.id?.toString() ?? '';
+                          newGlobalOptionID = selectedOption?.id?.toString() ?? '';
                           hasError = false;
                         });
                       },

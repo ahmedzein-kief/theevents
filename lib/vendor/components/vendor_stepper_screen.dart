@@ -38,7 +38,9 @@ class _StepperScreenState extends State<VendorStepperScreen> {
 
   Future<MetaDataResponse?> getAllMetaData() async {
     final provider = Provider.of<VendorSignUpProvider>(context, listen: false);
-    return provider.getAllMetaData(context);
+
+    final response = await provider.getAllMetaData(context);
+    return response;
   }
 
   Future<void> checkLoginData() async {
@@ -61,7 +63,9 @@ class _StepperScreenState extends State<VendorStepperScreen> {
       setState(() {
         if (metaResponse != null) {
           SecurePreferencesUtil.saveServerStep(
-              int.parse(metaResponse.data['step'] ?? '1'),);
+            int.parse(metaResponse.data['step'] ?? '1'),
+          );
+
           activeStep = int.parse(metaResponse.data['step'] ?? '1');
         } else {
           activeStep = 1;
@@ -120,13 +124,11 @@ class _StepperScreenState extends State<VendorStepperScreen> {
                       padding: const EdgeInsets.only(left: 10, right: 10),
                       child: GestureDetector(
                         onTap: () async {
-                          final int serverStep =
-                              await SecurePreferencesUtil.getServerStep() ?? 0;
+                          final int serverStep = await SecurePreferencesUtil.getServerStep() ?? 0;
                           print(
-                              'Tapped on step index ==> $index || activeStep==> $activeStep || serverStep==> $serverStep',);
-                          if (index > 0 &&
-                              index != activeStep &&
-                              index <= serverStep) {
+                            'Tapped on step index ==> $index || activeStep==> $activeStep || serverStep==> $serverStep',
+                          );
+                          if (index > 0 && index != activeStep && index <= serverStep) {
                             setState(() {
                               activeStep = index;
                             });
@@ -137,8 +139,7 @@ class _StepperScreenState extends State<VendorStepperScreen> {
                           height: 25,
                           decoration: BoxDecoration(
                             color: (index == 0)
-                                ? AppColors
-                                    .peachyPink // Keep the first step red
+                                ? AppColors.peachyPink // Keep the first step red
                                 : (index <= activeStep)
                                     ? AppColors.peachyPink // Active step colors
                                     : Colors.black,
@@ -163,16 +164,20 @@ class _StepperScreenState extends State<VendorStepperScreen> {
             SizedBox(height: screenHeight * 0.015),
             Padding(
               padding: EdgeInsets.only(
-                  left: screenWidth * 0.03,
-                  right: screenWidth * 0.03,
-                  bottom: screenHeight * 0.015,),
+                left: screenWidth * 0.03,
+                right: screenWidth * 0.03,
+                bottom: screenHeight * 0.015,
+              ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisSize: MainAxisSize.max,
                 children: [
-                  Text(AppStrings.vendorHeading.tr,
-                      style: vendorDescription(), textAlign: TextAlign.center,),
+                  Text(
+                    AppStrings.vendorHeading.tr,
+                    style: vendorDescription(),
+                    textAlign: TextAlign.center,
+                  ),
                 ],
               ),
             ),

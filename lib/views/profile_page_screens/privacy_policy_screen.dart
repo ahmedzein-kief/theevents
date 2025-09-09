@@ -246,8 +246,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
                       children: [
                         Expanded(
                           child: Text(
-                            provider.privacyPolicyData?.name ??
-                                AppStrings.privacyPolicy.tr,
+                            provider.privacyPolicyData?.name ?? AppStrings.privacyPolicy.tr,
                             style: privacyPolicyTextStyle(context),
                           ),
                         ),
@@ -386,16 +385,13 @@ class PrivacyPolicyModel {
     this.content,
   });
 
-  factory PrivacyPolicyModel.fromJson(Map<String, dynamic> json) =>
-      PrivacyPolicyModel(
+  factory PrivacyPolicyModel.fromJson(Map<String, dynamic> json) => PrivacyPolicyModel(
         view: json['view'],
         name: json['name'],
         slug: json['slug'],
         image: json['image'],
         coverImage: json['cover_image'],
-        seoMeta: json['seo_meta'] != null
-            ? SeoMeta.fromJson(json['seo_meta'])
-            : null,
+        seoMeta: json['seo_meta'] != null ? SeoMeta.fromJson(json['seo_meta']) : null,
         content: json['content'],
       );
   final String? view;

@@ -12,11 +12,11 @@ import '../../provider/vendor/vendor_sign_up_provider.dart';
 
 class EmailVerificationScreen extends StatefulWidget {
   const EmailVerificationScreen({super.key, required this.onNext});
+
   final void Function() onNext;
 
   @override
-  _EmailVerificationScreenState createState() =>
-      _EmailVerificationScreenState();
+  _EmailVerificationScreenState createState() => _EmailVerificationScreenState();
 }
 
 class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
@@ -38,8 +38,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final mainProvider =
-        Provider.of<VendorSignUpProvider>(context, listen: true);
+    final mainProvider = Provider.of<VendorSignUpProvider>(context, listen: true);
 
     return Scaffold(
       backgroundColor: const Color(0xFFF6F1F1),
@@ -64,7 +63,9 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                       ],
                     ),
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 24.0, vertical: 24.0,),
+                      horizontal: 24.0,
+                      vertical: 24.0,
+                    ),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -91,8 +92,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                         const SizedBox(height: 8.0),
                         Text(
                           VendorAppStrings.checkInboxSpam.tr,
-                          style:
-                              const TextStyle(fontSize: 14.0, color: Colors.black87),
+                          style: const TextStyle(fontSize: 14.0, color: Colors.black87),
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 24.0),
@@ -106,7 +106,8 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                                     borderRadius: BorderRadius.circular(8.0),
                                   ),
                                   padding: const EdgeInsets.symmetric(
-                                      vertical: 16.0,),
+                                    vertical: 16.0,
+                                  ),
                                 ),
                                 onPressed: () async {
                                   final resultVerified = await verifyEmail();
@@ -115,21 +116,23 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                                   });
                                   if (resultVerified != null) {
                                     if (resultVerified.isVerified == true) {
-                                      CustomSnackbar.showSuccess(context,
-                                          VendorAppStrings.accountVerified.tr,);
-                                      final prefs =
-                                          await SharedPreferences.getInstance();
+                                      CustomSnackbar.showSuccess(
+                                        context,
+                                        VendorAppStrings.accountVerified.tr,
+                                      );
+                                      final prefs = await SharedPreferences.getInstance();
                                       prefs.setBool(
-                                          SecurePreferencesUtil.verified, true,);
+                                        SecurePreferencesUtil.verified,
+                                        true,
+                                      );
                                       setState(() {
                                         widget.onNext();
                                       });
                                     } else {
                                       CustomSnackbar.showError(
-                                          context,
-                                          VendorAppStrings
-                                              .emailVerificationPendingStatus
-                                              .tr,);
+                                        context,
+                                        VendorAppStrings.emailVerificationPendingStatus.tr,
+                                      );
                                     }
                                   }
                                 },
@@ -161,7 +164,8 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                                     borderRadius: BorderRadius.circular(8.0),
                                   ),
                                   padding: const EdgeInsets.symmetric(
-                                      vertical: 16.0,),
+                                    vertical: 16.0,
+                                  ),
                                 ),
                                 onPressed: isResendLoading ? null : resendEmail,
                                 child: isResendLoading
@@ -193,11 +197,10 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
             ),
             if (mainProvider.isLoading)
               Container(
-                color: Colors.black.withOpacity(0.5),
+                color: Colors.black.withAlpha((0.5 * 255).toInt()),
                 child: const Center(
                   child: CircularProgressIndicator(
-                    valueColor:
-                        AlwaysStoppedAnimation<Color>(AppColors.peachyPink),
+                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.peachyPink),
                   ),
                 ),
               ),

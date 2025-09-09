@@ -18,9 +18,10 @@ class _PaymentConfirmTextState extends State<PaymentConfirmText> {
     final dynamic screenHeight = MediaQuery.sizeOf(context).height;
     return Padding(
       padding: EdgeInsets.only(
-          top: screenHeight * 0.04,
-          right: screenWidth * 0.02,
-          left: screenHeight * 0.02,),
+        top: screenHeight * 0.04,
+        right: screenWidth * 0.02,
+        left: screenHeight * 0.02,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -44,10 +45,7 @@ class _PaymentConfirmTextState extends State<PaymentConfirmText> {
                   // If you must have a line break, consider using `\n${AppStrings.termsOfUse.tr}`
                   text: AppStrings.termsOfUse.tr, // <--- REFACTORED
                   style: TextStyle(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onPrimary
-                        .withOpacity(0.6),
+                    color: Theme.of(context).colorScheme.onPrimary.withAlpha((0.6 * 255).toInt()),
                     decoration: TextDecoration.underline,
                   ),
                   // Add recognizer for tap events here if needed
@@ -59,10 +57,7 @@ class _PaymentConfirmTextState extends State<PaymentConfirmText> {
                 TextSpan(
                   text: AppStrings.privacyPolicy.tr, // <--- REFACTORED
                   style: TextStyle(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onPrimary
-                        .withOpacity(0.6),
+                    color: Theme.of(context).colorScheme.onPrimary.withAlpha((0.6 * 255).toInt()),
                     decoration: TextDecoration.underline,
                   ),
                   // Add recognizer for tap events here if needed

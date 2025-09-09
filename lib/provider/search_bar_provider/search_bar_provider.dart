@@ -1,4 +1,3 @@
-
 import 'package:event_app/models/product_packages_models/product_filters_model.dart';
 import 'package:event_app/provider/api_response_handler.dart';
 import 'package:flutter/cupertino.dart';
@@ -60,9 +59,7 @@ class SearchBarProvider extends ChangeNotifier {
 
     final baseUrl =
         'https://apistaging.theevents.ae/api/v1/search-bar?q=$query&per-page=$perPage&page=$page&sort-by=$sortBy';
-    final url = filtersQuery.isNotEmpty
-        ? '$baseUrl&$filtersQuery&allcategories=1'
-        : baseUrl;
+    final url = filtersQuery.isNotEmpty ? '$baseUrl&$filtersQuery&allcategories=1' : baseUrl;
 
     try {
       final response = await _apiResponseHandler.getRequest(
@@ -71,8 +68,7 @@ class SearchBarProvider extends ChangeNotifier {
       );
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonResponse = response.data;
-        final NewProductsModels apiResponse =
-            NewProductsModels.fromJson(jsonResponse);
+        final NewProductsModels apiResponse = NewProductsModels.fromJson(jsonResponse);
 
         if (page == 1) {
           _products = apiResponse.data?.records ?? [];
@@ -129,15 +125,9 @@ class BestSellerData {
       parent = [];
     }
 
-    pagination = json['pagination'] != null
-        ? Pagination.fromJson(json['pagination'])
-        : null;
-    records = json['records'] != null
-        ? List<Records>.from(json['records'].map((v) => Records.fromJson(v)))
-        : null;
-    filters = json['filters'] != null
-        ? ProductFiltersModel.fromJson(json['filters'])
-        : null;
+    pagination = json['pagination'] != null ? Pagination.fromJson(json['pagination']) : null;
+    records = json['records'] != null ? List<Records>.from(json['records'].map((v) => Records.fromJson(v))) : null;
+    filters = json['filters'] != null ? ProductFiltersModel.fromJson(json['filters']) : null;
   }
 
   List<dynamic>? parent;

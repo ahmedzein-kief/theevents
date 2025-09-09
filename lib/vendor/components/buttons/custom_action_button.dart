@@ -1,5 +1,5 @@
 import 'package:event_app/core/styles/app_sizes.dart';
-import 'package:event_app/vendor/components/utils/utils.dart';
+import 'package:event_app/core/utils/app_utils.dart';
 import 'package:flutter/material.dart';
 
 class CustomActionButton extends StatelessWidget {
@@ -10,6 +10,7 @@ class CustomActionButton extends StatelessWidget {
     this.onPressed,
     this.textStyle,
   });
+
   final bool isLoading;
   final VoidCallback? onPressed;
   final String name;
@@ -22,7 +23,7 @@ class CustomActionButton extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             if (isLoading)
-              Utils.pageLoadingIndicator(context: context)
+              AppUtils.pageLoadingIndicator(context: context)
             else
               Text(
                 name,

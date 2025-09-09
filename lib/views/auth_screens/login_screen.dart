@@ -69,9 +69,10 @@ class LoginScreenState extends State<LoginScreen> {
                   children: [
                     Padding(
                       padding: EdgeInsets.only(
-                          left: screenWidth * 0.05,
-                          right: screenWidth * 0.05,
-                          bottom: screeHeight * 0.04,),
+                        left: screenWidth * 0.05,
+                        right: screenWidth * 0.05,
+                        bottom: screeHeight * 0.04,
+                      ),
                       child: RichText(
                         text: TextSpan(
                           style: loginTextStyle(context),
@@ -93,14 +94,15 @@ class LoginScreenState extends State<LoginScreen> {
                       children: [
                         Padding(
                           padding: EdgeInsets.only(
-                              left: screenWidth * 0.05,
-                              right: screenWidth * 0.05,),
+                            left: screenWidth * 0.05,
+                            right: screenWidth * 0.05,
+                          ),
                           child: CustomTextFields(
                             hintStyle: GoogleFonts.inter(
-                                fontWeight: FontWeight.w400,
-                                fontSize: 16,
-                                color:
-                                    Theme.of(context).colorScheme.onSecondary,),
+                              fontWeight: FontWeight.w400,
+                              fontSize: 16,
+                              color: Theme.of(context).colorScheme.onSecondary,
+                            ),
                             formFieldValidator: Validator.email,
                             textEditingController: _emailController,
                             inputType: TextInputType.emailAddress,
@@ -114,15 +116,16 @@ class LoginScreenState extends State<LoginScreen> {
                         ),
                         Padding(
                           padding: EdgeInsets.only(
-                              left: screenWidth * 0.05,
-                              right: screenWidth * 0.05,
-                              bottom: 10,),
+                            left: screenWidth * 0.05,
+                            right: screenWidth * 0.05,
+                            bottom: 10,
+                          ),
                           child: CustomTextFields(
                             hintStyle: GoogleFonts.inter(
-                                fontWeight: FontWeight.w400,
-                                fontSize: 16,
-                                color:
-                                    Theme.of(context).colorScheme.onSecondary,),
+                              fontWeight: FontWeight.w400,
+                              fontSize: 16,
+                              color: Theme.of(context).colorScheme.onSecondary,
+                            ),
                             leftIcon: SvgPicture.asset(
                               color: Theme.of(context).colorScheme.onPrimary,
                               AppStrings.passwordIcon.tr,
@@ -145,9 +148,7 @@ class LoginScreenState extends State<LoginScreen> {
                                 height: screeHeight * 0.02,
                                 fit: BoxFit.cover,
                                 color: Theme.of(context).colorScheme.onPrimary,
-                                _passShowNot
-                                    ? AppStrings.hideEye.tr
-                                    : AppStrings.showEye.tr,
+                                _passShowNot ? AppStrings.hideEye.tr : AppStrings.showEye.tr,
                               ),
                             ),
                             isObsecureText: _passShowNot,
@@ -194,15 +195,12 @@ class LoginScreenState extends State<LoginScreen> {
                           child: Container(
                             alignment: Alignment.center,
                             child: Consumer<AuthProvider>(
-                              builder: (context, authProvider, child) =>
-                                  CustomAuthButton(
-                                title: authProvider.isLoading
-                                    ? '${AppStrings.continueo.tr}...'
-                                    : AppStrings.continueo.tr,
+                              builder: (context, authProvider, child) => CustomAuthButton(
+                                title:
+                                    authProvider.isLoading ? '${AppStrings.continueo.tr}...' : AppStrings.continueo.tr,
                                 isLoading: authProvider.isLoading,
                                 onPressed: () async {
-                                  if (_formKey.currentState?.validate() ??
-                                      false) {
+                                  if (_formKey.currentState?.validate() ?? false) {
                                     final userData = await authProvider.login(
                                       context,
                                       _emailController.text,
@@ -214,62 +212,54 @@ class LoginScreenState extends State<LoginScreen> {
 
                                     if (userData?.data != null) {
                                       await SecurePreferencesUtil.setVendorData(
-                                        approved:
-                                            userData?.data?.isApproved ?? false,
-                                        verified:
-                                            userData?.data?.isVerified ?? false,
+                                        approved: userData?.data?.isApproved ?? false,
+                                        verified: userData?.data?.isVerified ?? false,
                                         vendor: userData?.data?.isVendor ?? 0,
                                       );
 
+                                      // Save token and login state for all users
+                                      await SecurePreferencesUtil.saveToken(
+                                        'Bearer ${userData?.data!.token}',
+                                      );
+                                      if (_rememberMe) {
+                                        await SecurePreferencesUtil.setBool(
+                                          SecurePreferencesUtil.isLoggedInKey,
+                                          true,
+                                        );
+                                      }
+
                                       if (userData?.data?.isVendor == 1) {
-                                        await SecurePreferencesUtil.saveToken(
-                                            'Bearer ${userData?.data!.token}',);
-                                        if (_rememberMe) {
-                                          await SecurePreferencesUtil.setBool(
-                                              SecurePreferencesUtil
-                                                  .isLoggedInKey,
-                                              true,);
-                                        }
-                                        if (userData?.data?.isApproved ==
-                                                true &&
-                                            userData?.data?.isVerified ==
-                                                true) {
-                                          Navigator.of(context).popUntil(
-                                              (route) => route.isFirst,);
+                                        // Handle vendor users
+                                        final isApproved = userData?.data?.isApproved == true;
+                                        final isVerified = userData?.data?.isVerified == true;
+                                        final isPaid = userData?.data?.step == 6; // Assuming step 6 means paid
+
+                                        Navigator.of(context).popUntil((route) => route.isFirst);
+
+                                        if (isApproved && isVerified) {
+                                          // Vendor is approved and verified - go to vendor dashboard
                                           Navigator.of(context).pushReplacement(
-                                            MaterialPageRoute(
-                                                builder: (_) =>
-                                                    VendorDrawerScreen(),),
+                                            MaterialPageRoute(builder: (_) => VendorDrawerScreen()),
+                                          );
+                                        } else if (isPaid && !isApproved) {
+                                          // Vendor is paid but not approved yet - go to BaseHomeScreen
+                                          Navigator.of(context).pushReplacement(
+                                            MaterialPageRoute(builder: (_) => const BaseHomeScreen()),
                                           );
                                         } else {
-                                          Navigator.of(context).popUntil(
-                                              (route) => route.isFirst,);
-                                          Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                                builder: (_) =>
-                                                    const BaseHomeScreen(),),
+                                          // Vendor is not paid - go to BaseHomeScreen then VendorStepperScreen
+                                          Navigator.of(context).pushReplacement(
+                                            MaterialPageRoute(builder: (_) => const BaseHomeScreen()),
                                           );
                                           Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                                builder: (_) =>
-                                                    const VendorStepperScreen(),),
+                                            MaterialPageRoute(builder: (_) => const VendorStepperScreen()),
                                           );
                                         }
                                       } else {
-                                        await SecurePreferencesUtil.saveToken(
-                                            'Bearer ${userData?.data!.token}',);
-                                        if (_rememberMe) {
-                                          await SecurePreferencesUtil.setBool(
-                                              SecurePreferencesUtil
-                                                  .isLoggedInKey,
-                                              true,);
-                                        }
-                                        Navigator.of(context)
-                                            .popUntil((route) => route.isFirst);
+                                        // Handle regular users - go to BaseHomeScreen
+                                        Navigator.of(context).popUntil((route) => route.isFirst);
                                         Navigator.of(context).pushReplacement(
-                                          MaterialPageRoute(
-                                              builder: (_) =>
-                                                  const BaseHomeScreen(),),
+                                          MaterialPageRoute(builder: (_) => const BaseHomeScreen()),
                                         );
                                       }
                                     }
@@ -281,15 +271,17 @@ class LoginScreenState extends State<LoginScreen> {
                         ),
                         Padding(
                           padding: EdgeInsets.only(
-                              top: screeHeight * 0.04,
-                              left: screenWidth * 0.05,
-                              right: screenWidth * 0.05,),
+                            top: screeHeight * 0.04,
+                            left: screenWidth * 0.05,
+                            right: screenWidth * 0.05,
+                          ),
                           child: RichText(
                             text: TextSpan(
                               children: [
                                 TextSpan(
-                                    text: AppStrings.haveTroubleLogging.tr,
-                                    style: loginTermsConditionStyle(context),),
+                                  text: AppStrings.haveTroubleLogging.tr,
+                                  style: loginTermsConditionStyle(context),
+                                ),
                                 TextSpan(
                                   text: AppStrings.getHelp.tr,
                                   style: GoogleFonts.inter(
@@ -304,16 +296,18 @@ class LoginScreenState extends State<LoginScreen> {
                         ),
                         Padding(
                           padding: EdgeInsets.only(
-                              top: screeHeight * 0.01,
-                              left: screenWidth * 0.05,
-                              right: screenWidth * 0.05,),
+                            top: screeHeight * 0.01,
+                            left: screenWidth * 0.05,
+                            right: screenWidth * 0.05,
+                          ),
                           child: InkWell(
                             onTap: () {
                               Navigator.push(
-                                  context,
-                                  CupertinoPageRoute(
-                                      builder: (context) =>
-                                          const ForgotPasswordScreen(),),);
+                                context,
+                                CupertinoPageRoute(
+                                  builder: (context) => const ForgotPasswordScreen(),
+                                ),
+                              );
                             },
                             child: Text(
                               AppStrings.forgetPassword.tr,

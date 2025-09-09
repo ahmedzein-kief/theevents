@@ -1,6 +1,13 @@
 class ApiEndpoints {
+  // static const String baseUrl = 'https://apistaging.theevents.ae/api/v1/';
+
   static const String baseUrl = 'https://apistaging.theevents.ae/api/v1/';
+
+  // static const String imageBaseURL = 'https://apistaging.theevents.ae/storage/';
+
   static const String imageBaseURL = 'https://apistaging.theevents.ae/storage/';
+
+  // static const String payBaseURL = 'https://paystaging.theevents.ae/api/v1/';
 
   static const String payBaseURL = 'https://paystaging.theevents.ae/api/v1/';
 
@@ -91,7 +98,7 @@ class ApiEndpoints {
   static const String login = '${baseUrl}login';
 
   static const String logout = '${baseUrl}logout';
-  static const String signUp = 'register';
+  static const String signUp = '${baseUrl}register';
   static const String homeBanner = '/simple-slider?key=home-slider';
   static const String featuredBrands = '${baseUrl}brands/';
   static const String checkout = '${baseUrl}checkout/';

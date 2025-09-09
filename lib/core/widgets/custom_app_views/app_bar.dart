@@ -5,8 +5,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
 import '../../../provider/locale_provider.dart';
+import '../custom_app_views/search_bar.dart';
 
-class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
+class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   const CustomAppBar({
     super.key,
     this.customBackIcon,
@@ -28,6 +29,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.title = '',
     this.iconsColor,
     this.leftTextStyle,
+    this.showSearchBar = false,
+    this.searchController,
+    this.searchHintText = 'Search Events',
   });
 
   final String? leftIconPath;
@@ -49,7 +53,18 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final Color? iconsColor;
   final TextStyle? leftTextStyle;
+  final bool showSearchBar;
+  final TextEditingController? searchController;
+  final String searchHintText;
 
+  @override
+  State<CustomAppBar> createState() => _CustomAppBarState();
+
+  @override
+  Size get preferredSize => Size.fromHeight(appBarHeight);
+}
+
+class _CustomAppBarState extends State<CustomAppBar> {
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.sizeOf(context).width;
@@ -59,79 +74,105 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
     return SafeArea(
       child: Container(
-        color: backgroundColor,
+        color: widget.backgroundColor,
         child: AppBar(
+          shadowColor: Colors.transparent,
           automaticallyImplyLeading: false,
-          title: Text(title),
-          centerTitle: title.isNotEmpty,
+          title: widget.title.isNotEmpty && !widget.showSearchBar ? Text(widget.title) : null,
+          centerTitle: widget.title.isNotEmpty && !widget.showSearchBar,
           flexibleSpace: Container(
-            color: backgroundColor ?? Theme.of(context).colorScheme.primary,
-            child: Center(
+            color: widget.backgroundColor ?? Theme.of(context).colorScheme.primary,
+            child: SafeArea(
               child: Directionality(
                 textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // Back button / Left content
-                    Container(
-                      color: Colors.transparent,
-                      height: screenHeight,
-                      child: GestureDetector(
-                        onTap: onBackIconPressed,
-                        child: Padding(
-                          padding: EdgeInsets.only(
-                            left: isRTL ? 0 : screenWidth * 0.02,
-                            right: isRTL ? screenWidth * 0.02 : 0,
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              if (customBackIcon != null) customBackIcon!,
-                              if (leftText != null)
-                                Text(
-                                  leftText!,
-                                  style: leftTextStyle,
-                                ),
-                            ],
+                    // Back button / Left content (only show when search is not enabled)
+                    if (!widget.showSearchBar)
+                      Container(
+                        color: Colors.transparent,
+                        height: screenHeight,
+                        child: GestureDetector(
+                          onTap: widget.onBackIconPressed,
+                          child: Padding(
+                            padding: EdgeInsets.only(
+                              left: isRTL ? 0 : screenWidth * 0.02,
+                              right: isRTL ? screenWidth * 0.02 : 0,
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                if (widget.customBackIcon != null) widget.customBackIcon!,
+                                if (widget.leftText != null)
+                                  Text(
+                                    widget.leftText!,
+                                    style: widget.leftTextStyle,
+                                  ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                    ),
+
+                    // Search bar (when enabled) - using the flexible CustomSearchBar
+                    if (widget.showSearchBar)
+                      Expanded(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: screenWidth * 0.02,
+                          ),
+                          child: CustomSearchBar(
+                            controller: widget.searchController,
+                            hintText: widget.searchHintText,
+                            isCompact: true,
+                            height: 40,
+                            borderRadius: 20,
+                            fontSize: 13,
+                            iconSize: 18,
+                            horizontalPadding: 12,
+                            showSuggestions: false,
+                            // Disable suggestions in compact mode
+                            autofocus: false, // Add this to prevent auto-focus
+                          ),
+                        ),
+                      ),
+
                     // Right icons
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        if (firstRightIconPath != null)
+                        if (widget.firstRightIconPath != null)
                           Padding(
                             padding: EdgeInsets.only(
                               right: isRTL ? 0 : screenWidth * 0.05,
                               left: isRTL ? screenWidth * 0.05 : 0,
                             ),
                             child: GestureDetector(
-                              onTap: onFirstRightIconPressed,
+                              onTap: widget.onFirstRightIconPressed,
                               child: SvgPicture.asset(
-                                firstRightIconPath!,
+                                widget.firstRightIconPath!,
                                 colorFilter: ColorFilter.mode(
-                                  iconsColor ?? Theme.of(context).colorScheme.onPrimary,
+                                  widget.iconsColor ?? Theme.of(context).colorScheme.onPrimary,
                                   BlendMode.srcIn,
                                 ),
                                 height: screenHeight * 0.030,
                                 width: screenWidth * 0.30,
-                                fit: BoxFit.fill,
+                                fit: BoxFit.cover,
                               ),
                             ),
                           ),
-                        if (secondRightIconPath != null)
+                        if (widget.secondRightIconPath != null)
                           Padding(
                             padding: EdgeInsets.only(
                               right: isRTL ? 0 : screenWidth * 0.04,
                               left: isRTL ? screenWidth * 0.04 : 0,
                             ),
                             child: GestureDetector(
-                              onTap: onSecondRightIconPressed,
+                              onTap: widget.onSecondRightIconPressed,
                               child: badges.Badge(
                                 position: badges.BadgePosition.topEnd(
                                   top: -10,
@@ -147,17 +188,17 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                                   ),
                                 ),
                                 badgeContent: Text(
-                                  wishlistItemCount >= 10 ? '9+' : wishlistItemCount.toString(),
+                                  widget.wishlistItemCount >= 10 ? '9+' : widget.wishlistItemCount.toString(),
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 7,
                                   ),
                                 ),
-                                showBadge: wishlistItemCount > 0,
+                                showBadge: widget.wishlistItemCount > 0,
                                 child: SvgPicture.asset(
-                                  secondRightIconPath!,
+                                  widget.secondRightIconPath!,
                                   colorFilter: ColorFilter.mode(
-                                    iconsColor ?? Theme.of(context).colorScheme.onPrimary,
+                                    widget.iconsColor ?? Theme.of(context).colorScheme.onPrimary,
                                     BlendMode.srcIn,
                                   ),
                                   height: screenHeight * 0.030,
@@ -167,14 +208,14 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                               ),
                             ),
                           ),
-                        if (thirdRightIconPath != null)
+                        if (widget.thirdRightIconPath != null)
                           Padding(
                             padding: EdgeInsets.only(
                               right: isRTL ? 0 : screenWidth * 0.04,
                               left: isRTL ? screenWidth * 0.04 : 0,
                             ),
                             child: GestureDetector(
-                              onTap: onThirdRightIconPressed,
+                              onTap: widget.onThirdRightIconPressed,
                               child: badges.Badge(
                                 position: badges.BadgePosition.topEnd(
                                   top: -10,
@@ -189,17 +230,17 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                                   ),
                                 ),
                                 badgeContent: Text(
-                                  cartItemCount >= 10 ? '9+' : cartItemCount.toString(),
+                                  widget.cartItemCount >= 10 ? '9+' : widget.cartItemCount.toString(),
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 7,
                                   ),
                                 ),
-                                showBadge: cartItemCount > 0,
+                                showBadge: widget.cartItemCount > 0,
                                 child: SvgPicture.asset(
-                                  thirdRightIconPath!,
+                                  widget.thirdRightIconPath!,
                                   colorFilter: ColorFilter.mode(
-                                    iconsColor ?? Theme.of(context).colorScheme.onPrimary,
+                                    widget.iconsColor ?? Theme.of(context).colorScheme.onPrimary,
                                     BlendMode.srcIn,
                                   ),
                                   height: screenHeight * 0.030,
@@ -220,7 +261,4 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
     );
   }
-
-  @override
-  Size get preferredSize => Size.fromHeight(appBarHeight);
 }

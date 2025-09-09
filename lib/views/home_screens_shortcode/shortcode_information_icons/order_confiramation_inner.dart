@@ -14,8 +14,7 @@ class OrderConfirmationScreen extends StatefulWidget {
   final VoidCallback onPrevious;
 
   @override
-  State<OrderConfirmationScreen> createState() =>
-      _OrderConfirmationScreenState();
+  State<OrderConfirmationScreen> createState() => _OrderConfirmationScreenState();
 }
 
 class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
@@ -38,43 +37,61 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
                       child: Column(
                         children: [
                           const Icon(CupertinoIcons.gift_fill),
-                          Text(AppStrings.orderPlaced.tr,
-                              style: cartTextStyle(context),), // <--- REFACTORED
+                          Text(
+                            AppStrings.orderPlaced.tr,
+                            style: cartTextStyle(context),
+                          ), // <--- REFACTORED
                           Padding(
                             padding: const EdgeInsets.only(top: 10),
                             child: Column(
                               children: [
-                                Text('${AppStrings.orderNoPrefix.tr}100000',
-                                    style: orderPlaceText(
-                                        context,),), // <--- REFACTORED
                                 Text(
-                                    '${AppStrings.orderDatePrefix.tr}25 July 2024',
-                                    style: orderPlaceText(
-                                        context,),), // <--- REFACTORED
+                                  '${AppStrings.orderNoPrefix.tr}100000',
+                                  style: orderPlaceText(
+                                    context,
+                                  ),
+                                ), // <--- REFACTORED
                                 Text(
-                                    '${AppStrings.estimatedDeliveryPrefix.tr}25 July 2024',
-                                    style: orderExpectDateText(
-                                        context,),), // <--- REFACTORED
+                                  '${AppStrings.orderDatePrefix.tr}25 July 2024',
+                                  style: orderPlaceText(
+                                    context,
+                                  ),
+                                ), // <--- REFACTORED
+                                Text(
+                                  '${AppStrings.estimatedDeliveryPrefix.tr}25 July 2024',
+                                  style: orderExpectDateText(
+                                    context,
+                                  ),
+                                ), // <--- REFACTORED
                               ],
                             ),
                           ),
                           Padding(
                             padding: const EdgeInsets.only(
-                                left: 20, right: 20, top: 20,),
+                              left: 20,
+                              right: 20,
+                              top: 20,
+                            ),
                             child: Material(
                               shadowColor: Colors.black,
                               elevation: 15,
                               color: Colors.white,
                               child: Padding(
                                 padding: const EdgeInsets.only(
-                                    top: 20, left: 10, right: 10,),
+                                  top: 20,
+                                  left: 10,
+                                  right: 10,
+                                ),
                                 child: Column(
                                   mainAxisSize: MainAxisSize.min,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text('2${AppStrings.itemsSuffix.tr}',
-                                        style: itemsText(
-                                            context,),), // <--- REFACTORED
+                                    Text(
+                                      '2${AppStrings.itemsSuffix.tr}',
+                                      style: itemsText(
+                                        context,
+                                      ),
+                                    ), // <--- REFACTORED
                                     Padding(
                                       padding: const EdgeInsets.only(top: 10),
                                       child: Container(
@@ -164,8 +181,7 @@ Widget _buildItemList(BuildContext context) {
                               // Default text style
                               children: <TextSpan>[
                                 TextSpan(
-                                  text: AppStrings
-                                      .itemColor.tr, // Additional text span
+                                  text: AppStrings.itemColor.tr, // Additional text span
                                   style: itemsColorText(context),
                                 ),
                               ],
@@ -179,19 +195,25 @@ Widget _buildItemList(BuildContext context) {
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(AppStrings.actualPrice.tr,
-                              style:
-                                  itemsTitleText(context),), // <--- REFACTORED
+                          Text(
+                            AppStrings.actualPrice.tr,
+                            style: itemsTitleText(context),
+                          ), // <--- REFACTORED
                           Padding(
                             padding: const EdgeInsets.only(left: 5),
-                            child: Text(AppStrings.standardPrice.tr,
-                                style: wishItemSalePrice(
-                                    context,),), // <--- REFACTORED
+                            child: Text(
+                              AppStrings.standardPrice.tr,
+                              style: wishItemSalePrice(
+                                context,
+                              ),
+                            ), // <--- REFACTORED
                           ),
                           Padding(
                             padding: const EdgeInsets.only(left: 5),
-                            child: Text(AppStrings.fiftyPercentOffPrice.tr,
-                                style: wishItemSaleOff(),), // <--- REFACTORED
+                            child: Text(
+                              AppStrings.fiftyPercentOffPrice.tr,
+                              style: wishItemSaleOff(),
+                            ), // <--- REFACTORED
                           ),
                         ],
                       ),
@@ -207,8 +229,7 @@ Widget _buildItemList(BuildContext context) {
                               // Default text style
                               children: <TextSpan>[
                                 TextSpan(
-                                  text: AppStrings
-                                      .itemColor.tr, // Additional text span
+                                  text: AppStrings.itemColor.tr, // Additional text span
                                   style: itemsColorText(context),
                                 ),
                               ],
@@ -228,8 +249,7 @@ Widget _buildItemList(BuildContext context) {
                               // Default text style
                               children: <TextSpan>[
                                 TextSpan(
-                                  text: AppStrings
-                                      .itemColor.tr, // Additional text span
+                                  text: AppStrings.itemColor.tr, // Additional text span
                                   style: itemsColorText(context),
                                 ),
                               ],
@@ -249,8 +269,7 @@ Widget _buildItemList(BuildContext context) {
                               // Default text style
                               children: <TextSpan>[
                                 TextSpan(
-                                  text: AppStrings
-                                      .itemUKSize.tr, // Additional text span
+                                  text: AppStrings.itemUKSize.tr, // Additional text span
                                   style: itemsColorText(context),
                                 ),
                               ],
@@ -270,8 +289,7 @@ Widget _buildItemList(BuildContext context) {
                               // Default text style
                               children: <TextSpan>[
                                 TextSpan(
-                                  text: AppStrings.itemQuantityValue
-                                      .tr, // Additional text span
+                                  text: AppStrings.itemQuantityValue.tr, // Additional text span
                                   style: itemsColorText(context),
                                 ),
                               ],
@@ -315,8 +333,10 @@ Widget _amountSection(BuildContext context) {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(AppStrings.discount.tr.toUpperCase(),
-                style: totalPriceStyle(context),),
+            Text(
+              AppStrings.discount.tr.toUpperCase(),
+              style: totalPriceStyle(context),
+            ),
             Text('AED-1060', style: totalPriceStyle(context)),
           ],
         ),
@@ -324,8 +344,10 @@ Widget _amountSection(BuildContext context) {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(AppStrings.tax.tr.toUpperCase(),
-                style: totalPriceStyle(context),),
+            Text(
+              AppStrings.tax.tr.toUpperCase(),
+              style: totalPriceStyle(context),
+            ),
             Text('AED-1060', style: totalPriceStyle(context)),
           ],
         ),
@@ -359,12 +381,16 @@ Widget _amountSection(BuildContext context) {
           padding: EdgeInsets.symmetric(vertical: 15),
           child: Divider(height: 0.2, color: Colors.grey),
         ),
-        Text(AppStrings.deliveryMethod.tr,
-            style: deliveryMethodsStyle(context),),
+        Text(
+          AppStrings.deliveryMethod.tr,
+          style: deliveryMethodsStyle(context),
+        ),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Text(AppStrings.standardDelivery.tr,
-              style: standardStyle(context),),
+          child: Text(
+            AppStrings.standardDelivery.tr,
+            style: standardStyle(context),
+          ),
         ),
         Text(AppStrings.deliveryAddress.tr, style: addressStyle(context)),
         Padding(
@@ -415,12 +441,16 @@ Widget _amountSection(BuildContext context) {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(AppStrings.cancellingTheOrder.tr,
-                  style: addressStyle(context),),
+              Text(
+                AppStrings.cancellingTheOrder.tr,
+                style: addressStyle(context),
+              ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 12),
-                child: Text(AppStrings.cancellationInfo.tr,
-                    style: standardStyle(context),),
+                child: Text(
+                  AppStrings.cancellationInfo.tr,
+                  style: standardStyle(context),
+                ),
               ),
               Padding(
                 padding: const EdgeInsets.only(bottom: 10),
@@ -433,10 +463,14 @@ Widget _amountSection(BuildContext context) {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(AppStrings.standardDelivery.tr,
-                              style: standardTextStyle(context),),
-                          Text(AppStrings.cancelWithinOneHour.tr,
-                              style: standardStyle(context),),
+                          Text(
+                            AppStrings.standardDelivery.tr,
+                            style: standardTextStyle(context),
+                          ),
+                          Text(
+                            AppStrings.cancelWithinOneHour.tr,
+                            style: standardStyle(context),
+                          ),
                         ],
                       ),
                     ),
@@ -445,8 +479,10 @@ Widget _amountSection(BuildContext context) {
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 8),
-                child: Text(AppStrings.cancellationInfo.tr,
-                    style: standardStyle(context),),
+                child: Text(
+                  AppStrings.cancellationInfo.tr,
+                  style: standardStyle(context),
+                ),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -455,8 +491,10 @@ Widget _amountSection(BuildContext context) {
                     alignment: Alignment.centerLeft,
                     child: GestureDetector(
                       onTap: () {
-                        Navigator.push(context,
-                            SlidePageRoute(page: const OrderCancelScreen()),);
+                        Navigator.push(
+                          context,
+                          SlidePageRoute(page: const OrderCancelScreen()),
+                        );
                       },
                       child: Container(
                         margin: const EdgeInsets.only(top: 15),
@@ -464,8 +502,10 @@ Widget _amountSection(BuildContext context) {
                         decoration: const BoxDecoration(
                           color: Colors.redAccent,
                         ),
-                        child: Text(AppStrings.returnOrder.tr,
-                            style: returnStyle(context),),
+                        child: Text(
+                          AppStrings.returnOrder.tr,
+                          style: returnStyle(context),
+                        ),
                       ),
                     ),
                   ),
@@ -476,15 +516,14 @@ Widget _amountSection(BuildContext context) {
                       padding: EdgeInsets.all(screenWidth * 0.02),
                       decoration: BoxDecoration(
                         border: Border.all(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onPrimary
-                              .withOpacity(0.6),
+                          color: Theme.of(context).colorScheme.onPrimary.withAlpha((0.6 * 255).toInt()),
                           width: 0.5,
                         ),
                       ),
-                      child: Text(AppStrings.viewOrderUppercase.tr,
-                          style: addressStyle(context),),
+                      child: Text(
+                        AppStrings.viewOrderUppercase.tr,
+                        style: addressStyle(context),
+                      ),
                     ),
                   ),
                 ],

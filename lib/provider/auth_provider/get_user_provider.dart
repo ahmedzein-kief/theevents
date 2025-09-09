@@ -39,7 +39,7 @@ class UserProvider with ChangeNotifier {
     }
     const url = ApiEndpoints.getCustomer;
     final headers = {
-      'Authorization': 'Bearer $token',
+      'Authorization': token,
     };
 
     try {

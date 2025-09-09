@@ -1,3 +1,10 @@
+Map<String, dynamic> _parseShipping(data) {
+  if (data == null || data is List) {
+    return {};
+  }
+  return data as Map<String, dynamic>;
+}
+
 class CheckoutResponse {
   final bool error;
   final CheckoutData? data;
@@ -70,7 +77,7 @@ class CheckoutData {
   factory CheckoutData.fromJson(Map<String, dynamic> json) {
     return CheckoutData(
       token: json['token'] ?? '',
-      shipping: json['shipping'] ?? {},
+      shipping: _parseShipping(json['shipping']),
       defaultShippingMethod: json['defaultShippingMethod'] ?? '',
       defaultShippingOption: json['defaultShippingOption'] ?? '',
       subTotal: (json['subTotal'] ?? 0).toDouble(),
@@ -308,7 +315,7 @@ class MarketplaceData {
       shippingMethod: json['shipping_method'] ?? '',
       shippingOption: json['shipping_option'] ?? '',
       shippingAmount: json['shipping_amount'] ?? '',
-      shipping: json['shipping'] ?? {},
+      shipping: _parseShipping(json['shipping']),
       defaultShippingMethod: json['default_shipping_method'] ?? '',
       defaultShippingOption: json['default_shipping_option'] ?? '',
       isAvailableShipping: json['is_available_shipping'] ?? false,

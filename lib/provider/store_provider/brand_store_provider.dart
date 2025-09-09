@@ -40,9 +40,7 @@ class Data {
         title: json['title'],
         description: json['description'],
         slug: json['slug'],
-        seoMeta: json['seo_meta'] != null
-            ? SeoMeta.fromJson(json['seo_meta'])
-            : null,
+        seoMeta: json['seo_meta'] != null ? SeoMeta.fromJson(json['seo_meta']) : null,
       );
   final int id;
   final String name;
@@ -103,8 +101,7 @@ class StoreProvider with ChangeNotifier {
         storeModel = StoreModel.fromJson(data);
       } else {
         // Handle error
-        Logger()
-            .e('Failed to load store ${response.statusCode} ${response.data}');
+        Logger().e('Failed to load store ${response.statusCode} ${response.data}');
         throw Exception('Failed to load store');
       }
     } finally {

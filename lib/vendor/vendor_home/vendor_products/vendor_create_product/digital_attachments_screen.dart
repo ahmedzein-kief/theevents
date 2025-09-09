@@ -5,7 +5,7 @@ import 'package:event_app/core/helper/extensions/app_localizations_extension.dar
 import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/models/vendor_models/products/holder_models/upload_images_model.dart';
 import 'package:event_app/vendor/components/services/media_services.dart';
-import 'package:event_app/vendor/components/utils/utils.dart';
+import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/vendor/components/vendor_text_style.dart';
 import 'package:event_app/vendor/vendor_home/vendor_products/vendor_create_product/full_screen_image_view.dart';
 import 'package:event_app/vendor/view_models/vendor_products/vendor_create_product_view_model.dart';
@@ -19,8 +19,7 @@ class DigitalAttachmentsScreen extends StatefulWidget {
   final List<UploadImagesModel>? initialImages;
 
   @override
-  _DigitalAttachmentsScreenState createState() =>
-      _DigitalAttachmentsScreenState();
+  _DigitalAttachmentsScreenState createState() => _DigitalAttachmentsScreenState();
 }
 
 class _DigitalAttachmentsScreenState extends State<DigitalAttachmentsScreen> {
@@ -47,11 +46,8 @@ class _DigitalAttachmentsScreenState extends State<DigitalAttachmentsScreen> {
     final settings = provider.generalSettingsApiResponse.data?.data;
     final allowedExtension = settings?.digitalAllowedMimeTypes ?? '';
 
-    final List<File?>? myFiles =
-        await MediaServices().getMultipleFilesFromPicker(
-      allowedExtensions: allowedExtension.isNotEmpty
-          ? allowedExtension.split(',').toList()
-          : null,
+    final List<File?>? myFiles = await MediaServices().getMultipleFilesFromPicker(
+      allowedExtensions: allowedExtension.isNotEmpty ? allowedExtension.split(',').toList() : null,
     );
 
     final List<UploadImagesModel> uploadImagesList = (myFiles ?? [])
@@ -60,8 +56,7 @@ class _DigitalAttachmentsScreenState extends State<DigitalAttachmentsScreen> {
           (file) => UploadImagesModel(
             file: file!,
             fileName: path.basename(file.path), // Extract filename from path
-            fileExtension:
-                path.extension(file.path).toUpperCase().replaceAll('.', ''),
+            fileExtension: path.extension(file.path).toUpperCase().replaceAll('.', ''),
           ),
         )
         .toList();
@@ -97,21 +92,22 @@ class _DigitalAttachmentsScreenState extends State<DigitalAttachmentsScreen> {
         },
         child: Scaffold(
           appBar: AppBar(
-            title: Text(VendorAppStrings.digitalAttachments.tr,
-                style: vendorName(context),),
+            title: Text(
+              VendorAppStrings.digitalAttachments.tr,
+              style: vendorName(context),
+            ),
             leading: IconButton(
               icon: const Icon(Icons.arrow_back),
               onPressed: _returnBack,
             ),
           ),
-          body: Utils.modelProgressHud(
+          body: AppUtils.modelProgressHud(
             context: context,
             processing: _isProcessing,
             child: _selectedImages.isEmpty
                 ? Center(child: Text(VendorAppStrings.noAttachmentsSelected.tr))
                 : ListView.builder(
-                    padding:
-                        const EdgeInsets.only(left: 10, right: 10, bottom: 80),
+                    padding: const EdgeInsets.only(left: 10, right: 10, bottom: 80),
                     itemCount: _selectedImages.length,
                     itemBuilder: (context, index) {
                       String fileName;
@@ -119,18 +115,13 @@ class _DigitalAttachmentsScreenState extends State<DigitalAttachmentsScreen> {
                       print('has file ${_selectedImages[index].hasFile}');
 
                       if (!_selectedImages[index].hasFile) {
-                        final Uri uri =
-                            Uri.parse(_selectedImages[index].serverFullUrl);
+                        final Uri uri = Uri.parse(_selectedImages[index].serverFullUrl);
 
                         // Ensure there are path segments before accessing the last one
-                        fileName = uri.pathSegments.isNotEmpty
-                            ? uri.pathSegments.last
-                            : '';
+                        fileName = uri.pathSegments.isNotEmpty ? uri.pathSegments.last : '';
 
                         // Ensure fileName contains '.' before attempting to split
-                        fileExtension = fileName.contains('.')
-                            ? fileName.split('.').last
-                            : 'unknown';
+                        fileExtension = fileName.contains('.') ? fileName.split('.').last : 'unknown';
                       } else {
                         fileName = _selectedImages[index].fileName;
                         fileExtension = _selectedImages[index].fileExtension;
@@ -157,8 +148,7 @@ class _DigitalAttachmentsScreenState extends State<DigitalAttachmentsScreen> {
                                   errorBuilder: (errorContext, object, error) =>
                                       Image.asset('assets/placeholder-100.png'),
                                 ),
-                          title:
-                              Text(fileName, overflow: TextOverflow.ellipsis),
+                          title: Text(fileName, overflow: TextOverflow.ellipsis),
                           subtitle: Text(fileExtension),
                           onTap: () {
                             // _showFullScreenImage(_selectedImages[index].file)

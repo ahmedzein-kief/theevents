@@ -1,6 +1,6 @@
 class PaymentPostData {
   bool? cardForm;
-  int? cardAmount;
+  double? cardAmount;
   Map<String, String>? paymentMethod;
 
   // Convert object to List<MapEntry<String, String>>

@@ -58,7 +58,7 @@ class _ProductActionsState extends State<ProductActions> {
   }
 
   /// Navigate to login screen with appropriate message
-  void _navigateToLogin(String messageKey) {
+  void navigateToLogin(String messageKey) {
     PersistentNavBarNavigator.pushNewScreen(
       context,
       screen: AuthScreen(),
@@ -144,7 +144,7 @@ class _ProductActionsState extends State<ProductActions> {
     // First check if user is logged in
     final bool loggedIn = await _isLoggedIn();
     if (!loggedIn) {
-      _navigateToLogin(AppStrings.pleaseLogInToCart);
+      navigateToLogin(AppStrings.pleaseLogInToCart);
       return;
     }
 
@@ -189,7 +189,7 @@ class _ProductActionsState extends State<ProductActions> {
     // First check if user is logged in
     final bool loggedIn = await _isLoggedIn();
     if (!loggedIn) {
-      _navigateToLogin(AppStrings.pleaseLogInToWishList);
+      navigateToLogin(AppStrings.pleaseLogInToWishList);
       return;
     }
 

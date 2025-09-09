@@ -14,7 +14,7 @@ import 'package:event_app/vendor/components/services/alert_services.dart';
 import 'package:event_app/vendor/components/services/media_services.dart';
 import 'package:event_app/vendor/components/settings_components/simple_card.dart';
 import 'package:event_app/vendor/components/text_fields/custom_text_form_field.dart';
-import 'package:event_app/vendor/components/utils/utils.dart';
+import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/vendor/view_models/vendor_settings/vendor_get_settings_view_model.dart';
 import 'package:event_app/vendor/view_models/vendor_settings/vendor_settings_view_model.dart';
 import 'package:flutter/material.dart';
@@ -167,17 +167,17 @@ class _PayoutInfoViewState extends State<PayoutInfoView> {
   @override
   Widget build(BuildContext context) => Scaffold(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        body: Utils.modelProgressHud(
+        body: AppUtils.modelProgressHud(
           context: context,
           processing: false,
-          child: Utils.pageRefreshIndicator(
+          child: AppUtils.pageRefreshIndicator(
             context: context,
             onRefresh: _onRefresh,
             child: Consumer<VendorGetSettingsViewModel>(
               builder: (context, vendorGetSettingsProvider, _) {
                 /// Show loading if refreshing
                 if (vendorGetSettingsProvider.apiResponse.status == ApiStatus.LOADING) {
-                  return Utils.pageLoadingIndicator(context: context);
+                  return AppUtils.pageLoadingIndicator(context: context);
                 }
 
                 /// return ui if loading ends

@@ -15,6 +15,7 @@ class VendorCard extends StatelessWidget {
     this.iconData = Icons.check, // Default icon
     this.iconColor = Colors.white, // Default icon color
   });
+
   final String title;
   final String subtitle;
   final String actionText;
@@ -44,7 +45,7 @@ class VendorCard extends StatelessWidget {
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withOpacity(0.5),
+                color: Colors.grey.withAlpha((0.5 * 255).toInt()),
                 spreadRadius: 5,
                 blurRadius: 7,
                 offset: const Offset(0, 3), // changes position of shadow
@@ -73,11 +74,13 @@ class VendorCard extends StatelessWidget {
                         maxLines: 2,
                         softWrap: true,
                         style: GoogleFonts.inter(
-                            fontSize: 15,
-                            textStyle: const TextStyle(
-                                overflow: TextOverflow.ellipsis,),
-                            color: Colors.green,
-                            fontWeight: FontWeight.w600,),
+                          fontSize: 15,
+                          textStyle: const TextStyle(
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          color: Colors.green,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ],

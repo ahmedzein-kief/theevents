@@ -44,7 +44,7 @@ class FreshPicksProvider extends ChangeNotifier {
   }
 
   /// Navigate to login screen with appropriate message
-  void _navigateToLogin(BuildContext context, String messageKey) {
+  void navigateToLogin(BuildContext context, String messageKey) {
     PersistentNavBarNavigator.pushNewScreen(
       context,
       screen: AuthScreen(),
@@ -170,7 +170,7 @@ class FreshPicksProvider extends ChangeNotifier {
     // Check authentication first
     final bool loggedIn = await _isLoggedIn();
     if (!loggedIn) {
-      _navigateToLogin(context, 'Please log in to manage your wishlist');
+      navigateToLogin(context, 'Please log in to manage your wishlist');
       return;
     }
 
@@ -183,7 +183,7 @@ class FreshPicksProvider extends ChangeNotifier {
 
       final response = await dio.post(
         url,
-        options: Options(headers: {'Authorization': 'Bearer $token'}),
+        options: Options(headers: {'Authorization': token}),
       );
 
       if (response.statusCode == 200) {
@@ -213,7 +213,7 @@ class FreshPicksProvider extends ChangeNotifier {
     // Check authentication first
     final bool loggedIn = await _isLoggedIn();
     if (!loggedIn) {
-      _navigateToLogin(context, 'Please log in to manage your wishlist');
+      navigateToLogin(context, 'Please log in to manage your wishlist');
       return null;
     }
 
@@ -226,7 +226,7 @@ class FreshPicksProvider extends ChangeNotifier {
 
       final response = await dio.post(
         url,
-        options: Options(headers: {'Authorization': 'Bearer $token'}),
+        options: Options(headers: {'Authorization': token}),
       );
 
       if (response.statusCode == 200) {

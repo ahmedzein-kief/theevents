@@ -1,4 +1,3 @@
-
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/core/utils/custom_toast.dart';
 import 'package:event_app/provider/api_response_handler.dart';
@@ -19,19 +18,25 @@ class ChangePasswordProvider with ChangeNotifier {
   }
 
   Future<void> changePassword(
-      String token, ChangePasswordRequest request, BuildContext context,) async {
+    String token,
+    ChangePasswordRequest request,
+    BuildContext context,
+  ) async {
     const urlChangePassword = ApiEndpoints.changePassword;
     const url = urlChangePassword;
     final headers = {
-      'Authorization': 'Bearer $token',
+      'Authorization': token,
       'Accept': 'application/json',
     };
 
     setStatus(ApiStatus.loading); // Set status to loading before the API call
 
     try {
-      final response = await _apiResponseHandler.postRequest(url,
-          headers: headers, body: request.toJson(),);
+      final response = await _apiResponseHandler.postRequest(
+        url,
+        headers: headers,
+        body: request.toJson(),
+      );
 
       final responseData = response.data;
       if (response.statusCode == 200) {
@@ -48,10 +53,11 @@ class ChangePasswordProvider with ChangeNotifier {
 }
 
 class ChangePasswordRequest {
-  ChangePasswordRequest(
-      {required this.oldPassword,
-      required this.password,
-      required this.password_confirmation,});
+  ChangePasswordRequest({
+    required this.oldPassword,
+    required this.password,
+    required this.password_confirmation,
+  });
 
   String oldPassword;
   String password;

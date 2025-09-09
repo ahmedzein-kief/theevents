@@ -91,7 +91,7 @@ class _SimpleSliderState extends State<SliderTwoTagsWithAdScreen> {
                         return CachedNetworkImage(
                           imageUrl: slide.image ?? '',
                           alignment: Alignment.center,
-                          fit: BoxFit.fill,
+                          fit: BoxFit.cover,
                           errorListener: (object) {
                             Image.asset(
                               'assets/placeholder.png',
@@ -131,7 +131,7 @@ class _SimpleSliderState extends State<SliderTwoTagsWithAdScreen> {
                         return CachedNetworkImage(
                           imageUrl: 'assets/containing.png',
                           alignment: Alignment.center,
-                          fit: BoxFit.fill,
+                          fit: BoxFit.cover,
                           width: screenWidth,
                           errorListener: (object) {
                             Image.asset(
@@ -329,7 +329,7 @@ class _BrandsSlotsState extends State<BrandsSlots> {
                               gradient: cardGradients[(record.id ?? 0) % cardGradients.length],
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
+                                  color: Colors.black.withAlpha((0.1 * 255).toInt()),
                                   blurRadius: 4,
                                   offset: const Offset(0, 2),
                                 ),

@@ -71,8 +71,11 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
                 Expanded(
                   child: SingleChildScrollView(
                     child: Consumer<UserProvider>(
-                      builder: (BuildContext context, UserProvider provider,
-                          Widget? child,) {
+                      builder: (
+                        BuildContext context,
+                        UserProvider provider,
+                        Widget? child,
+                      ) {
                         final user = provider.user;
                         if (user == null) return Container();
                         return Column(
@@ -126,22 +129,23 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
                                   SizedBox(height: screenHeight * 0.04),
                                   AppCustomButton(
                                     title: AppStrings.update.tr,
-                                    isLoading: context
-                                            .watch<ProfileUpdateProvider>()
-                                            .status ==
-                                        ApiStatus.loading,
+                                    isLoading: context.watch<ProfileUpdateProvider>().status == ApiStatus.loading,
                                     onPressed: () async {
-                                      if (_formKey.currentState?.validate() ??
-                                          false) {
+                                      if (_formKey.currentState?.validate() ?? false) {
                                         await forUpdateProfile(context);
-                                        final provider =
-                                            Provider.of<UserProvider>(context,
-                                                listen: false,);
+                                        final provider = Provider.of<UserProvider>(
+                                          context,
+                                          listen: false,
+                                        );
                                         await provider.fetchUserData(
-                                            user.token ?? '', context,);
+                                          user.token ?? '',
+                                          context,
+                                        );
                                       } else {
-                                        CustomSnackbar.showError(context,
-                                            AppStrings.pleaseFillAllFields.tr,);
+                                        CustomSnackbar.showError(
+                                          context,
+                                          AppStrings.pleaseFillAllFields.tr,
+                                        );
                                       }
                                     },
                                   ),
@@ -152,13 +156,13 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
                             const Divider(thickness: 1, color: Colors.grey),
                             SizedBox(height: screenHeight * 0.02),
                             TextButton(
-                              onPressed: () =>
-                                  _showDeleteAccountWarning(context),
+                              onPressed: () => _showDeleteAccountWarning(context),
                               child: Text(
                                 AppStrings.deleteMyAccount.tr,
                                 style: const TextStyle(
-                                    color: Colors.red,
-                                    fontWeight: FontWeight.bold,),
+                                  color: Colors.red,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                           ],
@@ -171,12 +175,10 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
             ),
             if (mainProvider.isLoading)
               Container(
-                color: Colors.black
-                    .withOpacity(0.5), // Semi-transparent background
+                color: Colors.black.withAlpha((0.5 * 255).toInt()), // Semi-transparent background
                 child: const Center(
                   child: CircularProgressIndicator(
-                    valueColor:
-                        AlwaysStoppedAnimation<Color>(AppColors.peachyPink),
+                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.peachyPink),
                   ),
                 ),
               ),
@@ -221,8 +223,10 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
               Navigator.of(context).pop();
               await _deleteAccount(mainContext);
             },
-            child: Text(AppStrings.delete.tr,
-                style: const TextStyle(color: Colors.red),),
+            child: Text(
+              AppStrings.delete.tr,
+              style: const TextStyle(color: Colors.red),
+            ),
           ),
         ],
       ),
@@ -237,7 +241,9 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
 
     if (isDeleted) {
       Navigator.pushReplacement(
-          context, CupertinoPageRoute(builder: (context) => AuthScreen()),);
+        context,
+        CupertinoPageRoute(builder: (context) => AuthScreen()),
+      );
     }
   }
 }

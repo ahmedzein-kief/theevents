@@ -22,7 +22,7 @@ import 'package:provider/provider.dart';
 import '../../../../core/helper/validators/validator.dart';
 import '../../../../core/styles/app_colors.dart';
 import '../../../../core/widgets/custom_profile_views/custom_back_appbar_view.dart';
-import '../../../../vendor/components/utils/utils.dart' show Utils;
+import '../../../../core/utils/app_utils.dart' show AppUtils;
 
 class CustomerSubmitReviewView extends StatefulWidget {
   CustomerSubmitReviewView({
@@ -35,12 +35,10 @@ class CustomerSubmitReviewView extends StatefulWidget {
   final ProductsAvailableForReview productsAvailableForReview;
 
   @override
-  State<CustomerSubmitReviewView> createState() =>
-      _CustomerSubmitReviewViewState();
+  State<CustomerSubmitReviewView> createState() => _CustomerSubmitReviewViewState();
 }
 
-class _CustomerSubmitReviewViewState extends State<CustomerSubmitReviewView>
-    with MediaQueryMixin {
+class _CustomerSubmitReviewViewState extends State<CustomerSubmitReviewView> with MediaQueryMixin {
   final TextEditingController _reviewController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -59,7 +57,8 @@ class _CustomerSubmitReviewViewState extends State<CustomerSubmitReviewView>
   Future<void> _addPhotos() async {
     try {
       final files = await MediaServices().getMultipleFilesFromPicker(
-          allowedExtensions: MediaServices().allowedImageExtension,);
+        allowedExtensions: MediaServices().allowedImageExtension,
+      );
 
       if (files?.isNotEmpty ?? false) {
         const int maxCount = 6; // Maximum number of files allowed
@@ -69,8 +68,7 @@ class _CustomerSubmitReviewViewState extends State<CustomerSubmitReviewView>
         if (_photos.length + files!.length > maxCount) {
           CustomSnackbar.showError(
             context,
-            AppStrings.maxFilesError.tr
-                .replaceAll('maxCount', maxCount.toString()),
+            AppStrings.maxFilesError.tr.replaceAll('maxCount', maxCount.toString()),
           );
           return;
         }
@@ -80,20 +78,23 @@ class _CustomerSubmitReviewViewState extends State<CustomerSubmitReviewView>
             continue; // Skip duplicates
           }
 
-          final bool validFileSize =
-              await Utils.compareFileSize(file: file, maxSizeInKB: maxSizeInKB);
+          final bool validFileSize = await AppUtils.compareFileSize(file: file, maxSizeInKB: maxSizeInKB);
 
           if (validFileSize) {
             _photos.add(file);
           } else {
-            CustomSnackbar.showError(context,
-                "${file.path.split('/').last} size must be less than 2MB",);
+            CustomSnackbar.showError(
+              context,
+              "${file.path.split('/').last} size must be less than 2MB",
+            );
           }
 
           // Recheck max count after adding each file
           if (_photos.length >= maxCount) {
-            CustomSnackbar.showError(context,
-                'You have reached the maximum limit of $maxCount files',);
+            CustomSnackbar.showError(
+              context,
+              'You have reached the maximum limit of $maxCount files',
+            );
             break;
           }
         }
@@ -229,29 +230,30 @@ class _CustomerSubmitReviewViewState extends State<CustomerSubmitReviewView>
                                 borderRadius: 4,
                                 buttonText: AppStrings.submitReview.tr,
                                 buttonColor: AppColors.lightCoral,
-                                isLoading: provider.apiResponse.status ==
-                                    ApiStatus.LOADING,
+                                isLoading: provider.apiResponse.status == ApiStatus.LOADING,
                                 onTap: () async {
-                                  if (_formKey.currentState?.validate() ??
-                                      false) {
+                                  if (_formKey.currentState?.validate() ?? false) {
                                     try {
                                       _createForm();
-                                      final result =
-                                          await provider.customerSubmitReview(
-                                              form: formData, context: context,);
+                                      final result = await provider.customerSubmitReview(
+                                        form: formData,
+                                        context: context,
+                                      );
                                       if (result) {
                                         Navigator.pop(context, 1);
                                         Navigator.pushReplacement(
-                                            context,
-                                            CupertinoPageRoute(
-                                                builder: (context) =>
-                                                    const ProfileReviewScreen(
-                                                      initialTabIndex: 1,
-                                                    ),),);
+                                          context,
+                                          CupertinoPageRoute(
+                                            builder: (context) => const ProfileReviewScreen(
+                                              initialTabIndex: 1,
+                                            ),
+                                          ),
+                                        );
                                       }
                                     } catch (e) {
                                       print(
-                                          '${AppStrings.errorSubmittingReview.tr} $e',);
+                                        '${AppStrings.errorSubmittingReview.tr} $e',
+                                      );
                                     }
                                   }
                                 },

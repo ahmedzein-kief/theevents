@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import '../../core/network/api_endpoints/api_end_point.dart';
 import '../../core/network/api_status/api_status.dart';
 import '../../core/services/shared_preferences_helper.dart';
+import '../../core/utils/app_utils.dart';
 import '../../core/utils/custom_toast.dart';
 import '../../models/auth_models/login_models.dart';
 import '../../models/auth_models/logout_models.dart';
@@ -111,7 +112,7 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      const url = '${ApiEndpoints.baseUrl}${ApiEndpoints.signUp}';
+      const url = ApiEndpoints.signUp;
 
       final headers = {
         'Content-Type': 'application/json; charset=UTF-8',
@@ -258,15 +259,15 @@ class AuthProvider with ChangeNotifier {
       if (response['status']) {
         // Success case
         _message = response['data']['message'];
-        CustomSnackbar.showSuccess(context, _message); // Show success message
+        AppUtils.showToast(_message, isSuccess: true);
       } else {
         // Error response
         _message = response['message'];
         _errors = response['errors'];
-        CustomSnackbar.showError(context, _message); // Show error message
+        AppUtils.showToast(_message);
       }
     } catch (error) {
-      CustomSnackbar.showError(context, _message); // Show error message
+      AppUtils.showToast(_message);
     } finally {
       _isLoading = false;
       notifyListeners();

@@ -1,4 +1,4 @@
-// Updated BaseHomeScreen with proper language change handling
+// Fixed BaseHomeScreen with proper widget lifecycle management
 import 'dart:async';
 
 import 'package:event_app/core/constants/app_assets.dart';
@@ -12,26 +12,30 @@ import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../provider/home_shortcode_provider/featured_brands_provider.dart';
 import '../../provider/locale_provider.dart';
 import '../../provider/shortcode_featured_categories_provider/featured_categories_provider.dart';
-import '../../provider/shortcode_fresh_picks_provider/fresh_picks_provider.dart';
 import '../../provider/shortcode_home_page_provider.dart';
 import '../../views/base_screens/home_screen.dart';
 import '../../views/base_screens/profile_screen.dart';
 import '../../views/home_screens_shortcode/shorcode_featured_brands/featured_brands_view_all.dart';
 import '../../views/home_screens_shortcode/shortcode_featured_categories/featured_categories_items_screen.dart';
 import '../constants/app_strings.dart';
+import '../router/app_routes.dart';
 import '../services/shared_preferences_helper.dart';
+import '../utils/app_utils.dart';
 
 class BaseHomeScreen extends StatefulWidget {
   const BaseHomeScreen({
     super.key,
     this.data,
     this.typeId,
+    this.shouldNavigateToOrders = false,
   });
 
   final dynamic data;
   final int? typeId;
+  final bool shouldNavigateToOrders;
 
   @override
   State<BaseHomeScreen> createState() => _HomeScreenState();
@@ -42,8 +46,11 @@ class _HomeScreenState extends State<BaseHomeScreen> {
   late bool _isTempLoggedIn = false;
   int _currentIndex = 2;
   Locale? _currentLocale;
-  bool _isRefetching = false;
+  bool _isReFetching = false;
   Timer? _debounceTimer;
+
+  // Store context reference for safe async operations
+  BuildContext? _lastValidContext;
 
   final _controller = PersistentTabController(initialIndex: 2);
 
@@ -52,11 +59,33 @@ class _HomeScreenState extends State<BaseHomeScreen> {
     super.initState();
     _currentLocale = Provider.of<LocaleProvider>(context, listen: false).locale;
     _loadInitialData();
+
+    // Handle navigation to orders page with delay
+    if (widget.shouldNavigateToOrders) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          // Show success toast immediately after build
+          AppUtils.showToast(
+            AppStrings.orderPlacedSuccessfully.tr,
+            isSuccess: true,
+          );
+
+          // Delay ONLY the navigation to orders page
+          Future.delayed(const Duration(seconds: 1), () {
+            if (mounted) {
+              debugPrint('Navigating to orders page after delay');
+              Navigator.pushNamed(context, AppRoutes.orderPage);
+            }
+          });
+        }
+      });
+    }
   }
 
   @override
   void dispose() {
     _debounceTimer?.cancel();
+    _lastValidContext = null; // Clear context reference
     super.dispose();
   }
 
@@ -64,89 +93,127 @@ class _HomeScreenState extends State<BaseHomeScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
+    // Store valid context reference
+    _lastValidContext = context;
+
     final newLocale = Provider.of<LocaleProvider>(context).locale;
-    if (_currentLocale != newLocale && !_isRefetching) {
+    if (_currentLocale != newLocale && !_isReFetching) {
       _currentLocale = newLocale;
-      _refetchAllDataForNewLocale();
+      _reFetchAllDataForNewLocale();
     }
   }
 
   Future<void> _loadInitialData() async {
     await _loadLoginState();
-    await _fetchAllInitialData();
   }
 
-  // NEW: Comprehensive data refetch for locale changes
-  Future<void> _refetchAllDataForNewLocale() async {
-    if (_isRefetching) return;
+  // Enhanced data reFetch with better error handling
+  Future<void> _reFetchAllDataForNewLocale() async {
+    if (_isReFetching || !mounted) return;
 
     _debounceTimer?.cancel();
     _debounceTimer = Timer(const Duration(milliseconds: 300), () async {
-      setState(() => _isRefetching = true);
+      if (!mounted) return; // Additional check before starting
+
+      setState(() => _isReFetching = true);
 
       try {
+        // Use stored context reference for provider access
+        final contextToUse = _lastValidContext ?? context;
+        if (!mounted) return;
+
         // Clear all cached data first
-        final homePageProvider = Provider.of<HomePageProvider>(context, listen: false);
+        final homePageProvider = Provider.of<HomePageProvider>(contextToUse, listen: false);
         homePageProvider.clearHomePageCache();
 
-        // Refresh all providers that depend on locale
+        // Refresh all providers that depend on locale with mounted checks
         await Future.wait([
-          _fetchHomePageData(),
-          _fetchCelebritiesData(),
-          _fetchFreshPicksData(),
-          _fetchFeaturedCategoriesData(),
-          // Add any other provider refreshes here
+          _fetchHomePageDataSafely(),
+          _fetchCelebritiesDataSafely(),
+          _fetchBrandsDataSafely(),
+          _fetchFeaturedCategoriesDataSafely(),
         ]);
       } catch (e) {
-        debugPrint('Error refetching data on locale change: $e');
+        debugPrint('Error reFetching data on locale change: $e');
+        // Only show error if widget is still mounted and context is available
+        if (mounted && _lastValidContext != null) {
+          // You can add your error handling here, but make sure to check mounted state
+          // CustomSnackbar.showError(_lastValidContext!, 'Failed to refresh data');
+        }
       } finally {
         if (mounted) {
-          setState(() => _isRefetching = false);
+          setState(() => _isReFetching = false);
         }
       }
     });
   }
 
-  // NEW: Fetch all initial data
-  Future<void> _fetchAllInitialData() async {
-    await Future.wait([
-      _fetchHomePageData(),
-      _fetchCelebritiesData(),
-      _fetchFreshPicksData(),
-      _fetchFeaturedCategoriesData(),
-    ]);
+  Future<void> _fetchHomePageDataSafely() async {
+    if (!mounted) return;
+    final contextToUse = _lastValidContext ?? context;
+    final homePageProvider = Provider.of<HomePageProvider>(contextToUse, listen: false);
+    await homePageProvider.fetchHomePageData(contextToUse, forceRefresh: true);
   }
 
-  Future<void> _fetchHomePageData() async {
-    final homePageProvider = Provider.of<HomePageProvider>(context, listen: false);
-    await homePageProvider.fetchHomePageData(context, forceRefresh: true);
-  }
+  Future<void> _fetchCelebritiesDataSafely() async {
+    if (!mounted) return;
+    final contextToUse = _lastValidContext ?? context;
 
-  // NEW: Separate method for celebrities data
-  Future<void> _fetchCelebritiesData() async {
     final typeId = widget.typeId ?? 2;
-    final vendorProvider = Provider.of<VendorByTypeProvider>(context, listen: false);
-    await vendorProvider.fetchVendorTypeById(typeId, context);
-    await vendorProvider.fetchVendors(typeId: typeId, context);
+    final vendorProvider = Provider.of<VendorByTypeProvider>(contextToUse, listen: false);
+    await vendorProvider.fetchVendorTypeById(typeId, contextToUse);
+
+    if (!mounted) return;
+    await vendorProvider.fetchVendors(typeId: typeId, contextToUse);
   }
 
-  // NEW: Separate method for fresh picks data
-  Future<void> _fetchFreshPicksData() async {
-    final freshPicksProvider = Provider.of<FreshPicksProvider>(context, listen: false);
-    // Add your fresh picks refresh logic here if it exists
-    // await freshPicksProvider.fetchFreshPicks(context);
-  }
+  Future<void> _fetchFeaturedCategoriesDataSafely() async {
+    if (!mounted) return;
+    final contextToUse = _lastValidContext ?? context;
 
-  // NEW: Separate method for featured categories data
-  Future<void> _fetchFeaturedCategoriesData() async {
-    final featuredCategoriesProvider = Provider.of<FeaturedCategoriesProvider>(context, listen: false);
-    await featuredCategoriesProvider.fetchPageData(context);
+    final featuredCategoriesProvider = Provider.of<FeaturedCategoriesProvider>(contextToUse, listen: false);
+    await featuredCategoriesProvider.fetchPageData(contextToUse);
+
+    if (!mounted) return;
     await featuredCategoriesProvider.fetchCategories(
       perPage: 12,
-      context,
+      contextToUse,
       page: 1,
       sortBy: 'default_sorting',
     );
+  }
+
+  Future<void> _fetchBrandsDataSafely() async {
+    if (!mounted) return;
+    final contextToUse = _lastValidContext ?? context;
+
+    final provider = Provider.of<FeaturedBrandsProvider>(contextToUse, listen: false);
+    await provider.fetchFeaturedBrands(contextToUse);
+
+    if (!mounted) return;
+    await Provider.of<FeaturedBrandsProvider>(contextToUse, listen: false).fetchBrandsItems(
+      perPage: 12,
+      contextToUse,
+      page: 1,
+      sortBy: 'default_sorting',
+    );
+  }
+
+  // Legacy methods kept for backward compatibility but made safe
+  Future<void> _fetchHomePageData() async {
+    await _fetchHomePageDataSafely();
+  }
+
+  Future<void> _fetchCelebritiesData() async {
+    await _fetchCelebritiesDataSafely();
+  }
+
+  Future<void> _fetchFeaturedCategoriesData() async {
+    await _fetchFeaturedCategoriesDataSafely();
+  }
+
+  Future<void> _fetchBrandsData() async {
+    await _fetchBrandsDataSafely();
   }
 
   Future<void> _loadLoginState() async {
@@ -162,11 +229,13 @@ class _HomeScreenState extends State<BaseHomeScreen> {
   }
 
   Future _onTabTapped(int index) async {
+    if (!mounted) return; // Safety check
+
     await _loadLoginState();
 
     // Only fetch vendor data when actually navigating to that tab
     if (index == 0) {
-      await _fetchCelebritiesData();
+      await _fetchCelebritiesDataSafely();
     }
 
     if (mounted) {
@@ -305,7 +374,7 @@ class _HomeScreenState extends State<BaseHomeScreen> {
                     padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
                     color: Theme.of(context).bottomAppBarTheme.color,
                     child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Expanded(
                           child: _buildNavItem(
@@ -361,11 +430,11 @@ class _HomeScreenState extends State<BaseHomeScreen> {
           ),
 
           // Semi-transparent loading overlay when refetching due to locale change
-          if (_isRefetching)
+          if (_isReFetching)
             Positioned.fill(
               child: IgnorePointer(
                 child: Container(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withAlpha((0.1 * 255).toInt()),
                   child: const Center(
                     child: CircularProgressIndicator(),
                   ),

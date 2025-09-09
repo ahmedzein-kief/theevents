@@ -346,7 +346,7 @@ class _ProfileAddressScreenState extends State<ProfileAddressScreen> {
     if (token == null) return;
 
     try {
-      await Provider.of<AddressProvider>(context, listen: false).saveAddress(address);
+      await Provider.of<AddressProvider>(context, listen: false).saveAddress(context, address);
       await _refreshAddressList();
       if (mounted) {
         Navigator.pop(context);

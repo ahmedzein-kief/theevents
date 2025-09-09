@@ -23,6 +23,7 @@ class CustomPackagesView extends StatefulWidget {
     required this.isHeartObscure,
     required this.imageUrl,
   });
+
   final double containerHeight;
   final List<Color> containerColors; // List of colors for the gradient
   final int colorIndex; // Index for selecting colors
@@ -49,6 +50,7 @@ class _CustomPackagesViewState extends State<CustomPackagesView> {
 
   Future<void> _onCartTap() async {
     final bool loggedIn = await _isLoggedIn();
+    if (!mounted) return;
     if (!loggedIn) {
       // Navigate to the login screen if not logged in
       PersistentNavBarNavigator.pushNewScreen(
@@ -64,8 +66,7 @@ class _CustomPackagesViewState extends State<CustomPackagesView> {
         context: context,
         textHint: 'Please Log-In to add items to Your Cart.',
         onDismiss: () {
-          customToast
-              .removeToast(); // Dismiss the toast when the button is tapped
+          customToast.removeToast(); // Dismiss the toast when the button is tapped
         },
       );
     } else {
@@ -85,7 +86,7 @@ class _CustomPackagesViewState extends State<CustomPackagesView> {
       //   fullscreenDialog: true,
       //   builder: (context) => AuthScreen(),
       // ));
-
+      if (!mounted) return;
       PersistentNavBarNavigator.pushNewScreen(
         context,
         screen: AuthScreen(),
@@ -100,8 +101,7 @@ class _CustomPackagesViewState extends State<CustomPackagesView> {
         context: context,
         textHint: 'Please Log-In to add items to Your WishList.',
         onDismiss: () {
-          customToast
-              .removeToast(); // Dismiss the toast when the button is tapped
+          customToast.removeToast(); // Dismiss the toast when the button is tapped
         },
       );
       // Reset the tapped state if not logged in
@@ -129,8 +129,7 @@ class _CustomPackagesViewState extends State<CustomPackagesView> {
                   gradient: LinearGradient(
                     colors: [
                       widget.containerColors[widget.colorIndex],
-                      widget.containerColors[(widget.colorIndex + 1) %
-                          widget.containerColors.length],
+                      widget.containerColors[(widget.colorIndex + 1) % widget.containerColors.length],
                     ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
@@ -177,8 +176,10 @@ class _CustomPackagesViewState extends State<CustomPackagesView> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      Text(widget.productName.toString(),
-                          style: packagesProduct(),),
+                      Text(
+                        widget.productName.toString(),
+                        style: packagesProduct(),
+                      ),
                       Text(widget.price.toString(), style: packagesProduct()),
                       GestureDetector(
                         onTap: _onCartTap,
@@ -192,7 +193,9 @@ class _CustomPackagesViewState extends State<CustomPackagesView> {
                               'Add To Cart',
                               maxLines: 1,
                               style: GoogleFonts.inter(
-                                  color: Colors.white, fontSize: 10,),
+                                color: Colors.white,
+                                fontSize: 10,
+                              ),
                             ),
                           ),
                         ),
@@ -206,8 +209,11 @@ class _CustomPackagesViewState extends State<CustomPackagesView> {
                                 rating = index + 1;
                               });
                             },
-                            child: const Icon(Icons.star,
-                                size: 12, color: Colors.white,),
+                            child: const Icon(
+                              Icons.star,
+                              size: 12,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                       ),
@@ -218,14 +224,13 @@ class _CustomPackagesViewState extends State<CustomPackagesView> {
                           size: 25,
                           shadows: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.5),
+                              color: Colors.black.withAlpha((0.5 * 255).toInt()),
                               spreadRadius: 1,
                               blurRadius: 5,
                               offset: const Offset(0, 1),
                             ),
                           ],
-                          color:
-                              widget.isHeartObscure ? Colors.red : Colors.white,
+                          color: widget.isHeartObscure ? Colors.red : Colors.white,
                           // color: heartColor,
                         ),
                       ),

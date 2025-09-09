@@ -126,54 +126,52 @@ class _FreshPicksDetailScreenState extends State<FreshPicksDetailScreen> {
                                 right: screenWidth * 0.02,
                                 top: screenHeight * 0.02,
                               ),
-                              child: SizedBox(
-                                height: 100,
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(5),
-                                  child: CachedNetworkImage(
-                                    imageUrl: provider.tagsModel?.data?.coverImage ?? '',
-                                    fit: BoxFit.fill,
-                                    errorListener: (object) {
-                                      Image.asset(
-                                        'assets/placeholder.png',
-                                        // Replace with your actual image path
-                                        fit: BoxFit.cover,
-                                        // Adjust fit if needed
-                                        height: MediaQuery.sizeOf(context).height * 0.28,
-                                        width: double.infinity,
-                                      );
-                                    },
-                                    errorWidget: (context, object, error) => Image.asset(
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(5),
+                                child: CachedNetworkImage(
+                                  imageUrl: provider.tagsModel?.data?.coverImage ?? '',
+                                  fit: BoxFit.cover,
+                                  height: screenHeight * 0.14,
+                                  errorListener: (object) {
+                                    Image.asset(
                                       'assets/placeholder.png',
                                       // Replace with your actual image path
                                       fit: BoxFit.cover,
                                       // Adjust fit if needed
                                       height: MediaQuery.sizeOf(context).height * 0.28,
                                       width: double.infinity,
-                                    ),
-                                    placeholder: (BuildContext context, String url) => Container(
-                                      height: MediaQuery.sizeOf(context).height * 0.28,
-                                      width: double.infinity,
-                                      color: Colors.blueGrey[300],
-                                      // Background color
-                                      child: Stack(
-                                        alignment: Alignment.center,
-                                        children: [
-                                          Image.asset(
-                                            'assets/placeholder.png',
-                                            // Replace with your actual image path
-                                            fit: BoxFit.cover,
-                                            // Adjust fit if needed
-                                            height: MediaQuery.sizeOf(context).height * 0.28,
-                                            width: double.infinity,
-                                          ),
-                                          const CupertinoActivityIndicator(
-                                            radius: 16,
-                                            // Adjust size of the loader
-                                            animating: true,
-                                          ),
-                                        ],
-                                      ),
+                                    );
+                                  },
+                                  errorWidget: (context, object, error) => Image.asset(
+                                    'assets/placeholder.png',
+                                    // Replace with your actual image path
+                                    fit: BoxFit.cover,
+                                    // Adjust fit if needed
+                                    height: MediaQuery.sizeOf(context).height * 0.28,
+                                    width: double.infinity,
+                                  ),
+                                  placeholder: (BuildContext context, String url) => Container(
+                                    height: MediaQuery.sizeOf(context).height * 0.28,
+                                    width: double.infinity,
+                                    color: Colors.blueGrey[300],
+                                    // Background color
+                                    child: Stack(
+                                      alignment: Alignment.center,
+                                      children: [
+                                        Image.asset(
+                                          'assets/placeholder.png',
+                                          // Replace with your actual image path
+                                          fit: BoxFit.cover,
+                                          // Adjust fit if needed
+                                          height: MediaQuery.sizeOf(context).height * 0.28,
+                                          width: double.infinity,
+                                        ),
+                                        const CupertinoActivityIndicator(
+                                          radius: 16,
+                                          // Adjust size of the loader
+                                          animating: true,
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),

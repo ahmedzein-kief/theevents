@@ -17,6 +17,7 @@ class CustomListView extends StatelessWidget {
     required this.screenWidth,
     required this.screenHeight,
   });
+
   final List<Map<String, dynamic>> items;
   final List<Color> colors;
   final double screenWidth;
@@ -61,8 +62,7 @@ class CustomListView extends StatelessWidget {
                     ],
                   ),
                   child: Padding(
-                    padding:
-                        const EdgeInsets.only(bottom: 15, top: 15, left: 10),
+                    padding: const EdgeInsets.only(bottom: 15, top: 15, left: 10),
                     child: IntrinsicHeight(
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -84,8 +84,10 @@ class CustomListView extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(brandName,
-                                    style: wishTopItemStyle(context),),
+                                Text(
+                                  brandName,
+                                  style: wishTopItemStyle(context),
+                                ),
                                 Flexible(
                                   child: Text(
                                     brandDescription,
@@ -100,18 +102,21 @@ class CustomListView extends StatelessWidget {
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(actualPrice,
-                                        style: wishTopItemStyle(context),),
+                                    Text(
+                                      actualPrice,
+                                      style: wishTopItemStyle(context),
+                                    ),
                                     const SizedBox(width: 10),
-                                    Text(standardPrice,
-                                        style: wishItemSalePrice(context),),
+                                    Text(
+                                      standardPrice,
+                                      style: wishItemSalePrice(context),
+                                    ),
                                     const SizedBox(width: 10),
                                     Text(offPrice, style: wishItemSaleOff()),
                                   ],
                                 ),
                                 Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     if (isAvailable)
@@ -122,8 +127,7 @@ class CustomListView extends StatelessWidget {
                                           height: 20,
                                           width: 80,
                                           child: const Row(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
+                                            crossAxisAlignment: CrossAxisAlignment.center,
                                             children: [
                                               Padding(
                                                 padding: EdgeInsets.all(5),
@@ -136,8 +140,9 @@ class CustomListView extends StatelessWidget {
                                               Text(
                                                 'Add to cart',
                                                 style: TextStyle(
-                                                    fontSize: 10,
-                                                    color: Colors.white,),
+                                                  fontSize: 10,
+                                                  color: Colors.white,
+                                                ),
                                               ),
                                             ],
                                           ),
@@ -147,21 +152,19 @@ class CustomListView extends StatelessWidget {
                                       GestureDetector(
                                         onTap: () {},
                                         child: Container(
-                                          color: Colors.redAccent.shade100
-                                              .withOpacity(0.8),
+                                          color: Colors.redAccent.shade100.withOpacity(0.8),
                                           height: 20,
                                           width: 80,
                                           child: const Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            crossAxisAlignment: CrossAxisAlignment.center,
                                             children: [
                                               Text(
                                                 'Notify me',
                                                 style: TextStyle(
-                                                    fontSize: 10,
-                                                    color: Colors.white,),
+                                                  fontSize: 10,
+                                                  color: Colors.white,
+                                                ),
                                               ),
                                             ],
                                           ),
@@ -172,8 +175,7 @@ class CustomListView extends StatelessWidget {
                                       child: Icon(
                                         CupertinoIcons.delete,
                                         size: 20,
-                                        color: Colors.deepOrangeAccent
-                                            .withOpacity(0.5),
+                                        color: Colors.deepOrangeAccent.withAlpha((0.5 * 255).toInt()),
                                       ),
                                     ),
                                   ],

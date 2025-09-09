@@ -197,14 +197,14 @@ TextStyle profileItems(context) => GoogleFonts.inter(
 TextStyle labelHeading(context) => GoogleFonts.inter(
       fontWeight: FontWeight.w500,
       fontSize: 16,
-      // color: Colors.black.withOpacity(0.6)
-      color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.6),
+      // color: Colors.black.withAlpha((0.6 * 255).toInt())
+      color: Theme.of(context).colorScheme.onPrimary.withAlpha((0.6 * 255).toInt()),
     );
 
 TextStyle labelPaymentHeading(context) => GoogleFonts.inter(
       fontWeight: FontWeight.w500,
       fontSize: 16,
-      // color: Colors.black.withOpacity(0.6)
+      // color: Colors.black.withAlpha((0.6 * 255).toInt())
       color: Theme.of(context).colorScheme.onPrimary,
     );
 
@@ -212,7 +212,7 @@ TextStyle description(context) => GoogleFonts.inter(
       fontWeight: FontWeight.w400,
       fontSize: 15,
       wordSpacing: 3,
-      // color: Colors.black.withOpacity(0.6)
+      // color: Colors.black.withAlpha((0.6 * 255).toInt())
       color: Theme.of(context).colorScheme.onPrimary,
     );
 
@@ -220,7 +220,7 @@ TextStyle shippingMethod(context) => GoogleFonts.inter(
       fontWeight: FontWeight.w400,
       fontSize: 14,
       wordSpacing: 3,
-      // color: Colors.black.withOpacity(0.6)
+      // color: Colors.black.withAlpha((0.6 * 255).toInt())
       color: Theme.of(context).colorScheme.onPrimary,
     );
 
@@ -268,7 +268,7 @@ TextStyle mainHead(context) => TextStyle(
 
 TextStyle chooseStyle(context) => TextStyle(
       fontSize: 20,
-      color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.6),
+      color: Theme.of(context).colorScheme.onPrimary.withAlpha((0.6 * 255).toInt()),
       fontFamily: 'FontSf',
       overflow: TextOverflow.ellipsis,
       fontWeight: FontWeight.w700,

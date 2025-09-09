@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:dio/dio.dart';
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/models/orders/order_detail_model.dart';
@@ -29,12 +27,8 @@ class OrderDataProvider with ChangeNotifier {
 
   OrderDetailModel? get orderDetailModel => _orderDetailModel;
 
-  void clearOrders() {
-    _orderHistoryModel = null; // Reset orders before fetching new ones
-    _completedOrderHistoryModel = null; // Reset orders before fetching new ones
-    notifyListeners();
-  }
-
+  // Updated getOrders method in OrderDataProvider
+  // Keep the original getOrders method in OrderDataProvider - simple and clean
   Future<void> getOrders(
     BuildContext context,
     bool isPending,
@@ -65,7 +59,6 @@ class OrderDataProvider with ChangeNotifier {
           _completedOrderHistoryModel = OrderHistoryModel.fromJson(jsonData);
         }
 
-        log('getOrders jsonData: $jsonData');
         _isLoading = false;
         notifyListeners();
       } else {
@@ -82,6 +75,13 @@ class OrderDataProvider with ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+// Keep the original clearOrders method
+  void clearOrders() {
+    _orderHistoryModel = null;
+    _completedOrderHistoryModel = null;
+    notifyListeners();
   }
 
   Future<void> getOrderDetails(BuildContext context, String orderID) async {

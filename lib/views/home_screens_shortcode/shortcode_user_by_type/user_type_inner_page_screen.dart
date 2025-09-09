@@ -271,7 +271,7 @@ class _UserTypeInnerPageScreenState extends State<UserTypeInnerPageScreen> {
                                               child: CachedNetworkImage(
                                                 imageUrl: userData?.coverImage ?? '',
                                                 height: screenHeight * 0.17,
-                                                fit: BoxFit.fill,
+                                                fit: BoxFit.cover,
                                                 errorListener: (object) {
                                                   Image.asset(
                                                     'assets/placeholder.png', // Replace with your actual image path
@@ -451,7 +451,7 @@ class _UserTypeInnerPageScreenState extends State<UserTypeInnerPageScreen> {
                                                     //       borderRadius: BorderRadius.circular(12),
                                                     //       boxShadow: [
                                                     //         BoxShadow(
-                                                    //           color: Colors.grey.withOpacity(0.5),
+                                                    //           color: Colors.grey.withAlpha((0.5 * 255).toInt()),
                                                     //           blurRadius: 10,
                                                     //           offset: Offset(0, 2),
                                                     //         ),
@@ -605,7 +605,7 @@ class _UserTypeInnerPageScreenState extends State<UserTypeInnerPageScreen> {
               ),
               if (wishlistProvider.isLoading || freshListProvider.isLoading || cartProvider.isLoading)
                 Container(
-                  color: Colors.black.withOpacity(0.5), // Semi-transparent background
+                  color: Colors.black.withAlpha((0.5 * 255).toInt()), // Semi-transparent background
                   child: const Center(
                     child: CircularProgressIndicator(
                       valueColor: AlwaysStoppedAnimation<Color>(AppColors.peachyPink),

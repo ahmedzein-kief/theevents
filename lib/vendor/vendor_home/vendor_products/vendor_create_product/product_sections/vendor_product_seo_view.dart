@@ -12,7 +12,7 @@ import 'package:event_app/vendor/components/settings_components/simple_card.dart
 import 'package:event_app/vendor/components/status_constants/seo_index_constants.dart';
 import 'package:event_app/vendor/components/text_fields/custom_editable_text_field.dart';
 import 'package:event_app/vendor/components/text_fields/custom_text_form_field.dart';
-import 'package:event_app/vendor/components/utils/utils.dart';
+import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/vendor/vendor_home/vendor_products/vendor_create_product/product_sections/vendor_product_overview_view.dart';
 import 'package:event_app/vendor/view_models/vendor_products/vendor_create_product_view_model.dart';
 import 'package:flutter/material.dart';
@@ -20,18 +20,17 @@ import 'package:provider/provider.dart';
 
 class VendorProductSeoView extends StatefulWidget {
   const VendorProductSeoView({super.key, this.vendorProductSeoModel});
+
   final VendorProductSeoModel? vendorProductSeoModel;
 
   @override
   _VendorProductSeoViewState createState() => _VendorProductSeoViewState();
 }
 
-class _VendorProductSeoViewState extends State<VendorProductSeoView>
-    with MediaQueryMixin {
+class _VendorProductSeoViewState extends State<VendorProductSeoView> with MediaQueryMixin {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
-  final TextEditingController _keywordsTextFieldController =
-      TextEditingController();
+  final TextEditingController _keywordsTextFieldController = TextEditingController();
 
   final FocusNode _titleFocusNode = FocusNode();
   final FocusNode _descriptionFocusNode = FocusNode();
@@ -53,12 +52,12 @@ class _VendorProductSeoViewState extends State<VendorProductSeoView>
       // Initialize the text controllers with the values from the model (if available)
       _titleController.text = widget.vendorProductSeoModel?.title ?? '';
       _descriptionController.text = removeHtmlTags(
-          htmlString: widget.vendorProductSeoModel?.description ?? '',);
+        htmlString: widget.vendorProductSeoModel?.description ?? '',
+      );
 
       // Initialize the keywords controller with the items from the model
       if (widget.vendorProductSeoModel?.keywords != null) {
-        _selectedKeywords =
-            widget.vendorProductSeoModel?.keywords.toSet() ?? {};
+        _selectedKeywords = widget.vendorProductSeoModel?.keywords.toSet() ?? {};
       } else {
         _selectedKeywords = {};
       }
@@ -80,14 +79,11 @@ class _VendorProductSeoViewState extends State<VendorProductSeoView>
   Future _onRefresh() async {
     try {
       setProcessing(true);
-      final provider =
-          Provider.of<VendorCreateProductViewModel>(context, listen: false);
+      final provider = Provider.of<VendorCreateProductViewModel>(context, listen: false);
       await provider.vendorGetProductSeoKeywords(context: context);
 
-      if (provider.vendorGetSeoKeywordsApiResponse.status ==
-          ApiStatus.COMPLETED) {
-        _availableKeywords =
-            provider.vendorGetSeoKeywordsApiResponse.data?.data?.toSet() ?? {};
+      if (provider.vendorGetSeoKeywordsApiResponse.status == ApiStatus.COMPLETED) {
+        _availableKeywords = provider.vendorGetSeoKeywordsApiResponse.data?.data?.toSet() ?? {};
       }
       setProcessing(false);
     } catch (e) {
@@ -149,13 +145,15 @@ class _VendorProductSeoViewState extends State<VendorProductSeoView>
           title: 'Edit SEO meta',
           onGoBack: _return,
         ),
-        body: Utils.modelProgressHud(
+        body: AppUtils.modelProgressHud(
+          context: context,
+          processing: _isProcessing,
+          child: AppUtils.pageRefreshIndicator(
+            onRefresh: _onRefresh,
+            child: _buildUi(context),
             context: context,
-            processing: _isProcessing,
-            child: Utils.pageRefreshIndicator(
-                onRefresh: _onRefresh,
-                child: _buildUi(context),
-                context: context,),),
+          ),
+        ),
       ),
     );
   }
@@ -212,7 +210,7 @@ class _VendorProductSeoViewState extends State<VendorProductSeoView>
                   ),
                 ),
                 // Show loader when searching
-                if (_isSearching) Utils.searching(context: context),
+                if (_isSearching) AppUtils.searching(context: context),
 
                 /// show only when filtered keywords are available
                 if (_filteredKeywords.isNotEmpty)
@@ -221,13 +219,11 @@ class _VendorProductSeoViewState extends State<VendorProductSeoView>
                     expandedContent: Column(
                       children: [
                         Container(
-                          constraints:
-                              BoxConstraints(maxHeight: screenHeight * 0.4),
+                          constraints: BoxConstraints(maxHeight: screenHeight * 0.4),
                           child: Builder(
                             builder: (context) {
                               // Convert set to list outside the ListView
-                              final finalKeywordsList =
-                                  _filteredKeywords.toList();
+                              final finalKeywordsList = _filteredKeywords.toList();
                               return ListView.separated(
                                 shrinkWrap: true,
                                 physics: const AlwaysScrollableScrollPhysics(),
@@ -243,11 +239,8 @@ class _VendorProductSeoViewState extends State<VendorProductSeoView>
                                     tileColor: Colors.white,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.vertical(
-                                        top: index == 0
-                                            ? const Radius.circular(8)
-                                            : Radius.zero,
-                                        bottom: index ==
-                                                finalKeywordsList.length - 1
+                                        top: index == 0 ? const Radius.circular(8) : Radius.zero,
+                                        bottom: index == finalKeywordsList.length - 1
                                             ? const Radius.circular(8)
                                             : Radius.zero,
                                       ),
@@ -257,17 +250,18 @@ class _VendorProductSeoViewState extends State<VendorProductSeoView>
                                       text: 'Add',
                                       tooltipMessage: 'Add Keyword',
                                       onTap: () => _onAddAvailableKeyword(
-                                          keyword,), // Wrap in a closure
+                                        keyword,
+                                      ), // Wrap in a closure
                                     ),
                                     title: Padding(
                                       padding: EdgeInsets.symmetric(
-                                          horizontal: kSmallPadding,),
+                                        horizontal: kSmallPadding,
+                                      ),
                                       child: Text(keyword),
                                     ),
                                   );
                                 },
-                                separatorBuilder: (context, _) =>
-                                    const Divider(thickness: 0.1, height: 1),
+                                separatorBuilder: (context, _) => const Divider(thickness: 0.1, height: 1),
                               );
                             },
                           ),
@@ -359,9 +353,7 @@ class _VendorProductSeoViewState extends State<VendorProductSeoView>
     _debounce = Timer(const Duration(milliseconds: 500), () {
       final search = value.toLowerCase();
       setState(() {
-        _filteredKeywords = _availableKeywords
-            .where((element) => element.toLowerCase().contains(search))
-            .toSet();
+        _filteredKeywords = _availableKeywords.where((element) => element.toLowerCase().contains(search)).toSet();
         _isSearching = false; // Stop searching after filtering
       });
     });

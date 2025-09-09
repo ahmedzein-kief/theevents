@@ -8,7 +8,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/constants/app_strings.dart'; // Add this import
+import '../../../../core/constants/vendor_app_strings.dart';
 import '../../../../core/helper/validators/validator.dart';
+import '../../../../core/utils/app_utils.dart';
 import '../../../../core/widgets/custom_input_decoration.dart';
 import 'gift_card_bottom.dart';
 import 'payments_methods.dart';
@@ -60,6 +62,7 @@ class _GiftCardFormState extends State<GiftCardForm> {
   Future<CheckoutPaymentModel?> createGiftCard() async {
     final provider = Provider.of<CreateGiftCardProvider>(context, listen: false);
     final response = await provider.createGiftCard(
+      context,
       _customTextController.text,
       _receiptNameController.text,
       _cardEmailController.text,
@@ -326,22 +329,53 @@ class _GiftCardFormState extends State<GiftCardForm> {
                                 onTap: () async {
                                   if (_formKey.currentState?.validate() ?? false) {
                                     final response = await createGiftCard();
-
                                     final data = response?.data;
 
                                     // Check if the checkoutUrl is available and we haven't navigated yet
                                     if (data?.checkoutUrl.isNotEmpty == true) {
                                       _navigatedToPaymentScreen = true; // Set the flag to true
+
+                                      // Check if widget is still mounted before using context
+                                      if (!context.mounted) return;
+
                                       final result = await Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) => PaymentViewScreen(
                                             checkoutUrl: data!.checkoutUrl,
+                                            paymentType: 'gift_card', // Add payment type for gift cards
                                           ),
                                         ),
                                       );
+
+                                      // Handle the payment result - check mounted before using context
+                                      if (result == true) {
+                                        // Payment successful
+                                        if (context.mounted) {
+                                          AppUtils.showToast(
+                                            AppStrings.paymentSuccessful.tr,
+                                            isSuccess: true,
+                                          );
+                                          Navigator.pop(context, true);
+                                        }
+                                      } else if (result == false) {
+                                        // Payment failed
+                                        if (context.mounted) {
+                                          AppUtils.showToast(
+                                            AppStrings.paymentFailed.tr,
+                                          );
+                                        }
+                                      }
+                                      // If result is null, user cancelled - no action needed
+                                    } else {
+                                      // Handle case where checkout URL is not available
+                                      // Note: AppUtils.showToast might not need context, but if it does,
+                                      // you should also check context.mounted here
+                                      AppUtils.showToast(
+                                        VendorAppStrings.paymentLinkError.tr,
+                                      );
                                     }
-                                  } else {}
+                                  }
                                 },
                                 borderRadius: BorderRadius.circular(8),
                                 child: Container(
@@ -358,7 +392,7 @@ class _GiftCardFormState extends State<GiftCardForm> {
                               );
                             },
                           ),
-                        ),
+                        )
                       ],
                     ),
                   ),

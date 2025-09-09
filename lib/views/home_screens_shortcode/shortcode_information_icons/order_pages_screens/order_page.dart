@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/models/orders/order_history_model.dart';
@@ -32,19 +34,8 @@ class _OrderPageScreenState extends State<OrderPageScreen> with SingleTickerProv
     });
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      log('Fetching orders OrderPageScreen initState');
       fetchOrders(context, isPending: true); // Fetch pending orders initially
-    });
-  }
-
-  // Add this method to handle when screen is resumed/focused
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // Refresh orders when screen becomes active
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        fetchOrders(context, isPending: _tabController.index == 0);
-      }
     });
   }
 
@@ -58,16 +49,11 @@ class _OrderPageScreenState extends State<OrderPageScreen> with SingleTickerProv
     // Clear existing orders to force refresh
     provider.clearOrders();
 
-    await provider.getOrders(
-      context,
-      isPending,
-    );
+    await provider.getOrders(context, isPending);
   }
 
   @override
   Widget build(BuildContext context) {
-    final double screenHeight = MediaQuery.sizeOf(context).height;
-
     return BaseAppBar(
       textBack: AppStrings.back.tr,
       customBackIcon: const Icon(Icons.arrow_back_ios_sharp, size: 16),

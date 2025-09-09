@@ -36,7 +36,9 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen> {
           child: SingleChildScrollView(
             child: Padding(
               padding: EdgeInsets.only(
-                  right: screenWidth * 0.05, left: screenWidth * 0.05,),
+                right: screenWidth * 0.05,
+                left: screenWidth * 0.05,
+              ),
               child: Stack(
                 children: [
                   Container(
@@ -45,7 +47,7 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen> {
                       borderRadius: BorderRadius.circular(screenHeight * 0.003),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
+                          color: Colors.grey.withAlpha((0.5 * 255).toInt()),
                           spreadRadius: 5,
                           blurRadius: 7,
                           offset: const Offset(0, 3),
@@ -56,21 +58,22 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen> {
                       key: _formKey,
                       child: Padding(
                         padding: EdgeInsets.only(
-                            left: screenWidth * 0.05,
-                            right: screenWidth * 0.05,),
+                          left: screenWidth * 0.05,
+                          right: screenWidth * 0.05,
+                        ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Padding(
-                              padding:
-                                  EdgeInsets.only(top: screenHeight * 0.04),
-                              child: Text(AppStrings.forgetPassword.tr,
-                                  textAlign: TextAlign.center,
-                                  style: textStyleLogoutTop(context),),
+                              padding: EdgeInsets.only(top: screenHeight * 0.04),
+                              child: Text(
+                                AppStrings.forgetPassword.tr,
+                                textAlign: TextAlign.center,
+                                style: textStyleLogoutTop(context),
+                              ),
                             ),
                             Padding(
-                              padding:
-                                  EdgeInsets.only(top: screenHeight * 0.05),
+                              padding: EdgeInsets.only(top: screenHeight * 0.05),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -80,10 +83,9 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen> {
                                     textEditingController: _emailController,
                                     inputType: TextInputType.emailAddress,
                                     leftIcon: Image.asset(
-                                        'assets/emailicon.png',
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onPrimary,),
+                                      'assets/emailicon.png',
+                                      color: Theme.of(context).colorScheme.onPrimary,
+                                    ),
                                     formFieldValidator: (value) {
                                       if (value == null || value.isEmpty) {
                                         return AppStrings.emailRequired.tr;
@@ -93,14 +95,13 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen> {
                                     hintText: AppStrings.emailAddress.tr,
                                   ),
                                   Consumer<AuthProvider>(
-                                    builder: (context, provider, child) =>
-                                        Padding(
+                                    builder: (context, provider, child) => Padding(
                                       padding: EdgeInsets.symmetric(
-                                          vertical: screenHeight * 0.01,
-                                          horizontal: screenWidth * 0.03,),
+                                        vertical: screenHeight * 0.01,
+                                        horizontal: screenWidth * 0.03,
+                                      ),
                                       child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
+                                        crossAxisAlignment: CrossAxisAlignment.center,
                                         children: [
                                           // CustomAuthButton(
                                           //   title: 'Send',
@@ -121,16 +122,16 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen> {
                                           // ),
                                           CustomAuthButton(
                                             title: AppStrings.send.tr,
-                                            isLoading: provider
-                                                .isLoading, // Show loading indicator when provider is loading
+                                            isLoading:
+                                                provider.isLoading, // Show loading indicator when provider is loading
                                             onPressed: () {
-                                              if (_formKey.currentState!
-                                                  .validate()) {
+                                              if (_formKey.currentState!.validate()) {
                                                 // Call forgotPassword and handle success/error
                                                 provider
                                                     .forgotPassword(
-                                                        _emailController.text,
-                                                        context,)
+                                                  _emailController.text,
+                                                  context,
+                                                )
                                                     .then((_) {
                                                   // if (provider.message != null) {
                                                   //   if (provider.errors != null) {
@@ -152,47 +153,39 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen> {
                                             },
                                             child: Padding(
                                               padding: EdgeInsets.only(
-                                                  top: screenHeight * 0.1,
-                                                  bottom: screenHeight * 0.02,),
+                                                top: screenHeight * 0.1,
+                                                bottom: screenHeight * 0.02,
+                                              ),
                                               child: GestureDetector(
                                                 onTap: () {
-                                                  PersistentNavBarNavigator
-                                                      .pushNewScreen(
+                                                  PersistentNavBarNavigator.pushNewScreen(
                                                     context,
                                                     screen: AuthScreen(
                                                       initialIndex: 1,
                                                     ),
                                                     withNavBar: false,
                                                     // OPTIONAL VALUE. True by default.
-                                                    pageTransitionAnimation:
-                                                        PageTransitionAnimation
-                                                            .fade,
+                                                    pageTransitionAnimation: PageTransitionAnimation.fade,
                                                   );
                                                   // Navigator.push(context, MaterialPageRoute(builder: (context) => AuthScreen()));
                                                 },
                                                 child: Row(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.center,
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
+                                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                                  mainAxisAlignment: MainAxisAlignment.center,
                                                   children: [
                                                     Text(
-                                                      AppStrings
-                                                          .doNotHaveAccountYet
-                                                          .tr,
-                                                      style:
-                                                          textStyleLogoutNoAC(
-                                                              context,),
+                                                      AppStrings.doNotHaveAccountYet.tr,
+                                                      style: textStyleLogoutNoAC(
+                                                        context,
+                                                      ),
                                                     ),
                                                     Text(
-                                                      AppStrings
-                                                          .createOneNow.tr,
+                                                      AppStrings.createOneNow.tr,
                                                       style: GoogleFonts.inter(
-                                                          fontSize: 12,
-                                                          fontWeight:
-                                                              FontWeight.w200,
-                                                          color: AppColors
-                                                              .lightCoral,),
+                                                        fontSize: 12,
+                                                        fontWeight: FontWeight.w200,
+                                                        color: AppColors.lightCoral,
+                                                      ),
                                                     ),
                                                   ],
                                                 ),
@@ -218,8 +211,10 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen> {
                       onTap: () {
                         Navigator.pop(context);
                       },
-                      child: Icon(CupertinoIcons.xmark,
-                          color: Theme.of(context).colorScheme.onPrimary,),
+                      child: Icon(
+                        CupertinoIcons.xmark,
+                        color: Theme.of(context).colorScheme.onPrimary,
+                      ),
                     ),
                   ),
                 ],

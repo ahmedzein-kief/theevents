@@ -1,6 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
-import 'package:event_app/core/widgets/custom_app_views/search_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -35,15 +34,23 @@ class _FeaturedCategoriesScreenState extends State<FeaturedBrandsScreenViewAll> 
   final ScrollController _scrollController = ScrollController();
   bool _isFetchingMore = false; // Default to false
   int _currentPage = 1;
+  late final TextEditingController _searchController;
 
   @override
   void initState() {
+    _searchController = TextEditingController();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await fetchTopBanner();
       await fetchBrandsTypes();
       _scrollController.addListener(_onScroll);
     });
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   Future<void> fetchTopBanner() async {
@@ -111,6 +118,9 @@ class _FeaturedCategoriesScreenState extends State<FeaturedBrandsScreenViewAll> 
       firstRightIconPath: AppStrings.firstRightIconPath.tr,
       secondRightIconPath: AppStrings.secondRightIconPath.tr,
       thirdRightIconPath: AppStrings.thirdRightIconPath.tr,
+      showSearchBar: true,
+      searchController: _searchController,
+      searchHintText: AppStrings.searchBrands.tr,
       body: Scaffold(
         body: SafeArea(
           child: Consumer<FeaturedBrandsProvider>(
@@ -129,246 +139,233 @@ class _FeaturedCategoriesScreenState extends State<FeaturedBrandsScreenViewAll> 
                 return RefreshIndicator(
                   onRefresh: _refresh,
                   color: Theme.of(context).colorScheme.onPrimary,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      CustomSearchBar(hintText: AppStrings.searchBrands.tr),
-                      Expanded(
-                        child: SingleChildScrollView(
-                          controller: _scrollController,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.max,
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.only(
-                                  left: screenWidth * 0.02,
-                                  right: screenWidth * 0.02,
-                                  top: screenHeight * 0.02,
-                                ),
-                                child: SizedBox(
-                                  height: 100,
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(0),
-                                    child: CachedNetworkImage(
-                                      imageUrl: provider.featuredBrandsBanner?.data.coverImage ?? '',
-                                      fit: BoxFit.fill,
-                                      errorListener: (object) {
-                                        Container(
-                                          height: screenHeight,
-                                          width: screenWidth,
-                                          decoration: const BoxDecoration(
-                                            gradient: LinearGradient(
-                                              colors: [
-                                                Colors.grey,
-                                                Colors.black,
-                                              ],
-                                            ),
-                                          ),
-                                          child: const CupertinoActivityIndicator(
-                                            color: Colors.black,
-                                            radius: 10,
-                                            animating: true,
-                                          ),
-                                        );
-                                      },
-                                      errorWidget: (context, object, error) => Container(
-                                        height: screenHeight,
-                                        width: screenWidth,
-                                        decoration: const BoxDecoration(
-                                          gradient: LinearGradient(
-                                            colors: [Colors.grey, Colors.black],
-                                          ),
-                                        ),
-                                        child: const CupertinoActivityIndicator(
-                                          color: Colors.black,
-                                          radius: 10,
-                                          animating: true,
-                                        ),
-                                      ),
-                                      placeholder: (BuildContext context, String url) => Container(
-                                        height: screenHeight,
-                                        width: screenWidth,
-                                        decoration: const BoxDecoration(
-                                          gradient: LinearGradient(
-                                            colors: [Colors.grey, Colors.black],
-                                          ),
-                                        ),
-                                        child: const CupertinoActivityIndicator(
-                                          color: Colors.black,
-                                          radius: 10,
-                                          animating: true,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.only(
-                                  top: screenHeight * 0.02,
-                                  left: screenWidth * 0.04,
-                                  right: screenWidth * 0.04,
-                                ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      widget.data ?? '',
-                                      softWrap: true,
-                                      style: featuredBrandText(context),
-                                    ),
-                                    Row(
-                                      children: [
-                                        ItemsSortingDropDown(
-                                          selectedSortBy: _selectedSortBy,
-                                          onSortChanged: (newValue) {
-                                            _onSortChanged(newValue);
-                                          },
-                                        ),
+                  child: SingleChildScrollView(
+                    controller: _scrollController,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(
+                            left: screenWidth * 0.02,
+                            right: screenWidth * 0.02,
+                            top: screenHeight * 0.02,
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(0),
+                            child: CachedNetworkImage(
+                              imageUrl: provider.featuredBrandsBanner?.data.coverImage ?? '',
+                              fit: BoxFit.cover,
+                              errorListener: (object) {
+                                Container(
+                                  height: screenHeight,
+                                  width: screenWidth,
+                                  decoration: const BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        Colors.grey,
+                                        Colors.black,
                                       ],
                                     ),
-                                  ],
+                                  ),
+                                  child: const CupertinoActivityIndicator(
+                                    color: Colors.black,
+                                    radius: 10,
+                                    animating: true,
+                                  ),
+                                );
+                              },
+                              errorWidget: (context, object, error) => Container(
+                                height: screenHeight,
+                                width: screenWidth,
+                                decoration: const BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [Colors.grey, Colors.black],
+                                  ),
+                                ),
+                                child: const CupertinoActivityIndicator(
+                                  color: Colors.black,
+                                  radius: 10,
+                                  animating: true,
                                 ),
                               ),
-                              Padding(
-                                padding: EdgeInsets.only(
-                                  top: screenHeight * 0.02,
-                                  left: screenWidth * 0.04,
-                                  bottom: screenHeight * 0.02,
-                                  right: screenWidth * 0.04,
-                                ),
-                                child: GridView.builder(
-                                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 3,
-                                    crossAxisSpacing: 8.0,
-                                    mainAxisSpacing: 8.0,
-                                    childAspectRatio: 0.85,
+                              placeholder: (BuildContext context, String url) => Container(
+                                height: screenHeight,
+                                width: screenWidth,
+                                decoration: const BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [Colors.grey, Colors.black],
                                   ),
-                                  shrinkWrap: true,
-                                  scrollDirection: Axis.vertical,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  itemCount: provider.brands.length + (_isFetchingMore ? 1 : 0),
-                                  itemBuilder: (context, index) {
-                                    if (_isFetchingMore && index == provider.brands.length) {
-                                      return const Align(
-                                        alignment: Alignment.center,
-                                        child: Column(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          crossAxisAlignment: CrossAxisAlignment.center,
-                                          children: [
-                                            Center(
-                                              child: CircularProgressIndicator(
-                                                color: Colors.black,
-                                                strokeWidth: 0.5,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      );
-                                    }
-
-                                    final brand = provider.brands[index];
-                                    return GestureDetector(
-                                      onTap: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => FeaturedBrandsItemsScreen(
-                                              slug: brand.slug,
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius: BorderRadius.circular(8.0),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: Colors.black.withOpacity(0.1),
-                                              spreadRadius: 1,
-                                              blurRadius: 8,
-                                              offset: const Offset(0, 4),
-                                            ),
-                                          ],
-                                        ),
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.center,
-                                          children: [
-                                            // Image container with rounded top corners
-                                            SizedBox(
-                                              height: 100, // Fixed height for consistency
-
-                                              child: CachedNetworkImage(
-                                                imageUrl: brand.image,
-                                                fit: BoxFit.contain,
-                                                // Changed to contain to maintain aspect ratio
-                                                width: double.infinity,
-                                                height: double.infinity,
-                                                errorWidget: (context, object, error) => Container(
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.grey[100],
-                                                    borderRadius: const BorderRadius.only(
-                                                      topLeft: Radius.circular(8.0),
-                                                      topRight: Radius.circular(8.0),
-                                                    ),
-                                                  ),
-                                                  child: const Center(
-                                                    child: Icon(
-                                                      Icons.image_not_supported,
-                                                      color: Colors.grey,
-                                                      size: 24,
-                                                    ),
-                                                  ),
-                                                ),
-                                                placeholder: (BuildContext context, String url) => Container(
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.grey[100],
-                                                    borderRadius: const BorderRadius.only(
-                                                      topLeft: Radius.circular(8.0),
-                                                      topRight: Radius.circular(8.0),
-                                                    ),
-                                                  ),
-                                                  child: const Center(
-                                                    child: CupertinoActivityIndicator(
-                                                      color: Colors.grey,
-                                                      radius: 15,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                            // Brand name section
-                                            Padding(
-                                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                              child: Text(
-                                                brand.name,
-                                                style: const TextStyle(
-                                                  fontSize: 10,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                                textAlign: TextAlign.center,
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                            ),
-                                            const SizedBox(height: 8)
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  },
                                 ),
+                                child: const CupertinoActivityIndicator(
+                                  color: Colors.black,
+                                  radius: 10,
+                                  animating: true,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                            top: screenHeight * 0.02,
+                            left: screenWidth * 0.04,
+                            right: screenWidth * 0.04,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                widget.data ?? '',
+                                softWrap: true,
+                                style: featuredBrandText(context),
+                              ),
+                              Row(
+                                children: [
+                                  ItemsSortingDropDown(
+                                    selectedSortBy: _selectedSortBy,
+                                    onSortChanged: (newValue) {
+                                      _onSortChanged(newValue);
+                                    },
+                                  ),
+                                ],
                               ),
                             ],
                           ),
                         ),
-                      ),
-                    ],
+                        Padding(
+                          padding: EdgeInsets.only(
+                            top: screenHeight * 0.02,
+                            left: screenWidth * 0.04,
+                            bottom: screenHeight * 0.02,
+                            right: screenWidth * 0.04,
+                          ),
+                          child: GridView.builder(
+                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 3,
+                              crossAxisSpacing: 8.0,
+                              mainAxisSpacing: 8.0,
+                              childAspectRatio: 0.85,
+                            ),
+                            shrinkWrap: true,
+                            scrollDirection: Axis.vertical,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: provider.brands.length + (_isFetchingMore ? 1 : 0),
+                            itemBuilder: (context, index) {
+                              if (_isFetchingMore && index == provider.brands.length) {
+                                return const Align(
+                                  alignment: Alignment.center,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      Center(
+                                        child: CircularProgressIndicator(
+                                          color: Colors.black,
+                                          strokeWidth: 0.5,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }
+
+                              final brand = provider.brands[index];
+                              return GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => FeaturedBrandsItemsScreen(
+                                        slug: brand.slug,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(8.0),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withAlpha((0.1 * 255).toInt()),
+                                        spreadRadius: 1,
+                                        blurRadius: 8,
+                                        offset: const Offset(0, 4),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      // Image container with rounded top corners
+                                      SizedBox(
+                                        height: 100, // Fixed height for consistency
+
+                                        child: CachedNetworkImage(
+                                          imageUrl: brand.image,
+                                          fit: BoxFit.contain,
+                                          // Changed to contain to maintain aspect ratio
+                                          width: double.infinity,
+                                          height: double.infinity,
+                                          errorWidget: (context, object, error) => Container(
+                                            decoration: BoxDecoration(
+                                              color: Colors.grey[100],
+                                              borderRadius: const BorderRadius.only(
+                                                topLeft: Radius.circular(8.0),
+                                                topRight: Radius.circular(8.0),
+                                              ),
+                                            ),
+                                            child: const Center(
+                                              child: Icon(
+                                                Icons.image_not_supported,
+                                                color: Colors.grey,
+                                                size: 24,
+                                              ),
+                                            ),
+                                          ),
+                                          placeholder: (BuildContext context, String url) => Container(
+                                            decoration: BoxDecoration(
+                                              color: Colors.grey[100],
+                                              borderRadius: const BorderRadius.only(
+                                                topLeft: Radius.circular(8.0),
+                                                topRight: Radius.circular(8.0),
+                                              ),
+                                            ),
+                                            child: const Center(
+                                              child: CupertinoActivityIndicator(
+                                                color: Colors.grey,
+                                                radius: 15,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      // Brand name section
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                        child: Text(
+                                          brand.name,
+                                          style: const TextStyle(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8)
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 );
               }

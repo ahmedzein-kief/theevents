@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/core/network/api_endpoints/vendor_api_end_point.dart';
+import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/models/auth_models/get_user_models.dart';
 import 'package:event_app/models/dashboard/information_icons_models/gift_card_models/checkout_payment_model.dart';
 import 'package:event_app/models/vendor_models/post_models/authorized_signatory_info_post_data.dart';
@@ -22,6 +23,7 @@ import 'package:event_app/models/vendor_models/response_models/signup_response.d
 import 'package:flutter/cupertino.dart';
 
 import '../../core/helper/di/locator.dart';
+import '../../core/helper/functions/functions.dart';
 import '../../core/services/shared_preferences_helper.dart';
 import '../../core/utils/custom_toast.dart';
 import '../../models/dashboard/vendor_permissions.dart';
@@ -111,8 +113,7 @@ class VendorSignUpProvider with ChangeNotifier {
       );
     } else {
       if (boiData.eidServerFilePath?.isNotEmpty == true) {
-        formData.fields
-            .add(MapEntry('eid_file_name', boiData.eidFileName ?? ''));
+        formData.fields.add(MapEntry('eid_file_name', boiData.eidFileName ?? ''));
       }
     }
     if (boiData.passportFile != null) {
@@ -128,7 +129,8 @@ class VendorSignUpProvider with ChangeNotifier {
     } else {
       if (boiData.passportServerFilePath?.isNotEmpty == true) {
         formData.fields.add(
-            MapEntry('passport_file_name', boiData.passportFileName ?? ''),);
+          MapEntry('passport_file_name', boiData.passportFileName ?? ''),
+        );
       }
     }
 
@@ -148,7 +150,8 @@ class VendorSignUpProvider with ChangeNotifier {
       } else {
         if (asiData.ownerEIDServerFilePath?.isNotEmpty == true) {
           formData.fields.add(
-              MapEntry('owner_eid_file_name', asiData.ownerEIDFileName ?? ''),);
+            MapEntry('owner_eid_file_name', asiData.ownerEIDFileName ?? ''),
+          );
         }
       }
       if (asiData.passportFile != null) {
@@ -163,8 +166,12 @@ class VendorSignUpProvider with ChangeNotifier {
         );
       } else {
         if (asiData.passportServerFilePath?.isNotEmpty == true) {
-          formData.fields.add(MapEntry(
-              'owner_passport_file_name', asiData.passportFileName ?? '',),);
+          formData.fields.add(
+            MapEntry(
+              'owner_passport_file_name',
+              asiData.passportFileName ?? '',
+            ),
+          );
         }
       }
       if (asiData.poamoaFile != null) {
@@ -179,8 +186,12 @@ class VendorSignUpProvider with ChangeNotifier {
         );
       } else {
         if (asiData.poamoaServerPath?.isNotEmpty == true) {
-          formData.fields.add(MapEntry(
-              'signatory_poamoa_file_name', asiData.poamoaFileName ?? '',),);
+          formData.fields.add(
+            MapEntry(
+              'signatory_poamoa_file_name',
+              asiData.poamoaFileName ?? '',
+            ),
+          );
         }
       }
     }
@@ -256,7 +267,8 @@ class VendorSignUpProvider with ChangeNotifier {
     } else {
       if (ciData.companyLogoFileServerPath?.isNotEmpty == true) {
         formData.fields.add(
-            MapEntry('company_logo_name', ciData.companyLogoFileName ?? ''),);
+          MapEntry('company_logo_name', ciData.companyLogoFileName ?? ''),
+        );
       }
     }
 
@@ -272,8 +284,7 @@ class VendorSignUpProvider with ChangeNotifier {
       );
     } else {
       if (ciData.utlFileServerPath?.isNotEmpty == true) {
-        formData.fields
-            .add(MapEntry('tdl_file_name', ciData.utlFileName ?? ''));
+        formData.fields.add(MapEntry('tdl_file_name', ciData.utlFileName ?? ''));
       }
     }
 
@@ -289,8 +300,7 @@ class VendorSignUpProvider with ChangeNotifier {
       );
     } else {
       if (ciData.nocPoaFileServerPath?.isNotEmpty == true) {
-        formData.fields
-            .add(MapEntry('noc_file_name', ciData.nocPoaFileName ?? ''));
+        formData.fields.add(MapEntry('noc_file_name', ciData.nocPoaFileName ?? ''));
       }
     }
 
@@ -306,14 +316,16 @@ class VendorSignUpProvider with ChangeNotifier {
       );
     } else {
       if (ciData.vatFileServerPath?.isNotEmpty == true) {
-        formData.fields
-            .add(MapEntry('vat_file_name', ciData.vatFileName ?? ''));
+        formData.fields.add(MapEntry('vat_file_name', ciData.vatFileName ?? ''));
       }
     }
 
     try {
       final response = await _apiResponseHandler.postDioMultipartRequest(
-          url, headers, formData,);
+        url,
+        headers,
+        formData,
+      );
 
       if (response.statusCode == 200) {
         final dataModel = CompanyInfoResponse.fromJson(response.data);
@@ -371,13 +383,17 @@ class VendorSignUpProvider with ChangeNotifier {
     } else {
       if (bdData.bankLetterFileServerPath?.isNotEmpty == true) {
         formData.fields.add(
-            MapEntry('bank_letter_file_name', bdData.bankLetterFileName ?? ''),);
+          MapEntry('bank_letter_file_name', bdData.bankLetterFileName ?? ''),
+        );
       }
     }
 
     try {
       final response = await _apiResponseHandler.postDioMultipartRequest(
-          url, headers, formData,);
+        url,
+        headers,
+        formData,
+      );
 
       if (response.statusCode == 200) {
         final dataModel = BankDetailsResponse.fromJson(response.data);
@@ -434,14 +450,21 @@ class VendorSignUpProvider with ChangeNotifier {
       );
     } else {
       if (caData.companyStampFileServerPath?.isNotEmpty == true) {
-        formData.fields.add(MapEntry(
-            'company_stamp_file_name', caData.companyStampFileName ?? '',),);
+        formData.fields.add(
+          MapEntry(
+            'company_stamp_file_name',
+            caData.companyStampFileName ?? '',
+          ),
+        );
       }
     }
 
     try {
       final response = await _apiResponseHandler.postDioMultipartRequest(
-          url, headers, formData,);
+        url,
+        headers,
+        formData,
+      );
       if (response.statusCode == 200) {
         final dataModel = ContractAgreementResponse.fromJson(response.data);
         CustomSnackbar.showSuccess(context, dataModel.message);
@@ -488,7 +511,10 @@ class VendorSignUpProvider with ChangeNotifier {
 
     try {
       final response = await _apiResponseHandler.postDioMultipartRequest(
-          url, headers, formData,);
+        url,
+        headers,
+        formData,
+      );
 
       if (response.statusCode == 200) {
         final dataModel = CheckoutPaymentModel.fromJson(response.data);
@@ -497,14 +523,15 @@ class VendorSignUpProvider with ChangeNotifier {
         return dataModel;
       } else {
         final jsonData = json.decode(response.data);
-        CustomSnackbar.showError(context, _errorMessage(response));
+        AppUtils.showToast(_errorMessage(response));
         _isLoading = false;
         notifyListeners();
         return null;
       }
     } catch (e) {
       if (e is DioException) {
-        CustomSnackbar.showError(context, _errorMessage(e.response));
+        log('Error ${e.response?.data}');
+        AppUtils.showToast(_errorMessage(e.response));
       } else {}
       _isLoading = false;
       notifyListeners();
@@ -520,8 +547,7 @@ class VendorSignUpProvider with ChangeNotifier {
     try {
       final response = await _apiResponseHandler.getDioRequest(url);
       if (response.statusCode == 200) {
-        final jsonData =
-            List<Map<String, dynamic>>.from(response.data['data']['roles']);
+        final jsonData = List<Map<String, dynamic>>.from(response.data['data']['roles']);
         return jsonData;
       } else {
         throw Exception('Failed to Vendor types');
@@ -535,8 +561,7 @@ class VendorSignUpProvider with ChangeNotifier {
   Future<VendorPermissions> getAllVendorPermissions(int vendorId) async {
     const url = VendorApiEndpoints.vendorPermissions;
     try {
-      final response =
-          await _apiResponseHandler.getDioRequest('$url/$vendorId');
+      final response = await _apiResponseHandler.getDioRequest('$url/$vendorId');
 
       if (response.statusCode == 200) {
         final permissions = response.data['data']['permissions'];
@@ -549,9 +574,7 @@ class VendorSignUpProvider with ChangeNotifier {
     }
   }
 
-  Future<MetaDataResponse?> getAllMetaData(
-    BuildContext context,
-  ) async {
+  Future<MetaDataResponse?> getAllMetaData(BuildContext context) async {
     _isLoading = true;
     notifyListeners();
 
@@ -562,8 +585,7 @@ class VendorSignUpProvider with ChangeNotifier {
     };
 
     try {
-      final response =
-          await _apiResponseHandler.getDioRequest(url, headers: headers);
+      final response = await _apiResponseHandler.getDioRequest(url, headers: headers);
 
       if (response.statusCode == 200) {
         final dataModel = MetaDataResponse.fromJson(response.data);
@@ -647,8 +669,7 @@ class VendorSignUpProvider with ChangeNotifier {
     };
 
     try {
-      final response =
-          await _apiResponseHandler.getDioRequest(url, headers: headers);
+      final response = await _apiResponseHandler.getDioRequest(url, headers: headers);
 
       if (response.statusCode == 200) {
         final dataModel = EmailResendResponse.fromJson(response.data);
@@ -719,8 +740,7 @@ class VendorSignUpProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    final url =
-        '${VendorApiEndpoints.pay}?payment_type=subscription&amount=$amount';
+    final url = '${VendorApiEndpoints.pay}?payment_type=subscription&amount=$amount';
 
     try {
       final response = await _apiResponseHandler.getDioRequest(url);
@@ -754,8 +774,14 @@ class VendorSignUpProvider with ChangeNotifier {
     notifyListeners();
     const url = ApiEndpoints.getCustomer;
     final token = await SecurePreferencesUtil.getToken();
+
+    if (token == null || token.isEmpty) {
+      navigateToLogin(context, 'Please log in to fetch user data');
+      return null;
+    }
+
     final headers = {
-      'Authorization': 'Bearer $token',
+      'Authorization': token,
     };
 
     try {

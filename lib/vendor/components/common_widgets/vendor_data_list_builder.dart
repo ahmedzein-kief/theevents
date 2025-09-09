@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../Components/utils/utils.dart';
+import '../../../core/utils/app_utils.dart';
 
 class VendorDataListBuilder extends StatelessWidget {
   VendorDataListBuilder({
@@ -12,6 +12,7 @@ class VendorDataListBuilder extends StatelessWidget {
     this.onLoadingMoreData,
     required this.contentBuilder,
   });
+
   final int listLength;
   final ScrollController scrollController;
   Widget? onNoDataAvailable;
@@ -25,11 +26,10 @@ class VendorDataListBuilder extends StatelessWidget {
           physics: const AlwaysScrollableScrollPhysics(),
           controller: scrollController,
           children: listLength == 0
-              ? [onNoDataAvailable ?? Utils.noDataAvailable()]
+              ? [onNoDataAvailable ?? AppUtils.noDataAvailable()]
               : [
                   contentBuilder(context),
-                  if (loadingMoreData)
-                    onLoadingMoreData ?? Utils.spinKitThreeBounce(),
+                  if (loadingMoreData) onLoadingMoreData ?? AppUtils.spinKitThreeBounce(),
                 ],
         ),
       );

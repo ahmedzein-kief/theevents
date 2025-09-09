@@ -1,8 +1,8 @@
 import 'package:event_app/provider/vendor/vendor_repository.dart';
-import 'package:event_app/vendor/Components/utils/utils.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../../../core/services/shared_preferences_helper.dart';
+import '../../../core/utils/app_utils.dart';
 import '../../../data/vendor/data/response/ApiResponse.dart';
 
 class VendorGenerateOrderInvoiceViewModel with ChangeNotifier {
@@ -43,13 +43,14 @@ class VendorGenerateOrderInvoiceViewModel with ChangeNotifier {
       };
 
       final dynamic response = await _myRepo.vendorGenerateOrderInvoice(
-          headers: headers, orderId: orderId.toString(),);
+        headers: headers,
+        orderId: orderId.toString(),
+      );
 
       /// save invoice
-      final file =
-          await Utils.saveDocument(name: orderId, pdfResponse: response);
+      final file = await AppUtils.saveDocument(name: orderId, pdfResponse: response);
 
-      await Utils.openDocument(file);
+      await AppUtils.openDocument(file);
 
       setApiResponse = ApiResponse.completed(response);
       setLoading(false);

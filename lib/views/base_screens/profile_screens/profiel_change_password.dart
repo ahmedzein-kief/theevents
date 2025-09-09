@@ -17,12 +17,9 @@ class ChangePasswordScreen extends StatelessWidget {
 
   final _formKey = GlobalKey<FormState>();
 
-  final TextEditingController _currentPasswordController =
-      TextEditingController();
-  final TextEditingController _changePasswordController =
-      TextEditingController();
-  final TextEditingController _reEnterPasswordController =
-      TextEditingController();
+  final TextEditingController _currentPasswordController = TextEditingController();
+  final TextEditingController _changePasswordController = TextEditingController();
+  final TextEditingController _reEnterPasswordController = TextEditingController();
 
   final FocusNode _currentPasswordFocusNode = FocusNode();
   final FocusNode _changePasswordFocusNode = FocusNode();
@@ -71,8 +68,7 @@ class ChangePasswordScreen extends StatelessWidget {
                           focusNode: _changePasswordFocusNode,
                           nextFocusNode: _reEnterPasswordFocusNode,
                           labelText: AppStrings.changePassword.tr,
-                          formFieldValidator:
-                              Validator.signUpPasswordValidation,
+                          formFieldValidator: Validator.signUpPasswordValidation,
                         ),
                         CustomFieldProfileScreen(
                           isObscureText: true,
@@ -83,24 +79,23 @@ class ChangePasswordScreen extends StatelessWidget {
                           focusNode: _reEnterPasswordFocusNode,
                           nextFocusNode: _reEnterPasswordFocusNode,
                           labelText: AppStrings.reEnterPassword.tr,
-                          formFieldValidator:
-                              Validator.signUpPasswordValidation,
+                          formFieldValidator: Validator.signUpPasswordValidation,
                         ),
                         SizedBox(height: screenHeight * 0.04),
                         AppCustomButton(
                           title: AppStrings.update.tr,
-                          isLoading: context
-                                  .watch<ChangePasswordProvider>()
-                                  .status ==
-                              ApiStatus
-                                  .loading, // Show loader if status is loading
+                          isLoading: context.watch<ChangePasswordProvider>().status ==
+                              ApiStatus.loading, // Show loader if status is loading
                           onPressed: () async {
                             if (_formKey.currentState?.validate() ?? false) {
                               await forChangePassword(
-                                  context,); // Call the password change function
+                                context,
+                              ); // Call the password change function
                             } else {
                               CustomSnackbar.showError(
-                                  context, AppStrings.pleaseEnterFields.tr,);
+                                context,
+                                AppStrings.pleaseEnterFields.tr,
+                              );
                             }
                           },
                         ),
@@ -117,8 +112,7 @@ class ChangePasswordScreen extends StatelessWidget {
   }
 
   Future<void> forChangePassword(BuildContext context) async {
-    final provider =
-        Provider.of<ChangePasswordProvider>(context, listen: false);
+    final provider = Provider.of<ChangePasswordProvider>(context, listen: false);
     final token = await SecurePreferencesUtil.getToken();
     final oldPassword = _currentPasswordController.text;
     final newPassword = _changePasswordController.text;

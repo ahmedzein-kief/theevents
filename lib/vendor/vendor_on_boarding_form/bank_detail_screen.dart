@@ -18,6 +18,7 @@ import '../components/vendor_text_style.dart';
 
 class BankDetailScreen extends StatefulWidget {
   const BankDetailScreen({super.key, required this.onNext});
+
   final VoidCallback onNext;
 
   @override
@@ -57,19 +58,14 @@ class _BankDetailScreenState extends State<BankDetailScreen> {
        * Parsing bank details data
        */
       SecurePreferencesUtil.saveServerStep(
-          int.parse(response.data['step'] ?? '1'),);
-      bdModel.bankName =
-          _bankNameController.text = response.data['bank_name'] ?? '';
-      bdModel.ibanNumber =
-          _iBANNumberController.text = response.data['iban_number'] ?? '';
-      bdModel.accountName =
-          _accountNameController.text = response.data['account_name'] ?? '';
-      bdModel.accountNumber =
-          _accountNumberController.text = response.data['account_number'] ?? '';
-      bdModel.bankLetterFileName = _bankLetterController.text =
-          response.data['bank_letter_file_name'] ?? '';
-      bdModel.bankLetterFileServerPath =
-          response.data['bank_letter_file_path'] ?? '';
+        int.parse(response.data['step'] ?? '1'),
+      );
+      bdModel.bankName = _bankNameController.text = response.data['bank_name'] ?? '';
+      bdModel.ibanNumber = _iBANNumberController.text = response.data['iban_number'] ?? '';
+      bdModel.accountName = _accountNameController.text = response.data['account_name'] ?? '';
+      bdModel.accountNumber = _accountNumberController.text = response.data['account_number'] ?? '';
+      bdModel.bankLetterFileName = _bankLetterController.text = response.data['bank_letter_file_name'] ?? '';
+      bdModel.bankLetterFileServerPath = response.data['bank_letter_file_path'] ?? '';
     }
   }
 
@@ -102,8 +98,7 @@ class _BankDetailScreenState extends State<BankDetailScreen> {
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.sizeOf(context).width;
     final double screenHeight = MediaQuery.sizeOf(context).height;
-    final mainProvider =
-        Provider.of<VendorSignUpProvider>(context, listen: true);
+    final mainProvider = Provider.of<VendorSignUpProvider>(context, listen: true);
     return Scaffold(
       body: SafeArea(
         child: Stack(
@@ -118,20 +113,19 @@ class _BankDetailScreenState extends State<BankDetailScreen> {
                     children: [
                       Padding(
                         padding: EdgeInsets.only(
-                            left: screenWidth * 0.04,
-                            right: screenWidth * 0.04,
-                            top: screenHeight * 0.03,
-                            bottom: screenHeight * 0.015,),
+                          left: screenWidth * 0.04,
+                          right: screenWidth * 0.04,
+                          top: screenHeight * 0.03,
+                          bottom: screenHeight * 0.015,
+                        ),
                         child: Container(
                           decoration: BoxDecoration(
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black
-                                    .withOpacity(0.2), // Shadow color
+                                color: Colors.black.withOpacity(0.2), // Shadow color
                                 spreadRadius: 2, // How much the shadow spreads
                                 blurRadius: 5, // How blurry the shadow is
-                                offset:
-                                    const Offset(0, 2), // Shadow offset (X, Y)
+                                offset: const Offset(0, 2), // Shadow offset (X, Y)
                               ),
                             ],
                           ),
@@ -143,7 +137,11 @@ class _BankDetailScreenState extends State<BankDetailScreen> {
                               elevation: 15,
                               child: Padding(
                                 padding: const EdgeInsets.only(
-                                    top: 20, left: 10, right: 10, bottom: 30,),
+                                  top: 20,
+                                  left: 10,
+                                  right: 10,
+                                  bottom: 30,
+                                ),
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -154,8 +152,7 @@ class _BankDetailScreenState extends State<BankDetailScreen> {
                                     ),
                                     VendorCustomTextFields(
                                       labelText: VendorAppStrings.bankName.tr,
-                                      hintText:
-                                          VendorAppStrings.enterBankName.tr,
+                                      hintText: VendorAppStrings.enterBankName.tr,
                                       textStar: VendorAppStrings.asterick.tr,
                                       controller: _bankNameController,
                                       keyboardType: TextInputType.name,
@@ -168,11 +165,10 @@ class _BankDetailScreenState extends State<BankDetailScreen> {
                                     ),
                                     VendorCustomTextFields(
                                       labelText: VendorAppStrings.ibanNumber.tr,
-                                      hintText:
-                                          VendorAppStrings.enterIbanNumber.tr,
+                                      hintText: VendorAppStrings.enterIbanNumber.tr,
                                       textStar: VendorAppStrings.asterick.tr,
                                       controller: _iBANNumberController,
-                                      keyboardType: TextInputType.name,
+                                      keyboardType: TextInputType.text,
                                       focusNode: _iBANNumberFocusNode,
                                       nextFocusNode: _accountNameFocusNode,
                                       validator: Validator.ibanNumber,
@@ -181,10 +177,8 @@ class _BankDetailScreenState extends State<BankDetailScreen> {
                                       },
                                     ),
                                     VendorCustomTextFields(
-                                      labelText:
-                                          VendorAppStrings.accountName.tr,
-                                      hintText:
-                                          VendorAppStrings.enterAccountName.tr,
+                                      labelText: VendorAppStrings.accountName.tr,
+                                      hintText: VendorAppStrings.enterAccountName.tr,
                                       textStar: VendorAppStrings.asterick.tr,
                                       controller: _accountNameController,
                                       keyboardType: TextInputType.name,
@@ -196,13 +190,11 @@ class _BankDetailScreenState extends State<BankDetailScreen> {
                                       },
                                     ),
                                     VendorCustomTextFields(
-                                      labelText:
-                                          VendorAppStrings.accountNumber.tr,
-                                      hintText: VendorAppStrings
-                                          .enterAccountNumber.tr,
+                                      labelText: VendorAppStrings.accountNumber.tr,
+                                      hintText: VendorAppStrings.enterAccountNumber.tr,
                                       textStar: VendorAppStrings.asterick.tr,
                                       controller: _accountNumberController,
-                                      keyboardType: TextInputType.name,
+                                      keyboardType: TextInputType.number,
                                       focusNode: _accountNumberFocusNode,
                                       nextFocusNode: _bankLetterFocusNode,
                                       validator: Validator.accountNumber,
@@ -211,10 +203,8 @@ class _BankDetailScreenState extends State<BankDetailScreen> {
                                       },
                                     ),
                                     VendorCustomTextFields(
-                                      labelText:
-                                          VendorAppStrings.bankLetterPdf.tr,
-                                      hintText:
-                                          VendorAppStrings.noFileChosen.tr,
+                                      labelText: VendorAppStrings.bankLetterPdf.tr,
+                                      hintText: VendorAppStrings.noFileChosen.tr,
                                       textStar: VendorAppStrings.asterick.tr,
                                       controller: _bankLetterController,
                                       keyboardType: TextInputType.name,
@@ -222,27 +212,24 @@ class _BankDetailScreenState extends State<BankDetailScreen> {
                                       isEditable: false,
                                       isPrefixFilled: true,
                                       prefixIcon: Icons.upload_outlined,
-                                      prefixContainerColor:
-                                          Colors.grey.shade300,
+                                      prefixContainerColor: Colors.grey.shade300,
                                       borderSideColor: const BorderSide(
-                                          color: Colors.grey, width: 0.5,),
+                                        color: Colors.grey,
+                                        width: 0.5,
+                                      ),
                                       prefixIconColor: Colors.black,
                                       nextFocusNode: _bankLetterFocusNode,
                                       validator: Validator.fieldRequired,
                                       onIconPressed: () async {
-                                        final FilePickerResult? result =
-                                            await FilePicker.platform.pickFiles(
+                                        final FilePickerResult? result = await FilePicker.platform.pickFiles(
                                           type: FileType.custom,
                                           allowedExtensions: ['pdf'],
                                         );
                                         if (result != null) {
-                                          final File file =
-                                              File(result.files.single.path!);
-                                          _bankLetterController.text =
-                                              result.files.single.name;
+                                          final File file = File(result.files.single.path!);
+                                          _bankLetterController.text = result.files.single.name;
                                           bdModel.bankLetterFile = file;
-                                          bdModel.bankLetterFileName =
-                                              result.files.single.name;
+                                          bdModel.bankLetterFileName = result.files.single.name;
                                         } else {
                                           _bankLetterController.text = '';
                                           bdModel.bankLetterFile = null;
@@ -281,12 +268,10 @@ class _BankDetailScreenState extends State<BankDetailScreen> {
             ),
             if (mainProvider.isLoading)
               Container(
-                color: Colors.black
-                    .withOpacity(0.5), // Semi-transparent background
+                color: Colors.black.withAlpha((0.5 * 255).toInt()), // Semi-transparent background
                 child: const Center(
                   child: CircularProgressIndicator(
-                    valueColor:
-                        AlwaysStoppedAnimation<Color>(AppColors.peachyPink),
+                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.peachyPink),
                   ),
                 ),
               ),

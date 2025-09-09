@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../vendor/components/utils/utils.dart';
+import '../../utils/app_utils.dart';
 import '../../styles/app_colors.dart';
 
 class CustomAppButton extends StatefulWidget {
@@ -22,6 +22,7 @@ class CustomAppButton extends StatefulWidget {
     this.suffixIconColor,
     this.loadingIndicatorColor,
   });
+
   final String buttonText;
   final Color buttonColor;
   final IconData? prefixIcon;
@@ -71,17 +72,15 @@ class _CustomAppButtonState extends State<CustomAppButton> {
       onTap: widget.isLoading ? () {} : widget.onTap,
       child: Container(
         height: widget.height,
-        padding: widget.padding ??
-            EdgeInsets.symmetric(horizontal: screenWidth * 0.04, vertical: 10),
+        padding: widget.padding ?? EdgeInsets.symmetric(horizontal: screenWidth * 0.04, vertical: 10),
         decoration: BoxDecoration(
           color: _isPressed ? AppColors.stoneGray : widget.buttonColor,
-          borderRadius: widget.borderRadius != null
-              ? BorderRadius.circular(widget.borderRadius ?? 0)
-              : null,
+          borderRadius: widget.borderRadius != null ? BorderRadius.circular(widget.borderRadius ?? 0) : null,
           border: Border.all(
-              color: widget.isLoading
-                  ? widget.loadingIndicatorColor ?? Colors.transparent
-                  : widget.borderColor ?? Colors.transparent,),
+            color: widget.isLoading
+                ? widget.loadingIndicatorColor ?? Colors.transparent
+                : widget.borderColor ?? Colors.transparent,
+          ),
         ),
         child: Row(
           mainAxisSize: widget.mainAxisSize ?? MainAxisSize.min,
@@ -89,14 +88,18 @@ class _CustomAppButtonState extends State<CustomAppButton> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             if (widget.prefixIcon != null)
-              Icon(widget.prefixIcon,
-                  color: widget.prefixIconColor ?? Colors.white, size: 18,),
+              Icon(
+                widget.prefixIcon,
+                color: widget.prefixIconColor ?? Colors.white,
+                size: 18,
+              ),
             SizedBox(width: widget.prefixIcon != null ? 8.0 : 0),
             // Add spacing if prefixIcon is present
             if (widget.isLoading)
-              Utils.pageLoadingIndicator(
-                  context: context,
-                  color: widget.loadingIndicatorColor ?? Colors.white,)
+              AppUtils.pageLoadingIndicator(
+                context: context,
+                color: widget.loadingIndicatorColor ?? Colors.white,
+              )
             else
               Text(
                 widget.buttonText,
@@ -110,8 +113,11 @@ class _CustomAppButtonState extends State<CustomAppButton> {
             SizedBox(width: widget.suffixIcon != null ? 8.0 : 0),
             // Add spacing if suffixIcon is present
             if (widget.suffixIcon != null)
-              Icon(widget.suffixIcon,
-                  color: widget.suffixIconColor ?? Colors.white, size: 18,),
+              Icon(
+                widget.suffixIcon,
+                color: widget.suffixIconColor ?? Colors.white,
+                size: 18,
+              ),
           ],
         ),
       ),

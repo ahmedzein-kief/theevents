@@ -11,6 +11,7 @@ class DashboardInfoSection extends StatefulWidget {
     super.key,
     required this.data,
   });
+
   final Data? data;
 
   @override
@@ -29,8 +30,7 @@ class _DashboardInfoSectionState extends State<DashboardInfoSection> {
     data = [
       {
         'title': 'Earnings',
-        'amount':
-            'AED ${widget.data?.balance?.toString() ?? '0'}', // Use the stateful earnings here
+        'amount': 'AED ${widget.data?.balance?.toString() ?? '0'}', // Use the stateful earnings here
         'onTap': () => print('Earnings'),
         'icon': SvgPicture.asset(
           colorFilter: const ColorFilter.mode(
@@ -210,6 +210,7 @@ class DashboardInfoCard extends StatelessWidget {
     required this.icon,
     required this.containerColor,
   });
+
   final String title;
   final String amount;
   final VoidCallback onTap;
@@ -221,13 +222,15 @@ class DashboardInfoCard extends StatelessWidget {
         onTap: onTap,
         child: Container(
           padding: EdgeInsets.symmetric(
-              vertical: kExtraSmallPadding, horizontal: kTinyPadding,),
+            vertical: kExtraSmallPadding,
+            horizontal: kTinyPadding,
+          ),
           decoration: BoxDecoration(
             color: containerColor,
             borderRadius: BorderRadius.circular(kTinyCardRadius),
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withOpacity(0.5),
+                color: Colors.grey.withAlpha((0.5 * 255).toInt()),
                 blurRadius: 2,
                 spreadRadius: 0,
                 offset: const Offset(0, 4),

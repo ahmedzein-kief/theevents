@@ -283,7 +283,7 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
             : AppColors.orange, // normal in light mode,
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
+            color: Colors.grey.withAlpha((0.5 * 255).toInt()),
             blurRadius: 10,
           ),
         ],
@@ -324,7 +324,7 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
             : AppColors.orange, // normal in light mode,
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
+            color: Colors.grey.withAlpha((0.5 * 255).toInt()),
             blurRadius: 10,
           ),
         ],

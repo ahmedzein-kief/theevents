@@ -92,7 +92,7 @@ class _ProductImageScreenState extends State<ProductImageScreen> {
                             imageUrl: currentImageUrl ?? '',
                             height: widget.screenWidth * 0.55,
                             width: widget.screenWidth * 0.6,
-                            fit: BoxFit.fill,
+                            fit: BoxFit.cover,
                             errorWidget: (context, object, error) => Image.asset(
                               'assets/placeholder.png',
                               fit: BoxFit.cover,

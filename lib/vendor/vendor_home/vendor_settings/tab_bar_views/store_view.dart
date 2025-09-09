@@ -16,7 +16,7 @@ import 'package:event_app/vendor/components/settings_components/choose_file_card
 import 'package:event_app/vendor/components/settings_components/simple_card.dart';
 import 'package:event_app/vendor/components/text_fields/custom_editable_text_field.dart';
 import 'package:event_app/vendor/components/text_fields/custom_text_form_field.dart';
-import 'package:event_app/vendor/components/utils/utils.dart';
+import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/vendor/components/vendor_text_style.dart';
 import 'package:event_app/vendor/view_models/vendor_settings/vendor_get_settings_view_model.dart';
 import 'package:event_app/vendor/view_models/vendor_settings/vendor_settings_view_model.dart';
@@ -484,14 +484,14 @@ class _StoreViewState extends State<StoreView> {
   @override
   Widget build(BuildContext context) => Scaffold(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        body: Utils.pageRefreshIndicator(
+        body: AppUtils.pageRefreshIndicator(
           context: context,
           onRefresh: _onRefresh,
           child: Consumer<VendorGetSettingsViewModel>(
             builder: (context, vendorGetSettingsProvider, _) {
               /// Show loading if refreshing
               if (vendorGetSettingsProvider.apiResponse.status == ApiStatus.LOADING) {
-                return Utils.pageLoadingIndicator(context: context);
+                return AppUtils.pageLoadingIndicator(context: context);
               }
 
               /// return ui if loading ends

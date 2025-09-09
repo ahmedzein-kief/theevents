@@ -8,6 +8,7 @@ import '../../provider/home_shortcode_provider/simple_slider_provider.dart';
 
 class SimpleSlider extends StatefulWidget {
   const SimpleSlider({super.key, required this.data});
+
   final dynamic data;
 
   @override
@@ -27,8 +28,7 @@ class _SimpleSliderState extends State<SimpleSlider> {
   }
 
   Future<void> fetchSliderData() async {
-    await Provider.of<TopSliderProvider>(context, listen: false)
-        .fetchSliders(data: widget.data, context);
+    await Provider.of<TopSliderProvider>(context, listen: false).fetchSliders(data: widget.data, context);
   }
 
   @override
@@ -42,9 +42,10 @@ class _SimpleSliderState extends State<SimpleSlider> {
 
     return Padding(
       padding: EdgeInsets.only(
-          left: screenWidth * 0.02,
-          right: screenWidth * 0.02,
-          top: screenHeight * 0.02,),
+        left: screenWidth * 0.02,
+        right: screenWidth * 0.02,
+        top: screenHeight * 0.02,
+      ),
       child: Column(
         children: [
           Container(
@@ -52,8 +53,11 @@ class _SimpleSliderState extends State<SimpleSlider> {
             child: widget.data['attributes']['title'] != null
                 ? Text(
                     style: const TextStyle(
-                        fontWeight: FontWeight.w700, fontSize: 22,),
-                    widget.data['attributes']['title'],)
+                      fontWeight: FontWeight.w700,
+                      fontSize: 22,
+                    ),
+                    widget.data['attributes']['title'],
+                  )
                 : null,
           ),
           Column(
@@ -67,11 +71,11 @@ class _SimpleSliderState extends State<SimpleSlider> {
                       if (slide.image != null) {
                         return CachedNetworkImage(
                           cacheKey: slide.image,
-                          imageUrl:
-                              '${slide.image}?v=${DateTime.now().millisecondsSinceEpoch}',
+                          imageUrl: '${slide.image}?v=${DateTime.now().millisecondsSinceEpoch}',
                           alignment: Alignment.center,
                           width: double.infinity,
-                          fit: BoxFit.fill,
+                          // height: screenHeight * 0.14,
+                          fit: BoxFit.cover,
                           filterQuality: FilterQuality.high,
                           errorWidget: (context, error, object) => Image.asset(
                             'assets/placeholder.png', // Replace with your actual image path
@@ -87,8 +91,7 @@ class _SimpleSliderState extends State<SimpleSlider> {
                               width: double.infinity,
                             );
                           },
-                          placeholder: (BuildContext context, String url) =>
-                              Container(
+                          placeholder: (BuildContext context, String url) => Container(
                             height: MediaQuery.sizeOf(context).height * 0.28,
                             width: double.infinity,
                             color: Colors.blueGrey[100], // Background color
@@ -116,8 +119,7 @@ class _SimpleSliderState extends State<SimpleSlider> {
                       // Adjust interval between slides
                       autoPlayCurve: Curves.linearToEaseOut,
                       // Smooth and natural transition
-                      autoPlayAnimationDuration:
-                          const Duration(milliseconds: 800),
+                      autoPlayAnimationDuration: const Duration(milliseconds: 800),
                       // Slower movement
                       enableInfiniteScroll: true,
                       // Infinite loop of slides
@@ -161,7 +163,9 @@ class _SimpleSliderState extends State<SimpleSlider> {
                                 blurRadius: 2,
                                 // Blur radius
                                 offset: const Offset(
-                                    0, 01,), // Offset for shadow position
+                                  0,
+                                  01,
+                                ), // Offset for shadow position
                               ),
                             ],
                             borderRadius: BorderRadius.circular(14),

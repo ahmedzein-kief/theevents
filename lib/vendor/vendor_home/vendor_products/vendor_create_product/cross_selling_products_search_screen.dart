@@ -7,7 +7,7 @@ import 'package:event_app/vendor/components/dropdowns/search_dropdown.dart';
 import 'package:event_app/vendor/components/list_tiles/spinner_records_list_tile.dart';
 import 'package:event_app/vendor/components/services/alert_services.dart';
 import 'package:event_app/vendor/components/text_fields/custom_text_form_field.dart';
-import 'package:event_app/vendor/components/utils/utils.dart';
+import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/vendor/components/vendor_text_style.dart';
 import 'package:event_app/vendor/view_models/vendor_products/vendor_create_product_view_model.dart';
 import 'package:flutter/material.dart';
@@ -20,17 +20,16 @@ class CrossSellingProductsSearchScreen extends StatefulWidget {
     required this.dataId,
     required this.selectedCrossSellingProducts,
   });
+
   final String title;
   String? dataId;
   List<SearchProductRecord> selectedCrossSellingProducts = [];
 
   @override
-  _CrossSellingProductsSearchScreenState createState() =>
-      _CrossSellingProductsSearchScreenState();
+  _CrossSellingProductsSearchScreenState createState() => _CrossSellingProductsSearchScreenState();
 }
 
-class _CrossSellingProductsSearchScreenState
-    extends State<CrossSellingProductsSearchScreen> {
+class _CrossSellingProductsSearchScreenState extends State<CrossSellingProductsSearchScreen> {
   final ScrollController _scrollController = ScrollController();
   bool _isProcessing = false;
   SearchDropdownModel searchDropdownModel = SearchDropdownModel();
@@ -50,9 +49,10 @@ class _CrossSellingProductsSearchScreenState
   }
 
   Future<VendorSearchProductDataResponse?> _fetchOptionsData(
-      String query, String dataId,) async {
-    final provider =
-        Provider.of<VendorCreateProductViewModel>(context, listen: false);
+    String query,
+    String dataId,
+  ) async {
+    final provider = Provider.of<VendorCreateProductViewModel>(context, listen: false);
     if (query.isEmpty) {
       return null;
     }
@@ -136,14 +136,18 @@ class _CrossSellingProductsSearchScreenState
             ],
           ),
           backgroundColor: AppColors.bgColor,
-          body: Utils.modelProgressHud(
+          body: AppUtils.modelProgressHud(
             context: context,
             processing: _isProcessing,
             child: Column(
               children: [
                 Padding(
                   padding: const EdgeInsets.only(
-                      bottom: 8.0, left: 8.0, right: 8.0, top: 4.0,),
+                    bottom: 8.0,
+                    left: 8.0,
+                    right: 8.0,
+                    top: 4.0,
+                  ),
                   child: SearchDropdown(
                     hint: 'Search products',
                     searchDropdownModel: searchDropdownModel,
@@ -155,25 +159,26 @@ class _CrossSellingProductsSearchScreenState
                         searchDropdownModel.records = [];
                         selectedProduct.price = null;
                         if (!listSearchProducts.any(
-                            (product) => product.id == selectedProduct.id,)) {
+                          (product) => product.id == selectedProduct.id,
+                        )) {
                           listSearchProducts.add(selectedProduct);
                         } else {
                           AlertServices.showErrorSnackBar(
-                              message:
-                                  'Selected product already added in the list',
-                              context: context,);
+                            message: 'Selected product already added in the list',
+                            context: context,
+                          );
                         }
                       });
                     },
                     onSearchChanged: (searchModel) async {
                       final result = await _fetchOptionsData(
-                          searchModel.searchText, widget.dataId ?? '',);
+                        searchModel.searchText,
+                        widget.dataId ?? '',
+                      );
                       if (result != null) {
                         setState(() {
-                          searchDropdownModel.showDropdown =
-                              searchDropdownModel.searchText.isNotEmpty == true;
-                          searchDropdownModel.records =
-                              result.data?.records ?? [];
+                          searchDropdownModel.showDropdown = searchDropdownModel.searchText.isNotEmpty == true;
+                          searchDropdownModel.records = result.data?.records ?? [];
                         });
                       }
                     },
@@ -213,8 +218,7 @@ class _CrossSellingProductsSearchScreenState
       }
       String? productPriceType;
       if (product.priceType != null) {
-        productPriceType =
-            SearchProductRecord.capitalize(product.priceType ?? '');
+        productPriceType = SearchProductRecord.capitalize(product.priceType ?? '');
       } else {
         productPriceType = priceType.first;
       }
@@ -243,7 +247,10 @@ class _CrossSellingProductsSearchScreenState
             ),
             bottomWidget: Padding(
               padding: const EdgeInsets.only(
-                  left: 8, right: 8, bottom: 12,), // Adds padding on both sides
+                left: 8,
+                right: 8,
+                bottom: 12,
+              ), // Adds padding on both sides
               child: Row(
                 children: [
                   Expanded(
@@ -256,16 +263,16 @@ class _CrossSellingProductsSearchScreenState
                       onChanged: (value) {
                         setState(() {
                           print(
-                              'User Input 1 : $value',); // Debugging user input
-                          final int index = listSearchProducts
-                              .indexWhere((option) => option.id == product.id);
+                            'User Input 1 : $value',
+                          ); // Debugging user input
+                          final int index = listSearchProducts.indexWhere((option) => option.id == product.id);
                           if (index != -1) {
                             print(
-                                'User Input 2 : $value',); // Debugging user input
+                              'User Input 2 : $value',
+                            ); // Debugging user input
 
                             if (value is String) {
-                              listSearchProducts[index].price =
-                                  value.isNotEmpty ? int.parse(value) : 0;
+                              listSearchProducts[index].price = value.isNotEmpty ? int.parse(value) : 0;
                             }
                           }
                         });
@@ -275,23 +282,20 @@ class _CrossSellingProductsSearchScreenState
                     ),
                   ),
                   const SizedBox(
-                      width:
-                          8,), // Adds spacing between input field and dropdown
+                    width: 8,
+                  ), // Adds spacing between input field and dropdown
                   Expanded(
                     flex: 1, // Ensure dropdown has a defined width
                     child: GenericDropdown<String>(
-                      textStyle:
-                          const TextStyle(color: Colors.grey, fontSize: 15),
+                      textStyle: const TextStyle(color: Colors.grey, fontSize: 15),
                       value: productPriceType,
                       menuItemsList: priceType,
                       displayItem: (String priceType) => priceType,
                       onChanged: (String? value) {
                         setState(() {
-                          final int index = listSearchProducts
-                              .indexWhere((option) => option.id == product.id);
+                          final int index = listSearchProducts.indexWhere((option) => option.id == product.id);
                           if (index != -1) {
-                            listSearchProducts[index].priceType =
-                                value?.toString().toLowerCase() ?? '';
+                            listSearchProducts[index].priceType = value?.toString().toLowerCase() ?? '';
                           }
                         });
                       },
@@ -307,8 +311,10 @@ class _CrossSellingProductsSearchScreenState
     }).toList();
   }
 
-  Widget _buildFormattedText(
-          {required String title, required String description,}) =>
+  Widget _buildFormattedText({
+    required String title,
+    required String description,
+  }) =>
       RichText(
         text: TextSpan(
           style: const TextStyle(fontSize: 14, color: Colors.black87),

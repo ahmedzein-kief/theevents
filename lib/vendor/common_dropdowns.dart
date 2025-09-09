@@ -1,3 +1,4 @@
+import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -6,7 +7,9 @@ import '../core/constants/vendor_app_strings.dart';
 import '../core/styles/app_colors.dart';
 
 Future<String?> showGenderDropdown(
-    BuildContext context, String currentSelection,) async {
+  BuildContext context,
+  String currentSelection,
+) async {
   const genderOptions = ['Male', 'Female', 'Not to say'];
   return showDialog<String>(
     context: context,
@@ -23,9 +26,7 @@ Future<String?> showGenderDropdown(
               title: Text(
                 gender,
                 style: TextStyle(
-                  color: gender == currentSelection
-                      ? AppColors.peachyPink
-                      : Colors.black,
+                  color: gender == currentSelection ? AppColors.peachyPink : Colors.black,
                 ),
               ),
               onTap: () {
@@ -40,7 +41,9 @@ Future<String?> showGenderDropdown(
 }
 
 Future<String?> showRegionDropdown(
-    BuildContext context, String currentSelection,) async {
+  BuildContext context,
+  String currentSelection,
+) async {
   const regionOptions = [
     'Abu Dhabi',
     'Dubai',
@@ -65,9 +68,7 @@ Future<String?> showRegionDropdown(
               title: Text(
                 region,
                 style: TextStyle(
-                  color: region == currentSelection
-                      ? AppColors.peachyPink
-                      : Colors.black,
+                  color: region == currentSelection ? AppColors.peachyPink : Colors.black,
                 ),
               ),
               onTap: () {
@@ -103,9 +104,7 @@ Future<String?> showCompanyCategoryType(
               title: Text(
                 region,
                 style: TextStyle(
-                  color: region == currentSelection
-                      ? AppColors.peachyPink
-                      : Colors.black,
+                  color: region == currentSelection ? AppColors.peachyPink : Colors.black,
                 ),
               ),
               onTap: () {
@@ -120,37 +119,28 @@ Future<String?> showCompanyCategoryType(
 }
 
 Future<String?> showDatePickerDialog(
-    BuildContext context, String format,) async {
+  BuildContext context,
+  String format,
+) async {
   final now = DateTime.now();
   final firstDate = now.add(const Duration(days: 1));
   final initialDate = now.isBefore(firstDate) ? firstDate : now;
 
-  final DateTime? picked = await showDatePicker(
+  final results = await showCalendarDatePicker2Dialog(
     context: context,
-    initialDate: initialDate,
-    // Ensure initialDate is not before firstDate
-    firstDate: firstDate,
-    // Earliest selectable date is 2 days from now
-    lastDate: DateTime(2101),
-    builder: (BuildContext context, Widget? child) => Theme(
-      data: ThemeData.light().copyWith(
-        colorScheme: const ColorScheme.light(
-          primary: Colors.blue,
-          onPrimary: Colors.white,
-          onSurface: Colors.black,
-        ),
-        textButtonTheme: TextButtonThemeData(
-          style: TextButton.styleFrom(
-            foregroundColor: Colors.pink, // "Cancel" button text color
-          ),
-        ),
-      ),
-      child: child!,
+    config: CalendarDatePicker2WithActionButtonsConfig(
+      firstDate: firstDate,
+      lastDate: DateTime(2101),
+      currentDate: initialDate,
+      selectedDayHighlightColor: Colors.blue,
+      cancelButtonTextStyle: const TextStyle(color: Colors.pink),
     ),
+    dialogSize: const Size(325, 400),
+    value: [initialDate],
   );
 
-  if (picked != null) {
-    return DateFormat(format).format(picked);
+  if (results != null && results.isNotEmpty && results[0] != null) {
+    return DateFormat(format).format(results[0]!);
   }
 
   return null;

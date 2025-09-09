@@ -3,6 +3,7 @@ import 'package:event_app/core/services/shared_preferences_helper.dart';
 import 'package:event_app/provider/api_response_handler.dart';
 import 'package:flutter/cupertino.dart';
 
+import '../../core/helper/functions/functions.dart';
 import '../../core/network/api_status/api_status.dart';
 
 class AddressModel {
@@ -95,22 +96,30 @@ class AddressProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<int?> saveAddress(AddressModel address) async {
+  Future<int?> saveAddress(BuildContext context, AddressModel address) async {
     setStatus(ApiStatus.loading);
     _isLoading = true;
     notifyListeners();
     final token = await SecurePreferencesUtil.getToken();
     const urlCreateAddress = ApiEndpoints.createCustomerAddress;
     const url = urlCreateAddress;
+
+    if (token == null || token.isEmpty) {
+      navigateToLogin(context, 'Please log in to create an address');
+      return null;
+    }
     final headers = {
       // 'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token',
+      'Authorization': token,
     };
 
     try {
       // Encode the address object to JSON string format
-      final response = await _apiResponseHandler.postRequest(url,
-          headers: headers, body: address.toJsonString(),);
+      final response = await _apiResponseHandler.postRequest(
+        url,
+        headers: headers,
+        body: address.toJsonString(),
+      );
 
       if (response.statusCode == 200) {
         setStatus(ApiStatus.completed);
@@ -141,8 +150,7 @@ class CreateAddressResponse {
   });
 
   // Factory constructor to create a CartUpdateResponse from JSON
-  factory CreateAddressResponse.fromJson(Map<String, dynamic> json) =>
-      CreateAddressResponse(
+  factory CreateAddressResponse.fromJson(Map<String, dynamic> json) => CreateAddressResponse(
         error: json['error'] as bool,
         data: json['data'], // Handle null or any type of data here
         message: json['message'] as String,

@@ -341,7 +341,7 @@ ThemeData darkTheme = ThemeData(
     selectionHandleColor: AppColors.peachyPink,
   ),
   bottomNavigationBarTheme: BottomNavigationBarThemeData(
-    backgroundColor: Colors.grey.withOpacity(0.5),
+    backgroundColor: Colors.grey.withAlpha((0.5 * 255).toInt()),
   ),
   scaffoldBackgroundColor: Colors.black,
   bottomAppBarTheme: const BottomAppBarTheme(color: Colors.black),

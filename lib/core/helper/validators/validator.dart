@@ -36,9 +36,7 @@ class Validator {
     }
 
     final Uri? uri = Uri.tryParse(value);
-    final bool isValid = uri != null &&
-        uri.hasScheme &&
-        (uri.scheme == 'http' || uri.scheme == 'https');
+    final bool isValid = uri != null && uri.hasScheme && (uri.scheme == 'http' || uri.scheme == 'https');
 
     return isValid ? null : 'Please enter a valid link';
   }
@@ -157,13 +155,6 @@ class Validator {
   static String? bankName(String? value) {
     if (value == null || value.isEmpty) {
       return 'Bank name is required';
-    }
-    return null;
-  }
-
-  static String? ibanNumber(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'IBAN number is required';
     }
     return null;
   }
@@ -382,8 +373,7 @@ class Validator {
     }
 
     // PayPal email regex validation
-    final RegExp paypalEmailRegex =
-        RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+    final RegExp paypalEmailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
 
     if (!paypalEmailRegex.hasMatch(value)) {
       return 'Enter a valid PayPal email ID.';
@@ -458,10 +448,7 @@ class Validator {
 
   static String? validateStartAndEndDate(String? startDate, String? endDate) {
     // Skip validation if either date is empty
-    if (startDate == null ||
-        startDate.isEmpty ||
-        endDate == null ||
-        endDate.isEmpty) {
+    if (startDate == null || startDate.isEmpty || endDate == null || endDate.isEmpty) {
       return null;
     }
 
@@ -518,5 +505,26 @@ class Validator {
       return 'City name can only contain letters, spaces, and hyphens.';
     }
     return null; // Valid city name
+  }
+
+  static String? ibanNumber(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'IBAN number is required';
+    }
+
+    // Remove spaces
+    final iban = value.replaceAll(' ', '');
+
+    // Basic length check
+    if (iban.length < 15 || iban.length > 34) {
+      return 'Invalid IBAN length';
+    }
+
+    // Must start with 2 letters (country code)
+    if (!RegExp(r'^[A-Z]{2}[0-9A-Z]+$').hasMatch(iban)) {
+      return 'Invalid IBAN format';
+    }
+
+    return null; // ✅ valid
   }
 }

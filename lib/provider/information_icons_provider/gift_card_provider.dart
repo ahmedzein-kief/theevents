@@ -5,6 +5,8 @@ import 'package:event_app/models/dashboard/information_icons_models/gift_card_mo
 import 'package:event_app/provider/api_response_handler.dart';
 import 'package:flutter/cupertino.dart';
 
+import '../../core/helper/functions/functions.dart';
+
 class GiftCardInnerProvider with ChangeNotifier {
   final ApiResponseHandler _apiResponseHandler = ApiResponseHandler();
 
@@ -60,6 +62,7 @@ class CreateGiftCardProvider with ChangeNotifier {
   String? get error => _error;
 
   Future<CheckoutPaymentModel?> createGiftCard(
+    BuildContext context,
     String selectedPrice,
     String name,
     String email,
@@ -71,8 +74,13 @@ class CreateGiftCardProvider with ChangeNotifier {
 
     final token = await SecurePreferencesUtil.getToken();
 
+    if (token == null || token.isEmpty) {
+      navigateToLogin(context, 'Please log in to create a gift card');
+      return null;
+    }
+
     final headers = {
-      'Authorization': 'Bearer $token',
+      'Authorization': token,
     };
 
     const url = ApiEndpoints.createGiftCard;
@@ -84,8 +92,7 @@ class CreateGiftCardProvider with ChangeNotifier {
         '$url?payment_method=${paymentMethod['payment_method']}&${paymentMethod['sub_option_key']}=${paymentMethod['sub_option_value']}&value=$selectedPrice&recipient_email=$email&recipient_name=$name&additional_notes=$notes';
 
     try {
-      final response =
-          await _apiResponseHandler.postRequest(updateURL, headers: headers);
+      final response = await _apiResponseHandler.postRequest(updateURL, headers: headers);
 
       if (response.statusCode == 200) {
         _error = null;

@@ -8,6 +8,7 @@ import '../../provider/home_shortcode_provider/banner_ads_provider.dart';
 
 class BannerAdsScreen extends StatefulWidget {
   const BannerAdsScreen({super.key, required this.data});
+
   final dynamic data;
 
   @override
@@ -53,13 +54,11 @@ class _ApplyBannerState extends State<BannerAdsScreen> {
                 child: SizedBox(
                   width: screenWidth,
                   child: CachedNetworkImage(
-                    imageUrl:
-                        provider.homeBannerModels?.data?.tabletImageUrl ?? '',
-                    fit: BoxFit.fill,
-                    height: 100,
+                    imageUrl: provider.homeBannerModels?.data?.tabletImageUrl ?? '',
+                    fit: BoxFit.cover,
+                    height: screenHeight * 0.14,
                     width: double.infinity,
-                    errorWidget: (context, child, loadingProcessor) =>
-                        Container(
+                    errorWidget: (context, child, loadingProcessor) => Container(
                       width: double.infinity,
                       height: 100,
                       decoration: BoxDecoration(
@@ -69,11 +68,15 @@ class _ApplyBannerState extends State<BannerAdsScreen> {
                           end: Alignment.bottomRight,
                         ),
                         borderRadius: BorderRadius.circular(
-                            12,), // Optional: to round the corners
+                          12,
+                        ), // Optional: to round the corners
                       ),
                       child: const Center(
                         child: CupertinoActivityIndicator(
-                            color: Colors.black, radius: 10, animating: true,),
+                          color: Colors.black,
+                          radius: 10,
+                          animating: true,
+                        ),
                       ),
                     ),
                     errorListener: (object) {
@@ -87,7 +90,8 @@ class _ApplyBannerState extends State<BannerAdsScreen> {
                             end: Alignment.bottomRight,
                           ),
                           borderRadius: BorderRadius.circular(
-                              12,), // Optional: to round the corners
+                            12,
+                          ), // Optional: to round the corners
                         ),
                       );
                     },

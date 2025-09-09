@@ -4,6 +4,12 @@ import 'app_strings.dart';
 
 final Map<String, Map<String, String>> appTranslations = {
   'en': {
+    'orderPlacedSuccessfully': 'Order placed successfully! Check your orders for details.',
+    'payment_successful': 'Payment was successful',
+    'payment_failed': 'Payment failed',
+    'payment_cancelled': 'Payment was cancelled',
+    'payment_link_error': 'Failed to generate payment link',
+    AppStrings.vendorAccountUnderReview: AppStrings.vendorAccountUnderReview,
     'content': 'Content',
     'pleaseSelectRequiredOptions': 'Please select all required options',
     'dismiss': 'Dismiss',
@@ -381,21 +387,21 @@ final Map<String, Map<String, String>> appTranslations = {
         'يتطلب هذا التطبيق الوصول إلى وحدة التخزين الخارجية لجهازك لحفظ الفاتورة. يرجى منح الإذن للمتابعة.',
 
 // Gift Cards
-    AppStrings.selectGiftCardAmount: 'اختر مبلغ بطاقة الهدية',
-    AppStrings.selectOrAddAmount: 'اختر أو أضف مبلغاً',
-    AppStrings.amountMustBeLessThan: 'يجب أن يكون المبلغ أقل من 10000 درهم',
-    AppStrings.invalidAmountEntered: 'تم إدخال مبلغ غير صالح',
-    AppStrings.enterReceiptName: 'أدخل اسم المستلم *',
-    AppStrings.enterReceiptEmail: 'أدخل بريد المستلم *',
-    AppStrings.additionalNotes: 'ملاحظات إضافية',
-    AppStrings.payNow: 'ادفع الآن',
-    AppStrings.discount50: 'خصم 50%',
-    AppStrings.searchDiscounts: 'ابحث عن الخصومات',
+    AppStrings.selectGiftCardAmount: 'Select gift card amount',
+    AppStrings.selectOrAddAmount: 'Select or add an amount',
+    AppStrings.amountMustBeLessThan: 'Amount must be less than AED 10,000',
+    AppStrings.invalidAmountEntered: 'Invalid amount entered',
+    AppStrings.enterReceiptName: 'Enter recipient name *',
+    AppStrings.enterReceiptEmail: 'Enter recipient email *',
+    AppStrings.additionalNotes: 'Additional notes',
+    AppStrings.payNow: 'Pay now',
+    AppStrings.discount50: '50% off',
+    AppStrings.searchDiscounts: 'Search discounts',
 
 // Placeholder values
-    AppStrings.actualPrice: 'السعر الفعلي',
-    AppStrings.standardPrice: 'السعر القياسي',
-    AppStrings.fiftyPercentOffPrice: 'سعر خصم 50%',
+    AppStrings.actualPrice: 'Actual price',
+    AppStrings.standardPrice: 'Standard price',
+    AppStrings.fiftyPercentOffPrice: '50% off price',
 
 // VendorAppStrings (add your vendor strings here)
 
@@ -696,6 +702,13 @@ final Map<String, Map<String, String>> appTranslations = {
     VendorAppStrings.areYouAuthorizedSignatory: VendorAppStrings.areYouAuthorizedSignatory,
   },
   'ar': {
+    'orderPlacedSuccessfully': 'تم تقديم الطلب بنجاح! تحقق من طلباتك للحصول على التفاصيل.',
+    'payment_successful': 'تم الدفع بنجاح',
+    'payment_failed': 'فشل الدفع',
+    'payment_cancelled': 'تم إلغاء الدفع',
+    'payment_link_error': 'فشل في إنشاء رابط الدفع',
+    'vendorAccountUnderReview': 'حساب البائع الخاص بك قيد المراجعة وفي انتظار الموافقة.',
+    AppStrings.vendorAccountUnderReview: AppStrings.vendorAccountUnderReview,
     'content': 'المحتوى',
     'pleaseSelectRequiredOptions': 'يرجى تحديد جميع الخيارات المطلوبة',
     'dismiss': 'إغلاق',
@@ -1370,7 +1383,7 @@ final Map<String, Map<String, String>> appTranslations = {
 // Additional Form Hints
 
     VendorAppStrings.nowAed: 'الآن درهم إماراتي',
-    VendorAppStrings.youWillBeRedirectedToTelrTabby: 'سيتم توجيهك إلى Telr/Tabby لإكمال الدفع',
+    VendorAppStrings.youWillBeRedirectedToTelrTabby: 'سيتم توجيهك إلى Telr لإكمال الدفع',
     VendorAppStrings.paymentFailure: 'فشل في الدفع',
     VendorAppStrings.congratulations: 'تهانينا!',
 
@@ -1383,6 +1396,13 @@ final Map<String, Map<String, String>> appTranslations = {
     VendorAppStrings.areYouAuthorizedSignatory: 'هل أنت الموقع المفوض؟',
   },
   'ru': {
+    'orderPlacedSuccessfully': 'Заказ успешно оформлен! Проверьте свои заказы для получения деталей.',
+
+    'payment_successful': 'Оплата прошла успешно',
+    'payment_failed': 'Платеж не прошёл',
+    'payment_cancelled': 'Платёж был отменён',
+    'payment_link_error': 'Не удалось создать ссылку для оплаты',
+    'vendorAccountUnderReview': 'Ваша учетная запись продавца находится на рассмотрении и ожидает одобрения.',
     'content': 'содержание',
     'pleaseSelectRequiredOptions': 'Пожалуйста, выберите все обязательные параметры',
     'dismiss': 'Закрыть',
@@ -1772,7 +1792,7 @@ final Map<String, Map<String, String>> appTranslations = {
     VendorAppStrings.selectRegion: 'Пожалуйста, выберите регион',
 
     VendorAppStrings.nowAed: 'Теперь AED',
-    VendorAppStrings.youWillBeRedirectedToTelrTabby: 'Вы будете перенаправлены в Telr/Tabby для завершения оплаты',
+    VendorAppStrings.youWillBeRedirectedToTelrTabby: 'Вы будете перенаправлены в Telr для завершения оплаты',
     VendorAppStrings.paymentFailure: 'Ошибка оплаты',
     VendorAppStrings.congratulations: 'Поздравляем!',
 
@@ -1850,6 +1870,13 @@ final Map<String, Map<String, String>> appTranslations = {
     AppStrings.fiftyPercentOffPrice: AppStrings.fiftyPercentOffPrice,
   },
   'zh': {
+    'orderPlacedSuccessfully': '订单已成功提交！请查看您的订单以获取详细信息。',
+
+    'payment_successful': '支付成功',
+    'payment_failed': '支付失败',
+    'payment_cancelled': '支付已取消',
+    'payment_link_error': '生成支付链接失败',
+    'vendorAccountUnderReview': '您的卖家账户正在审核中，等待批准。',
     'content': '内容',
     AppStrings.brands: '品牌',
     AppStrings.celebrities: '名人',
@@ -2144,7 +2171,7 @@ final Map<String, Map<String, String>> appTranslations = {
 // Payment and Subscription
     VendorAppStrings.payment: '付款',
     VendorAppStrings.nowAed: '现在 AED',
-    VendorAppStrings.youWillBeRedirectedToTelrTabby: '您将被重定向到 Telr/Tabby 完成付款',
+    VendorAppStrings.youWillBeRedirectedToTelrTabby: '您将被重定向到 Telr 完成付款',
     VendorAppStrings.paymentFailure: '付款失败',
     VendorAppStrings.congratulations: '恭喜！',
 
@@ -2222,6 +2249,13 @@ final Map<String, Map<String, String>> appTranslations = {
     AppStrings.fiftyPercentOffPrice: AppStrings.fiftyPercentOffPrice,
   },
   'hi': {
+    'orderPlacedSuccessfully': 'ऑर्डर सफलतापूर्वक किया गया! विवरण के लिए अपने ऑर्डर देखें।',
+
+    'payment_successful': 'भुगतान सफल हुआ',
+    'payment_failed': 'भुगतान असफल रहा',
+    'payment_cancelled': 'भुगतान रद्द कर दिया गया',
+    'payment_link_error': 'भुगतान लिंक बनाने में विफल',
+    'vendorAccountUnderReview': 'आपका विक्रेता खाता समीक्षा में है और स्वीकृति की प्रतीक्षा कर रहा है।',
     'content': 'सामग्री',
     AppStrings.brands: 'ब्रांड',
     AppStrings.celebrities: 'सेलिब्रिटी',
@@ -2530,8 +2564,7 @@ final Map<String, Map<String, String>> appTranslations = {
 // Payment and Subscription
     VendorAppStrings.payment: 'भुगतान',
     VendorAppStrings.nowAed: 'अब AED',
-    VendorAppStrings.youWillBeRedirectedToTelrTabby:
-        'आपको भुगतान पूरा करने के लिए Telr/Tabby पर पुनर्निर्देशित किया जाएगा',
+    VendorAppStrings.youWillBeRedirectedToTelrTabby: 'आपको भुगतान पूरा करने के लिए Telr पर पुनर्निर्देशित किया जाएगा',
     VendorAppStrings.paymentFailure: 'भुगतान विफल',
     VendorAppStrings.congratulations: 'बधाई हो!',
 
@@ -2609,6 +2642,12 @@ final Map<String, Map<String, String>> appTranslations = {
     AppStrings.fiftyPercentOffPrice: AppStrings.fiftyPercentOffPrice,
   },
   'ur': {
+    'orderPlacedSuccessfully': 'آرڈر کامیابی سے دیا گیا! تفصیلات کے لیے اپنے آرڈرز چیک کریں۔',
+    'payment_successful': 'ادائیگی کامیاب ہوگئی',
+    'payment_failed': 'ادائیگی ناکام ہوگئی',
+    'payment_cancelled': 'ادائیگی منسوخ کر دی گئی',
+    'payment_link_error': 'ادائیگی کا لنک بنانے میں ناکام',
+    'vendorAccountUnderReview': 'آپ کا وینڈر اکاؤنٹ جائزے میں ہے اور منظوری کا منتظر ہے۔',
     'content': 'مواد',
     AppStrings.brands: 'برانڈز',
     AppStrings.celebrities: 'مشہور شخصیات',
@@ -2915,7 +2954,7 @@ final Map<String, Map<String, String>> appTranslations = {
 // Payment and Subscription
     VendorAppStrings.payment: 'ادائیگی',
     VendorAppStrings.nowAed: 'اب AED',
-    VendorAppStrings.youWillBeRedirectedToTelrTabby: 'آپ کو ادائیگی مکمل کرنے کے لیے Telr/Tabby پر منتقل کیا جائے گا',
+    VendorAppStrings.youWillBeRedirectedToTelrTabby: 'آپ کو ادائیگی مکمل کرنے کے لیے Telr پر منتقل کیا جائے گا',
     VendorAppStrings.paymentFailure: 'ادائیگی ناکام',
     VendorAppStrings.congratulations: 'مبارک ہو!',
 

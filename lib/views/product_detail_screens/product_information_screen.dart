@@ -167,7 +167,7 @@ class _ProductInformationScreenState extends State<ProductInformationScreen> {
             //                                   width: widget.screenWidth * 0.25,
             //                                   decoration: BoxDecoration(
             //                                     gradient: LinearGradient(
-            //                                       colors: [AppColors.lightCoral, Colors.black.withOpacity(0.5)],
+            //                                       colors: [AppColors.lightCoral, Colors.black.withAlpha((0.5 * 255).toInt())],
             //                                     ),
             //                                   ),
             //                                   child: const CupertinoActivityIndicator(

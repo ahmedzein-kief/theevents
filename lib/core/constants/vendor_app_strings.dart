@@ -337,7 +337,7 @@ class VendorAppStrings {
   // Payment and Subscription
   static const String payment = 'Payment';
   static const String nowAed = 'Now AED';
-  static const String youWillBeRedirectedToTelrTabby = 'You will be redirected to Telr/Tabby to complete payment';
+  static const String youWillBeRedirectedToTelrTabby = 'You will be redirected to Telr to complete payment';
   static const String paymentFailure = 'Payment Failure';
   static const String congratulations = 'Congratulations!';
 
@@ -346,4 +346,6 @@ class VendorAppStrings {
   static const String areYouAuthorizedSignatory = 'Are you an authorized signatory?';
 
   static const String content = 'content';
+  static const String paymentCancelled = 'payment_cancelled';
+  static const String paymentLinkError = 'payment_link_error';
 }

@@ -12,24 +12,30 @@ import 'customer_address.dart';
 class CustomerAddress extends ChangeNotifier {
   final ApiResponseHandler _apiResponseHandler = ApiResponseHandler();
 
-  Future<bool> updateAddress(AddressModel address, String token, int addressId,
-      BuildContext context,) async {
+  Future<bool> updateAddress(
+    AddressModel address,
+    String token,
+    int addressId,
+    BuildContext context,
+  ) async {
     final url = '${ApiEndpoints.customerAddressEdit}$addressId';
     final headers = {
-      'Authorization': 'Bearer $token',
+      'Authorization': token,
       // 'Content-Type': 'application/json',
     };
 
-    final response = await _apiResponseHandler.postRequest(url,
-        headers: headers, body: address.toJsonString(),);
+    final response = await _apiResponseHandler.postRequest(
+      url,
+      headers: headers,
+      body: address.toJsonString(),
+    );
 
     if (response.statusCode == 200) {
       CustomSnackbar.showSuccess(context, 'Address Update successfully!');
 
       /// --------------------------- RE-FETCH THE DATA OF THE CUSTOMER ------------------------------
       final token = await SecurePreferencesUtil.getToken();
-      final reFetchUserData =
-          Provider.of<CustomerAddressProvider>(context, listen: false);
+      final reFetchUserData = Provider.of<CustomerAddressProvider>(context, listen: false);
       await reFetchUserData.fetchCustomerAddresses(token ?? '', context);
       notifyListeners();
       return true;

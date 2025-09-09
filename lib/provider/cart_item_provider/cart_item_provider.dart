@@ -3,17 +3,15 @@ import 'dart:convert';
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/provider/api_response_handler.dart';
 import 'package:flutter/material.dart';
-import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:provider/provider.dart';
 
+import '../../core/helper/functions/functions.dart';
 import '../../core/services/shared_preferences_helper.dart';
 import '../../core/utils/custom_toast.dart';
-import '../../core/widgets/custom_items_views/custom_toast.dart';
 import '../../models/cartItems_models/cart_item_models.dart';
 import '../../models/cart_items_models/cart_delete_models.dart';
 import '../../models/cart_items_models/cart_items_models.dart';
 import '../../models/cart_items_models/cart_update_models.dart';
-import '../../views/auth_screens/auth_page_view.dart';
 import '../auth_provider/get_user_provider.dart';
 
 class CartProvider with ChangeNotifier {
@@ -37,25 +35,6 @@ class CartProvider with ChangeNotifier {
     return token != null && token.isNotEmpty;
   }
 
-  /// Navigate to login screen with appropriate message
-  void _navigateToLogin(BuildContext context, String messageKey) {
-    PersistentNavBarNavigator.pushNewScreen(
-      context,
-      screen: AuthScreen(),
-      withNavBar: false,
-      pageTransitionAnimation: PageTransitionAnimation.fade,
-    );
-
-    final CustomToast customToast = CustomToast(context);
-    customToast.showToast(
-      context: context,
-      textHint: messageKey,
-      onDismiss: () {
-        customToast.removeToast();
-      },
-    );
-  }
-
   Future<void> addToCart(
     int productID,
     BuildContext context,
@@ -66,7 +45,7 @@ class CartProvider with ChangeNotifier {
     // Check authentication first
     final bool loggedIn = await _isLoggedIn();
     if (!loggedIn) {
-      _navigateToLogin(context, 'Please log in to add items to cart');
+      navigateToLogin(context, 'Please log in to add items to cart');
       return;
     }
 
@@ -77,8 +56,13 @@ class CartProvider with ChangeNotifier {
       final token = await SecurePreferencesUtil.getToken();
       const url = ApiEndpoints.addToCart;
 
+      if (token == null || token.isEmpty) {
+        navigateToLogin(context, 'Please log in to add items to cart');
+        return;
+      }
+
       final headers = {
-        'Authorization': 'Bearer $token',
+        'Authorization': token,
         'Content-Type': 'application/json',
       };
 
@@ -128,7 +112,7 @@ class CartProvider with ChangeNotifier {
       } else if (response.statusCode == 401) {
         // Token expired or invalid
         CustomSnackbar.showError(context, 'Session expired. Please log in again.');
-        _navigateToLogin(context, 'Session expired. Please log in again.');
+        navigateToLogin(context, 'Session expired. Please log in again.');
       } else {
         CustomSnackbar.showError(
           context,
@@ -158,7 +142,7 @@ class CartProvider with ChangeNotifier {
     // Check authentication first
     final bool loggedIn = await _isLoggedIn();
     if (!loggedIn) {
-      _navigateToLogin(context, 'Please log in to manage your cart');
+      navigateToLogin(context, 'Please log in to manage your cart');
       return;
     }
 
@@ -167,7 +151,7 @@ class CartProvider with ChangeNotifier {
 
     try {
       final url = '${ApiEndpoints.cartRemove}$rowId';
-      final headers = {'Authorization': 'Bearer $token'};
+      final headers = {'Authorization': token};
 
       final response = await _apiResponseHandler.postRequest(url, headers: headers);
 
@@ -179,7 +163,7 @@ class CartProvider with ChangeNotifier {
         CustomSnackbar.showSuccess(context, cartResponse.message);
       } else if (response.statusCode == 401) {
         CustomSnackbar.showError(context, 'Session expired. Please log in again.');
-        _navigateToLogin(context, 'Session expired. Please log in again.');
+        navigateToLogin(context, 'Session expired. Please log in again.');
       } else {
         CustomSnackbar.showError(context, 'Something went wrong.');
       }
@@ -206,7 +190,7 @@ class CartProvider with ChangeNotifier {
 
     try {
       const url = ApiEndpoints.cartItems;
-      final headers = {'Authorization': 'Bearer $token'};
+      final headers = {'Authorization': token};
 
       final response = await _apiResponseHandler.getRequest(
         url,
@@ -222,7 +206,7 @@ class CartProvider with ChangeNotifier {
         provider.fetchUserData(token ?? '', context);
       } else if (response.statusCode == 401) {
         CustomSnackbar.showError(context, 'Session expired. Please log in again.');
-        _navigateToLogin(context, 'Session expired. Please log in again.');
+        navigateToLogin(context, 'Session expired. Please log in again.');
       }
     } catch (e) {
       CustomSnackbar.showError(context, 'Failed to load cart data.');
@@ -230,6 +214,12 @@ class CartProvider with ChangeNotifier {
       _cartLoading = false;
       notifyListeners();
     }
+  }
+
+  /// Optimistically clear cart locally (e.g., after successful checkout)
+  void clearCartLocally() {
+    _cartResponse = null;
+    notifyListeners();
   }
 
   bool _checkoutLoading = false;
@@ -244,7 +234,7 @@ class CartProvider with ChangeNotifier {
     // Check authentication first
     final bool loggedIn = await _isLoggedIn();
     if (!loggedIn) {
-      _navigateToLogin(context, 'Please log in to proceed with checkout');
+      navigateToLogin(context, 'Please log in to proceed with checkout');
       return null;
     }
 
@@ -253,7 +243,7 @@ class CartProvider with ChangeNotifier {
 
     try {
       final url = '${ApiEndpoints.checkout}$checkoutToken';
-      final headers = {'Authorization': 'Bearer $token'};
+      final headers = {'Authorization': token};
 
       final response = await _apiResponseHandler.getRequest(
         url,
@@ -265,7 +255,7 @@ class CartProvider with ChangeNotifier {
         return response;
       } else if (response.statusCode == 401) {
         CustomSnackbar.showError(context, 'Session expired. Please log in again.');
-        _navigateToLogin(context, 'Session expired. Please log in again.');
+        navigateToLogin(context, 'Session expired. Please log in again.');
       } else {
         CustomSnackbar.showError(context, 'Failed to load checkout data.');
       }
@@ -289,13 +279,13 @@ class CartProvider with ChangeNotifier {
     // Check authentication first
     final bool loggedIn = await _isLoggedIn();
     if (!loggedIn) {
-      _navigateToLogin(context, 'Please log in to update your cart');
+      navigateToLogin(context, 'Please log in to update your cart');
       return;
     }
 
     try {
       const url = ApiEndpoints.updateCart;
-      final headers = {'Authorization': 'Bearer $token'};
+      final headers = {'Authorization': token};
 
       final response = await _apiResponseHandler.postRequest(
         url,
@@ -311,7 +301,7 @@ class CartProvider with ChangeNotifier {
         CustomSnackbar.showSuccess(context, updateCart.message);
       } else if (response.statusCode == 401) {
         CustomSnackbar.showError(context, 'Session expired. Please log in again.');
-        _navigateToLogin(context, 'Session expired. Please log in again.');
+        navigateToLogin(context, 'Session expired. Please log in again.');
       } else {
         final errorResponse = UpdateCartResponse.fromJson(response.data);
         CustomSnackbar.showError(context, errorResponse.message);

@@ -607,7 +607,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               ),
               if (mainProvider.isOtherLoading || actionLoading)
                 Container(
-                  color: Colors.black.withOpacity(0.5), // Semi-transparent background
+                  color: Colors.black.withAlpha((0.5 * 255).toInt()), // Semi-transparent background
                   child: const Center(
                     child: CircularProgressIndicator(
                       valueColor: AlwaysStoppedAnimation<Color>(AppColors.peachyPink),

@@ -2,7 +2,7 @@ import 'package:event_app/core/constants/vendor_app_strings.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/styles/app_sizes.dart';
 import 'package:event_app/vendor/components/app_bars/vendor_common_app_bar.dart';
-import 'package:event_app/vendor/components/utils/utils.dart';
+import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/vendor/vendor_home/vendor_settings/tab_bar_views/payout_info_view.dart';
 import 'package:event_app/vendor/vendor_home/vendor_settings/tab_bar_views/store_view.dart';
 import 'package:event_app/vendor/vendor_home/vendor_settings/tab_bar_views/tax_info_view.dart';
@@ -37,7 +37,7 @@ class _VendorProfileSettingsViewState extends State<VendorProfileSettingsView> w
   Widget build(BuildContext context) => Scaffold(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         appBar: widget.initialIndex != null ? VendorCommonAppBar(title: VendorAppStrings.settingsTitle.tr) : null,
-        body: Utils.pageRefreshIndicator(
+        body: AppUtils.pageRefreshIndicator(
           context: context,
           onRefresh: () async {},
           child: _buildUI(context),

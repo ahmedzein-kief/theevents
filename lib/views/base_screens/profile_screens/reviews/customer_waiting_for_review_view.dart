@@ -5,7 +5,7 @@ import 'package:event_app/core/styles/app_sizes.dart';
 import 'package:event_app/data/vendor/data/response/apis_status.dart';
 import 'package:event_app/vendor/components/common_widgets/vendor_data_list_builder.dart';
 import 'package:event_app/vendor/components/list_tiles/records_list_tile.dart';
-import 'package:event_app/vendor/components/utils/utils.dart';
+import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/views/base_screens/profile_screens/reviews/customer_submit_review_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -93,10 +93,10 @@ class _CustomerWaitingForReviewsViewState extends State<CustomerWaitingForReview
   @override
   Widget build(BuildContext context) => Scaffold(
         // backgroundColor: AppColors.bgColor,
-        body: Utils.modelProgressHud(
+        body: AppUtils.modelProgressHud(
           context: context,
           processing: _isProcessing,
-          child: Utils.pageRefreshIndicator(
+          child: AppUtils.pageRefreshIndicator(
             context: context,
             onRefresh: _onRefresh,
             child: _buildUi(context),
@@ -114,12 +114,12 @@ class _CustomerWaitingForReviewsViewState extends State<CustomerWaitingForReview
                   /// current api status
                   final ApiStatus? apiStatus = provider.apiResponse.status;
                   if (apiStatus == ApiStatus.LOADING && provider.list.isEmpty) {
-                    return Utils.pageLoadingIndicator(context: context);
+                    return AppUtils.pageLoadingIndicator(context: context);
                   }
                   if (apiStatus == ApiStatus.ERROR) {
                     return ListView(
                       physics: const AlwaysScrollableScrollPhysics(),
-                      children: [Utils.somethingWentWrong()],
+                      children: [AppUtils.somethingWentWrong()],
                     );
                   }
                   return Column(

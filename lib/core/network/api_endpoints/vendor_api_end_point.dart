@@ -1,8 +1,6 @@
 class VendorApiEndpoints {
-  static const String baseUrl =
-      'https://apistaging.theevents.ae/api/v1/vendor/';
-  static const String baseUrlSettings =
-      'https://apistaging.theevents.ae/api/v1/';
+  static const String baseUrl = 'https://apistaging.theevents.ae/api/v1/vendor/';
+  static const String baseUrlSettings = 'https://apistaging.theevents.ae/api/v1/';
   static const String imageBaseURL = 'https://apistaging.theevents.ae/storage/';
   static const String vendorProductBaseUrl = 'https://theevents.ae/products/';
 
@@ -12,11 +10,9 @@ class VendorApiEndpoints {
   //   Urls Of Api Endpoints  new one
   static const String signup = '${baseUrl}register';
   static const String meta = '${baseUrl}meta';
-  static const String vendorTypes =
-      'https://apistaging.theevents.ae/api/v1/getVendorsTypes';
+  static const String vendorTypes = 'https://apistaging.theevents.ae/api/v1/getVendorsTypes';
   static const String vendorPermissions = '${baseUrl}getPermissions';
-  static const String settings_subscription =
-      '${baseUrlSettings}settings/subscription';
+  static const String settings_subscription = '${baseUrlSettings}settings/subscription';
   static const String pay = '${baseUrlSettings}payment-methods';
   static const String emailResend = '${baseUrlSettings}email/resend';
   static const String previewAgreement = '${baseUrl}preview-agreement';
@@ -26,8 +22,7 @@ class VendorApiEndpoints {
   /// product
   static String get vendorProducts => '${baseUrl}products';
 
-  static String get vendorGetProductGeneralSettings =>
-      '${baseUrl}products/general-settings';
+  static String get vendorGetProductGeneralSettings => '${baseUrl}products/general-settings';
 
   static String get vendorAttributeSets => '${baseUrl}products/attribute-sets';
 
@@ -37,26 +32,19 @@ class VendorApiEndpoints {
 
   static String get globalOptions => '${baseUrl}ajax/global-option';
 
-  static String get searchProduct =>
-      '${baseUrl}products/get-list-product-for-search';
+  static String get searchProduct => '${baseUrl}products/get-list-product-for-search';
 
-  static String get vendorGetProductSeoKeywords =>
-      '${baseUrl}ajax/get-seo-keywords';
+  static String get vendorGetProductSeoKeywords => '${baseUrl}ajax/get-seo-keywords';
 
-  static String get vendorGetProductVariations =>
-      '${baseUrl}products/product-versions/';
+  static String get vendorGetProductVariations => '${baseUrl}products/product-versions/';
 
-  static String get vendorSetDefaultProductVariation =>
-      '${baseUrl}products/set-default-product-version/';
+  static String get vendorSetDefaultProductVariation => '${baseUrl}products/set-default-product-version/';
 
-  static String get vendorGenerateAllProductVariations =>
-      '${baseUrl}products/generate-all-version/';
+  static String get vendorGenerateAllProductVariations => '${baseUrl}products/generate-all-version/';
 
-  static String get vendorGetSelectedProductAttributes =>
-      '${baseUrl}products/attribute-sets/';
+  static String get vendorGetSelectedProductAttributes => '${baseUrl}products/attribute-sets/';
 
-  static String get vendorEditProductAttributes =>
-      '${baseUrl}products/store-related-attributes/';
+  static String get vendorEditProductAttributes => '${baseUrl}products/store-related-attributes/';
 
   static String get vendorCreateProduct => '${baseUrl}products/create';
 
@@ -68,20 +56,16 @@ class VendorApiEndpoints {
 
   static String get vendorGetVersion => '${baseUrl}products/get-version/';
 
-  static String get vendorUpdateProductVariation =>
-      '${baseUrl}products/update-version/';
+  static String get vendorUpdateProductVariation => '${baseUrl}products/update-version/';
 
-  static String get vendorDeleteProductVariation =>
-      '${baseUrl}products/delete-version/';
+  static String get vendorDeleteProductVariation => '${baseUrl}products/delete-version/';
 
-  static String get vendorCreateProductVariation =>
-      '${baseUrl}products/add-version/';
+  static String get vendorCreateProductVariation => '${baseUrl}products/add-version/';
 
   /// packages
   static String get vendorPackages => '${baseUrl}packages';
 
-  static String get vendorGetPackageGeneralSettings =>
-      '${baseUrl}packages/general-settings';
+  static String get vendorGetPackageGeneralSettings => '${baseUrl}packages/general-settings';
 
   static String get vendorCreatePackage => '${baseUrl}packages/create';
 
@@ -95,8 +79,7 @@ class VendorApiEndpoints {
 
   static String get vendorGetCoupons => '${baseUrl}coupons';
 
-  static String get vendorGenerateCouponCode =>
-      '${baseUrl}coupons/generate-coupon';
+  static String get vendorGenerateCouponCode => '${baseUrl}coupons/generate-coupon';
 
   static String get vendorCreateCoupon => '${baseUrl}coupons/create';
 
@@ -133,11 +116,9 @@ class VendorApiEndpoints {
 
   static String get vendorGetOrderDetails => '${baseUrl}orders/show/';
 
-  static String get vendorGenerateOrderInvoice =>
-      '${baseUrl}orders/generate-invoice/';
+  static String get vendorGenerateOrderInvoice => '${baseUrl}orders/generate-invoice/';
 
-  static String get vendorUpdateShippingStatus =>
-      '${baseUrl}orders/update-shipping-status/';
+  static String get vendorUpdateShippingStatus => '${baseUrl}orders/update-shipping-status/';
 
   static String get vendorUpdateOrder => '${baseUrl}orders/update/';
 
@@ -145,16 +126,13 @@ class VendorApiEndpoints {
 
   static String get vendorCancelOrder => '${baseUrl}orders/cancel-order/';
 
-  static String get vendorSendConfirmationEmail =>
-      '${baseUrl}orders/send-order-confirmation-email/';
+  static String get vendorSendConfirmationEmail => '${baseUrl}orders/send-order-confirmation-email/';
 
   static String get vendorOrderReturns => '${baseUrl}order-returns';
 
-  static String get vendorUpdateShippingAddress =>
-      '${baseUrl}orders/update-shipping-address/';
+  static String get vendorUpdateShippingAddress => '${baseUrl}orders/update-shipping-address/';
 
-  static String get addAttributeToProduct =>
-      '${baseUrl}products/add-attribute-to-product/';
+  static String get addAttributeToProduct => '${baseUrl}products/add-attribute-to-product/';
 
   static String get rejectionHistory => '${baseUrl}rejection-history/';
 }

@@ -7,6 +7,7 @@ import 'package:event_app/core/helper/validators/validator.dart';
 import 'package:event_app/core/network/api_endpoints/vendor_api_end_point.dart';
 import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/core/styles/app_sizes.dart';
+import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/core/widgets/custom_auth_views/app_custom_button.dart';
 import 'package:event_app/data/vendor/data/response/apis_status.dart';
 import 'package:event_app/models/vendor_models/products/create_product/attribute_sets_data_response.dart';
@@ -33,7 +34,6 @@ import 'package:event_app/vendor/components/settings_components/simple_card.dart
 import 'package:event_app/vendor/components/status_constants/product_type_constants.dart';
 import 'package:event_app/vendor/components/status_constants/seo_index_constants.dart';
 import 'package:event_app/vendor/components/text_fields/custom_text_form_field.dart';
-import 'package:event_app/vendor/components/utils/utils.dart';
 import 'package:event_app/vendor/vendor_home/vendor_products/vendor_create_product/cross_selling_products_search_screen.dart';
 import 'package:event_app/vendor/vendor_home/vendor_products/vendor_create_product/digital_attachment_links_screen.dart';
 import 'package:event_app/vendor/vendor_home/vendor_products/vendor_create_product/digital_attachments_screen.dart';
@@ -855,7 +855,7 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
         controller: scrollController,
         child: Column(
           children: [
-            Utils.dragHandle(context: context),
+            AppUtils.dragHandle(context: context),
             VendorProductOverviewView(
               overviewModel: overviewModel,
               productType: (widget.productType == VendorProductType.physical)
@@ -1199,7 +1199,7 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
       appBar: VendorCommonAppBar(
         title: widget.productID == null ? getHeaderText() : 'Edit Product ${widget.productID}',
       ),
-      body: Utils.modelProgressHud(
+      body: AppUtils.modelProgressHud(
         context: context,
         processing: _isProcessing,
         child: Stack(
@@ -1402,7 +1402,7 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
               separatorBuilder: (context, index) => const SizedBox(height: 16),
               itemBuilder: (context, index) {
                 if (provider.generalSettingsApiResponse.status == ApiStatus.ERROR) {
-                  return Utils.somethingWentWrong();
+                  return AppUtils.somethingWentWrong();
                 }
                 return sections[index];
               },
@@ -1466,7 +1466,7 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
               validator: Validator.validatePermalink,
               suffix: _permalinkController.text.isNotEmpty || _nameController.text.isNotEmpty
                   ? InkResponse(
-                      highlightColor: AppColors.lightCoral.withOpacity(0.5),
+                      highlightColor: AppColors.lightCoral.withAlpha((0.5 * 255).toInt()),
                       splashColor: AppColors.lightCoral.withOpacity(0.3),
                       radius: 10,
                       onTap: createSlugApiResponse != ApiStatus.LOADING
@@ -1478,7 +1478,7 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
                           ? SizedBox(
                               height: 20,
                               width: 20,
-                              child: Utils.pageLoadingIndicator(context: context),
+                              child: AppUtils.pageLoadingIndicator(context: context),
                             )
                           : const Icon(
                               Icons.edit,

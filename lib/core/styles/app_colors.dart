@@ -9,17 +9,17 @@ import '../../vendor/components/status_constants/withdrawal_status_constants.dar
 
 class AppColors {
   static List<Color> staticColorsSlider = [
-    Colors.red.withOpacity(0.5),
-    Colors.blue.withOpacity(0.5),
-    Colors.green.withOpacity(0.5),
-    Colors.yellow.withOpacity(0.5),
-    Colors.pink.withOpacity(0.5),
-    Colors.orange.withOpacity(0.5),
-    Colors.purple.withOpacity(0.5),
-    Colors.brown.withOpacity(0.5),
-    Colors.teal.withOpacity(0.5),
-    Colors.cyan.withOpacity(0.5),
-    Colors.amber.withOpacity(0.5),
+    Colors.red.withAlpha((0.5 * 255).toInt()),
+    Colors.blue.withAlpha((0.5 * 255).toInt()),
+    Colors.green.withAlpha((0.5 * 255).toInt()),
+    Colors.yellow.withAlpha((0.5 * 255).toInt()),
+    Colors.pink.withAlpha((0.5 * 255).toInt()),
+    Colors.orange.withAlpha((0.5 * 255).toInt()),
+    Colors.purple.withAlpha((0.5 * 255).toInt()),
+    Colors.brown.withAlpha((0.5 * 255).toInt()),
+    Colors.teal.withAlpha((0.5 * 255).toInt()),
+    Colors.cyan.withAlpha((0.5 * 255).toInt()),
+    Colors.amber.withAlpha((0.5 * 255).toInt()),
   ];
 
   static const Color lightCoral = Color(0xFFF3A195);

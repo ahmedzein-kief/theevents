@@ -18,7 +18,7 @@ import 'package:provider/provider.dart';
 
 import '../../../core/constants/vendor_app_strings.dart';
 import '../../../core/styles/app_colors.dart';
-import '../../Components/utils/utils.dart';
+import '../../../core/utils/app_utils.dart';
 import '../../components/data_tables/custom_data_tables.dart';
 import '../../components/generics/debouced_search.dart';
 import '../../view_models/vendor_packages/vendor_get_packages_view_model.dart';
@@ -91,10 +91,10 @@ class _VendorPackagesViewState extends State<VendorPackagesView> with MediaQuery
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        body: Utils.modelProgressHud(
+        body: AppUtils.modelProgressHud(
           context: context,
           processing: _isProcessing,
-          child: Utils.pageRefreshIndicator(
+          child: AppUtils.pageRefreshIndicator(
             context: context,
             onRefresh: _onRefresh,
             child: _buildUi(context),
@@ -115,10 +115,10 @@ class _VendorPackagesViewState extends State<VendorPackagesView> with MediaQuery
                   /// current api status
                   final ApiStatus? apiStatus = provider.apiResponse.status;
                   if (apiStatus == ApiStatus.LOADING && provider.list.isEmpty) {
-                    return Utils.pageLoadingIndicator(context: context);
+                    return AppUtils.pageLoadingIndicator(context: context);
                   }
                   if (apiStatus == ApiStatus.ERROR) {
-                    return Utils.somethingWentWrong();
+                    return AppUtils.somethingWentWrong();
                   }
                   return Column(
                     children: [

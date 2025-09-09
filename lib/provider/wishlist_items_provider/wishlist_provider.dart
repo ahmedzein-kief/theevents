@@ -25,7 +25,7 @@ class WishlistProvider with ChangeNotifier {
     notifyListeners();
     const url = ApiEndpoints.wishlistItems;
     final headers = {
-      'Authorization': 'Bearer $token',
+      'Authorization': token,
     };
 
     final response = await _apiResponseHandler.getRequest(

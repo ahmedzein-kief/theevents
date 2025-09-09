@@ -10,6 +10,7 @@ class UserModel {
     required this.isVendor,
     required this.isApproved,
     required this.isVerified,
+    this.step,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
@@ -22,6 +23,7 @@ class UserModel {
         isVendor: json['is_vendor'],
         isApproved: json['is_approved'],
         isVerified: json['is_verified'],
+        step: json['step'],
       );
   final int id;
   final String name;
@@ -32,4 +34,5 @@ class UserModel {
   final int? isVendor;
   final bool? isApproved;
   final bool? isVerified;
+  final int? step;
 }

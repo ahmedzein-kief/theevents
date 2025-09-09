@@ -3,8 +3,7 @@ import 'dart:convert';
 SubscriptionPackageResponse subscriptionPackageResponseFromJson(String str) =>
     SubscriptionPackageResponse.fromJson(json.decode(str));
 
-String subscriptionPackageResponseToJson(SubscriptionPackageResponse data) =>
-    json.encode(data.toJson());
+String subscriptionPackageResponseToJson(SubscriptionPackageResponse data) => json.encode(data.toJson());
 
 class SubscriptionPackageResponse {
   SubscriptionPackageResponse({
@@ -12,8 +11,7 @@ class SubscriptionPackageResponse {
     required this.error,
   });
 
-  factory SubscriptionPackageResponse.fromJson(Map<dynamic, dynamic> json) =>
-      SubscriptionPackageResponse(
+  factory SubscriptionPackageResponse.fromJson(Map<dynamic, dynamic> json) => SubscriptionPackageResponse(
         data: Data.fromJson(json['data']),
         error: json['error'],
       );
@@ -40,6 +38,7 @@ class Data {
     required this.storeEmail,
     required this.formatedPriceWithoutVat,
     required this.thanksHeading,
+    required this.formatedPriceWithVat,
   });
 
   factory Data.fromJson(Map<dynamic, dynamic> json) => Data(
@@ -49,6 +48,7 @@ class Data {
         heading: json['heading'],
         subHeading: json['sub_heading'],
         formatedVat: json['formated_vat'],
+        formatedPriceWithVat: (json['formated_price_with_vat'] as String?)?.replaceAll(RegExp(r'[^\d.]'), '') ?? '',
         price: json['price'],
         thanksSubHeading: json['thanks_sub_heading'],
         storeEmail: json['store_email'],
@@ -59,6 +59,7 @@ class Data {
   String formatedPrice;
   String subHeading2;
   String subtime;
+  String formatedPriceWithVat;
   String heading;
   String subHeading;
   String formatedVat;
@@ -75,6 +76,7 @@ class Data {
         'heading': heading,
         'sub_heading': subHeading,
         'formated_vat': formatedVat,
+        'formated_price_with_vat': formatedPriceWithVat,
         'price': price,
         'thanks_sub_heading': thanksSubHeading,
         'store_email': storeEmail,

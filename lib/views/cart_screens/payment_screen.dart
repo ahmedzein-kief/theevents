@@ -2,7 +2,6 @@ import 'package:event_app/core/helper/extensions/app_localizations_extension.dar
 import 'package:event_app/models/checkout_models/checkout_data_models.dart';
 import 'package:event_app/views/cart_screens/shipping_address_view_screen.dart';
 import 'package:event_app/views/cart_screens/shipping_method_view_screen.dart';
-import 'package:event_app/views/home_screens_shortcode/shortcode_information_icons/order_pages_screens/order_page.dart';
 import 'package:event_app/views/payment_screens/payment_view_screen.dart';
 import 'package:event_app/views/profile_page_screens/terms_and_condtion_screen.dart';
 import 'package:flutter/cupertino.dart';
@@ -14,6 +13,7 @@ import '../../core/constants/app_strings.dart'; // <--- IMPORT AppStrings
 import '../../core/services/shared_preferences_helper.dart';
 import '../../core/styles/custom_text_styles.dart';
 import '../../core/utils/custom_toast.dart';
+import '../../core/widgets/bottom_navigation_bar.dart';
 import '../../core/widgets/custom_items_views/coupon_text_field.dart';
 import '../../core/widgets/custom_items_views/custom_add_to_cart_button.dart';
 import '../../provider/cart_item_provider/cart_item_provider.dart';
@@ -122,17 +122,20 @@ class _ShippingAddressScreenState extends State<PaymentScreen> {
     );
   }
 
-  // Add method to clear cart and refresh providers
   Future<void> _clearCartAndRefreshProviders() async {
     final token = await SecurePreferencesUtil.getToken();
 
     // Clear cart provider
     final cartProvider = Provider.of<CartProvider>(context, listen: false);
+    // Optimistic clear to update app bar badge immediately
+    cartProvider.clearCartLocally();
+
+    // Then fetch from server to be sure
     await cartProvider.fetchCartData(token ?? '', context);
 
-    // Refresh orders provider
+    // Simple clear of orders - let user refresh when they visit orders page
     final orderProvider = Provider.of<OrderDataProvider>(context, listen: false);
-    await orderProvider.getOrders(context, true); // Refresh pending orders
+    orderProvider.clearOrders();
   }
 
   @override
@@ -391,16 +394,17 @@ class _ShippingAddressScreenState extends State<PaymentScreen> {
                         });
 
                         if (result == true) {
-                          // Clear cart and refresh providers BEFORE navigating
+                          // Clear cart and refresh providers
                           await _clearCartAndRefreshProviders();
 
                           if (mounted) {
+                            // First reset the stack and go to Home, passing a flag to navigate further
                             Navigator.pushAndRemoveUntil(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const OrderPageScreen(),
+                                builder: (context) => const BaseHomeScreen(shouldNavigateToOrders: true), // Pass a flag
                               ),
-                              (route) => route.settings.name == '/homeScreen',
+                              (route) => false,
                             );
                           }
                         }

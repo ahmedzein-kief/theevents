@@ -3,9 +3,8 @@ library;
 
 import 'dart:convert';
 
+import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/models/vendor_models/products/edit_product/new_product_view_data_response.dart';
-
-import '../../../../vendor/Components/utils/utils.dart';
 
 EditVariationsDataResponse editVariationsDataResponseFromJson(String str) =>
     EditVariationsDataResponse.fromJson(json.decode(str));
@@ -17,8 +16,7 @@ class EditVariationsDataResponse {
     required this.message,
   });
 
-  factory EditVariationsDataResponse.fromJson(Map<dynamic, dynamic> json) =>
-      EditVariationsDataResponse(
+  factory EditVariationsDataResponse.fromJson(Map<dynamic, dynamic> json) => EditVariationsDataResponse(
         data: json['data'] != null ? Data.fromJson(json['data']) : null,
         error: json['error'],
         message: json['message'],
@@ -42,14 +40,16 @@ class Data {
   factory Data.fromJson(Map<dynamic, dynamic> json) => Data(
         generateLicenseCode: json['generate_license_code'],
         productAttributeSets: List<ProductAttributeSet>.from(
-            json['productAttributeSets']
-                .map((x) => ProductAttributeSet.fromJson(x)),),
+          json['productAttributeSets'].map((x) => ProductAttributeSet.fromJson(x)),
+        ),
         product: VariationProduct.fromJson(json['product']),
         originalProduct: VariationProduct.fromJson(json['originalProduct']),
         attachments: List<Attachment>.from(
-            json['attachments'].map((x) => Attachment.fromJson(x)),),
+          json['attachments'].map((x) => Attachment.fromJson(x)),
+        ),
         variationImages: List<VariationImages>.from(
-            json['variationImages'].map((x) => VariationImages.fromJson(x)),),
+          json['variationImages'].map((x) => VariationImages.fromJson(x)),
+        ),
       );
 
   int? generateLicenseCode;
@@ -70,8 +70,7 @@ class VariationInfo {
   });
 
   factory VariationInfo.fromJson(Map<dynamic, dynamic> json) => VariationInfo(
-        configurableProduct:
-            VariationProduct.fromJson(json['configurable_product']),
+        configurableProduct: VariationProduct.fromJson(json['configurable_product']),
         productId: json['product_id'],
         id: json['id'],
         isDefault: json['is_default'],
@@ -91,8 +90,7 @@ class VariationImages {
     required this.fullURL,
   });
 
-  factory VariationImages.fromJson(Map<dynamic, dynamic> json) =>
-      VariationImages(
+  factory VariationImages.fromJson(Map<dynamic, dynamic> json) => VariationImages(
         url: json['url'],
         fullURL: json['full_url'],
       );
@@ -140,13 +138,11 @@ class VariationProduct {
     this.quantity,
   });
 
-  factory VariationProduct.fromJson(Map<dynamic, dynamic> json) =>
-      VariationProduct(
-        endDate: Utils.formatTimestampToYMDHMS(json['end_date']),
+  factory VariationProduct.fromJson(Map<dynamic, dynamic> json) => VariationProduct(
+        endDate: AppUtils.formatTimestampToYMDHMS(json['end_date']),
         generateLicenseCode: json['generate_license_code'],
-        originalPrice: (json['original_price'] is int)
-            ? double.parse(json['original_price'].toString())
-            : json['original_price'],
+        originalPrice:
+            (json['original_price'] is int) ? double.parse(json['original_price'].toString()) : json['original_price'],
         frontSalePrice: (json['front_sale_price'] is int)
             ? double.parse(json['front_sale_price'].toString())
             : json['front_sale_price'],
@@ -154,38 +150,31 @@ class VariationProduct {
         allowCheckoutWhenOutOfStock: json['allow_checkout_when_out_of_stock'],
         isVariation: json['is_variation'],
         saleType: json['sale_type'],
-        createdAt: Utils.formatTimestampToYMDHMS(json['created_at']),
+        createdAt: AppUtils.formatTimestampToYMDHMS(json['created_at']),
         content: json['content'],
-        updatedAt: Utils.formatTimestampToYMDHMS(json['updated_at']),
-        price: (json['price'] is int)
-            ? double.parse(json['price'].toString())
-            : json['price'],
+        updatedAt: AppUtils.formatTimestampToYMDHMS(json['updated_at']),
+        price: (json['price'] is int) ? double.parse(json['price'].toString()) : json['price'],
         createdByType: json['created_by_type'],
         id: json['id'],
         sku: json['sku'],
         views: json['views'],
         order: json['order'],
-        startDate: Utils.formatTimestampToYMDHMS(json['start_date']),
+        startDate: AppUtils.formatTimestampToYMDHMS(json['start_date']),
         images: List<String>.from(json['images'].map((x) => x)),
         stockStatus: ProductType.fromJson(json['stock_status']),
         withStorehouseManagement: json['with_storehouse_management'],
-        salePrice: (json['sale_price'] is int)
-            ? double.parse(json['sale_price'].toString())
-            : json['sale_price'],
+        salePrice: (json['sale_price'] is int) ? double.parse(json['sale_price'].toString()) : json['sale_price'],
         brandId: json['brand_id'],
         approvedBy: json['approved_by'],
         productType: ProductType.fromJson(json['product_type']),
-        variationInfo: json['variation_info'] == null
-            ? null
-            : VariationInfo.fromJson(json['variation_info']),
+        variationInfo: json['variation_info'] == null ? null : VariationInfo.fromJson(json['variation_info']),
         name: json['name'],
         createdById: json['created_by_id'],
         isFeatured: json['is_featured'],
         status: ProductType.fromJson(json['status']),
         barcode: json['barcode'],
-        costPerItem: (json['cost_per_item'] is int)
-            ? double.parse(json['cost_per_item'].toString())
-            : json['cost_per_item'],
+        costPerItem:
+            (json['cost_per_item'] is int) ? double.parse(json['cost_per_item'].toString()) : json['cost_per_item'],
         storeId: json['store_id'],
         image: json['image'],
         quantity: json['quantity'],
@@ -261,16 +250,16 @@ class ProductAttributeSet {
     required this.selectedId,
   });
 
-  factory ProductAttributeSet.fromJson(Map<dynamic, dynamic> json) =>
-      ProductAttributeSet(
+  factory ProductAttributeSet.fromJson(Map<dynamic, dynamic> json) => ProductAttributeSet(
         isSearchable: json['is_searchable'],
         createdAt: json['created_at'],
         title: json['title'],
         isUseInProductListing: json['is_use_in_product_listing'],
         updatedAt: json['updated_at'],
         displayLayout: json['display_layout'],
-        attributes: List<EditAttributeData>.from(json['attributes']
-            .map((x) => EditAttributeData.fromJson(x, json['selected_id'])),),
+        attributes: List<EditAttributeData>.from(
+          json['attributes'].map((x) => EditAttributeData.fromJson(x, json['selected_id'])),
+        ),
         id: json['id'],
         useImageFromProductVariation: json['use_image_from_product_variation'],
         slug: json['slug'],
@@ -310,7 +299,9 @@ class EditAttributeData {
   });
 
   factory EditAttributeData.fromJson(
-          Map<dynamic, dynamic> json, int? selectedId,) =>
+    Map<dynamic, dynamic> json,
+    int? selectedId,
+  ) =>
       EditAttributeData(
         attributeSetId: json['attribute_set_id'],
         color: json['color'],
@@ -344,6 +335,7 @@ final colorValues = EnumValues({
 
 class EnumValues<T> {
   EnumValues(this.map);
+
   Map<String, T> map;
   late Map<T, String> reverseMap;
 

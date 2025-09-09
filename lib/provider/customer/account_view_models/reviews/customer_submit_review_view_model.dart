@@ -25,14 +25,18 @@ class CustomerSubmitReviewViewModel with ChangeNotifier {
 
   final _myRepo = CustomerRepository();
   ApiResponse<CommonPostRequestModel> _apiResponse = ApiResponse.none();
+
   ApiResponse<CommonPostRequestModel> get apiResponse => _apiResponse;
+
   set setApiResponse(ApiResponse<CommonPostRequestModel> response) {
     _apiResponse = response;
     notifyListeners();
   }
 
-  Future<bool> customerSubmitReview(
-      {required FormData form, required BuildContext context,}) async {
+  Future<bool> customerSubmitReview({
+    required FormData form,
+    required BuildContext context,
+  }) async {
     try {
       setLoading(true);
       setApiResponse = ApiResponse.loading();
@@ -42,11 +46,12 @@ class CustomerSubmitReviewViewModel with ChangeNotifier {
         'Authorization': _token!,
       };
 
-      final CommonPostRequestModel response =
-          await _myRepo.customerSubmitReview(headers: headers, form: form);
+      final CommonPostRequestModel response = await _myRepo.customerSubmitReview(headers: headers, form: form);
       setApiResponse = ApiResponse.completed(response);
       CustomSnackbar.showSuccess(
-          context, apiResponse.data?.message?.toString() ?? 'Success',);
+        context,
+        apiResponse.data?.message?.toString() ?? 'Success',
+      );
       setLoading(false);
       return true;
     } catch (error) {

@@ -18,6 +18,7 @@ class CustomIconContainer extends StatelessWidget {
     this.padding,
     this.fixedHeight = 40, // Default fixed height
   });
+
   final String text;
   final IconData? prefixIcon;
   final IconData? suffixIcon;
@@ -41,28 +42,23 @@ class CustomIconContainer extends StatelessWidget {
         // Set fixed height
         padding: EdgeInsets.symmetric(vertical: padding ?? 8, horizontal: 10),
         decoration: BoxDecoration(
-          color: backgroundColor ??
-              VendorColors.vendorAppBackground, // Default background color
-          borderRadius:
-              BorderRadius.circular(borderRadius ?? 2), // Border radius
+          color: backgroundColor ?? VendorColors.vendorAppBackground, // Default background color
+          borderRadius: BorderRadius.circular(borderRadius ?? 2), // Border radius
           border: Border.all(
             color: (borderColor ?? Colors.transparent)
-                .withOpacity(0.5), // Border color (transparent if not provided)
+                .withAlpha((0.5 * 255).toInt()), // Border color (transparent if not provided)
             width: borderWidth ?? 1.0, // Default border width
           ),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min, // Takes only the width of the content
-          mainAxisAlignment:
-              MainAxisAlignment.center, // Center content horizontally
+          mainAxisAlignment: MainAxisAlignment.center, // Center content horizontally
           children: [
             if (prefixIcon != null)
               Icon(
                 prefixIcon,
                 // color: Theme.of(context).colorScheme.onPrimary ,
-                color: isBackgroundColored
-                    ? Colors.white
-                    : Theme.of(context).colorScheme.onPrimary,
+                color: isBackgroundColored ? Colors.white : Theme.of(context).colorScheme.onPrimary,
                 size: 16,
               ), // Prefix Icon
             const SizedBox(width: 4),
@@ -76,19 +72,17 @@ class CustomIconContainer extends StatelessWidget {
               // Center align text
               style: GoogleFonts.inter(
                 fontSize: 12,
-                color: isBackgroundColored
-                    ? Colors.white
-                    : Theme.of(context).colorScheme.onPrimary.withAlpha(400),
+                color: isBackgroundColored ? Colors.white : Theme.of(context).colorScheme.onPrimary.withAlpha(400),
                 // color: Colors.black.withAlpha(400),
               ),
             ),
             const SizedBox(width: 4),
             if (suffixIcon != null)
-              Icon(suffixIcon,
-                  color: isBackgroundColored
-                      ? Colors.white
-                      : Theme.of(context).colorScheme.onPrimary,
-                  size: 16,), // Suffix Icon
+              Icon(
+                suffixIcon,
+                color: isBackgroundColored ? Colors.white : Theme.of(context).colorScheme.onPrimary,
+                size: 16,
+              ), // Suffix Icon
           ],
         ),
       ),

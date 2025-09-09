@@ -6,7 +6,7 @@ import 'package:event_app/vendor/components/common_widgets/vendor_action_cell.da
 import 'package:event_app/vendor/components/dropdowns/search_dropdown.dart';
 import 'package:event_app/vendor/components/list_tiles/records_list_tile.dart';
 import 'package:event_app/vendor/components/services/alert_services.dart';
-import 'package:event_app/vendor/components/utils/utils.dart';
+import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/vendor/components/vendor_text_style.dart';
 import 'package:event_app/vendor/view_models/vendor_products/vendor_create_product_view_model.dart';
 import 'package:flutter/material.dart';
@@ -19,17 +19,16 @@ class RelatedProductsSearchScreen extends StatefulWidget {
     required this.dataId,
     required this.selectedRelatedProducts,
   });
+
   final String title;
   String? dataId;
   List<SearchProductRecord> selectedRelatedProducts = [];
 
   @override
-  _RelatedProductsSearchScreenState createState() =>
-      _RelatedProductsSearchScreenState();
+  _RelatedProductsSearchScreenState createState() => _RelatedProductsSearchScreenState();
 }
 
-class _RelatedProductsSearchScreenState
-    extends State<RelatedProductsSearchScreen> {
+class _RelatedProductsSearchScreenState extends State<RelatedProductsSearchScreen> {
   final ScrollController _scrollController = ScrollController();
   bool _isProcessing = false;
   SearchDropdownModel searchDropdownModel = SearchDropdownModel();
@@ -48,9 +47,10 @@ class _RelatedProductsSearchScreenState
   }
 
   Future<VendorSearchProductDataResponse?> _fetchOptionsData(
-      String query, String dataId,) async {
-    final provider =
-        Provider.of<VendorCreateProductViewModel>(context, listen: false);
+    String query,
+    String dataId,
+  ) async {
+    final provider = Provider.of<VendorCreateProductViewModel>(context, listen: false);
     if (query.isEmpty) {
       return null;
     }
@@ -95,7 +95,7 @@ class _RelatedProductsSearchScreenState
             ),
           ),
           backgroundColor: AppColors.bgColor,
-          body: Utils.modelProgressHud(
+          body: AppUtils.modelProgressHud(
             context: context,
             processing: _isProcessing,
             child: Column(
@@ -112,26 +112,27 @@ class _RelatedProductsSearchScreenState
                         searchDropdownModel.showDropdown = false;
                         searchDropdownModel.records = [];
                         if (!listSearchProducts.any(
-                            (product) => product.id == selectedProduct.id,)) {
+                          (product) => product.id == selectedProduct.id,
+                        )) {
                           listSearchProducts.add(selectedProduct);
                         } else {
                           AlertServices.showErrorSnackBar(
-                              message:
-                                  'Selected product already added in the list',
-                              context: context,);
+                            message: 'Selected product already added in the list',
+                            context: context,
+                          );
                         }
                       });
                     },
                     onSearchChanged: (searchModel) async {
                       final result = await _fetchOptionsData(
-                          searchModel.searchText, widget.dataId ?? '',);
+                        searchModel.searchText,
+                        widget.dataId ?? '',
+                      );
                       print(result);
                       if (result != null) {
                         setState(() {
-                          searchDropdownModel.showDropdown =
-                              searchDropdownModel.searchText.isNotEmpty == true;
-                          searchDropdownModel.records =
-                              result.data?.records ?? [];
+                          searchDropdownModel.showDropdown = searchDropdownModel.searchText.isNotEmpty == true;
+                          searchDropdownModel.records = result.data?.records ?? [];
                         });
                       }
                     },
@@ -192,8 +193,10 @@ class _RelatedProductsSearchScreenState
                             listSearchProducts.remove(product);
                           });
                         },
-                        child: const Icon(Icons.cancel_outlined,
-                            color: Colors.grey,),
+                        child: const Icon(
+                          Icons.cancel_outlined,
+                          color: Colors.grey,
+                        ),
                       ),
                     ],
                   ),

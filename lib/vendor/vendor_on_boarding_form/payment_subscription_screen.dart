@@ -1,7 +1,9 @@
+import 'dart:developer';
+
 import 'package:event_app/core/constants/app_strings.dart';
 import 'package:event_app/core/constants/vendor_app_strings.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
-import 'package:event_app/core/utils/custom_toast.dart';
+import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/core/widgets/bottom_navigation_bar.dart';
 import 'package:event_app/models/dashboard/information_icons_models/gift_card_models/checkout_payment_model.dart';
 import 'package:event_app/models/vendor_models/post_models/payment_post_data.dart';
@@ -40,9 +42,8 @@ class _PaymentScreenState extends State<PaymentSubscriptionScreen> {
 
   Future<void> getSubscriptionPackageDetails() async {
     final provider = Provider.of<VendorSignUpProvider>(context, listen: false);
-    subscriptionResponse =
-        await provider.getSubscriptionPackageDetails(context);
-    getPaymentMethods(subscriptionResponse?.data.price ?? '');
+    subscriptionResponse = await provider.getSubscriptionPackageDetails(context);
+    getPaymentMethods(subscriptionResponse?.data.formatedPriceWithVat ?? '');
   }
 
   Future<void> getPaymentMethods(String price) async {
@@ -62,8 +63,7 @@ class _PaymentScreenState extends State<PaymentSubscriptionScreen> {
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.sizeOf(context).width;
     final double screenHeight = MediaQuery.sizeOf(context).height;
-    final mainProvider =
-        Provider.of<VendorSignUpProvider>(context, listen: true);
+    final mainProvider = Provider.of<VendorSignUpProvider>(context, listen: true);
     return Scaffold(
       body: SafeArea(
         child: Stack(
@@ -87,12 +87,10 @@ class _PaymentScreenState extends State<PaymentSubscriptionScreen> {
                           decoration: BoxDecoration(
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black
-                                    .withOpacity(0.2), // Shadow color
+                                color: Colors.black.withOpacity(0.2), // Shadow color
                                 spreadRadius: 2, // How much the shadow spreads
                                 blurRadius: 5, // How blurry the shadow is
-                                offset:
-                                    const Offset(0, 2), // Shadow offset (X, Y)
+                                offset: const Offset(0, 2), // Shadow offset (X, Y)
                               ),
                             ],
                           ),
@@ -102,14 +100,19 @@ class _PaymentScreenState extends State<PaymentSubscriptionScreen> {
                             elevation: 15,
                             child: Padding(
                               padding: const EdgeInsets.only(
-                                  top: 20, left: 10, right: 10, bottom: 30,),
+                                top: 20,
+                                left: 10,
+                                right: 10,
+                                bottom: 30,
+                              ),
                               child: Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
+                                mainAxisAlignment: MainAxisAlignment.spaceAround,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Text(VendorAppStrings.payment.tr,
-                                      style: loginHeading(),),
+                                  Text(
+                                    VendorAppStrings.payment.tr,
+                                    style: loginHeading(),
+                                  ),
                                   const Divider(
                                     color: Colors.grey, // Line color
                                     thickness: 1, // Line thickness
@@ -118,7 +121,8 @@ class _PaymentScreenState extends State<PaymentSubscriptionScreen> {
                                   ),
                                   Padding(
                                     padding: EdgeInsets.only(
-                                        top: screenHeight * 0.03,),
+                                      top: screenHeight * 0.03,
+                                    ),
                                     child: Text(
                                       subscriptionResponse?.data.heading ?? '',
                                       style: loginHeading(),
@@ -126,25 +130,24 @@ class _PaymentScreenState extends State<PaymentSubscriptionScreen> {
                                   ),
                                   Padding(
                                     padding: EdgeInsets.symmetric(
-                                        vertical: screenHeight * 0.03,),
+                                      vertical: screenHeight * 0.03,
+                                    ),
                                     child: Text(
-                                      subscriptionResponse?.data.subHeading ??
-                                          '',
+                                      subscriptionResponse?.data.subHeading ?? '',
                                       style: vendorDescriptionAgreement(),
                                       softWrap: true,
                                       textAlign: TextAlign.center,
                                     ),
                                   ),
                                   Text(
-                                      '${VendorAppStrings.nowAed.tr} ${subscriptionResponse?.data.price}',
-                                      style: loginHeading(),),
+                                    '${VendorAppStrings.nowAed.tr} ${subscriptionResponse?.data.formatedPriceWithVat}',
+                                    style: loginHeading(),
+                                  ),
                                   const SizedBox(
                                     height: 20,
                                   ),
                                   PaymentMethods(
-                                    subCardShow: false,
-                                    amount:
-                                        subscriptionResponse?.data.price ?? '',
+                                    amount: subscriptionResponse?.data.formatedPriceWithVat ?? '',
                                     paymentType: 'subscription',
                                     onSelectionChanged: (selectedMethod) {
                                       paymentMethod = selectedMethod;
@@ -152,10 +155,10 @@ class _PaymentScreenState extends State<PaymentSubscriptionScreen> {
                                   ),
                                   Padding(
                                     padding: EdgeInsets.symmetric(
-                                        vertical: screenHeight * 0.03,),
+                                      vertical: screenHeight * 0.03,
+                                    ),
                                     child: Text(
-                                      VendorAppStrings
-                                          .youWillBeRedirectedToTelrTabby.tr,
+                                      VendorAppStrings.youWillBeRedirectedToTelrTabby.tr,
                                       softWrap: true,
                                       textAlign: TextAlign.center,
                                       style: agreementAccept(),
@@ -178,38 +181,44 @@ class _PaymentScreenState extends State<PaymentSubscriptionScreen> {
                 isLoading: mainProvider.isLoading,
                 title: VendorAppStrings.payNow.tr,
                 onPressed: () async {
-                  pModel.cardAmount =
-                      int.tryParse(subscriptionResponse?.data.price ?? '');
+                  log('subscriptionResponse?.data.formatedPriceWithVat ${subscriptionResponse?.data.formatedPriceWithVat}');
+                  pModel.cardAmount = double.tryParse(subscriptionResponse?.data.formatedPriceWithVat ?? '');
                   pModel.paymentMethod = paymentMethod;
 
                   final checkoutPaymentLink = await updatePayment(pModel);
                   if (checkoutPaymentLink != null) {
-                    final paymentResult = await Navigator.push(
+                    final bool? paymentResult = await Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => PaymentViewScreen(
                           checkoutUrl: checkoutPaymentLink.data.checkoutUrl,
+                          paymentType: 'subscription', // Pass subscription type
                         ),
                       ),
                     );
-                    if (paymentResult) {
+
+                    log('paymentResult => $paymentResult');
+
+                    if (paymentResult == true) {
                       showCongratsDialog(context, screenWidth, screenHeight);
+                    } else if (paymentResult == false) {
+                      AppUtils.showToast(VendorAppStrings.paymentFailure.tr);
                     } else {
-                      CustomSnackbar.showError(
-                          context, VendorAppStrings.paymentFailure.tr,);
+                      // Handle null case (user cancelled)
+                      AppUtils.showToast(VendorAppStrings.paymentCancelled.tr);
                     }
+                  } else {
+                    AppUtils.showToast(VendorAppStrings.paymentLinkError.tr);
                   }
                 },
               ),
             ),
             if (mainProvider.isLoading)
               Container(
-                color: Colors.black
-                    .withOpacity(0.5), // Semi-transparent background
+                color: Colors.black.withAlpha((0.5 * 255).toInt()), // Semi-transparent background
                 child: const Center(
                   child: CircularProgressIndicator(
-                    valueColor:
-                        AlwaysStoppedAnimation<Color>(AppColors.peachyPink),
+                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.peachyPink),
                   ),
                 ),
               ),
@@ -220,7 +229,10 @@ class _PaymentScreenState extends State<PaymentSubscriptionScreen> {
   }
 
   void showCongratsDialog(
-      BuildContext context, double screenWidth, double screenHeight,) {
+    BuildContext context,
+    double screenWidth,
+    double screenHeight,
+  ) {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -238,9 +250,11 @@ class _PaymentScreenState extends State<PaymentSubscriptionScreen> {
               onTap: () {
                 Navigator.pop(context);
                 Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const BaseHomeScreen(),),);
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const BaseHomeScreen(),
+                  ),
+                );
               },
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -284,8 +298,7 @@ class _PaymentScreenState extends State<PaymentSubscriptionScreen> {
                     ),
                   ),
                   Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: screenHeight * 0.02),
+                    padding: EdgeInsets.symmetric(horizontal: screenHeight * 0.02),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -298,7 +311,8 @@ class _PaymentScreenState extends State<PaymentSubscriptionScreen> {
                         ),
                         Padding(
                           padding: EdgeInsets.symmetric(
-                              vertical: screenHeight * 0.040,),
+                            vertical: screenHeight * 0.040,
+                          ),
                           child: Text(
                             AppStrings.paymentDone.tr,
                             style: paymentDesc(),

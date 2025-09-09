@@ -4,7 +4,7 @@ import 'package:event_app/data/vendor/data/response/apis_status.dart';
 import 'package:event_app/models/vendor_models/dashboard/dashboard_data_response.dart';
 import 'package:event_app/vendor/components/data_tables/custom_data_tables.dart';
 import 'package:event_app/vendor/components/list_tiles/records_list_tile.dart';
-import 'package:event_app/vendor/components/utils/utils.dart';
+import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/vendor/components/vendor_text_style.dart';
 import 'package:event_app/vendor/vendor_home/vendor_coupons/dashboard_info_section.dart';
 import 'package:event_app/vendor/view_models/dashboard/vendor_dashboard_view_model.dart';
@@ -65,10 +65,10 @@ class _VendorDashBoardScreenState extends State<VendorDashBoardScreen> {
   @override
   Widget build(BuildContext context) => Scaffold(
         key: _scaffoldKey,
-        body: Utils.modelProgressDashboardHud(
+        body: AppUtils.modelProgressDashboardHud(
           context: context,
           processing: _isProcessing,
-          child: Utils.pageRefreshIndicator(
+          child: AppUtils.pageRefreshIndicator(
             context: context,
             onRefresh: _onRefresh,
             child: _buildUi(context),
@@ -132,7 +132,9 @@ class _VendorDashBoardScreenState extends State<VendorDashBoardScreen> {
                           child: Container(
                             padding: const EdgeInsets.all(20),
                             decoration: BoxDecoration(
-                              color: isSelectingStartDate ? AppColors.peachyPink.withOpacity(0.1) : Colors.transparent,
+                              color: isSelectingStartDate
+                                  ? AppColors.peachyPink.withAlpha((0.1 * 255).toInt())
+                                  : Colors.transparent,
                               borderRadius: const BorderRadius.only(
                                 topLeft: Radius.circular(20),
                               ),
@@ -187,7 +189,9 @@ class _VendorDashBoardScreenState extends State<VendorDashBoardScreen> {
                           child: Container(
                             padding: const EdgeInsets.all(20),
                             decoration: BoxDecoration(
-                              color: !isSelectingStartDate ? AppColors.peachyPink.withOpacity(0.1) : Colors.transparent,
+                              color: !isSelectingStartDate
+                                  ? AppColors.peachyPink.withAlpha((0.1 * 255).toInt())
+                                  : Colors.transparent,
                               borderRadius: const BorderRadius.only(
                                 topRight: Radius.circular(20),
                               ),
@@ -573,7 +577,7 @@ class _VendorDashBoardScreenState extends State<VendorDashBoardScreen> {
               return ListView(
                 shrinkWrap: true,
                 physics: const AlwaysScrollableScrollPhysics(),
-                children: [Utils.somethingWentWrong()],
+                children: [AppUtils.somethingWentWrong()],
               );
             }
             return Column(

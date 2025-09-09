@@ -698,7 +698,7 @@ class _SaveAddressScreenState extends State<SaveAddressScreen> {
                   addressProvider.isLoading ||
                   customerAddressProvider.isLoadingAddresses)
                 Container(
-                  color: Colors.black.withOpacity(0.5),
+                  color: Colors.black.withAlpha((0.5 * 255).toInt()),
                   child: const Center(
                     child: CircularProgressIndicator(
                       valueColor: AlwaysStoppedAnimation<Color>(AppColors.peachyPink),
@@ -876,7 +876,7 @@ class _SaveAddressScreenState extends State<SaveAddressScreen> {
         isDefault: true,
       );
 
-      final result = await Provider.of<AddressProvider>(context, listen: false).saveAddress(address);
+      final result = await Provider.of<AddressProvider>(context, listen: false).saveAddress(context, address);
 
       if (result != null) {
         final resultSubmit = await Provider.of<SubMitCheckoutInformationProvider>(

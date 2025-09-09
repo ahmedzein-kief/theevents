@@ -35,9 +35,7 @@ class Data {
   Data({this.pagination, this.records});
 
   Data.fromJson(Map<String, dynamic> json) {
-    pagination = json['pagination'] != null
-        ? AddressPagination.fromJson(json['pagination'])
-        : null;
+    pagination = json['pagination'] != null ? AddressPagination.fromJson(json['pagination']) : null;
     if (json['records'] != null) {
       records = <CustomerRecords>[];
       json['records'].forEach((v) {
@@ -62,8 +60,12 @@ class Data {
 }
 
 class AddressPagination {
-  AddressPagination(
-      {this.total, this.lastPage, this.currentPage, this.perPage,});
+  AddressPagination({
+    this.total,
+    this.lastPage,
+    this.currentPage,
+    this.perPage,
+  });
 
   AddressPagination.fromJson(Map<String, dynamic> json) {
     total = json['total'];
@@ -88,18 +90,19 @@ class AddressPagination {
 }
 
 class CustomerRecords {
-  CustomerRecords(
-      {this.id,
-      this.name,
-      this.isDefault,
-      this.fullAddress,
-      this.phone,
-      this.email,
-      this.country,
-      this.city,
-      this.address,
-      this.zip_code,
-      this.state,});
+  CustomerRecords({
+    this.id,
+    this.name,
+    this.isDefault,
+    this.fullAddress,
+    this.phone,
+    this.email,
+    this.country,
+    this.city,
+    this.address,
+    this.zip_code,
+    this.state,
+  });
 
   CustomerRecords.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -173,8 +176,11 @@ class CustomerAddressProvider with ChangeNotifier {
   String? get errorMessage => _errorMessage;
 
   Future<CustomerAddressModels?> fetchCustomerAddresses(
-      String token, BuildContext context,
-      {int perPage = 12, page = 1,}) async {
+    String token,
+    BuildContext context, {
+    int perPage = 12,
+    page = 1,
+  }) async {
     setStatus(ApiStatus.loading);
     if (page == 1) {
       _addresses.clear();
@@ -184,10 +190,9 @@ class CustomerAddressProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      final url =
-          '${ApiEndpoints.customerAddressList}?per-page=$perPage&page=$page';
+      final url = '${ApiEndpoints.customerAddressList}?per-page=$perPage&page=$page';
       final headers = {
-        'Authorization': 'Bearer $token',
+        'Authorization': token,
       };
 
       final response = await _apiResponseHandler.getRequest(
@@ -198,8 +203,7 @@ class CustomerAddressProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         setStatus(ApiStatus.completed);
-        final CustomerAddressModels customerAddressModels =
-            CustomerAddressModels.fromJson(response.data);
+        final CustomerAddressModels customerAddressModels = CustomerAddressModels.fromJson(response.data);
 
         if (page == 1) {
           _addresses = customerAddressModels.data?.records ?? [];
@@ -246,8 +250,7 @@ class CustomerAddressProvider with ChangeNotifier {
       final url = '${ApiEndpoints.customerAddressDelete}$addressId';
       final headers = {'Authorization': token ?? ''};
 
-      final response =
-          await _apiResponseHandler.deleteRequest(url, headers: headers);
+      final response = await _apiResponseHandler.deleteRequest(url, headers: headers);
 
       if (response.statusCode == 200) {
         final data = response.data;

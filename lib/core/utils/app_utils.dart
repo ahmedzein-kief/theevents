@@ -3,57 +3,88 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../core/styles/app_colors.dart';
-import '../../Components/data_tables/custom_data_tables.dart';
+import '../../vendor/Components/data_tables/custom_data_tables.dart';
+import '../styles/app_colors.dart';
 
-class Utils {
+class AppUtils {
+  static void showToast(String text, {bool isSuccess = false, bool isInfo = false, bool long = false}) {
+    Color color = Colors.red;
+    if (isInfo) {
+      color = Colors.orangeAccent;
+    } else if (isSuccess) {
+      color = Colors.green;
+    }
+
+    Fluttertoast.showToast(
+      msg: text,
+      backgroundColor: color,
+      fontSize: 16,
+      toastLength: long ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT,
+      gravity: ToastGravity.TOP,
+    );
+  }
+
   //*------Common Loading Indicators Start------*/
 
   /// Material Loading Indicator
-  static Widget materialLoadingIndicator(
-          {color, required BuildContext context,}) =>
+  static Widget materialLoadingIndicator({
+    color,
+    required BuildContext context,
+  }) =>
       Center(
-          child: CircularProgressIndicator(
-              color: color ?? Theme.of(context).colorScheme.primary,
-              strokeWidth: 1.5,),);
+        child: CircularProgressIndicator(
+          color: color ?? Theme.of(context).colorScheme.primary,
+          strokeWidth: 1.5,
+        ),
+      );
 
   /// Cupertino Loading Indicator
-  static Widget cupertinoLoadingIndicator(
-          {color, required BuildContext context,}) =>
+  static Widget cupertinoLoadingIndicator({
+    color,
+    required BuildContext context,
+  }) =>
       Center(
-          child: CupertinoActivityIndicator(
-              color: color ?? Theme.of(context).colorScheme.primary,),);
+        child: CupertinoActivityIndicator(
+          color: color ?? Theme.of(context).colorScheme.primary,
+        ),
+      );
 
   /// Page loading indicator
-  static Widget pageLoadingIndicator({color, required BuildContext context}) =>
-      Center(
-          child: Platform.isAndroid
-              ? SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: Utils.materialLoadingIndicator(
-                      color: color ?? Theme.of(context).colorScheme.primary,
-                      context: context,),)
-              : Utils.cupertinoLoadingIndicator(
+  static Widget pageLoadingIndicator({color, required BuildContext context}) => Center(
+        child: Platform.isAndroid
+            ? SizedBox(
+                width: 20,
+                height: 20,
+                child: AppUtils.materialLoadingIndicator(
                   color: color ?? Theme.of(context).colorScheme.primary,
-                  context: context,),);
+                  context: context,
+                ),
+              )
+            : AppUtils.cupertinoLoadingIndicator(
+                color: color ?? Theme.of(context).colorScheme.primary,
+                context: context,
+              ),
+      );
 
   /// Page Refresh Indicator
-  static Widget pageRefreshIndicator(
-          {required child,
-          required onRefresh,
-          required BuildContext context,}) =>
+  static Widget pageRefreshIndicator({
+    required child,
+    required onRefresh,
+    required BuildContext context,
+  }) =>
       RefreshIndicator(
-          color: Theme.of(context).colorScheme.primary,
-          backgroundColor: Theme.of(context).colorScheme.secondary,
-          onRefresh: onRefresh,
-          child: child,);
+        color: Theme.of(context).colorScheme.primary,
+        backgroundColor: Theme.of(context).colorScheme.secondary,
+        onRefresh: onRefresh,
+        child: child,
+      );
 
   /// Spin kit three dots bounce
   static Widget spinKitThreeBounce() => const Center(
@@ -67,8 +98,11 @@ class Utils {
       );
 
   /// Model Progress Hud
-  static Widget modelProgressHud(
-      {required BuildContext context, bool processing = true, child,}) {
+  static Widget modelProgressHud({
+    required BuildContext context,
+    bool processing = true,
+    child,
+  }) {
     final Widget progressIndicator = Container(
       height: 60,
       width: 60,
@@ -79,10 +113,14 @@ class Utils {
       ),
       padding: const EdgeInsets.all(10),
       child: Platform.isAndroid
-          ? Utils.materialLoadingIndicator(
-              color: AppColors.lightCoral, context: context,)
-          : Utils.cupertinoLoadingIndicator(
-              color: AppColors.lightCoral, context: context,),
+          ? AppUtils.materialLoadingIndicator(
+              color: AppColors.lightCoral,
+              context: context,
+            )
+          : AppUtils.cupertinoLoadingIndicator(
+              color: AppColors.lightCoral,
+              context: context,
+            ),
     );
     return ModalProgressHUD(
       color: Colors.blueGrey,
@@ -95,8 +133,11 @@ class Utils {
     );
   }
 
-  static Widget modelProgressDashboardHud(
-      {required BuildContext context, bool processing = true, child,}) {
+  static Widget modelProgressDashboardHud({
+    required BuildContext context,
+    bool processing = true,
+    child,
+  }) {
     final Widget progressIndicator = Container(
       height: 60,
       width: 60,
@@ -107,10 +148,14 @@ class Utils {
       ),
       padding: const EdgeInsets.all(10),
       child: Platform.isAndroid
-          ? Utils.materialLoadingIndicator(
-              color: AppColors.lightCoral, context: context,)
-          : Utils.cupertinoLoadingIndicator(
-              color: AppColors.lightCoral, context: context,),
+          ? AppUtils.materialLoadingIndicator(
+              color: AppColors.lightCoral,
+              context: context,
+            )
+          : AppUtils.cupertinoLoadingIndicator(
+              color: AppColors.lightCoral,
+              context: context,
+            ),
     );
     return ModalProgressHUD(
       color: Colors.blueGrey,
@@ -234,8 +279,10 @@ class Utils {
   }
 
   // make phone call
-  static Future<void> makePhoneCall(
-      {required String phoneNumber, required BuildContext context,}) async {
+  static Future<void> makePhoneCall({
+    required String phoneNumber,
+    required BuildContext context,
+  }) async {
     final Uri launchUri = Uri(
       scheme: 'tel',
       path: phoneNumber,
@@ -261,9 +308,10 @@ class Utils {
         child: Row(
           children: [
             SizedBox(
-                width: 16,
-                height: 16,
-                child: Utils.pageLoadingIndicator(context: context),),
+              width: 16,
+              height: 16,
+              child: AppUtils.pageLoadingIndicator(context: context),
+            ),
             const SizedBox(width: 8),
             const Text('Searching...', style: TextStyle(color: Colors.grey)),
           ],
@@ -277,8 +325,7 @@ class Utils {
           margin: const EdgeInsets.only(top: 8.0), // Replace `kSmallPadding`
           decoration: BoxDecoration(
             color: AppColors.lightCoral, // Replace with `AppColors.lightCoral`
-            borderRadius:
-                BorderRadius.circular(8.0), // Replace `kSmallCardRadius`
+            borderRadius: BorderRadius.circular(8.0), // Replace `kSmallCardRadius`
           ),
         ),
       );
@@ -299,8 +346,7 @@ class Utils {
     required File file,
     required int maxSizeInKB,
   }) async {
-    final int fileSizeInBytes =
-        await file.length(); // Get the file size in bytes
+    final int fileSizeInBytes = await file.length(); // Get the file size in bytes
     final int maxSizeInBytes = maxSizeInKB * 1024; // Convert KB to bytes
 
     // Return true if the file size is within the limit

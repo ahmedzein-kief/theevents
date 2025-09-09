@@ -7,7 +7,7 @@ import 'package:event_app/data/vendor/data/response/apis_status.dart';
 import 'package:event_app/provider/customer/account_view_models/reviews/customer_delete_review_view_model.dart';
 import 'package:event_app/vendor/components/common_widgets/vendor_data_list_builder.dart';
 import 'package:event_app/vendor/components/list_tiles/records_list_tile.dart';
-import 'package:event_app/vendor/components/utils/utils.dart';
+import 'package:event_app/core/utils/app_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/svg.dart';
@@ -96,10 +96,10 @@ class _CustomerReviewedViewState extends State<CustomerReviewedView> with MediaQ
   @override
   Widget build(BuildContext context) => Scaffold(
         // backgroundColor: AppColors.bgColor,
-        body: Utils.modelProgressHud(
+        body: AppUtils.modelProgressHud(
           context: context,
           processing: _isProcessing,
-          child: Utils.pageRefreshIndicator(
+          child: AppUtils.pageRefreshIndicator(
             context: context,
             onRefresh: _onRefresh,
             child: _buildUi(context),
@@ -117,12 +117,12 @@ class _CustomerReviewedViewState extends State<CustomerReviewedView> with MediaQ
                   /// current api status
                   final ApiStatus? apiStatus = provider.apiResponse.status;
                   if (apiStatus == ApiStatus.LOADING && provider.list.isEmpty) {
-                    return Utils.pageLoadingIndicator(context: context);
+                    return AppUtils.pageLoadingIndicator(context: context);
                   }
                   if (apiStatus == ApiStatus.ERROR) {
                     return ListView(
                       physics: const AlwaysScrollableScrollPhysics(),
-                      children: [Utils.somethingWentWrong()],
+                      children: [AppUtils.somethingWentWrong()],
                     );
                   }
                   return Column(
@@ -218,7 +218,7 @@ class _CustomerReviewedViewState extends State<CustomerReviewedView> with MediaQ
                           ? SizedBox(
                               height: 20,
                               width: 20,
-                              child: Utils.pageLoadingIndicator(context: context),
+                              child: AppUtils.pageLoadingIndicator(context: context),
                             )
                           : SvgPicture.asset(
                               'assets/vendor_assets/settings/delete_record.svg',

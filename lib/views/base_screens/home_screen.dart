@@ -7,7 +7,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/constants/app_strings.dart';
 import '../../core/styles/app_colors.dart';
-import '../../core/widgets/custom_app_views/search_bar.dart';
 import '../../provider/cart_item_provider/cart_item_provider.dart';
 import '../../provider/locale_provider.dart';
 import '../../provider/shortcode_fresh_picks_provider/fresh_picks_provider.dart';
@@ -123,7 +122,7 @@ class _HomeScreenViewState extends State<HomeScreen> {
 
   Widget _buildLoadingOverlay() {
     return Container(
-      color: Colors.black.withOpacity(0.5),
+      color: Colors.black.withAlpha((0.5 * 255).toInt()),
       child: const Center(
         child: CircularProgressIndicator(
           valueColor: AlwaysStoppedAnimation<Color>(AppColors.peachyPink),
@@ -226,6 +225,10 @@ class _HomeScreenViewState extends State<HomeScreen> {
       firstRightIconPath: AppStrings.firstRightIconPath.tr,
       secondRightIconPath: AppStrings.secondRightIconPath.tr,
       thirdRightIconPath: AppStrings.thirdRightIconPath.tr,
+      // Enable search bar integration
+      showSearchBar: true,
+      searchController: _searchController,
+      searchHintText: AppStrings.searchEvents.tr,
       body: RefreshIndicator(
         color: Theme.of(context).colorScheme.onPrimary,
         onRefresh: _refreshHomePage,
@@ -234,20 +237,11 @@ class _HomeScreenViewState extends State<HomeScreen> {
           body: SafeArea(
             child: Stack(
               children: [
-                Column(
-                  children: [
-                    CustomSearchBar(
-                      hintText: AppStrings.searchEvents.tr,
-                      controller: _searchController,
-                    ),
-                    Expanded(
-                      child: Consumer<HomePageProvider>(
-                        builder: (context, provider, _) {
-                          return _buildContent(provider);
-                        },
-                      ),
-                    ),
-                  ],
+                // Remove the separate search bar since it's now integrated in the app bar
+                Consumer<HomePageProvider>(
+                  builder: (context, provider, _) {
+                    return _buildContent(provider);
+                  },
                 ),
                 if (isLoading) _buildLoadingOverlay(),
               ],

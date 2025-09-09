@@ -1,6 +1,6 @@
 import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/core/styles/app_sizes.dart';
-import 'package:event_app/vendor/components/utils/utils.dart';
+import 'package:event_app/core/utils/app_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -17,6 +17,7 @@ class VendorActionCell extends StatelessWidget {
     this.showViewWidget,
     this.mainAxisSize = MainAxisSize.max,
   });
+
   final bool isDeleting;
   final VoidCallback? onEdit;
   final VoidCallback onDelete;
@@ -39,7 +40,8 @@ class VendorActionCell extends StatelessWidget {
                 GestureDetector(
                   onTap: onEdit,
                   child: SvgPicture.asset(
-                      'assets/vendor_assets/settings/edit_record.svg',),
+                    'assets/vendor_assets/settings/edit_record.svg',
+                  ),
                 ),
                 // Spacer between icons
                 kExtraSmallSpace,
@@ -52,9 +54,10 @@ class VendorActionCell extends StatelessWidget {
                 GestureDetector(
                   onTap: isDeleting ? null : onDelete,
                   child: isDeleting
-                      ? Utils.pageLoadingIndicator(context: context)
+                      ? AppUtils.pageLoadingIndicator(context: context)
                       : SvgPicture.asset(
-                          'assets/vendor_assets/settings/delete_record.svg',),
+                          'assets/vendor_assets/settings/delete_record.svg',
+                        ),
                 ),
               ],
             ),
@@ -65,8 +68,10 @@ class VendorActionCell extends StatelessWidget {
                 kExtraSmallSpace,
                 GestureDetector(
                   onTap: onView,
-                  child: const Icon(Icons.remove_red_eye,
-                      color: AppColors.cornflowerBlue,),
+                  child: const Icon(
+                    Icons.remove_red_eye,
+                    color: AppColors.cornflowerBlue,
+                  ),
                 ),
               ],
             ),

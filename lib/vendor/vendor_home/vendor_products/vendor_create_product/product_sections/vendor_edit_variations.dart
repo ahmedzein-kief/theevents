@@ -19,7 +19,7 @@ import 'package:event_app/vendor/components/enums/enums.dart';
 import 'package:event_app/vendor/components/settings_components/simple_card.dart';
 import 'package:event_app/vendor/components/status_constants/product_type_constants.dart';
 import 'package:event_app/vendor/components/text_fields/custom_text_form_field.dart';
-import 'package:event_app/vendor/components/utils/utils.dart';
+import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/vendor/components/vendor_text_style.dart';
 import 'package:event_app/vendor/vendor_home/vendor_products/vendor_create_product/digital_attachment_links_screen.dart';
 import 'package:event_app/vendor/vendor_home/vendor_products/vendor_create_product/digital_attachments_screen.dart';
@@ -292,10 +292,10 @@ class _VendorEditVariationsState extends State<VendorEditVariations> with MediaQ
           title: 'Edit Variations (${widget.productVariationsID})',
           onGoBack: _return,
         ),
-        body: Utils.modelProgressHud(
+        body: AppUtils.modelProgressHud(
           context: context,
           processing: _isProcessing,
-          child: Utils.pageRefreshIndicator(
+          child: AppUtils.pageRefreshIndicator(
             onRefresh: _onRefresh,
             child: Form(
               key: _formKey,
@@ -398,13 +398,13 @@ class _VendorEditVariationsState extends State<VendorEditVariations> with MediaQ
           variationPostDataModel.productType = isDigital ? ProductTypeConstants.DIGITAL : ProductTypeConstants.PHYSICAL;
 
           if (apiStatus == ApiStatus.LOADING && listAttributes.isEmpty) {
-            return Utils.pageLoadingIndicator(context: context);
+            return AppUtils.pageLoadingIndicator(context: context);
           }
 
           if (apiStatus == ApiStatus.ERROR) {
             return ListView(
               children: [
-                Utils.somethingWentWrong(),
+                AppUtils.somethingWentWrong(),
               ],
             );
           }

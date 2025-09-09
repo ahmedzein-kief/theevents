@@ -16,21 +16,19 @@ import 'business_owner_information_screen.dart';
 
 class BusinessAndAuthorizationScreen extends StatefulWidget {
   const BusinessAndAuthorizationScreen({super.key, required this.onNext});
+
   final VoidCallback onNext;
 
   @override
-  State<BusinessAndAuthorizationScreen> createState() =>
-      _BusinessAndAuthorizationScreenState();
+  State<BusinessAndAuthorizationScreen> createState() => _BusinessAndAuthorizationScreenState();
 }
 
-class _BusinessAndAuthorizationScreenState
-    extends State<BusinessAndAuthorizationScreen> {
+class _BusinessAndAuthorizationScreenState extends State<BusinessAndAuthorizationScreen> {
   int selectedIndex = 0;
   int _radioValue = 0;
   final _formKey = GlobalKey<FormState>();
   final BusinessOwnerInfoPostData boiModel = BusinessOwnerInfoPostData();
-  final AuthorizedSignatoryInfoPostData asiModel =
-      AuthorizedSignatoryInfoPostData();
+  final AuthorizedSignatoryInfoPostData asiModel = AuthorizedSignatoryInfoPostData();
 
   Future<void> getAllMetaData() async {
     final provider = Provider.of<VendorSignUpProvider>(context, listen: false);
@@ -38,11 +36,9 @@ class _BusinessAndAuthorizationScreenState
 
     if (response != null) {
       SecurePreferencesUtil.saveServerStep(
-          int.parse(response.data['step'] ?? '1'),);
-      _radioValue =
-          response.data['user_information_type']?.toLowerCase() == 'owner'
-              ? 0
-              : 1;
+        int.parse(response.data['step'] ?? '1'),
+      );
+      _radioValue = response.data['user_information_type']?.toLowerCase() == 'owner' ? 0 : 1;
       /**
        * Parsing business data
        */
@@ -69,8 +65,7 @@ class _BusinessAndAuthorizationScreenState
       asiModel.ownerEIDFileName = response.data['owner_eid_file_name'];
       asiModel.ownerEIDServerFilePath = response.data['owner_eid_file_path'];
       asiModel.passportFileName = response.data['owner_passport_file_name'];
-      asiModel.passportServerFilePath =
-          response.data['owner_passport_file_path'];
+      asiModel.passportServerFilePath = response.data['owner_passport_file_path'];
       asiModel.poamoaFileName = response.data['signatory_poamoa_file_name'];
       asiModel.poamoaServerPath = response.data['signatory_poamoa_file_path'];
     }
@@ -81,8 +76,7 @@ class _BusinessAndAuthorizationScreenState
     AuthorizedSignatoryInfoPostData? asiData,
   ) async {
     final provider = Provider.of<VendorSignUpProvider>(context, listen: false);
-    final response =
-        await provider.updateBusinessSignatoryData(context, boiData, asiData);
+    final response = await provider.updateBusinessSignatoryData(context, boiData, asiData);
     return response;
   }
 
@@ -96,8 +90,7 @@ class _BusinessAndAuthorizationScreenState
 
   @override
   Widget build(BuildContext context) {
-    final mainProvider =
-        Provider.of<VendorSignUpProvider>(context, listen: true);
+    final mainProvider = Provider.of<VendorSignUpProvider>(context, listen: true);
     return Scaffold(
       body: SafeArea(
         child: Stack(
@@ -118,8 +111,9 @@ class _BusinessAndAuthorizationScreenState
                                 child: RadioListTile<int>(
                                   activeColor: Colors.black,
                                   title: Text(
-                                      VendorAppStrings.areYouBusinessOwner.tr,
-                                      style: vendorBusinessInfo(),),
+                                    VendorAppStrings.areYouBusinessOwner.tr,
+                                    style: vendorBusinessInfo(),
+                                  ),
                                   value: 0,
                                   groupValue: _radioValue,
                                   onChanged: (int? value) {
@@ -132,9 +126,9 @@ class _BusinessAndAuthorizationScreenState
                               Expanded(
                                 child: RadioListTile<int>(
                                   title: Text(
-                                      VendorAppStrings
-                                          .areYouAuthorizedSignatory.tr,
-                                      style: vendorBusinessInfo(),),
+                                    VendorAppStrings.areYouAuthorizedSignatory.tr,
+                                    style: vendorBusinessInfo(),
+                                  ),
                                   activeColor: Colors.black,
                                   value: 1,
                                   groupValue: _radioValue,
@@ -193,12 +187,10 @@ class _BusinessAndAuthorizationScreenState
             ),
             if (mainProvider.isLoading)
               Container(
-                color: Colors.black
-                    .withOpacity(0.5), // Semi-transparent background
+                color: Colors.black.withAlpha((0.5 * 255).toInt()), // Semi-transparent background
                 child: const Center(
                   child: CircularProgressIndicator(
-                    valueColor:
-                        AlwaysStoppedAnimation<Color>(AppColors.peachyPink),
+                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.peachyPink),
                   ),
                 ),
               ),

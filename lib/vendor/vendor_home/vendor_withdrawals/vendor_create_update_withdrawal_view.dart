@@ -12,7 +12,7 @@ import 'package:event_app/vendor/components/settings_components/simple_card.dart
 import 'package:event_app/vendor/components/status_constants/payment_channel_constants.dart';
 import 'package:event_app/vendor/components/status_constants/withdrawal_status_constants.dart';
 import 'package:event_app/vendor/components/text_fields/custom_text_form_field.dart';
-import 'package:event_app/vendor/components/utils/utils.dart';
+import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/vendor/vendor_home/vendor_coupons/coupon_view_utils.dart';
 import 'package:event_app/vendor/vendor_home/vendor_settings/vendor_profile_settings_view.dart';
 import 'package:event_app/vendor/view_models/dashboard/vendor_dashboard_view_model.dart';
@@ -37,12 +37,10 @@ class VendorCreateUpdateWithdrawalView extends StatefulWidget {
   String? withdrawalID;
 
   @override
-  State<VendorCreateUpdateWithdrawalView> createState() =>
-      _VendorCreateUpdateWithdrawalViewState();
+  State<VendorCreateUpdateWithdrawalView> createState() => _VendorCreateUpdateWithdrawalViewState();
 }
 
-class _VendorCreateUpdateWithdrawalViewState
-    extends State<VendorCreateUpdateWithdrawalView> with MediaQueryMixin {
+class _VendorCreateUpdateWithdrawalViewState extends State<VendorCreateUpdateWithdrawalView> with MediaQueryMixin {
   // Form key
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -55,8 +53,7 @@ class _VendorCreateUpdateWithdrawalViewState
   bool _cancelWithdrawal = false;
 
   String formatEndDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
-  String formatStartDate = DateFormat('yyyy-MM-dd')
-      .format(DateTime.now().subtract(const Duration(days: 365)));
+  String formatStartDate = DateFormat('yyyy-MM-dd').format(DateTime.now().subtract(const Duration(days: 365)));
 
   bool _isProcessing = false;
 
@@ -82,18 +79,17 @@ class _VendorCreateUpdateWithdrawalViewState
 
       if (widget.withdrawalID != null) {
         setProcessing(true);
-        final showWithdrawalProvider =
-            context.read<VendorShowWithdrawalViewModel>();
+        final showWithdrawalProvider = context.read<VendorShowWithdrawalViewModel>();
 
         await showWithdrawalProvider.vendorShowWithdrawal(
-            withdrawalID: widget.withdrawalID!,);
+          withdrawalID: widget.withdrawalID!,
+        );
 
         if (showWithdrawalProvider.apiResponse.status == ApiStatus.COMPLETED) {
           final withdrawal = showWithdrawalProvider.apiResponse.data?.data;
           _amountController.text = withdrawal?.amount.toString() ?? '';
           _feeController.text = withdrawal?.fee.toString() ?? '';
-          _descriptionController.text =
-              withdrawal?.description?.toString() ?? '';
+          _descriptionController.text = withdrawal?.description?.toString() ?? '';
 
           setProcessing(false);
         }
@@ -119,10 +115,9 @@ class _VendorCreateUpdateWithdrawalViewState
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: VendorCommonAppBar(
-            title: widget.withdrawalID == null
-                ? 'Create Withdrawal'
-                : 'Withdrawal #${widget.withdrawalID}',),
-        body: Utils.modelProgressHud(
+          title: widget.withdrawalID == null ? 'Create Withdrawal' : 'Withdrawal #${widget.withdrawalID}',
+        ),
+        body: AppUtils.modelProgressHud(
           context: context,
           processing: _isProcessing,
           child: _buildUi(context),
@@ -132,18 +127,11 @@ class _VendorCreateUpdateWithdrawalViewState
 
   Widget _buildUi(BuildContext context) {
     final dashboardProvider = context.read<VendorDashboardViewModel>();
-    final balance =
-        dashboardProvider.apiResponse.data?.data.balanceFormat ?? '';
-    final status = context
-        .read<VendorShowWithdrawalViewModel>()
-        .apiResponse
-        .data
-        ?.data
-        ?.status;
+    final balance = dashboardProvider.apiResponse.data?.data.balanceFormat ?? '';
+    final status = context.read<VendorShowWithdrawalViewModel>().apiResponse.data?.data?.status;
 
     /// showProvider
-    final showWithdrawalProvider =
-        context.read<VendorShowWithdrawalViewModel>();
+    final showWithdrawalProvider = context.read<VendorShowWithdrawalViewModel>();
     return Padding(
       padding: EdgeInsets.all(kSmallPadding),
       child: Form(
@@ -163,8 +151,9 @@ class _VendorCreateUpdateWithdrawalViewState
                         children: [
                           Padding(
                             padding: EdgeInsets.symmetric(
-                                horizontal: kMediumPadding,
-                                vertical: kMediumPadding,),
+                              horizontal: kMediumPadding,
+                              vertical: kMediumPadding,
+                            ),
                             child: Row(
                               mainAxisSize: MainAxisSize.max,
                               mainAxisAlignment: MainAxisAlignment.end,
@@ -178,9 +167,11 @@ class _VendorCreateUpdateWithdrawalViewState
                                   ),
                                 ),
                                 showStatusBox(
-                                    statusText: status?.label ?? '',
-                                    color: AppColors.getWithdrawalStatusColor(
-                                        status?.value,),),
+                                  statusText: status?.label ?? '',
+                                  color: AppColors.getWithdrawalStatusColor(
+                                    status?.value,
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -198,8 +189,7 @@ class _VendorCreateUpdateWithdrawalViewState
                           /// amount
                           CustomTextFormField(
                             labelText: 'Amount (Balance: $balance)',
-                            labelTextStyle:
-                                CouponViewUtils.couponLabelTextStyle(),
+                            labelTextStyle: CouponViewUtils.couponLabelTextStyle(),
                             required: true,
                             showTitle: true,
                             readOnly: widget.withdrawalID != null,
@@ -233,8 +223,7 @@ class _VendorCreateUpdateWithdrawalViewState
                             labelText: 'Description',
                             showTitle: true,
                             required: false,
-                            readOnly: showWithdrawalProvider.apiResponse.data
-                                        ?.data?.status?.value !=
+                            readOnly: showWithdrawalProvider.apiResponse.data?.data?.status?.value !=
                                     WithdrawalStatusConstants.PENDING &&
                                 widget.withdrawalID != null,
                             maxLines: 3,
@@ -256,19 +245,17 @@ class _VendorCreateUpdateWithdrawalViewState
                                       text: TextSpan(
                                         children: [
                                           const TextSpan(
-                                            text:
-                                                'You will receive money as per ',
+                                            text: 'You will receive money as per ',
                                             style: TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 13,),
+                                              color: Colors.black,
+                                              fontSize: 13,
+                                            ),
                                           ),
                                           TextSpan(
                                             recognizer: TapGestureRecognizer()
-                                              ..onTap = () =>
-                                                  Navigator.of(context).push(
+                                              ..onTap = () => Navigator.of(context).push(
                                                     CupertinoPageRoute(
-                                                      builder: (context) =>
-                                                          VendorProfileSettingsView(
+                                                      builder: (context) => VendorProfileSettingsView(
                                                         initialIndex: 2,
                                                       ),
                                                     ),
@@ -289,8 +276,7 @@ class _VendorCreateUpdateWithdrawalViewState
                             ),
 
                           /// show bank details
-                          if (widget.withdrawalID != null)
-                            _showBankDetails(context),
+                          if (widget.withdrawalID != null) _showBankDetails(context),
                         ],
                       ),
                     ),
@@ -300,9 +286,7 @@ class _VendorCreateUpdateWithdrawalViewState
               kFormFieldSpace,
 
               /// do you want to cancel withdrawal
-              if (showWithdrawalProvider
-                          .apiResponse.data?.data?.status?.value ==
-                      WithdrawalStatusConstants.PENDING &&
+              if (showWithdrawalProvider.apiResponse.data?.data?.status?.value == WithdrawalStatusConstants.PENDING &&
                   widget.withdrawalID != null)
                 Column(
                   children: [
@@ -312,9 +296,7 @@ class _VendorCreateUpdateWithdrawalViewState
                 ),
 
               /// save button
-              if (showWithdrawalProvider
-                          .apiResponse.data?.data?.status?.value ==
-                      WithdrawalStatusConstants.PENDING ||
+              if (showWithdrawalProvider.apiResponse.data?.data?.status?.value == WithdrawalStatusConstants.PENDING ||
                   widget.withdrawalID == null)
                 _saveButton(),
             ],
@@ -327,8 +309,7 @@ class _VendorCreateUpdateWithdrawalViewState
   Widget _showBankDetails(context) => Consumer<VendorShowWithdrawalViewModel>(
         builder: (context, provider, _) {
           final details = provider.apiResponse.data?.data?.bankInfo;
-          final paymentChannel =
-              provider.apiResponse.data?.data?.paymentChannel;
+          final paymentChannel = provider.apiResponse.data?.data?.paymentChannel;
           return areAllDetailsNull(details)
               ? kShowVoid
               : Column(
@@ -338,18 +319,20 @@ class _VendorCreateUpdateWithdrawalViewState
                     kSmallSpace,
                     RichText(
                       text: const TextSpan(
-                          text:
-                              'You will receive money through the information: ',
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,),),
+                        text: 'You will receive money through the information: ',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
                     ),
                     kMinorSpace,
                     Container(
                       padding: EdgeInsets.symmetric(
-                          vertical: kExtraSmallPadding,
-                          horizontal: kSmallPadding,),
+                        vertical: kExtraSmallPadding,
+                        horizontal: kSmallPadding,
+                      ),
                       decoration: BoxDecoration(
                         border: Border.all(color: Colors.grey.shade400),
                         borderRadius: BorderRadius.circular(kButtonRadius),
@@ -358,30 +341,41 @@ class _VendorCreateUpdateWithdrawalViewState
                         children: [
                           if (details?.name != null)
                             buildRow(
-                                VendorAppStrings.bankName.tr, details?.name,),
+                              VendorAppStrings.bankName.tr,
+                              details?.name,
+                            ),
                           if (details?.code != null)
-                            buildRow(VendorAppStrings.bankCodeIfscHeader.tr,
-                                details?.code,),
+                            buildRow(
+                              VendorAppStrings.bankCodeIfscHeader.tr,
+                              details?.code,
+                            ),
                           if (details?.fullName != null)
                             buildRow(
-                                VendorAppStrings.accountHolderNameHeader.tr,
-                                details?.fullName,),
+                              VendorAppStrings.accountHolderNameHeader.tr,
+                              details?.fullName,
+                            ),
                           if (details?.number != null)
-                            buildRow(VendorAppStrings.accountNumberHeader.tr,
-                                details?.number,),
+                            buildRow(
+                              VendorAppStrings.accountNumberHeader.tr,
+                              details?.number,
+                            ),
                           if (details?.paypalId != null)
-                            buildRow(VendorAppStrings.paypalIdHeader.tr,
-                                details?.paypalId,
-                                isLastRow: paymentChannel ==
-                                    PaymentChannelConstants.PAYPAL,),
+                            buildRow(
+                              VendorAppStrings.paypalIdHeader.tr,
+                              details?.paypalId,
+                              isLastRow: paymentChannel == PaymentChannelConstants.PAYPAL,
+                            ),
                           if (details?.upiId != null)
-                            buildRow(VendorAppStrings.upiIdHeader.tr,
-                                details?.upiId,),
+                            buildRow(
+                              VendorAppStrings.upiIdHeader.tr,
+                              details?.upiId,
+                            ),
                           if (details?.description != null)
-                            buildRow(VendorAppStrings.descriptionHeader.tr,
-                                details?.description,
-                                isLastRow: paymentChannel ==
-                                    PaymentChannelConstants.BANK_TRANSFER,),
+                            buildRow(
+                              VendorAppStrings.descriptionHeader.tr,
+                              details?.description,
+                              isLastRow: paymentChannel == PaymentChannelConstants.BANK_TRANSFER,
+                            ),
                         ],
                       ),
                     ),
@@ -397,7 +391,9 @@ class _VendorCreateUpdateWithdrawalViewState
           children: [
             Padding(
               padding: EdgeInsets.symmetric(
-                  horizontal: kMediumPadding, vertical: kMediumPadding,),
+                horizontal: kMediumPadding,
+                vertical: kMediumPadding,
+              ),
               child: const Text(
                 'Do you want to cancel this withdrawal?',
                 style: TextStyle(
@@ -424,7 +420,10 @@ class _VendorCreateUpdateWithdrawalViewState
             ),
             Padding(
               padding: EdgeInsets.only(
-                  left: kSmallPadding, right: kSmallPadding, bottom: kPadding,),
+                left: kSmallPadding,
+                right: kSmallPadding,
+                bottom: kPadding,
+              ),
               child: const Text(
                 'After cancel amount and fee will be refunded back in your balance.',
                 style: TextStyle(fontSize: 12, color: AppColors.darkGrey),
@@ -441,7 +440,9 @@ class _VendorCreateUpdateWithdrawalViewState
           children: [
             Padding(
               padding: EdgeInsets.symmetric(
-                  horizontal: kMediumPadding, vertical: kMediumPadding,),
+                horizontal: kMediumPadding,
+                vertical: kMediumPadding,
+              ),
               child: const Text(
                 'Publish',
                 style: TextStyle(fontWeight: FontWeight.w500),
@@ -478,11 +479,11 @@ class _VendorCreateUpdateWithdrawalViewState
 
                           /// create withdrawal
                           if (widget.withdrawalID == null) {
-                            final result =
-                                await provider.vendorCreateUpdateWithdrawal(
-                                    requestType: RequestType.CREATE,
-                                    form: form,
-                                    context: context,);
+                            final result = await provider.vendorCreateUpdateWithdrawal(
+                              requestType: RequestType.CREATE,
+                              form: form,
+                              context: context,
+                            );
                             if (result) {
                               _descriptionController.clear();
                               _amountController.clear();
@@ -494,23 +495,19 @@ class _VendorCreateUpdateWithdrawalViewState
                           /// update withdrawal
                           else {
                             await provider.vendorCreateUpdateWithdrawal(
-                                requestType: RequestType.UPDATE,
-                                withdrawalID: widget.withdrawalID,
-                                form: form,
-                                context: context,);
-                            context
-                                .read<VendorWithdrawalsViewModel>()
-                                .clearList();
-                            context
-                                .read<VendorWithdrawalsViewModel>()
-                                .vendorWithdrawals();
+                              requestType: RequestType.UPDATE,
+                              withdrawalID: widget.withdrawalID,
+                              form: form,
+                              context: context,
+                            );
+                            context.read<VendorWithdrawalsViewModel>().clearList();
+                            context.read<VendorWithdrawalsViewModel>().vendorWithdrawals();
                             await _onRefresh();
                           }
                           setProcessing(false);
 
                           /// Calling the get vendor coupons api
-                          final withdrawalsProvider =
-                              context.read<VendorWithdrawalsViewModel>();
+                          final withdrawalsProvider = context.read<VendorWithdrawalsViewModel>();
                           withdrawalsProvider.clearList();
                           withdrawalsProvider.vendorWithdrawals();
                         }

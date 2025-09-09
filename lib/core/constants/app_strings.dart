@@ -462,4 +462,9 @@ class AppStrings {
   // Categories
   static const String giftsByOccasion = 'Gifts by occasion';
   static const String darkMode = 'Dark Mode';
+  static const String vendorAccountUnderReview = 'Your vendor account is under review and waiting for approval.';
+
+  static const String paymentSuccessful = 'payment_successful';
+  static const String paymentFailed = 'payment_failed';
+  static const String orderPlacedSuccessfully = 'orderPlacedSuccessfully';
 }

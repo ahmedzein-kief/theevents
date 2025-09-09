@@ -80,6 +80,7 @@ class _VendorDrawerScreenState extends State<VendorDrawerScreen> {
     });
 
     _screens = [
+      // VendorStepperScreen(),
       VendorDashBoardScreen(
         onIndexUpdate: (index) {
           setState(() {
@@ -156,7 +157,7 @@ class _VendorDrawerScreenState extends State<VendorDrawerScreen> {
               ),
               if (provider.isLoading) // Show loading indicator in center
                 Container(
-                  color: Colors.black.withOpacity(0.5), // Optional dim background
+                  color: Colors.black.withAlpha((0.5 * 255).toInt()), // Optional dim background
                   child: const Center(
                     child: CircularProgressIndicator(
                       valueColor: AlwaysStoppedAnimation<Color>(AppColors.peachyPink),

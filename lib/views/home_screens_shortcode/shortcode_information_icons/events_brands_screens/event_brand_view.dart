@@ -377,7 +377,7 @@ class _EventBrandScreenState extends State<EventBrandScreen> {
               ),
               if (wishlistProvider.isLoading || freshListProvider.isLoading || cartProvider.isLoading)
                 Container(
-                  color: Colors.black.withOpacity(0.5), // Semi-transparent background
+                  color: Colors.black.withAlpha((0.5 * 255).toInt()), // Semi-transparent background
                   child: const Center(
                     child: CircularProgressIndicator(
                       valueColor: AlwaysStoppedAnimation<Color>(AppColors.peachyPink),

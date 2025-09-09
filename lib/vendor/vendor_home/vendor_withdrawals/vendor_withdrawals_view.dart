@@ -9,7 +9,7 @@ import 'package:event_app/vendor/components/common_widgets/vendor_data_list_buil
 import 'package:event_app/vendor/components/data_tables/custom_data_tables.dart';
 import 'package:event_app/vendor/components/list_tiles/records_list_tile.dart';
 import 'package:event_app/vendor/components/status_constants/withdrawal_status_constants.dart';
-import 'package:event_app/vendor/components/utils/utils.dart';
+import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/vendor/vendor_home/vendor_withdrawals/vendor_create_update_withdrawal_view.dart';
 import 'package:event_app/vendor/view_models/vendor_withdrawal/vendor_withdrawal_view_model.dart';
 import 'package:flutter/cupertino.dart';
@@ -88,10 +88,10 @@ class _VendorWithdrawalsViewState extends State<VendorWithdrawalsView> with Medi
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        body: Utils.modelProgressHud(
+        body: AppUtils.modelProgressHud(
           context: context,
           processing: _isProcessing,
-          child: Utils.pageRefreshIndicator(
+          child: AppUtils.pageRefreshIndicator(
             context: context,
             onRefresh: _onRefresh,
             child: _buildUi(context),
@@ -112,12 +112,12 @@ class _VendorWithdrawalsViewState extends State<VendorWithdrawalsView> with Medi
                   /// current api status
                   final ApiStatus? apiStatus = provider.apiResponse.status;
                   if (apiStatus == ApiStatus.LOADING && provider.list.isEmpty) {
-                    return Utils.pageLoadingIndicator(context: context);
+                    return AppUtils.pageLoadingIndicator(context: context);
                   }
                   if (apiStatus == ApiStatus.ERROR) {
                     return ListView(
                       physics: const AlwaysScrollableScrollPhysics(),
-                      children: [Utils.somethingWentWrong()],
+                      children: [AppUtils.somethingWentWrong()],
                     );
                   }
                   return Column(

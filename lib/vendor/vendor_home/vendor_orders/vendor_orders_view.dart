@@ -17,8 +17,8 @@ import 'package:provider/provider.dart';
 
 import '../../../core/constants/vendor_app_strings.dart';
 import '../../../core/styles/app_colors.dart';
+import '../../../core/utils/app_utils.dart';
 import '../../../models/vendor_models/vendor_order_models/vendor_get_orders_model.dart';
-import '../../Components/utils/utils.dart';
 import '../../components/data_tables/custom_data_tables.dart';
 import '../../components/vendor_tool_bar_widgets/vendor_tool_bar_widgets.dart';
 import '../../view_models/vendor_orders/vendor_get_orders_view_model.dart';
@@ -91,10 +91,10 @@ class _VendorOrdersViewState extends State<VendorOrdersView> with MediaQueryMixi
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        body: Utils.modelProgressHud(
+        body: AppUtils.modelProgressHud(
           context: context,
           processing: _isProcessing,
-          child: Utils.pageRefreshIndicator(
+          child: AppUtils.pageRefreshIndicator(
             context: context,
             onRefresh: _onRefresh,
             child: _buildUi(context),
@@ -117,12 +117,12 @@ class _VendorOrdersViewState extends State<VendorOrdersView> with MediaQueryMixi
                   /// current api status
                   final ApiStatus? apiStatus = provider.apiResponse.status;
                   if (apiStatus == ApiStatus.LOADING && provider.list.isEmpty) {
-                    return Utils.pageLoadingIndicator(context: context);
+                    return AppUtils.pageLoadingIndicator(context: context);
                   }
                   if (apiStatus == ApiStatus.ERROR) {
                     return ListView(
                       physics: const AlwaysScrollableScrollPhysics(),
-                      children: [Utils.somethingWentWrong()],
+                      children: [AppUtils.somethingWentWrong()],
                     );
                   }
                   return Column(

@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:event_app/vendor/components/utils/utils.dart';
+import 'package:event_app/core/utils/app_utils.dart';
 
 NewProductViewDataResponse newProductViewDataResponseFromJson(String str) =>
     NewProductViewDataResponse.fromJson(json.decode(str));
@@ -104,54 +104,35 @@ class Data {
       });
     }
     sku = json['sku'];
-    price = (json['price'] is int)
-        ? double.parse(json['price'].toString())
-        : json['price'];
+    price = (json['price'] is int) ? double.parse(json['price'].toString()) : json['price'];
     priceFormat = json['price_format'];
-    salePrice = (json['sale_price'] is int)
-        ? double.parse(json['sale_price'].toString())
-        : json['sale_price'];
+    salePrice = (json['sale_price'] is int) ? double.parse(json['sale_price'].toString()) : json['sale_price'];
     salePriceFormat = json['sale_price_format'];
     quantity = json['quantity'];
     allowCheckoutWhenOutOfStock = json['allow_checkout_when_out_of_stock'];
     withStorehouseManagement = json['with_storehouse_management'];
     brandId = json['brand_id'];
     isVariation = json['is_variation'];
-    startDate = Utils.formatTimestampToYMDHMS(json['start_date']);
-    endDate = Utils.formatTimestampToYMDHMS(json['end_date']);
-    length = (json['length'] is int)
-        ? double.parse(json['length'].toString())
-        : json['length'];
-    wide = (json['wide'] is int)
-        ? double.parse(json['wide'].toString())
-        : json['wide'];
-    height = (json['height'] is int)
-        ? double.parse(json['height'].toString())
-        : json['height'];
-    weight = (json['weight'] is int)
-        ? double.parse(json['weight'].toString())
-        : json['weight'];
+    startDate = AppUtils.formatTimestampToYMDHMS(json['start_date']);
+    endDate = AppUtils.formatTimestampToYMDHMS(json['end_date']);
+    length = (json['length'] is int) ? double.parse(json['length'].toString()) : json['length'];
+    wide = (json['wide'] is int) ? double.parse(json['wide'].toString()) : json['wide'];
+    height = (json['height'] is int) ? double.parse(json['height'].toString()) : json['height'];
+    weight = (json['weight'] is int) ? double.parse(json['weight'].toString()) : json['weight'];
     taxes = json['taxes'] != null ? json['taxes'].cast<int>() : [];
     views = json['views'];
-    stockStatus = json['stock_status'] != null
-        ? Status.fromJson(json['stock_status'])
-        : null;
+    stockStatus = json['stock_status'] != null ? Status.fromJson(json['stock_status']) : null;
     image = json['image'];
     imageUrl = json['image_url'];
-    productType = json['product_type'] != null
-        ? ProductType.fromJson(json['product_type'])
-        : null;
+    productType = json['product_type'] != null ? ProductType.fromJson(json['product_type']) : null;
     barcode = json['barcode'];
-    costPerItem = (json['cost_per_item'] is int)
-        ? double.parse(json['cost_per_item'].toString())
-        : json['cost_per_item'];
+    costPerItem =
+        (json['cost_per_item'] is int) ? double.parse(json['cost_per_item'].toString()) : json['cost_per_item'];
     storeId = json['store_id'];
-    createdAt = Utils.formatTimestampToYMDHMS(json['created_at']);
-    updatedAt = Utils.formatTimestampToYMDHMS(json['updated_at']);
-    categories =
-        json['categories'] != null ? json['categories'].cast<int>() : [];
-    collections =
-        json['collections'] != null ? json['collections'].cast<int>() : [];
+    createdAt = AppUtils.formatTimestampToYMDHMS(json['created_at']);
+    updatedAt = AppUtils.formatTimestampToYMDHMS(json['updated_at']);
+    categories = json['categories'] != null ? json['categories'].cast<int>() : [];
+    collections = json['collections'] != null ? json['collections'].cast<int>() : [];
     labels = json['labels'] != null ? json['labels'].cast<int>() : [];
     totalVariations = json['totalVariations'];
     tags = json['tags'] != null ? json['tags'].cast<String>() : [];
@@ -176,9 +157,7 @@ class Data {
           )
         : [];
 
-    selectedExistingFaqs = json['selectedExistingFaqs'] != null
-        ? json['selectedExistingFaqs'].cast<String>()
-        : [];
+    selectedExistingFaqs = json['selectedExistingFaqs'] != null ? json['selectedExistingFaqs'].cast<String>() : [];
 
     if (json['relatedProducts'] != null) {
       relatedProducts = [];
@@ -199,16 +178,17 @@ class Data {
         options?.add(Option.fromJson(v));
       });
     }
-    seoMeta = json['seo_meta'] != null && json['seo_meta'].toString().isNotEmpty
-        ? SeoMeta.fromJson(json['seo_meta'])
-        : null;
+    seoMeta =
+        json['seo_meta'] != null && json['seo_meta'].toString().isNotEmpty ? SeoMeta.fromJson(json['seo_meta']) : null;
 
     generateLicenseCode = json['generate_license_code']?.toString() ?? '';
     if (json['attachments'] != null) {
       attachments = List<Attachment>.from(
-          json['attachments'].map((v) => Attachment.fromJson(v)),);
+        json['attachments'].map((v) => Attachment.fromJson(v)),
+      );
     }
   }
+
   int? id;
   String? name;
   String? slug;
@@ -299,8 +279,7 @@ class Status {
   String? label;
 }
 
-ProductType productTypeFromJson(String str) =>
-    ProductType.fromJson(json.decode(str));
+ProductType productTypeFromJson(String str) => ProductType.fromJson(json.decode(str));
 
 class ProductType {
   ProductType({
@@ -432,7 +411,8 @@ class Option {
         productId: json['product_id'],
         values: json['values'] != null
             ? List<ValueElement>.from(
-                json['values'].map((x) => ValueElement.fromJson(x)),)
+                json['values'].map((x) => ValueElement.fromJson(x)),
+              )
             : [],
         name: json['name'],
         createdAt: json['created_at'],
@@ -455,9 +435,7 @@ class Option {
         'updated_at': updatedAt,
         'option_type': optionType,
         'product_id': productId,
-        'values': values != null
-            ? List<dynamic>.from(values!.map((x) => x.toJson()))
-            : [],
+        'values': values != null ? List<dynamic>.from(values!.map((x) => x.toJson())) : [],
         'name': name,
         'created_at': createdAt,
         'id': id,
@@ -529,8 +507,7 @@ class CrossSaleProduct {
     this.id,
   });
 
-  factory CrossSaleProduct.fromJson(Map<dynamic, dynamic> json) =>
-      CrossSaleProduct(
+  factory CrossSaleProduct.fromJson(Map<dynamic, dynamic> json) => CrossSaleProduct(
         image: json['image'],
         priceFormat: json['price_format'],
         imageUrl: json['image_url'],
@@ -540,14 +517,10 @@ class CrossSaleProduct {
         crossPriceType: json['cross_price_type'],
         applyToAllVariations: json['apply_to_all_variations'],
         price: json['price'],
-        variations: json['variations'] != null
-            ? List<dynamic>.from(json['variations'])
-            : [],
+        variations: json['variations'] != null ? List<dynamic>.from(json['variations']) : [],
         name: json['name'],
         isVariant: json['is_variant'],
-        attributes: json['attributes'] != null
-            ? List<dynamic>.from(json['attributes'])
-            : [],
+        attributes: json['attributes'] != null ? List<dynamic>.from(json['attributes']) : [],
         id: json['id'],
       );
 
@@ -569,6 +542,7 @@ class CrossSaleProduct {
 
 class EnumValues<T> {
   EnumValues(this.map);
+
   Map<String, T> map;
   late Map<T, String> reverseMap;
 
@@ -630,9 +604,9 @@ class SeoMeta {
     seoTitle = json['seo_title'];
     seoDescription = json['seo_description'];
     index = json['index'];
-    keywords =
-        json['seo_keywords'] != null ? jsonDecode(json['seo_keywords']) : null;
+    keywords = json['seo_keywords'] != null ? jsonDecode(json['seo_keywords']) : null;
   }
+
   String? seoTitle;
   String? seoDescription;
   String? index;

@@ -7,7 +7,7 @@ import 'package:event_app/models/vendor_models/revenues/revenue_data_response.da
 import 'package:event_app/vendor/components/common_widgets/vendor_data_list_builder.dart';
 import 'package:event_app/vendor/components/data_tables/custom_data_tables.dart';
 import 'package:event_app/vendor/components/list_tiles/records_list_tile.dart';
-import 'package:event_app/vendor/components/utils/utils.dart';
+import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/vendor/components/vendor_tool_bar_widgets/vendor_tool_bar_widgets.dart';
 import 'package:event_app/vendor/view_models/vendor_revenues/vendor_revenues_view_model.dart';
 import 'package:flutter/material.dart';
@@ -84,10 +84,10 @@ class _VendorRevenuesViewState extends State<VendorRevenuesView> with MediaQuery
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        body: Utils.modelProgressHud(
+        body: AppUtils.modelProgressHud(
           context: context,
           processing: _isProcessing,
-          child: Utils.pageRefreshIndicator(
+          child: AppUtils.pageRefreshIndicator(
             onRefresh: _onRefresh,
             child: _buildUi(context),
             context: context,
@@ -108,12 +108,12 @@ class _VendorRevenuesViewState extends State<VendorRevenuesView> with MediaQuery
                   /// current api status
                   final ApiStatus? apiStatus = provider.apiResponse.status;
                   if (apiStatus == ApiStatus.LOADING && provider.list.isEmpty) {
-                    return Utils.pageLoadingIndicator(context: context);
+                    return AppUtils.pageLoadingIndicator(context: context);
                   }
                   if (apiStatus == ApiStatus.ERROR) {
                     return ListView(
                       physics: const AlwaysScrollableScrollPhysics(),
-                      children: [Utils.somethingWentWrong()],
+                      children: [AppUtils.somethingWentWrong()],
                     );
                   }
                   return Column(

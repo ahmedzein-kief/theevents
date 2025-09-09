@@ -11,7 +11,9 @@ class FeaturedBrandsItemsProvider with ChangeNotifier {
   bool hasError = false;
 
   Future<HomeBrandsTypesModels?> fetchHomeBrands(
-      List<int> ids, BuildContext context,) async {
+    List<int> ids,
+    BuildContext context,
+  ) async {
     const String url = 'https://apistaging.theevents.ae/api/v1/ecom-tags';
     final queryParameters = {
       'ids': ids.map((id) => id.toString()).join(','), // Join IDs with a comma
@@ -40,7 +42,8 @@ class FeaturedBrandsItemsProvider with ChangeNotifier {
         hasError = true;
         notifyListeners();
         throw Exception(
-            'Failed to load data with status code: ${response.statusCode}',);
+          'Failed to load data with status code: ${response.statusCode}',
+        );
       }
     } catch (e) {
       isLoading = false;

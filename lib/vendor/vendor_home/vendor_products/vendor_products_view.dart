@@ -4,6 +4,7 @@ import 'package:event_app/core/helper/extensions/app_localizations_extension.dar
 import 'package:event_app/core/helper/mixins/media_query_mixin.dart';
 import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/core/styles/app_sizes.dart';
+import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/data/vendor/data/response/apis_status.dart';
 import 'package:event_app/models/vendor_models/products/VendorGetProductsModel.dart';
 import 'package:event_app/vendor/components/common_widgets/vendor_action_cell.dart';
@@ -12,7 +13,6 @@ import 'package:event_app/vendor/components/data_tables/custom_data_tables.dart'
 import 'package:event_app/vendor/components/dialogs/delete_item_alert_dialog.dart';
 import 'package:event_app/vendor/components/enums/enums.dart';
 import 'package:event_app/vendor/components/list_tiles/custom_records_list_tile.dart';
-import 'package:event_app/vendor/components/utils/utils.dart';
 import 'package:event_app/vendor/components/vendor_tool_bar_widgets/vendor_tool_bar_widgets.dart';
 import 'package:event_app/vendor/vendor_home/vendor_products/vendor_create_product/vendor_create_physical_product_view.dart';
 import 'package:event_app/vendor/view_models/vendor_products/vendor_delete_product_view_model.dart';
@@ -95,10 +95,10 @@ class _VendorProductsViewState extends State<VendorProductsView> with MediaQuery
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        body: Utils.modelProgressHud(
+        body: AppUtils.modelProgressHud(
           context: context,
           processing: _isProcessing,
-          child: Utils.pageRefreshIndicator(
+          child: AppUtils.pageRefreshIndicator(
             onRefresh: _onRefresh,
             child: _buildUi(context),
             context: context,
@@ -121,10 +121,10 @@ class _VendorProductsViewState extends State<VendorProductsView> with MediaQuery
                   /// current api status
                   final ApiStatus? apiStatus = provider.apiResponse.status;
                   if (apiStatus == ApiStatus.LOADING && provider.list.isEmpty) {
-                    return Utils.pageLoadingIndicator(context: context);
+                    return AppUtils.pageLoadingIndicator(context: context);
                   }
                   if (apiStatus == ApiStatus.ERROR) {
-                    return Utils.somethingWentWrong();
+                    return AppUtils.somethingWentWrong();
                   }
                   return Column(
                     children: [

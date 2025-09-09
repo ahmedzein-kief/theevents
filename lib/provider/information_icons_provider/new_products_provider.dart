@@ -1,4 +1,3 @@
-
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/models/dashboard/information_icons_models/new_products_models.dart';
 import 'package:event_app/models/product_packages_models/product_filters_model.dart';
@@ -105,11 +104,8 @@ class NewProductsProvider extends ChangeNotifier {
       }
     }).join('&');
 
-    final baseUrl =
-        '${ApiEndpoints.newProducts}?per-page=$perPage&page=$page&sort-by=$sortBy';
-    final url = filtersQuery.isNotEmpty
-        ? '$baseUrl&$filtersQuery&allcategories=1'
-        : baseUrl;
+    final baseUrl = '${ApiEndpoints.newProducts}?per-page=$perPage&page=$page&sort-by=$sortBy';
+    final url = filtersQuery.isNotEmpty ? '$baseUrl&$filtersQuery&allcategories=1' : baseUrl;
 
     print('URL $url');
 
@@ -124,8 +120,7 @@ class NewProductsProvider extends ChangeNotifier {
         // final newProducts = NewProductsModels.fromJson(jsonData).data?.records ?? [];
         final Map<String, dynamic> jsonResponse = response.data;
         print('json response $jsonResponse');
-        final NewProductsModels apiResponse =
-            NewProductsModels.fromJson(jsonResponse);
+        final NewProductsModels apiResponse = NewProductsModels.fromJson(jsonResponse);
 
         if (page == 1) {
           _products = apiResponse.data?.records ?? [];

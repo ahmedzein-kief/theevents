@@ -16,9 +16,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/styles/app_colors.dart';
+import '../../../core/utils/app_utils.dart';
 import '../../../models/wishlist_models/states_cities_models.dart';
 import '../../../views/country_picker/country_pick_screen.dart';
-import '../../Components/utils/utils.dart';
 
 class VendorUpdateShippingAddressBottomSheetView extends StatefulWidget {
   const VendorUpdateShippingAddressBottomSheetView({
@@ -41,12 +41,10 @@ class VendorUpdateShippingAddressBottomSheetView extends StatefulWidget {
   final bool showUseDefaultButton;
 
   @override
-  _VendorUpdateShippingAddressBottomSheetViewState createState() =>
-      _VendorUpdateShippingAddressBottomSheetViewState();
+  _VendorUpdateShippingAddressBottomSheetViewState createState() => _VendorUpdateShippingAddressBottomSheetViewState();
 }
 
-class _VendorUpdateShippingAddressBottomSheetViewState
-    extends State<VendorUpdateShippingAddressBottomSheetView> {
+class _VendorUpdateShippingAddressBottomSheetViewState extends State<VendorUpdateShippingAddressBottomSheetView> {
   final _formKey = GlobalKey<FormState>();
 
   // Controllers
@@ -143,15 +141,13 @@ class _VendorUpdateShippingAddressBottomSheetViewState
       // Fetch all countries first
       countryModel = await fetchCountries(context);
 
-      if (widget.customerAddress != null &&
-          countryModel?.data?.list?.isNotEmpty == true) {
+      if (widget.customerAddress != null && countryModel?.data?.list?.isNotEmpty == true) {
         final countryName = widget.customerAddress?.country;
 
         // Find the country that matches the customer's address
         final countryRecord = countryModel!.data!.list!.firstWhere(
           (element) => element.name == countryName,
-          orElse: () =>
-              countryModel!.data!.list!.first, // fallback to first country
+          orElse: () => countryModel!.data!.list!.first, // fallback to first country
         );
 
         // Set country data
@@ -174,7 +170,10 @@ class _VendorUpdateShippingAddressBottomSheetViewState
             // Fetch cities for this state
             if (selectedState?.id != null) {
               cityModel = await fetchCities(
-                  context, selectedState!.id!, selectedCountryId!,);
+                context,
+                selectedState!.id!,
+                selectedCountryId!,
+              );
 
               // Find and set the matching city
               if (cityModel?.data?.isNotEmpty == true) {
@@ -182,8 +181,7 @@ class _VendorUpdateShippingAddressBottomSheetViewState
 
                 selectedCity = cityModel!.data!.firstWhere(
                   (element) => element.name == cityName,
-                  orElse: () =>
-                      cityModel!.data!.first, // fallback to first city
+                  orElse: () => cityModel!.data!.first, // fallback to first city
                 );
               }
             }
@@ -425,7 +423,7 @@ class _VendorUpdateShippingAddressBottomSheetViewState
       heightFactor: 0.85,
       child: Scaffold(
         body: SafeArea(
-          child: Utils.modelProgressHud(
+          child: AppUtils.modelProgressHud(
             context: context,
             processing: _isProcessing,
             child: SingleChildScrollView(
@@ -528,12 +526,10 @@ class _VendorUpdateShippingAddressBottomSheetViewState
 
                     // Update Button
                     ChangeNotifierProvider(
-                      create: (context) =>
-                          VendorUpdateShippingAddressViewModel(),
+                      create: (context) => VendorUpdateShippingAddressViewModel(),
                       child: Consumer<VendorUpdateShippingAddressViewModel>(
                         builder: (context, provider, _) => AppCustomButton(
-                          isLoading:
-                              provider.apiResponse.status == ApiStatus.loading,
+                          isLoading: provider.apiResponse.status == ApiStatus.loading,
                           title: VendorAppStrings.update.tr,
                           onPressed: () async {
                             try {
@@ -552,11 +548,9 @@ class _VendorUpdateShippingAddressBottomSheetViewState
                                   cityId: _cityController.text,
                                 );
 
-                                final form = address
-                                    .vendorOrderDetailsUpdateShippingAddressToJson();
+                                final form = address.vendorOrderDetailsUpdateShippingAddressToJson();
 
-                                final result =
-                                    await provider.vendorUpdateShippingAddress(
+                                final result = await provider.vendorUpdateShippingAddress(
                                   shippingID: widget.shipmentId.toString(),
                                   form: form,
                                   context: context,
@@ -564,10 +558,9 @@ class _VendorUpdateShippingAddressBottomSheetViewState
 
                                 if (result) {
                                   // Refresh the order detail page
-                                  context
-                                      .read<VendorGetOrderDetailsViewModel>()
-                                      .vendorGetOrderDetails(
-                                          orderId: widget.orderId,);
+                                  context.read<VendorGetOrderDetailsViewModel>().vendorGetOrderDetails(
+                                        orderId: widget.orderId,
+                                      );
 
                                   if (mounted) {
                                     Navigator.pop(context);

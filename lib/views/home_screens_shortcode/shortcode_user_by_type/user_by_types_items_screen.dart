@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/styles/custom_text_styles.dart';
-import '../../../core/widgets/custom_app_views/search_bar.dart';
 import '../../../core/widgets/user_by_type_view/custom_user_type_container.dart';
 import '../../../provider/shortcode_vendor_type_by_provider/vendor_type_by_provider.dart';
 import '../../filters/items_sorting_drop_down.dart';
@@ -35,15 +34,23 @@ class _UserByTypeItemsScreenState extends State<UserByTypeItemsScreen> {
   final ScrollController _scrollController = ScrollController();
   bool _isFetchingMore = false; // default to false
   int _currentPage = 1;
+  late final TextEditingController _searchController;
 
   @override
   void initState() {
+    _searchController = TextEditingController();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       // fetchVendorByType();
       fetchVendors();
       _scrollController.addListener(_onScroll);
     });
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   Future<void> fetchVendorByType() async {
@@ -111,6 +118,8 @@ class _UserByTypeItemsScreenState extends State<UserByTypeItemsScreen> {
       firstRightIconPath: AppStrings.firstRightIconPath.tr,
       secondRightIconPath: AppStrings.secondRightIconPath.tr,
       thirdRightIconPath: AppStrings.thirdRightIconPath.tr,
+      showSearchBar: true,
+      searchController: _searchController,
       body: RefreshIndicator(
         color: Theme.of(context).colorScheme.onPrimary,
         onRefresh: () async {
@@ -128,148 +137,133 @@ class _UserByTypeItemsScreenState extends State<UserByTypeItemsScreen> {
                     ),
                   );
                 }
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    CustomSearchBar(
-                      hintText: AppStrings.searchEvents.tr,
-                    ),
-                    Expanded(
-                      child: SingleChildScrollView(
-                        controller: _scrollController,
-                        child: Column(
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.only(
-                                left: screenWidth * 0.02,
-                                right: screenWidth * 0.02,
-                                top: screenHeight * 0.02,
-                              ),
-                              child: SizedBox(
+                return SingleChildScrollView(
+                  controller: _scrollController,
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(
+                          left: screenWidth * 0.02,
+                          right: screenWidth * 0.02,
+                          top: screenHeight * 0.02,
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(5),
+                          child: Image.network(
+                            fit: BoxFit.cover,
+                            provider.vendorTypeData?.coverImage ?? '',
+                            errorBuilder: (context, provider, error) => const SizedBox.shrink(),
+                            loadingBuilder: (context, child, loadingProcessor) {
+                              if (loadingProcessor == null) {
+                                return child;
+                              }
+                              return Container(
                                 height: 100,
                                 width: double.infinity,
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(5),
-                                  child: Image.network(
-                                    fit: BoxFit.fill,
-                                    provider.vendorTypeData?.coverImage ?? '',
-                                    errorBuilder: (context, provider, error) => const SizedBox.shrink(),
-                                    loadingBuilder: (context, child, loadingProcessor) {
-                                      if (loadingProcessor == null) {
-                                        return child;
-                                      }
-                                      return Container(
-                                        height: 100,
-                                        width: double.infinity,
-                                        decoration: const BoxDecoration(
-                                          gradient: LinearGradient(
-                                            colors: [
-                                              Colors.grey,
-                                              Colors.black,
-                                            ],
-                                          ),
-                                        ),
-                                        child: const CupertinoActivityIndicator(
-                                          color: Colors.black,
-                                          radius: 10,
-                                          animating: true,
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(
-                                top: screenHeight * 0.02,
-                                left: screenWidth * 0.04,
-                                right: screenWidth * 0.04,
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                mainAxisSize: MainAxisSize.max,
-                                children: [
-                                  Text(
-                                    widget.title,
-                                    style: boldHomeTextStyle(),
-                                  ),
-                                  Row(
-                                    children: [
-                                      ItemsSortingDropDown(
-                                        selectedSortBy: _selectedSortBy,
-                                        onSortChanged: (newValue) {
-                                          _onSortChanged(newValue);
-                                        },
-                                      ),
+                                decoration: const BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      Colors.grey,
+                                      Colors.black,
                                     ],
                                   ),
-                                ],
-                              ),
-                            ),
-                            Container(
-                              // color: AppColors.infoBackGround,
-                              child: Padding(
-                                padding: EdgeInsets.only(
-                                  left: screenWidth * 0.02,
-                                  right: screenWidth * 0.02,
-                                  bottom: screenHeight * 0.02,
-                                  top: screenHeight * 0.01,
                                 ),
-                                child: GridView.builder(
-                                  shrinkWrap: true,
-                                  scrollDirection: Axis.vertical,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 3,
-                                    crossAxisSpacing: 8,
-                                    mainAxisSpacing: 20,
-                                    mainAxisExtent: screenHeight * 0.16,
-                                  ),
-                                  itemCount: provider.vendors.length + (_isFetchingMore ? 1 : 0),
-                                  itemBuilder: (context, index) {
-                                    if (_isFetchingMore && index == provider.vendors.length) {
-                                      return const Column(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        children: [
-                                          Center(
-                                            child: CircularProgressIndicator(
-                                              color: Colors.black,
-                                              strokeWidth: 0.5,
-                                            ),
-                                          ),
-                                        ],
-                                      );
-                                    }
-                                    final vendor = provider.vendors[index];
-                                    return UserByTypeSeeAll(
-                                      imageUrl: vendor.avatar ?? '',
-                                      name: vendor.name ?? '',
-                                      textStyle: homeItemsStyle(context),
-                                      onTap: () {
-                                        /// User Type Details
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => UserTypeInnerPageScreen(
-                                              typeId: widget.typeId,
-                                              id: vendor.id,
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                    );
+                                child: const CupertinoActivityIndicator(
+                                  color: Colors.black,
+                                  radius: 10,
+                                  animating: true,
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                          top: screenHeight * 0.02,
+                          left: screenWidth * 0.04,
+                          right: screenWidth * 0.04,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            Text(
+                              widget.title,
+                              style: boldHomeTextStyle(),
+                            ),
+                            Row(
+                              children: [
+                                ItemsSortingDropDown(
+                                  selectedSortBy: _selectedSortBy,
+                                  onSortChanged: (newValue) {
+                                    _onSortChanged(newValue);
                                   },
                                 ),
-                              ),
+                              ],
                             ),
                           ],
                         ),
                       ),
-                    ),
-                  ],
+                      Container(
+                        // color: AppColors.infoBackGround,
+                        child: Padding(
+                          padding: EdgeInsets.only(
+                            left: screenWidth * 0.02,
+                            right: screenWidth * 0.02,
+                            bottom: screenHeight * 0.02,
+                            top: screenHeight * 0.01,
+                          ),
+                          child: GridView.builder(
+                            shrinkWrap: true,
+                            scrollDirection: Axis.vertical,
+                            physics: const NeverScrollableScrollPhysics(),
+                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 3,
+                              crossAxisSpacing: 8,
+                              mainAxisSpacing: 20,
+                              mainAxisExtent: screenHeight * 0.16,
+                            ),
+                            itemCount: provider.vendors.length + (_isFetchingMore ? 1 : 0),
+                            itemBuilder: (context, index) {
+                              if (_isFetchingMore && index == provider.vendors.length) {
+                                return const Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Center(
+                                      child: CircularProgressIndicator(
+                                        color: Colors.black,
+                                        strokeWidth: 0.5,
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              }
+                              final vendor = provider.vendors[index];
+                              return UserByTypeSeeAll(
+                                imageUrl: vendor.avatar ?? '',
+                                name: vendor.name ?? '',
+                                textStyle: homeItemsStyle(context),
+                                onTap: () {
+                                  /// User Type Details
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => UserTypeInnerPageScreen(
+                                        typeId: widget.typeId,
+                                        id: vendor.id,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 );
               },
             ),

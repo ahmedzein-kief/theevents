@@ -68,8 +68,7 @@ class _ProductCardState extends State<ProductCard> {
   //   return prefs.getString(SecurePreferencesUtil.tokenKey)?.isNotEmpty ?? false;
   // }
 
-  Future<bool> _isLoggedIn() async =>
-      (await SecurePreferencesUtil.getToken()) != null;
+  Future<bool> _isLoggedIn() async => (await SecurePreferencesUtil.getToken()) != null;
 
   Future<void> _onHeartTap() async {
     setState(() {
@@ -77,6 +76,7 @@ class _ProductCardState extends State<ProductCard> {
     });
     final bool loggedIn = await _isLoggedIn();
     if (!loggedIn) {
+      if (!mounted) return;
       // Navigate to the login screen if not logged in
       PersistentNavBarNavigator.pushNewScreen(
         context,
@@ -92,8 +92,7 @@ class _ProductCardState extends State<ProductCard> {
         context: context,
         textHint: 'Please Log-In to add items to Your WishList.',
         onDismiss: () {
-          customToast
-              .removeToast(); // Dismiss the toast when the button is tapped
+          customToast.removeToast(); // Dismiss the toast when the button is tapped
         },
       );
       // Reset the tapped state if not logged in
@@ -111,7 +110,7 @@ class _ProductCardState extends State<ProductCard> {
   Future<void> _onCartTap() async {
     if (widget.isOutOfStock) return;
     final bool loggedIn = await _isLoggedIn();
-    if (!loggedIn) {
+    if (!loggedIn) {   if (!mounted) return;
       // Navigate to the login screen if not logged in
       PersistentNavBarNavigator.pushNewScreen(
         context,
@@ -126,8 +125,7 @@ class _ProductCardState extends State<ProductCard> {
         context: context,
         textHint: 'Please Log-In to add items to Your Cart.',
         onDismiss: () {
-          customToast
-              .removeToast(); // Dismiss the toast when the button is tapped
+          customToast.removeToast(); // Dismiss the toast when the button is tapped
         },
       );
     } else {
@@ -183,8 +181,7 @@ class _ProductCardState extends State<ProductCard> {
                           height: MediaQuery.sizeOf(context).height * 0.28,
                           width: double.infinity,
                         ),
-                        placeholder: (BuildContext context, String url) =>
-                            Container(
+                        placeholder: (BuildContext context, String url) => Container(
                           height: MediaQuery.sizeOf(context).height * 0.28,
                           width: double.infinity,
                           color: Colors.blueGrey[300], // Background color
@@ -194,8 +191,7 @@ class _ProductCardState extends State<ProductCard> {
                               Image.asset(
                                 'assets/placeholder.png', // Replace with your actual image path
                                 fit: BoxFit.cover, // Adjust fit if needed
-                                height:
-                                    MediaQuery.sizeOf(context).height * 0.28,
+                                height: MediaQuery.sizeOf(context).height * 0.28,
                                 width: double.infinity,
                               ),
                               const CupertinoActivityIndicator(
@@ -216,7 +212,11 @@ class _ProductCardState extends State<ProductCard> {
                           children: [
                             Container(
                               padding: const EdgeInsets.only(
-                                  left: 4, right: 8, top: 1, bottom: 1,),
+                                left: 4,
+                                right: 8,
+                                top: 1,
+                                bottom: 1,
+                              ),
                               color: Colors.white,
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -230,14 +230,18 @@ class _ProductCardState extends State<ProductCard> {
                                       style: ratings(context),
                                     ),
                                   ),
-                                  const Icon(Icons.star,
-                                      size: 13, color: Colors.yellow,),
+                                  const Icon(
+                                    Icons.star,
+                                    size: 13,
+                                    color: Colors.yellow,
+                                  ),
                                   Container(
                                     height: 20,
                                     width: 1,
                                     color: AppColors.semiTransparentBlack,
                                     margin: const EdgeInsets.symmetric(
-                                        horizontal: 5,),
+                                      horizontal: 5,
+                                    ),
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.only(left: 2),
@@ -259,15 +263,13 @@ class _ProductCardState extends State<ProductCard> {
                                 size: 25,
                                 shadows: [
                                   BoxShadow(
-                                    color: Colors.black.withOpacity(0.5),
+                                    color: Colors.black.withAlpha((0.5 * 255).toInt()),
                                     spreadRadius: 1,
                                     blurRadius: 5,
                                     offset: const Offset(0, 1),
                                   ),
                                 ],
-                                color: widget.isHeartObscure
-                                    ? Colors.red
-                                    : Colors.white,
+                                color: widget.isHeartObscure ? Colors.red : Colors.white,
                                 // color: heartColor,
                               ),
                             ),
@@ -276,8 +278,7 @@ class _ProductCardState extends State<ProductCard> {
                       ),
                     ],
                   ),
-                  if (widget.optionalIcon !=
-                      null) // Conditionally display the optional icon
+                  if (widget.optionalIcon != null) // Conditionally display the optional icon
                     Positioned(
                       right: 5,
                       top: 5,
@@ -289,14 +290,14 @@ class _ProductCardState extends State<ProductCard> {
                             color: Colors.white,
                             shape: BoxShape.circle,
                             border: Border.all(
-                                color: Colors.grey, width: 1,), // Add a border
+                              color: Colors.grey,
+                              width: 1,
+                            ), // Add a border
                           ),
                           child: SvgPicture.asset(
                             height: 18,
                             width: 18,
-                            widget.isOutOfStock
-                                ? AppStrings.outOfStock.tr
-                                : AppStrings.itemAddToCart.tr,
+                            widget.isOutOfStock ? AppStrings.outOfStock.tr : AppStrings.itemAddToCart.tr,
                             color: widget.isOutOfStock ? Colors.red : null,
                           ),
                         ),
@@ -312,8 +313,7 @@ class _ProductCardState extends State<ProductCard> {
                 Expanded(
                   flex: 3,
                   child: Padding(
-                    padding:
-                        const EdgeInsets.only(left: 5, bottom: 4, right: 5),
+                    padding: const EdgeInsets.only(left: 5, bottom: 4, right: 5),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -342,18 +342,14 @@ class _ProductCardState extends State<ProductCard> {
                             children: [
                               Expanded(
                                 child: Text(
-                                  widget.price != null
-                                      ? 'AED${widget.price}'
-                                      : '',
+                                  widget.price != null ? 'AED${widget.price}' : '',
                                   maxLines: 1,
                                   style: priceStyle(context),
                                 ),
                               ),
                               Expanded(
                                 child: Text(
-                                  widget.priceWithTaxes != null
-                                      ? ' ${widget.priceWithTaxes}'
-                                      : '',
+                                  widget.priceWithTaxes != null ? ' ${widget.priceWithTaxes}' : '',
                                   maxLines: 1,
                                   style: standardPriceStyle(context),
                                 ),
@@ -363,7 +359,9 @@ class _ProductCardState extends State<ProductCard> {
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(
-                                    color: Colors.orange, fontSize: 8,),
+                                  color: Colors.orange,
+                                  fontSize: 8,
+                                ),
                               ),
                             ],
                           ),

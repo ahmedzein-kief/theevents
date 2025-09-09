@@ -97,7 +97,8 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider(create: (_) => FeaturedBrandsProvider()),
           ChangeNotifierProvider(create: (_) => FeaturedBrandsItemsProvider()),
           ChangeNotifierProvider(
-              create: (_) => FeaturedCategoriesDetailProvider(),),
+            create: (_) => FeaturedCategoriesDetailProvider(),
+          ),
           ChangeNotifierProvider(create: (_) => HomePageProvider()),
           ChangeNotifierProvider(create: (_) => EventBazaarProvider()),
           ChangeNotifierProvider(create: (_) => FreshPicksProvider()),
@@ -120,7 +121,8 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider(create: (_) => StoreProvider()),
           ChangeNotifierProvider(create: (_) => AddressProvider()),
           ChangeNotifierProvider(
-              create: (_) => PaymentMethodProviderGiftCard(),),
+            create: (_) => PaymentMethodProviderGiftCard(),
+          ),
           ChangeNotifierProvider(create: (_) => EventsBrandProvider()),
           ChangeNotifierProvider(create: (_) => EventsBrandProductProvider()),
           ChangeNotifierProvider(create: (_) => ChangePasswordProvider()),
@@ -132,7 +134,8 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider(create: (_) => UserOrderProvider()),
           ChangeNotifierProvider(create: (_) => CheckoutProvider()),
           ChangeNotifierProvider(
-              create: (_) => SubMitCheckoutInformationProvider(),),
+            create: (_) => SubMitCheckoutInformationProvider(),
+          ),
           ChangeNotifierProvider(create: (_) => OrderDataProvider()),
           ChangeNotifierProvider(create: (_) => VendorSignUpProvider()),
 
@@ -149,9 +152,11 @@ class MyApp extends StatelessWidget {
           /// vendor orders
           ChangeNotifierProvider(create: (_) => VendorGetOrdersViewModel()),
           ChangeNotifierProvider(
-              create: (_) => VendorGetOrderDetailsViewModel(),),
+            create: (_) => VendorGetOrderDetailsViewModel(),
+          ),
           ChangeNotifierProvider(
-              create: (_) => VendorGenerateOrderInvoiceViewModel(),),
+            create: (_) => VendorGenerateOrderInvoiceViewModel(),
+          ),
           ChangeNotifierProvider(create: (_) => VendorOrderReturnsViewModel()),
           ChangeNotifierProvider(create: (_) => VendorWithdrawalsViewModel()),
           ChangeNotifierProvider(create: (_) => VendorReviewsViewModel()),
@@ -166,9 +171,7 @@ class MyApp extends StatelessWidget {
                 // Use light icons on a dark status bar
                 statusBarBrightness: Brightness.dark,
                 // Use dark status bar background
-                statusBarColor: theme.isLightTheme
-                    ? Colors.black
-                    : Colors.transparent, // Adjust based on theme
+                statusBarColor: theme.isLightTheme ? Colors.black : Colors.transparent, // Adjust based on theme
                 // statusBarColor: AppColors.peachyPink
               ),
               child: MaterialApp(
@@ -176,8 +179,7 @@ class MyApp extends StatelessWidget {
                 darkTheme: darkTheme,
                 title: 'Events',
                 debugShowCheckedModeBanner: false,
-                themeMode:
-                    theme.isLightTheme ? ThemeMode.light : ThemeMode.dark,
+                themeMode: theme.isLightTheme ? ThemeMode.light : ThemeMode.dark,
                 home: const SplashScreen(),
                 // home: VendorCreatePhysicalProductView(),
                 routes: {
@@ -208,10 +210,11 @@ ThemeData lightTheme = ThemeData(
   useMaterial3: true,
   scaffoldBackgroundColor: AppColors.bgColor,
   appBarTheme: const AppBarTheme(
-      backgroundColor: AppColors.bgColor,
-      elevation: 0.5,
-      shadowColor: Colors.grey,
-      titleTextStyle: TextStyle(color: Colors.black),),
+    backgroundColor: AppColors.bgColor,
+    elevation: 0.5,
+    shadowColor: Colors.grey,
+    titleTextStyle: TextStyle(color: Colors.black),
+  ),
 );
 
 ThemeData darkTheme = ThemeData(
@@ -224,15 +227,18 @@ ThemeData darkTheme = ThemeData(
     onPrimary: Colors.white,
   ),
   textSelectionTheme: const TextSelectionThemeData(
-      cursorColor: AppColors.peachyPink,
-      selectionColor: AppColors.peachyPink,
-      selectionHandleColor: AppColors.peachyPink,),
+    cursorColor: AppColors.peachyPink,
+    selectionColor: AppColors.peachyPink,
+    selectionHandleColor: AppColors.peachyPink,
+  ),
   bottomNavigationBarTheme: BottomNavigationBarThemeData(
-      backgroundColor: Colors.grey.withOpacity(0.5),),
+    backgroundColor: Colors.grey.withAlpha((0.5 * 255).toInt()),
+  ),
   scaffoldBackgroundColor: Colors.black,
   appBarTheme: const AppBarTheme(
-      backgroundColor: Colors.black,
-      elevation: 0.5,
-      shadowColor: AppColors.lightCoral,
-      titleTextStyle: TextStyle(color: Colors.white),),
+    backgroundColor: Colors.black,
+    elevation: 0.5,
+    shadowColor: AppColors.lightCoral,
+    titleTextStyle: TextStyle(color: Colors.white),
+  ),
 );

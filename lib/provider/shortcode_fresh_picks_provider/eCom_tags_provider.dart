@@ -1,4 +1,3 @@
-
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/models/product_packages_models/product_filters_model.dart';
 import 'package:event_app/provider/api_response_handler.dart';
@@ -91,11 +90,8 @@ class EComTagProvider with ChangeNotifier {
       }
     }).join('&');
 
-    final baseUrl =
-        '${ApiEndpoints.productsECom}$slug?per-page=$perPage&page=$page&sort-by=$sortBy';
-    final url = filtersQuery.isNotEmpty
-        ? '$baseUrl&$filtersQuery&allcategories=1'
-        : baseUrl;
+    final baseUrl = '${ApiEndpoints.productsECom}$slug?per-page=$perPage&page=$page&sort-by=$sortBy';
+    final url = filtersQuery.isNotEmpty ? '$baseUrl&$filtersQuery&allcategories=1' : baseUrl;
 
     try {
       final response = await _apiResponseHandler.getRequest(
@@ -107,8 +103,7 @@ class EComTagProvider with ChangeNotifier {
         // final jsonResponse = NewProductsModels.fromJson(jsonData).data?.records ?? [];
 
         final Map<String, dynamic> jsonResponse = response.data;
-        final EComProductsModels apiResponse =
-            EComProductsModels.fromJson(jsonResponse);
+        final EComProductsModels apiResponse = EComProductsModels.fromJson(jsonResponse);
 
         if (page == 1) {
           _products = apiResponse.data?.records ?? [];
@@ -147,8 +142,7 @@ class EComTagProvider with ChangeNotifier {
     notifyListeners();
 
     // final url = Uri.parse('https://apistaging.theevents.ae/api/v1/tag-packages/$slug?per-page=$perPage&page=$page&sort-by=$sortBy');
-    final url =
-        '${ApiEndpoints.packagesECom}$slug?per-page=$perPage&page=$page&sort-by=$sortBy';
+    final url = '${ApiEndpoints.packagesECom}$slug?per-page=$perPage&page=$page&sort-by=$sortBy';
 
     try {
       final response = await _apiResponseHandler.getRequest(
@@ -160,8 +154,7 @@ class EComTagProvider with ChangeNotifier {
         // final jsonResponse = NewProductsModels.fromJson(jsonData).data?.records ?? [];
 
         final Map<String, dynamic> jsonResponse = response.data;
-        final EComProductsModels apiResponse =
-            EComProductsModels.fromJson(jsonResponse);
+        final EComProductsModels apiResponse = EComProductsModels.fromJson(jsonResponse);
 
         if (page == 1) {
           _packages = apiResponse.data?.records ?? [];

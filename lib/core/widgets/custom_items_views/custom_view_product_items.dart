@@ -61,13 +61,11 @@ class _ResponsiveProductCardState extends State<ResponsiveProductCard> {
                   children: [
                     LayoutBuilder(
                       builder: (context, constraints) => Image.network(
-                        widget.imageUrl ??
-                            'https://apistaging.theevents.ae/storage/products/tobacco-rose-600x600.png',
+                        widget.imageUrl ?? 'https://apistaging.theevents.ae/storage/products/tobacco-rose-600x600.png',
                         fit: BoxFit.cover,
                         height: constraints.maxHeight,
                         width: constraints.maxWidth,
-                        errorBuilder: (context, error, stackTrace) =>
-                            Image.asset(
+                        errorBuilder: (context, error, stackTrace) => Image.asset(
                           'assets/vendor_profile.jpg',
                           fit: BoxFit.cover,
                           height: constraints.maxHeight,
@@ -93,12 +91,15 @@ class _ResponsiveProductCardState extends State<ResponsiveProductCard> {
                                 style: ratings(context),
                               ),
                             ),
-                            const Icon(Icons.star,
-                                size: 13, color: Colors.yellow,),
+                            const Icon(
+                              Icons.star,
+                              size: 13,
+                              color: Colors.yellow,
+                            ),
                             Container(
                               height: 15,
                               width: 1,
-                              color: Colors.black.withOpacity(0.5),
+                              color: Colors.black.withAlpha((0.5 * 255).toInt()),
                               margin: const EdgeInsets.symmetric(horizontal: 5),
                             ),
                             Text(
@@ -121,8 +122,10 @@ class _ResponsiveProductCardState extends State<ResponsiveProductCard> {
                             color: _isClicked ? Colors.green : Colors.white,
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(Icons.shopping_cart_outlined,
-                              size: 20,),
+                          child: const Icon(
+                            Icons.shopping_cart_outlined,
+                            size: 20,
+                          ),
                         ),
                       ),
                     ),
@@ -132,12 +135,9 @@ class _ResponsiveProductCardState extends State<ResponsiveProductCard> {
                       child: GestureDetector(
                         onTap: widget.onHeartTap,
                         child: Icon(
-                          widget.isHeartObscure
-                              ? Icons.favorite
-                              : Icons.favorite_border,
+                          widget.isHeartObscure ? Icons.favorite : Icons.favorite_border,
                           size: 25,
-                          color:
-                              widget.isHeartObscure ? Colors.red : Colors.white,
+                          color: widget.isHeartObscure ? Colors.red : Colors.white,
                         ),
                       ),
                     ),

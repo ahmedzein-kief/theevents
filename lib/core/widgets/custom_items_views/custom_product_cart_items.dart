@@ -57,7 +57,7 @@ class ProductCartItems extends StatelessWidget {
                     offset: const Offset(0, 1),
                     blurRadius: 0.5,
                     spreadRadius: 0.5,
-                    color: Theme.of(context).shadowColor.withOpacity(0.1), // theme-aware shadow
+                    color: Theme.of(context).shadowColor.withAlpha((0.1 * 255).toInt()), // theme-aware shadow
                   ),
                 ],
               ),

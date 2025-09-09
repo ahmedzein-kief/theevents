@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../Components/utils/utils.dart';
+import '../../../core/utils/app_utils.dart';
 
 class CustomIconButtonWithText extends StatelessWidget {
   const CustomIconButtonWithText({
@@ -18,6 +18,7 @@ class CustomIconButtonWithText extends StatelessWidget {
     this.visualDensity,
     this.isLoading = false,
   });
+
   final String text;
   final Widget icon;
   final VoidCallback onPressed;
@@ -42,17 +43,20 @@ class CustomIconButtonWithText extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(borderRadius ?? 8.0),
           side: BorderSide(
-              color: isLoading
-                  ? Theme.of(context).colorScheme.primary
-                  : borderColor ?? Theme.of(context).colorScheme.outline,),
+            color: isLoading
+                ? Theme.of(context).colorScheme.primary
+                : borderColor ?? Theme.of(context).colorScheme.outline,
+          ),
         ),
         child: isLoading
             ? SizedBox(
                 height: 20,
                 width: 20,
-                child: Utils.pageLoadingIndicator(
-                    context: context,
-                    color: textColor ?? Theme.of(context).colorScheme.primary,),)
+                child: AppUtils.pageLoadingIndicator(
+                  context: context,
+                  color: textColor ?? Theme.of(context).colorScheme.primary,
+                ),
+              )
             : Row(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -63,9 +67,9 @@ class CustomIconButtonWithText extends StatelessWidget {
                   Text(
                     text,
                     style: TextStyle(
-                        fontSize: fontSize,
-                        color: textColor ??
-                            Theme.of(context).colorScheme.onPrimary,),
+                      fontSize: fontSize,
+                      color: textColor ?? Theme.of(context).colorScheme.onPrimary,
+                    ),
                   ),
                 ],
               ),

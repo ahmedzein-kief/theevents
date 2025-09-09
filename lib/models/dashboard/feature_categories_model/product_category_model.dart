@@ -1,13 +1,16 @@
 //    ----------------------------------------------------------------  MODELS CLASS OF THE FEATURED CATEGORY BANNER ----------------------------------------------------------------
 class ProductCategoryBanner {
-  ProductCategoryBanner(
-      {required this.error, required this.data, this.message,});
+  ProductCategoryBanner({
+    required this.error,
+    required this.data,
+    this.message,
+  });
 
-  factory ProductCategoryBanner.fromJson(Map<String, dynamic> json) =>
-      ProductCategoryBanner(
+  factory ProductCategoryBanner.fromJson(Map<String, dynamic> json) => ProductCategoryBanner(
         error: json['error'] ?? false, // Default to false if not present
         data: ProductCategoryData.fromJson(
-            json['data'] ?? {},), // Provide empty map if 'data' is null
+          json['data'] ?? {},
+        ), // Provide empty map if 'data' is null
         message: json['message'],
       );
   final bool error;
@@ -29,8 +32,7 @@ class ProductCategoryData {
     required this.seoMeta,
   });
 
-  factory ProductCategoryData.fromJson(Map<String, dynamic> json) =>
-      ProductCategoryData(
+  factory ProductCategoryData.fromJson(Map<String, dynamic> json) => ProductCategoryData(
         id: json['id'] ?? 0,
         // Provide default values if needed
         name: json['name'] ?? '',
@@ -42,7 +44,8 @@ class ProductCategoryData {
         coverImage: json['cover_image'] ?? '',
         items: json['items'] ?? 0,
         seoMeta: SeoMeta.fromJson(
-            json['seo_meta'] ?? {},), // Provide empty map if 'seo_meta' is null
+          json['seo_meta'] ?? {},
+        ), // Provide empty map if 'seo_meta' is null
       );
   final int id;
   final String name;
@@ -105,18 +108,12 @@ class Data {
   Data({this.parent, this.pagination, this.records, this.filters});
 
   Data.fromJson(Map<String, dynamic> json) {
-    parent = (json['parent'] is Map<String, dynamic>)
-        ? Parent.fromJson(json['parent'])
-        : null;
-    pagination = json['pagination'] != null
-        ? Paginations.fromJson(json['pagination'])
-        : null;
+    parent = (json['parent'] is Map<String, dynamic>) ? Parent.fromJson(json['parent']) : null;
+    pagination = json['pagination'] != null ? Paginations.fromJson(json['pagination']) : null;
     if (json['records'] != null) {
-      records =
-          (json['records'] as List).map((v) => Records.fromJson(v)).toList();
+      records = (json['records'] as List).map((v) => Records.fromJson(v)).toList();
     }
-    filters =
-        json['filters'] != null ? Filters.fromJson(json['filters']) : null;
+    filters = json['filters'] != null ? Filters.fromJson(json['filters']) : null;
   }
 
   Parent? parent;
@@ -143,14 +140,15 @@ class Data {
 }
 
 class Parent {
-  Parent(
-      {this.id,
-      this.name,
-      this.image,
-      this.thumb,
-      this.coverImage,
-      this.description,
-      this.slug,});
+  Parent({
+    this.id,
+    this.name,
+    this.image,
+    this.thumb,
+    this.coverImage,
+    this.description,
+    this.slug,
+  });
 
   Parent.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -242,12 +240,19 @@ class Records {
     wishEnabled = json['wish_enabled'];
     compareEnabled = json['compare_enabled'];
     reviewEnabled = json['review_enabled'];
-    review = json['review'] != null ? Review.fromJson(json['review']) : null;
-    prices = json['prices'] != null ? Prices.fromJson(json['prices']) : null;
-    store = json['store'] != null ? Store.fromJson(json['store']) : null;
-    brand = json['brand'] != null ? Store.fromJson(json['brand']) : null;
-    if (json['labels'] != null) {
+
+    review = (json['review'] is Map<String, dynamic>) ? Review.fromJson(json['review']) : null;
+
+    prices = (json['prices'] is Map<String, dynamic>) ? Prices.fromJson(json['prices']) : null;
+
+    store = (json['store'] is Map<String, dynamic>) ? Store.fromJson(json['store']) : null;
+
+    brand = (json['brand'] is Map<String, dynamic>) ? Store.fromJson(json['brand']) : null;
+
+    if (json['labels'] is List) {
       labels = (json['labels'] as List).map((v) => Labels.fromJson(v)).toList();
+    } else {
+      labels = [];
     }
   }
 
@@ -322,11 +327,12 @@ class Review {
 }
 
 class Prices {
-  Prices(
-      {this.frontSalePrice,
-      this.price,
-      this.frontSalePriceWithTaxes,
-      this.priceWithTaxes,});
+  Prices({
+    this.frontSalePrice,
+    this.price,
+    this.frontSalePriceWithTaxes,
+    this.priceWithTaxes,
+  });
 
   Prices.fromJson(Map<String, dynamic> json) {
     frontSalePrice = json['front_sale_price'];
@@ -392,13 +398,16 @@ class Filters {
   Filters({this.filterData, this.options});
 
   Filters.fromJson(Map<String, dynamic> json) {
-    if (json['data'] != null) {
-      filterData =
-          (json['data'] as List).map((v) => FilterData.fromJson(v)).toList();
+    if (json['data'] is List) {
+      filterData = (json['data'] as List).map((v) => FilterData.fromJson(v)).toList();
+    } else {
+      filterData = [];
     }
-    if (json['options'] != null) {
-      options =
-          (json['options'] as List).map((v) => Options.fromJson(v)).toList();
+
+    if (json['options'] is List) {
+      options = (json['options'] as List).map((v) => Options.fromJson(v)).toList();
+    } else {
+      options = [];
     }
   }
 

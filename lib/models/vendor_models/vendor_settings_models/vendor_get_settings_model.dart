@@ -4,11 +4,9 @@ import 'dart:convert';
 /// data : {"payment_method_options":{"bank_transfer":"Bank Transfer","paypal":"PayPal"},"store":{"name":"Abhay Kumar","slug":"wwwshopurlcom","email":"abhay.kumar@gmail.com","phone":"98980446928","address":"vpo lahar","country":"IN","state":"Himachal Pradesh","city":"Hamirpur","title":"Master Company","description":"Description for master company.","content":"<p><strong>Test Content.</strong></p><p><i><u>Hi Abhay</u></i></p><p><span style=\"color:hsl(30,75%,60%);\">How are you?</span></p>","company":"Ampersand","logo":"https://apistaging.theevents.ae/storage/stores/asfsfsfsasfsf/1024-1024-image-3.jpg","cover_image":null},"payment_method":"bank_transfer","bank_info":{"name":"State Bank Of India","code":"111111111","full_name":"111111111","number":"111111111","paypal_id":"hkjhakjhsf","upi_id":"upi@ok","description":"description for payout Info."},"tax_info":{"business_name":"Master Business Kom","tax_id":"123456786543","address":"Vpo lahar"}}
 /// message : null
 
-VendorGetSettingsModel vendorGetSettingsModelFromJson(String str) =>
-    VendorGetSettingsModel.fromJson(json.decode(str));
+VendorGetSettingsModel vendorGetSettingsModelFromJson(String str) => VendorGetSettingsModel.fromJson(json.decode(str));
 
-String vendorGetSettingsModelToJson(VendorGetSettingsModel data) =>
-    json.encode(data.toJson());
+String vendorGetSettingsModelToJson(VendorGetSettingsModel data) => json.encode(data.toJson());
 
 class VendorGetSettingsModel {
   VendorGetSettingsModel({
@@ -85,15 +83,12 @@ class Data {
   }
 
   Data.fromJson(json) {
-    _paymentMethodOptions = json['payment_method_options'] != null
-        ? PaymentMethodOptions.fromJson(json['payment_method_options'])
-        : null;
+    _paymentMethodOptions =
+        json['payment_method_options'] != null ? PaymentMethodOptions.fromJson(json['payment_method_options']) : null;
     _store = json['store'] != null ? Store.fromJson(json['store']) : null;
     _paymentMethod = json['payment_method'];
-    _bankInfo =
-        json['bank_info'] != null ? BankInfo.fromJson(json['bank_info']) : null;
-    _taxInfo =
-        json['tax_info'] != null ? TaxInfo.fromJson(json['tax_info']) : null;
+    _bankInfo = json['bank_info'] != null ? BankInfo.fromJson(json['bank_info']) : null;
+    _taxInfo = json['tax_info'] != null ? TaxInfo.fromJson(json['tax_info']) : null;
   }
 
   PaymentMethodOptions? _paymentMethodOptions;
@@ -464,11 +459,9 @@ class Store {
 /// bank_transfer : "Bank Transfer"
 /// paypal : "PayPal"
 
-PaymentMethodOptions paymentMethodOptionsFromJson(String str) =>
-    PaymentMethodOptions.fromJson(json.decode(str));
+PaymentMethodOptions paymentMethodOptionsFromJson(String str) => PaymentMethodOptions.fromJson(json.decode(str));
 
-String paymentMethodOptionsToJson(PaymentMethodOptions data) =>
-    json.encode(data.toJson());
+String paymentMethodOptionsToJson(PaymentMethodOptions data) => json.encode(data.toJson());
 
 class PaymentMethodOptions {
   PaymentMethodOptions({

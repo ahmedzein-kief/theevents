@@ -26,8 +26,7 @@ class TopSliderProvider with ChangeNotifier {
 
     // const baseUrl = 'https://apistaging.theevents.ae/api/v1/simple-slider'; // Replace with your API endpoint
     const baseUrl = ApiEndpoints.homeSlider; // Replace with your API endpoint
-    final url =
-        '$baseUrl?key=${data['attributes']['key']}'; // Add query parameters here
+    final url = '$baseUrl?key=${data['attributes']['key']}'; // Add query parameters here
 
     try {
       final response = await _apiResponseHandler.getRequest(
@@ -70,8 +69,7 @@ class BottomSliderProvider with ChangeNotifier {
 
     // const baseUrl = 'https://apistaging.theevents.ae/api/v1/simple-slider'; // Replace with your API endpoint
     const baseUrl = ApiEndpoints.homeSlider; // Replace with your API endpoint
-    final url =
-        '$baseUrl?key=${data['attributes']['key']}'; // Add query parameters here
+    final url = '$baseUrl?key=${data['attributes']['key']}'; // Add query parameters here
 
     try {
       final response = await _apiResponseHandler.getRequest(

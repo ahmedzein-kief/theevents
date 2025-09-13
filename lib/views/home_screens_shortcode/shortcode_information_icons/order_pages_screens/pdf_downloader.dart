@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:event_app/core/constants/app_strings.dart'; // Import AppStrings
+import 'package:event_app/core/constants/app_strings.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/styles/app_colors.dart';
 import 'package:file_picker/file_picker.dart';
@@ -9,6 +9,8 @@ import 'package:file_saver/file_saver.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
+
+import '../../../../core/utils/app_utils.dart';
 
 class PDFDownloader {
   Future<String?> saveFileInDownloads(
@@ -18,35 +20,21 @@ class PDFDownloader {
   ) async {
     try {
       if (Platform.isAndroid) {
-        final bool isPermissionGranted =
-            await requestManageExternalStoragePermission(context);
+        final bool isPermissionGranted = await requestManageExternalStoragePermission(context);
         if (!isPermissionGranted) {
           return AppStrings.permissionDenied.tr;
         }
       }
 
       final binaryData = Uint8List.fromList(content.codeUnits);
-      String? path;
 
-      if (Platform.isIOS) {
-        final String? selectedDirectory =
-            await FilePicker.platform.getDirectoryPath();
-        if (selectedDirectory == null) {
-          return AppStrings.userCancelled.tr;
-        }
-
-        final filePath = '$selectedDirectory/$filename.pdf';
-        final file = File(filePath);
-        await file.writeAsBytes(binaryData);
-        path = filePath;
-      } else {
-        path = await FileSaver.instance.saveAs(
-          name: filename,
-          bytes: binaryData,
-          ext: 'pdf',
-          mimeType: MimeType.pdf,
-        );
-      }
+      // Use FileSaver for both platforms for consistent behavior
+      final path = await FileSaver.instance.saveAs(
+        name: filename,
+        bytes: binaryData,
+        ext: 'pdf',
+        mimeType: MimeType.pdf,
+      );
 
       return AppStrings.fileSavedSuccess.tr;
     } catch (e) {
@@ -60,38 +48,117 @@ class PDFDownloader {
     String filename,
   ) async {
     try {
+      if (binaryData == null) {
+        AppUtils.showToast(AppStrings.fileSaveError.tr);
+        return AppStrings.fileSaveError.tr;
+      }
+
       if (Platform.isAndroid) {
-        final bool isPermissionGranted =
-            await requestManageExternalStoragePermission(context);
+        final bool isPermissionGranted = await requestManageExternalStoragePermission(context);
         if (!isPermissionGranted) {
+          AppUtils.showToast(AppStrings.permissionDenied.tr);
           return AppStrings.permissionDenied.tr;
         }
       }
 
-      String? path;
+      final path = await FileSaver.instance.saveAs(
+        name: filename,
+        bytes: binaryData,
+        ext: 'pdf',
+        mimeType: MimeType.pdf,
+      );
 
-      if (Platform.isIOS) {
-        final String? selectedDirectory =
-            await FilePicker.platform.getDirectoryPath();
+      if (path != null) {
+        AppUtils.showToast(AppStrings.fileSavedSuccess.tr, isSuccess: true);
+        return AppStrings.fileSavedSuccess.tr;
+      } else {
+        AppUtils.showToast(AppStrings.fileSaveError.tr);
+        return AppStrings.fileSaveError.tr;
+      }
+    } catch (e) {
+      final errorMessage = '${AppStrings.fileSaveError.tr} $e';
+      AppUtils.showToast(errorMessage);
+      return errorMessage;
+    }
+  }
 
-        if (selectedDirectory == null) {
-          return AppStrings.userCancelled.tr;
+  // Alternative method that gives user choice on iOS
+  Future<String?> saveFileInDownloadsUintWithChoice(
+    BuildContext context,
+    Uint8List? binaryData,
+    String filename,
+  ) async {
+    try {
+      if (binaryData == null) {
+        return AppStrings.fileSaveError.tr;
+      }
+
+      if (Platform.isAndroid) {
+        final bool isPermissionGranted = await requestManageExternalStoragePermission(context);
+        if (!isPermissionGranted) {
+          return AppStrings.permissionDenied.tr;
         }
 
-        final filePath = '$selectedDirectory/$filename.pdf';
-        final file = File(filePath);
-        await file.writeAsBytes(binaryData!);
-        path = filePath;
-      } else {
-        path = await FileSaver.instance.saveAs(
+        // Use FileSaver for Android
+        final path = await FileSaver.instance.saveAs(
           name: filename,
-          bytes: binaryData!,
+          bytes: binaryData,
           ext: 'pdf',
           mimeType: MimeType.pdf,
         );
-      }
 
-      return AppStrings.fileSavedSuccess.tr;
+        return path != null ? AppStrings.fileSavedSuccess.tr : AppStrings.fileSaveError.tr;
+      } else {
+        // iOS: Show dialog to let user choose save method
+        final choice = await showDialog<String>(
+          context: context,
+          builder: (BuildContext context) => AlertDialog(
+            title: const Text('Save PDF'),
+            content: const Text('How would you like to save the PDF?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop('files'),
+                child: const Text('Choose Location'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop('download'),
+                child: const Text('Quick Save'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop('cancel'),
+                style: TextButton.styleFrom(foregroundColor: AppColors.lightCoral),
+                child: Text(AppStrings.cancel.tr),
+              ),
+            ],
+          ),
+        );
+
+        if (choice == 'cancel' || choice == null) {
+          return AppStrings.userCancelled.tr;
+        }
+
+        if (choice == 'files') {
+          // Use FilePicker for user to choose location
+          final String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
+          if (selectedDirectory == null) {
+            return AppStrings.userCancelled.tr;
+          }
+
+          final filePath = '$selectedDirectory/$filename.pdf';
+          final file = File(filePath);
+          await file.writeAsBytes(binaryData);
+          return AppStrings.fileSavedSuccess.tr;
+        } else {
+          // Use FileSaver for quick save
+          final path = await FileSaver.instance.saveAs(
+            name: filename,
+            bytes: binaryData,
+            ext: 'pdf',
+            mimeType: MimeType.pdf,
+          );
+          return path != null ? AppStrings.fileSavedSuccess.tr : AppStrings.fileSaveError.tr;
+        }
+      }
     } catch (e) {
       return '${AppStrings.fileSaveError.tr} $e';
     }
@@ -115,14 +182,12 @@ class PDFDownloader {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              style:
-                  TextButton.styleFrom(foregroundColor: AppColors.lightCoral),
+              style: TextButton.styleFrom(foregroundColor: AppColors.lightCoral),
               child: Text(AppStrings.cancel.tr),
             ),
             TextButton(
               onPressed: () => Navigator.of(context).pop(true),
-              style:
-                  TextButton.styleFrom(foregroundColor: AppColors.lightCoral),
+              style: TextButton.styleFrom(foregroundColor: AppColors.lightCoral),
               child: Text(AppStrings.allow.tr),
             ),
           ],

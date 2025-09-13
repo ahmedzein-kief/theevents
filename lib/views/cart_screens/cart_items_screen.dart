@@ -348,6 +348,7 @@ class _CartItemsScreensState extends State<CartItemsScreen> {
                                         builder: (builder) {
                                           return SaveAddressScreen(
                                             tracked_start_checkout: checkoutToken,
+                                            finalAmount: provider.cartResponse?.data.finalTotal.toString() ?? '',
                                           );
                                         },
                                       ),

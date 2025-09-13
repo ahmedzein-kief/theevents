@@ -42,6 +42,7 @@ class CustomCheckBoxTile extends StatelessWidget {
     this.subTitle,
     this.subTitleStyle,
   });
+
   bool isChecked;
   String title;
   String? subTitle;
@@ -63,7 +64,10 @@ class CustomCheckBoxTile extends StatelessWidget {
         title: Text(
           title.toString(),
           style: const TextStyle(
-              fontSize: 14, fontWeight: FontWeight.w400, color: Colors.black,),
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
+            color: Colors.black,
+          ),
         ),
         subtitle: subTitle != null ? Text(subTitle ?? '') : null,
         checkboxShape: RoundedRectangleBorder(
@@ -88,17 +92,19 @@ class CustomCheckBox extends StatelessWidget {
     required this.onChanged,
     this.controlAffinity,
   });
+
   bool value;
   ListTileControlAffinity? controlAffinity;
   void Function(bool? value) onChanged;
 
   @override
   Widget build(BuildContext context) => Checkbox(
+        activeColor: Theme.of(context).colorScheme.onPrimary,
+        checkColor: Theme.of(context).colorScheme.primary,
         visualDensity: VisualDensity.compact,
         fillColor: checkboxColor(context),
         splashRadius: 5,
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        checkColor: Colors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(2),
           side: const BorderSide(color: Colors.grey, width: 0.1),
@@ -114,14 +120,16 @@ class CustomCheckBox extends StatelessWidget {
 
 /// square check box
 class CustomGFCheckbox extends StatefulWidget {
-  CustomGFCheckbox(
-      {super.key,
-      required this.value,
-      required this.onChanged,
-      required this.text,
-      this.textStyle,
-      this.type,
-      this.focusNode,});
+  CustomGFCheckbox({
+    super.key,
+    required this.value,
+    required this.onChanged,
+    required this.text,
+    this.textStyle,
+    this.type,
+    this.focusNode,
+  });
+
   FocusNode? focusNode;
   final bool value;
   final ValueChanged<bool?> onChanged;
@@ -183,6 +191,7 @@ class CustomCheckboxWithTitle extends StatelessWidget {
     this.subTitleStyle,
     this.isTitleExpanded = true,
   });
+
   final bool isChecked;
   final ValueChanged<bool?> onChanged;
   final String title;
@@ -242,8 +251,7 @@ class CustomCheckboxWithTitle extends StatelessWidget {
                 Expanded(
                   child: Text(
                     subTitle ?? '',
-                    style: subTitleStyle ??
-                        subtitleTextStyle(titleStyle).copyWith(height: 0),
+                    style: subTitleStyle ?? subtitleTextStyle(titleStyle).copyWith(height: 0),
                     textAlign: TextAlign.justify,
                   ),
                 ),
@@ -295,8 +303,7 @@ class CustomCheckboxWithTitle extends StatelessWidget {
                       Expanded(
                         child: Text(
                           subTitle ?? '',
-                          style: subTitleStyle ??
-                              subtitleTextStyle(titleStyle).copyWith(height: 0),
+                          style: subTitleStyle ?? subtitleTextStyle(titleStyle).copyWith(height: 0),
                           textAlign: TextAlign.justify,
                         ),
                       ),

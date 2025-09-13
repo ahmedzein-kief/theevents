@@ -85,7 +85,7 @@ class Data {
   Data.fromJson(json) {
     _paymentMethodOptions =
         json['payment_method_options'] != null ? PaymentMethodOptions.fromJson(json['payment_method_options']) : null;
-    _store = json['store'] != null ? Store.fromJson(json['store']) : null;
+    _store = (json['store'] != null && json['store'] is Map) ? Store.fromJson(json['store']) : null;
     _paymentMethod = json['payment_method'];
     _bankInfo = json['bank_info'] != null ? BankInfo.fromJson(json['bank_info']) : null;
     _taxInfo = json['tax_info'] != null ? TaxInfo.fromJson(json['tax_info']) : null;
@@ -343,7 +343,24 @@ class Store {
     _coverImage = coverImage;
   }
 
-  Store.fromJson(json) {
+  Store.fromJson(dynamic json) {
+    if (json == null || json is List) {
+      _name = '';
+      _slug = '';
+      _email = '';
+      _phone = '';
+      _address = '';
+      _country = '';
+      _state = '';
+      _city = '';
+      _title = '';
+      _description = '';
+      _content = '';
+      _company = '';
+      _logo = '';
+      _coverImage = null;
+      return;
+    }
     _name = json['name'];
     _slug = json['slug'];
     _email = json['email'];

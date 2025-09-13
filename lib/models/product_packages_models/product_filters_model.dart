@@ -1,10 +1,8 @@
 import 'dart:convert';
 
-ProductFiltersModel productFiltersModelFromJson(String str) =>
-    ProductFiltersModel.fromJson(json.decode(str));
+ProductFiltersModel productFiltersModelFromJson(String str) => ProductFiltersModel.fromJson(json.decode(str));
 
-String productFiltersModelToJson(ProductFiltersModel data) =>
-    json.encode(data.toJson());
+String productFiltersModelToJson(ProductFiltersModel data) => json.encode(data.toJson());
 
 class ProductFiltersModel {
   ProductFiltersModel({
@@ -18,28 +16,27 @@ class ProductFiltersModel {
     required this.attributesSet,
   });
 
-  factory ProductFiltersModel.fromJson(Map<dynamic, dynamic> json) =>
-      ProductFiltersModel(
+  factory ProductFiltersModel.fromJson(Map<dynamic, dynamic> json) => ProductFiltersModel(
         rand: json['rand'] ?? 0,
-        categoryRequest: json['categoryRequest'] != null
-            ? List<dynamic>.from(json['categoryRequest'].map((x) => x))
-            : [],
+        categoryRequest:
+            json['categoryRequest'] != null ? List<dynamic>.from(json['categoryRequest'].map((x) => x)) : [],
         brands: json['brands'] != null
             ? List<FilterBrand>.from(
-                json['brands'].map((x) => FilterBrand.fromJson(x)),)
+                json['brands'].map((x) => FilterBrand.fromJson(x)),
+              )
             : [],
         maxPrice: json['max_price'] ?? 0,
         categoryId: json['category_id'] ?? 0,
         categories: json['categories'] != null
-            ? List<ProductFiltersModelCategory>.from(json['categories']
-                .map((x) => ProductFiltersModelCategory.fromJson(x)),)
+            ? List<ProductFiltersModelCategory>.from(
+                json['categories'].map((x) => ProductFiltersModelCategory.fromJson(x)),
+              )
             : [],
-        tags: json['tags'] != null
-            ? List<Tag>.from(json['tags'].map((x) => Tag.fromJson(x)))
-            : [],
+        tags: json['tags'] != null ? List<Tag>.from(json['tags'].map((x) => Tag.fromJson(x))) : [],
         attributesSet: json['attributeSets'] != null
             ? List<AttributeSet>.from(
-                json['attributeSets'].map((x) => AttributeSet.fromJson(x)),)
+                json['attributeSets'].map((x) => AttributeSet.fromJson(x)),
+              )
             : [],
       );
 
@@ -67,8 +64,7 @@ class ProductFiltersModel {
         'category_id': categoryId,
         'categories': List<dynamic>.from(categories.map((x) => x.toJson())),
         'tags': List<dynamic>.from(tags.map((x) => x.toJson())),
-        'attributeSets':
-            List<dynamic>.from(attributesSet.map((x) => x.toJson())),
+        'attributeSets': List<dynamic>.from(attributesSet.map((x) => x.toJson())),
       };
 }
 
@@ -100,11 +96,8 @@ class AttributeSet {
         order: json['order'],
         createdAt: DateTime.parse(json['created_at']),
         updatedAt: DateTime.parse(json['updated_at']),
-        useImageFromProductVariation:
-            json['use_image_from_product_variation'] == 1,
-        attributes: (json['attributes'] as List)
-            .map((item) => Attribute.fromJson(item))
-            .toList(),
+        useImageFromProductVariation: json['use_image_from_product_variation'] == 1,
+        attributes: (json['attributes'] as List).map((item) => Attribute.fromJson(item)).toList(),
         categories: List<dynamic>.from(json['categories']),
       );
   final int id;
@@ -132,11 +125,8 @@ class AttributeSet {
         'order': order,
         'created_at': createdAt.toIso8601String(),
         'updated_at': updatedAt.toIso8601String(),
-        'use_image_from_product_variation':
-            useImageFromProductVariation ? 1 : 0,
-        'attributes': attributes
-            .map((item) => item.toJson())
-            .toList(), // Assuming Attribute class has a toJson method.
+        'use_image_from_product_variation': useImageFromProductVariation ? 1 : 0,
+        'attributes': attributes.map((item) => item.toJson()).toList(), // Assuming Attribute class has a toJson method.
         'categories': categories,
       };
 }
@@ -227,7 +217,8 @@ class FilterBrand {
         id: json['id'],
         coverImage: json['cover_image'],
         categories: List<BrandCategory>.from(
-            json['categories'].map((x) => BrandCategory.fromJson(x)),),
+          json['categories'].map((x) => BrandCategory.fromJson(x)),
+        ),
         isFeatured: json['is_featured'],
         status: Status.fromJson(json['status']),
         order: json['order'],
@@ -351,17 +342,12 @@ class Pivot {
       };
 }
 
-enum ReferenceType {
-  BOTBLE_ECOMMERCE_MODELS_BRAND,
-  BOTBLE_ECOMMERCE_MODELS_PRODUCT_TAG
-}
+enum ReferenceType { BOTBLE_ECOMMERCE_MODELS_BRAND, BOTBLE_ECOMMERCE_MODELS_PRODUCT_TAG }
 
 final referenceTypeValues = EnumValues(
   {
-    'Botble\\Ecommerce\\Models\\Brand':
-        ReferenceType.BOTBLE_ECOMMERCE_MODELS_BRAND,
-    'Botble\\Ecommerce\\Models\\ProductTag':
-        ReferenceType.BOTBLE_ECOMMERCE_MODELS_PRODUCT_TAG,
+    'Botble\\Ecommerce\\Models\\Brand': ReferenceType.BOTBLE_ECOMMERCE_MODELS_BRAND,
+    'Botble\\Ecommerce\\Models\\ProductTag': ReferenceType.BOTBLE_ECOMMERCE_MODELS_PRODUCT_TAG,
   },
 );
 
@@ -414,12 +400,12 @@ class Slugable {
 
 enum Prefix { BRANDS, PRODUCT_TAGS }
 
-final prefixValues =
-    EnumValues({'brands': Prefix.BRANDS, 'product-tags': Prefix.PRODUCT_TAGS});
+final prefixValues = EnumValues({'brands': Prefix.BRANDS, 'product-tags': Prefix.PRODUCT_TAGS});
 
 class ProductFiltersModelCategory {
   ProductFiltersModelCategory({
     required this.image,
+    this.mobileCoverImage,
     required this.parentId,
     required this.name,
     required this.iconImage,
@@ -429,9 +415,9 @@ class ProductFiltersModelCategory {
     this.selected = false,
   });
 
-  factory ProductFiltersModelCategory.fromJson(Map<dynamic, dynamic> json) =>
-      ProductFiltersModelCategory(
+  factory ProductFiltersModelCategory.fromJson(Map<dynamic, dynamic> json) => ProductFiltersModelCategory(
         image: json['image'],
+        mobileCoverImage: json['cover_image_for_mobile'],
         parentId: json['parent_id'],
         name: json['name'],
         iconImage: json['icon_image'],
@@ -441,6 +427,7 @@ class ProductFiltersModelCategory {
       );
 
   String? image;
+  String? mobileCoverImage;
   int parentId;
   String name;
   String iconImage;
@@ -451,6 +438,7 @@ class ProductFiltersModelCategory {
 
   Map<dynamic, dynamic> toJson() => {
         'image': image,
+        'cover_image_for_mobile': mobileCoverImage,
         'parent_id': parentId,
         'name': name,
         'icon_image': iconImage,
@@ -516,6 +504,7 @@ class Tag {
 
 class EnumValues<T> {
   EnumValues(this.map);
+
   Map<String, T> map;
   late Map<T, String> reverseMap;
 

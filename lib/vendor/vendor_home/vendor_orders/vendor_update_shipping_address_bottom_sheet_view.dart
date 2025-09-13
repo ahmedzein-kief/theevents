@@ -514,8 +514,8 @@ class _VendorUpdateShippingAddressBottomSheetViewState extends State<VendorUpdat
                           children: [
                             Checkbox(
                               focusColor: Colors.black,
-                              activeColor: Colors.black,
-                              checkColor: Colors.white,
+                              activeColor: Theme.of(context).colorScheme.onPrimary,
+                              checkColor: Theme.of(context).colorScheme.primary,
                               value: _isChecked,
                               onChanged: _toggleCheckBox,
                             ),

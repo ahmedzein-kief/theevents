@@ -1,3 +1,4 @@
+import 'package:event_app/core/constants/vendor_app_strings.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/models/checkout_models/checkout_data_models.dart';
 import 'package:event_app/views/cart_screens/shipping_address_view_screen.dart';
@@ -7,20 +8,18 @@ import 'package:event_app/views/profile_page_screens/terms_and_condtion_screen.d
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:pay/pay.dart'; // Apple Pay package
 import 'package:provider/provider.dart';
 
-import '../../core/constants/app_strings.dart'; // <--- IMPORT AppStrings
+import '../../core/constants/app_strings.dart';
 import '../../core/services/shared_preferences_helper.dart';
 import '../../core/styles/custom_text_styles.dart';
 import '../../core/utils/custom_toast.dart';
-import '../../core/widgets/bottom_navigation_bar.dart';
 import '../../core/widgets/custom_items_views/coupon_text_field.dart';
 import '../../core/widgets/custom_items_views/custom_add_to_cart_button.dart';
-import '../../provider/cart_item_provider/cart_item_provider.dart';
 import '../../provider/checkout_provider/checkout_provider.dart';
-import '../../provider/orders_provider/order_data_provider.dart';
 
-// Updated PaymentScreen with proper cart clearing and order refresh
+// Updated PaymentScreen with Apple Pay integration
 class PaymentScreen extends StatefulWidget {
   const PaymentScreen({
     super.key,
@@ -53,6 +52,19 @@ class _ShippingAddressScreenState extends State<PaymentScreen> {
     'is_valid_coupon': false,
     'message': '',
   };
+
+  // Apple Pay configuration
+  static const String defaultApplePayConfigString = '''{
+    "provider": "apple_pay",
+    "data": {
+      "merchantIdentifier": "merchant.com.yourapp.id",
+      "displayName": "Your App Name",
+      "merchantCapabilities": ["3DS", "debit", "credit"],
+      "supportedNetworks": ["amex", "visa", "discover", "masterCard"],
+      "countryCode": "AE",
+      "currencyCode": "AED"
+    }
+  }''';
 
   /// +++++++++++++++++++++++ function checkbox  --------------------------------------
   void _toggleCheckbox(bool? value) {
@@ -122,20 +134,65 @@ class _ShippingAddressScreenState extends State<PaymentScreen> {
     );
   }
 
-  Future<void> _clearCartAndRefreshProviders() async {
-    final token = await SecurePreferencesUtil.getToken();
+  // Apple Pay handlers
+  Future<void> onApplePayResult(paymentResult) async {
+    try {
+      final provider = Provider.of<CheckoutProvider>(context, listen: false);
 
-    // Clear cart provider
-    final cartProvider = Provider.of<CartProvider>(context, listen: false);
-    // Optimistic clear to update app bar badge immediately
-    cartProvider.clearCartLocally();
+      setState(() {
+        provider.isLoading = true;
+      });
 
-    // Then fetch from server to be sure
-    await cartProvider.fetchCartData(token ?? '', context);
+      // Process Apple Pay payment
+      // You'll need to implement the Apple Pay processing logic here
+      // This typically involves sending the payment token to your backend
 
-    // Simple clear of orders - let user refresh when they visit orders page
-    final orderProvider = Provider.of<OrderDataProvider>(context, listen: false);
-    orderProvider.clearOrders();
+      final bool success = await _processApplePayment(paymentResult);
+
+      if (success) {
+        // Navigate to success screen or handle successful payment
+        widget.onNext();
+        CustomSnackbar.showSuccess(
+          context,
+          'Payment completed successfully',
+        );
+      } else {
+        CustomSnackbar.showError(
+          context,
+          'Apple Pay payment failed. Please try again.',
+        );
+      }
+    } catch (e) {
+      CustomSnackbar.showError(
+        context,
+        'Apple Pay payment error: ${e.toString()}',
+      );
+    } finally {
+      setState(() {
+        Provider.of<CheckoutProvider>(context, listen: false).isLoading = false;
+      });
+    }
+  }
+
+  Future<bool> _processApplePayment(dynamic paymentResult) async {
+    // Implement your Apple Pay processing logic here
+    // This should send the payment token to your backend for processing
+
+    try {
+      // Example implementation:
+      // final response = await ApiService.processApplePayment(
+      //   paymentToken: paymentResult.token,
+      //   amount: totalAmount,
+      //   orderId: widget.tracked_start_checkout,
+      // );
+
+      // For now, simulate processing
+      await Future.delayed(const Duration(seconds: 2));
+      return true; // Return actual result from your backend
+    } catch (e) {
+      print('Apple Pay processing error: $e');
+      return false;
+    }
   }
 
   @override
@@ -297,9 +354,8 @@ class _ShippingAddressScreenState extends State<PaymentScreen> {
                               Row(
                                 children: [
                                   Checkbox(
-                                    focusColor: Colors.black,
-                                    activeColor: Colors.black,
-                                    checkColor: Colors.white,
+                                    activeColor: Theme.of(context).colorScheme.onPrimary,
+                                    checkColor: Theme.of(context).colorScheme.primary,
                                     value: _isTermsAccepted,
                                     onChanged: _toggleCheckbox,
                                   ),
@@ -358,66 +414,10 @@ class _ShippingAddressScreenState extends State<PaymentScreen> {
                     ),
                   ),
                 ),
+                // Payment button section
                 Padding(
                   padding: EdgeInsets.symmetric(vertical: screenHeight * 0.01),
-                  child: AppCustomButton(
-                    onPressed: () async {
-                      if (!_isTermsAccepted) {
-                        CustomSnackbar.showError(
-                          context,
-                          AppStrings.mustAcceptTerms.tr,
-                        );
-                        setState(() {
-                          hasTCError = true;
-                        });
-                        return;
-                      }
-
-                      final checkoutURL = await checkoutPayment(
-                        provider.checkoutData,
-                        widget.paymentMethod,
-                        widget.isNewAddress,
-                      );
-
-                      if (checkoutURL != null) {
-                        final result = await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => PaymentViewScreen(
-                              checkoutUrl: checkoutURL,
-                            ),
-                          ),
-                        );
-
-                        setState(() {
-                          provider.isLoading = false;
-                        });
-
-                        if (result == true) {
-                          // Clear cart and refresh providers
-                          await _clearCartAndRefreshProviders();
-
-                          if (mounted) {
-                            // First reset the stack and go to Home, passing a flag to navigate further
-                            Navigator.pushAndRemoveUntil(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const BaseHomeScreen(shouldNavigateToOrders: true), // Pass a flag
-                              ),
-                              (route) => false,
-                            );
-                          }
-                        }
-                      } else {
-                        setState(() {
-                          provider.isLoading = false;
-                        });
-                      }
-                    },
-                    icon: CupertinoIcons.forward,
-                    title: AppStrings.continueToPayment.tr,
-                    isLoading: provider.isLoading,
-                  ),
+                  child: _buildPaymentButton(provider),
                 ),
               ],
             ),
@@ -425,6 +425,114 @@ class _ShippingAddressScreenState extends State<PaymentScreen> {
         },
       ),
     );
+  }
+
+  Widget _buildPaymentButton(CheckoutProvider provider) {
+    final bool isApplePaySelected = widget.paymentMethod['payment_method'] == 'apple_pay';
+
+    if (isApplePaySelected && _isTermsAccepted) {
+      // Show Apple Pay button
+      return Column(
+        children: [
+          // Apple Pay Button
+          Container(
+            width: double.infinity,
+            margin: const EdgeInsets.symmetric(horizontal: 16),
+            child: ApplePayButton(
+              paymentConfiguration: PaymentConfiguration.fromJsonString(defaultApplePayConfigString),
+              paymentItems: _buildPaymentItems(provider),
+              style: ApplePayButtonStyle.whiteOutline,
+              type: ApplePayButtonType.buy,
+              margin: const EdgeInsets.only(top: 15.0),
+              onPaymentResult: onApplePayResult,
+              loadingIndicator: const Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          // Terms validation message
+          if (hasTCError)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Text(
+                AppStrings.mustAcceptTerms.tr,
+                style: const TextStyle(
+                  color: Colors.red,
+                  fontSize: 12,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+        ],
+      );
+    } else if (!isApplePaySelected) {
+      // Show regular payment button
+      return AppCustomButton(
+        onPressed: () async {
+          if (!_isTermsAccepted) {
+            CustomSnackbar.showError(
+              context,
+              AppStrings.mustAcceptTerms.tr,
+            );
+            setState(() {
+              hasTCError = true;
+            });
+            return;
+          }
+
+          final checkoutURL = await checkoutPayment(
+            provider.checkoutData,
+            widget.paymentMethod,
+            widget.isNewAddress,
+          );
+
+          if (checkoutURL != null) {
+            // Navigate to PaymentViewScreen
+            // PaymentViewScreen will handle success navigation and cart clearing
+            await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => PaymentViewScreen(
+                  checkoutUrl: checkoutURL,
+                ),
+              ),
+            );
+
+            // Reset loading state after returning from PaymentViewScreen
+            setState(() {
+              provider.isLoading = false;
+            });
+          } else {
+            setState(() {
+              provider.isLoading = false;
+            });
+            CustomSnackbar.showError(
+              context,
+              VendorAppStrings.paymentLinkError.tr,
+            );
+          }
+        },
+        icon: CupertinoIcons.forward,
+        title: AppStrings.continueToPayment.tr,
+        isLoading: provider.isLoading,
+      );
+    } else {
+      return const SizedBox.shrink();
+    }
+  }
+
+  List<PaymentItem> _buildPaymentItems(CheckoutProvider provider) {
+    final orderAmount = provider.checkoutData?.data?.formattedPrices.orderAmount ?? '0.00';
+    final cleanAmount = orderAmount.replaceAll(RegExp(r'[^0-9.]'), '');
+
+    return [
+      PaymentItem(
+        label: 'Total',
+        amount: cleanAmount,
+        status: PaymentItemStatus.final_price,
+      ),
+    ];
   }
 
   Widget _totalView() {

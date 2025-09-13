@@ -1,9 +1,10 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/styles/app_colors.dart';
+import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/models/orders/order_detail_model.dart';
-import 'package:event_app/models/vendor_models/products/create_product/common_data_response.dart';
 import 'package:event_app/provider/orders_provider/order_data_provider.dart';
 import 'package:event_app/vendor/components/services/media_services.dart';
 import 'package:event_app/views/base_screens/base_app_bar.dart';
@@ -26,21 +27,50 @@ class OrderDetailsScreen extends StatefulWidget {
 }
 
 class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
+  bool _hasInitiallyLoaded = false;
+  int _retryCount = 0;
+  static const int maxRetries = 3;
+  static const Duration retryDelay = Duration(seconds: 2);
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      fetchOrderDetails(context, widget.orderID);
+      _fetchOrderDetailsWithRetry(context, widget.orderID);
     });
   }
 
-  Future<CommonDataResponse?> uploadProof(
+  Future<void> _fetchOrderDetailsWithRetry(BuildContext? context, String orderID) async {
+    if (!mounted || context == null) return;
+
+    final provider = Provider.of<OrderDataProvider>(context, listen: false);
+
+    try {
+      await provider.getOrderDetails(context, orderID);
+      _hasInitiallyLoaded = true;
+      _retryCount = 0;
+
+      // If data is still null after successful API call, it might be a new order
+      // Wait a bit and retry for new orders that might not be immediately available
+      if (provider.orderDetailModel?.data == null && _retryCount < maxRetries) {
+        _retryCount++;
+        await Future.delayed(retryDelay);
+        if (mounted) {
+          _fetchOrderDetailsWithRetry(context, orderID);
+        }
+      }
+    } catch (e) {
+      _hasInitiallyLoaded = true;
+      // Handle error case
+    }
+  }
+
+  Future<void> uploadProof(
     String filePath,
     String fileName,
   ) async {
     final provider = Provider.of<OrderDataProvider>(context, listen: false);
-    final response = await provider.uploadProof(context, filePath, fileName, widget.orderID);
-    return response;
+    provider.uploadProof(context, filePath, fileName, widget.orderID);
   }
 
   Future<void> fetchOrderDetails(BuildContext? context, String orderID) async {
@@ -55,58 +85,76 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     await provider.cancelOrder(context, orderID);
   }
 
+  // Replace your existing downloadProof method in OrderDetailsScreen:
   Future<void> downloadProof(BuildContext? context) async {
-    if (!mounted) return;
-    if (context == null) return;
+    if (!mounted || context == null) return;
+
     try {
       final provider = Provider.of<OrderDataProvider>(context, listen: false);
       final binaryData = await provider.downloadProof(context, widget.orderID);
+
+      if (binaryData == null) {
+        if (mounted && context.mounted) {
+          AppUtils.showToast(AppStrings.error.tr);
+        }
+        return;
+      }
+
       final filename = 'Order_Proof_${widget.orderID}';
 
-      // Save binary data as a PDF
-      final result = await PDFDownloader().saveFileInDownloads(context, binaryData!, filename);
+      // Use the correct method that accepts Uint8List
+      final result = await PDFDownloader().saveFileInDownloadsUint(context, binaryData, filename);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('$result'),
-        ),
-      );
+      if (mounted && context.mounted && result != null) {
+        log('result $result');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(result),
+            backgroundColor: result.contains(AppStrings.fileSaveError.tr) ? Colors.red : Colors.green,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('${AppStrings.error.tr}: ${e.toString()}'),
-        ),
-      );
-    } finally {}
+      print('Error downloading proof: $e');
+      if (mounted && context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${AppStrings.error.tr}: ${e.toString()}'),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 4),
+          ),
+        );
+      }
+    }
   }
 
+// Replace your existing getInvoice method in OrderDetailsScreen:
   Future<void> getInvoice(
     BuildContext? context,
     String orderID,
     String invoice,
   ) async {
-    if (!mounted) return;
-    if (context == null) return;
+    if (!mounted || context == null) return;
+
     try {
       final provider = Provider.of<OrderDataProvider>(context, listen: false);
       final binaryData = await provider.getInvoice(context, orderID);
-      final filename = invoice;
 
-      // Save binary data as a PDF
-      final result = await PDFDownloader().saveFileInDownloads(context, binaryData!, filename);
+      if (binaryData == null) {
+        if (mounted && context.mounted) {
+          AppUtils.showToast(AppStrings.error.tr);
+        }
+        return;
+      }
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('$result'),
-        ),
-      );
+      final filename = invoice.endsWith('.pdf') ? invoice.substring(0, invoice.length - 4) : invoice;
+      await PDFDownloader().saveFileInDownloadsUint(context, binaryData, filename);
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('${AppStrings.error.tr}: ${e.toString()}'),
-        ),
-      );
-    } finally {}
+      if (mounted && context.mounted) {
+        AppUtils.showToast('${AppStrings.error.tr}: ${e.toString()}');
+      }
+    }
   }
 
   @override
@@ -119,20 +167,57 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
         ),
         body: Scaffold(
           backgroundColor: Colors.grey[100],
-          body: Consumer<OrderDataProvider>(
-            builder: (context, provider, child) {
-              final data = provider.orderDetailModel?.data;
+          body: SafeArea(
+            child: Consumer<OrderDataProvider>(
+              builder: (context, provider, child) {
+                final data = provider.orderDetailModel?.data;
 
-              /*if (provider.isLoading)
-              return Center(
-                child: SizedBox(
-                  width: 50, // Set the desired width
-                  height: 50, // Set the desired height
-                  child: const CircularProgressIndicator(color: Colors.black),
-                ),
-              );
-            else {*/
-              if (data != null) {
+                // Show loading indicator when loading OR when we haven't initially loaded yet
+                if (provider.isLoading || !_hasInitiallyLoaded) {
+                  return const Center(
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        AppColors.peachyPink,
+                      ),
+                    ),
+                  );
+                }
+
+                // Only show error state if we have initially loaded and still no data
+                if (data == null && _hasInitiallyLoaded) {
+                  // Show error state or empty state
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.error_outline,
+                          size: 64,
+                          color: Colors.grey,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          _retryCount >= maxRetries ? AppStrings.noOrderDetailsFound.tr : AppStrings.loading.tr,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        if (_retryCount >= maxRetries)
+                          ElevatedButton(
+                            onPressed: () {
+                              _retryCount = 0;
+                              _hasInitiallyLoaded = false;
+                              _fetchOrderDetailsWithRetry(context, widget.orderID);
+                            },
+                            child: Text(AppStrings.retry.tr),
+                          ),
+                      ],
+                    ),
+                  );
+                }
+
                 return Stack(
                   children: [
                     // Main Content
@@ -148,7 +233,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                               children: [
                                 _infoRow(
                                   '${AppStrings.orderNumber.tr}:',
-                                  data.code,
+                                  data!.code,
                                 ),
                                 _infoRow(
                                   '${AppStrings.time.tr}:',
@@ -271,7 +356,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                     onPressed: () async {
                                       final File? file = await MediaServices().getSingleFileFromPicker();
                                       if (file != null) {
-                                        final result = await uploadProof(
+                                        uploadProof(
                                           file.path,
                                           path.basename(file.path),
                                         );
@@ -371,7 +456,9 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                           ),
                         ),
                       ),
-                    if (provider.isLoading)
+
+                    // Loading overlay for subsequent operations (when data exists)
+                    if (provider.isLoading && _hasInitiallyLoaded && data != null)
                       Container(
                         color: Colors.black.withAlpha((0.5 * 255).toInt()), // Semi-transparent background
                         child: const Center(
@@ -384,11 +471,8 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                       ),
                   ],
                 );
-              } else {
-                return Container();
-              }
-              // }
-            },
+              },
+            ),
           ),
         ),
       );
@@ -466,6 +550,15 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
             height: 80,
             width: 80,
             fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) => Container(
+              height: 80,
+              width: 80,
+              color: Colors.grey[200],
+              child: const Icon(
+                Icons.image_not_supported,
+                color: Colors.grey,
+              ),
+            ),
           ),
         ),
         title: Text(

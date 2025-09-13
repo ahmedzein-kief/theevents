@@ -472,8 +472,8 @@ class _ContractAgreementScreenState extends State<ContractAgreementScreen> {
                                             mainAxisSize: MainAxisSize.max,
                                             children: [
                                               Checkbox(
-                                                activeColor: Colors.black,
-                                                checkColor: Colors.white,
+                                                activeColor: Theme.of(context).colorScheme.onPrimary,
+                                                checkColor: Theme.of(context).colorScheme.primary,
                                                 value: _isAgreementAccepted,
                                                 onChanged: (bool? value) {
                                                   setState(() {

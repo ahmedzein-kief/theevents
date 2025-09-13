@@ -76,6 +76,7 @@ class _ShippingAddressViewScreenState extends State<ShippingAddressViewScreen> {
                         MaterialPageRoute(
                           builder: (context) => SaveAddressScreen(
                             tracked_start_checkout: checkoutToken,
+                            finalAmount: widget.checkoutData?.orderAmount.toString() ?? '',
                             isEditable: true,
                             addressModel: AddressModel(
                               id: widget.checkoutData?.sessionCheckoutData.addressId.toString() ?? '',

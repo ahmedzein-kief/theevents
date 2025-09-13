@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:intl/intl.dart';
+import 'package:intl/intl.dart' hide TextDirection;
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
@@ -352,4 +352,7 @@ class AppUtils {
     // Return true if the file size is within the limit
     return fileSizeInBytes <= maxSizeInBytes;
   }
+
+  // Check if the current locale is RTL
+  static bool isRTL(context) => Directionality.of(context) == TextDirection.rtl;
 }

@@ -467,4 +467,11 @@ class AppStrings {
   static const String paymentSuccessful = 'payment_successful';
   static const String paymentFailed = 'payment_failed';
   static const String orderPlacedSuccessfully = 'orderPlacedSuccessfully';
+  static const String noOrderDetailsFound = 'noOrderDetailsFound';
+  static const String retry = 'retry';
+  static const String confirmPaymentCancel = 'confirmPaymentCancel';
+  static const String paymentCancelWarning = 'paymentCancelWarning';
+  static const String continuePayment = 'continuePayment';
+  static const String cancelPayment = 'cancelPayment';
+  static const String processing = 'Processing';
 }

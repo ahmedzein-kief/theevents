@@ -22,6 +22,10 @@ class FeaturedBrandsProvider with ChangeNotifier {
 
   String? get errorMessage => _errorMessage;
 
+  void resetTopBrands() {
+    _topBrands = null;
+  }
+
   Future<void> fetchTopBrands(BuildContext context) async {
     _isLoading = true;
     notifyListeners();
@@ -37,7 +41,9 @@ class FeaturedBrandsProvider with ChangeNotifier {
         _topBrands = HomeTopBrandsModels.fromJson(response.data);
         _errorMessage = null;
       } else {
-        throw Exception('');
+        _errorMessage = 'Failed to load data: ${response.statusCode}';
+
+        throw Exception(_errorMessage);
       }
     } catch (e) {
       _errorMessage = e.toString();
@@ -102,10 +108,12 @@ class FeaturedBrandsProvider with ChangeNotifier {
 
   bool get isMoreLoading => _isMoreLoading;
 
-  Future<void> fetchBrandsItems(BuildContext context,
-      {String sortBy = 'default_sorting',
-      int perPage = 12,
-      int page = 1,}) async {
+  Future<void> fetchBrandsItems(
+    BuildContext context, {
+    String sortBy = 'default_sorting',
+    int perPage = 12,
+    int page = 1,
+  }) async {
     if (page == 1) {
       branLoader = true;
       notifyListeners();
@@ -114,8 +122,7 @@ class FeaturedBrandsProvider with ChangeNotifier {
       notifyListeners();
     }
 
-    final url =
-        '${ApiEndpoints.featureBrandsAll}?per-page=$perPage&page=$page&sort-by=$sortBy';
+    final url = '${ApiEndpoints.featureBrandsAll}?per-page=$perPage&page=$page&sort-by=$sortBy';
 
     try {
       final response = await _apiResponseHandler.getRequest(
@@ -231,11 +238,8 @@ class FeaturedBrandsProvider with ChangeNotifier {
       }
     }).join('&');
 
-    final baseUrl =
-        '${ApiEndpoints.featuredBrandProducts}$slug?per-page=$perPage&page=$page&sort-by=$sortBy';
-    final url = filtersQuery.isNotEmpty
-        ? '$baseUrl&$filtersQuery&allcategories=1'
-        : baseUrl;
+    final baseUrl = '${ApiEndpoints.featuredBrandProducts}$slug?per-page=$perPage&page=$page&sort-by=$sortBy';
+    final url = filtersQuery.isNotEmpty ? '$baseUrl&$filtersQuery&allcategories=1' : baseUrl;
 
     try {
       final response = await _apiResponseHandler.getRequest(
@@ -245,8 +249,7 @@ class FeaturedBrandsProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonResponse = response.data;
-        final TopBrandsProducts apiResponse =
-            TopBrandsProducts.fromJson(jsonResponse);
+        final TopBrandsProducts apiResponse = TopBrandsProducts.fromJson(jsonResponse);
 
         if (page == 1) {
           _records = apiResponse.data?.records ?? [];
@@ -281,11 +284,13 @@ class FeaturedBrandsProvider with ChangeNotifier {
 
   bool get isLoadingPackages => _isLoadingPackages;
 
-  Future<void> fetchBrandsPackages(BuildContext context,
-      {required String slug,
-      int perPage = 12,
-      page = 1,
-      String sortBy = 'default_sorting',}) async {
+  Future<void> fetchBrandsPackages(
+    BuildContext context, {
+    required String slug,
+    int perPage = 12,
+    page = 1,
+    String sortBy = 'default_sorting',
+  }) async {
     if (page == 1) {
       _isMoreLoading = true;
       _isLoadingPackages = true;
@@ -294,8 +299,7 @@ class FeaturedBrandsProvider with ChangeNotifier {
     }
     notifyListeners();
 
-    final url =
-        '${ApiEndpoints.featuredBrandPackages}$slug?per-page=$perPage&page=$page&sort-by=$sortBy';
+    final url = '${ApiEndpoints.featuredBrandPackages}$slug?per-page=$perPage&page=$page&sort-by=$sortBy';
 
     try {
       final response = await _apiResponseHandler.getRequest(
@@ -305,8 +309,7 @@ class FeaturedBrandsProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonResponse = response.data;
-        final TopBrandsProducts apiResponse =
-            TopBrandsProducts.fromJson(jsonResponse);
+        final TopBrandsProducts apiResponse = TopBrandsProducts.fromJson(jsonResponse);
 
         if (page == 1) {
           _recordsPackages = apiResponse.data?.records ?? [];

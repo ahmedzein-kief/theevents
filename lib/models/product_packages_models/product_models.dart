@@ -134,8 +134,12 @@ class RecordProduct {
       reviewEnabled: json['review_enabled'],
       review: json['review'] != null ? Review.fromJson(json['review']) : null,
       prices: json['prices'] != null ? Prices.fromJson(json['prices']) : null,
-      store: json['store'] != null ? Store.fromJson(json['store']) : null,
-      brand: json['brand'] != null ? Store.fromJson(json['brand']) : null,
+      store: (json['store'] != null && json['store'] is Map<String, dynamic>)
+          ? Store.fromJson(json['store'])
+          : null,
+      brand: (json['brand'] != null && json['brand'] is Map<String, dynamic>)
+          ? Store.fromJson(json['brand'])
+          : null,
       labels: json['labels'],
     );
   }

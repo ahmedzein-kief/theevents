@@ -1,0 +1,20 @@
+{
+  "provider": "apple_pay",
+  "data": {
+    "merchantIdentifier": "merchant.com.logicalyinfotech.events",
+    "displayName": "TheEvents",
+    "merchantCapabilities": [
+      "3DS",
+      "debit",
+      "credit"
+    ],
+    "supportedNetworks": [
+      "amex",
+      "visa",
+      "discover",
+      "masterCard"
+    ],
+    "countryCode": "AE",
+    "currencyCode": "AED"
+  }
+}

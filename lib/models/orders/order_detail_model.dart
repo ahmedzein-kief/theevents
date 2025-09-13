@@ -212,10 +212,15 @@ class Store {
     required this.slug,
   });
 
-  factory Store.fromJson(Map<dynamic, dynamic> json) => Store(
-        name: json['name'],
-        slug: json['slug'],
-      );
+  factory Store.fromJson(dynamic json) {
+    if (json == null || json is List) {
+      return Store(name: '', slug: '');
+    }
+    return Store(
+      name: json['name'] ?? '',
+      slug: json['slug'] ?? '',
+    );
+  }
 
   String name;
   String slug;

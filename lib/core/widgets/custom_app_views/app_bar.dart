@@ -148,8 +148,8 @@ class _CustomAppBarState extends State<CustomAppBar> {
                         if (widget.firstRightIconPath != null)
                           Padding(
                             padding: EdgeInsets.only(
-                              right: isRTL ? 0 : screenWidth * 0.05,
-                              left: isRTL ? screenWidth * 0.05 : 0,
+                              right: isRTL ? 0 : screenWidth * 0.03,
+                              left: isRTL ? screenWidth * 0.03 : 0,
                             ),
                             child: GestureDetector(
                               onTap: widget.onFirstRightIconPressed,
@@ -168,8 +168,8 @@ class _CustomAppBarState extends State<CustomAppBar> {
                         if (widget.secondRightIconPath != null)
                           Padding(
                             padding: EdgeInsets.only(
-                              right: isRTL ? 0 : screenWidth * 0.04,
-                              left: isRTL ? screenWidth * 0.04 : 0,
+                              right: isRTL ? 0 : screenWidth * 0.03,
+                              left: isRTL ? screenWidth * 0.03 : 0,
                             ),
                             child: GestureDetector(
                               onTap: widget.onSecondRightIconPressed,
@@ -211,8 +211,8 @@ class _CustomAppBarState extends State<CustomAppBar> {
                         if (widget.thirdRightIconPath != null)
                           Padding(
                             padding: EdgeInsets.only(
-                              right: isRTL ? 0 : screenWidth * 0.04,
-                              left: isRTL ? screenWidth * 0.04 : 0,
+                              right: isRTL ? 0 : screenWidth * 0.03,
+                              left: isRTL ? screenWidth * 0.03 : 0,
                             ),
                             child: GestureDetector(
                               onTap: widget.onThirdRightIconPressed,

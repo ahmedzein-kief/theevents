@@ -10,10 +10,11 @@ import '../base_screens/base_app_bar.dart';
 import 'payment_screen.dart';
 
 class StepperScreen extends StatefulWidget {
-  const StepperScreen({super.key, this.tracked_start_checkout, required this.isNewAddress});
+  const StepperScreen({super.key, this.tracked_start_checkout, required this.isNewAddress, required this.amount});
 
   final String? tracked_start_checkout;
   final bool isNewAddress;
+  final String amount;
 
   @override
   _StepperScreenState createState() => _StepperScreenState();

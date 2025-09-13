@@ -107,6 +107,7 @@ class _OrderPageScreenState extends State<OrderPageScreen> with SingleTickerProv
           final records = isCompleted
               ? provider.completedOrderHistoryModel?.data.records
               : provider.orderHistoryModel?.data.records;
+
           final List<OrderProduct>? allProducts = records
               ?.expand(
                 (record) => record.products.map(

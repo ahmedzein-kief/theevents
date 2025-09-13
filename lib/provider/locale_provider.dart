@@ -86,54 +86,34 @@ class LocaleProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      print('Fetching languages from: ${ApiEndpoints.getAllActiveLanguages}');
-
       final response = await _apiResponseHandler.getRequest(
         ApiEndpoints.getAllActiveLanguages,
         context: context,
       );
-
-      print('Language API response status: ${response.statusCode}');
-      print('Language API response data: ${response.data}');
 
       if (response.statusCode == 200) {
         // The API returns a direct array, not a wrapped response
         if (response.data is List) {
           final languagesResponse = LanguagesResponse.fromJson(response.data);
           _languages = languagesResponse.languages ?? [];
-          print(
-            'Languages fetched successfully: ${_languages.length} languages',
-          );
 
           // Sort languages by order if available
           _languages.sort((a, b) => (a.langOrder ?? 0).compareTo(b.langOrder ?? 0));
-
-          // Print language details for debugging
-          for (final lang in _languages) {
-            print(
-              'Language: ${lang.langName} (${lang.langLocale}) - RTL: ${lang.langIsRtl}',
-            );
-          }
         } else {
-          print('Unexpected response format, using fallback languages');
           _languages = _getDefaultLanguages();
         }
 
         // Ensure we have at least English and Arabic as fallbacks
         if (_languages.isEmpty) {
-          print('No languages found, using default languages');
           _languages = _getDefaultLanguages();
         }
       } else {
         // Fallback to default languages if API fails
-        print(
-          'API failed with status: ${response.statusCode}, using fallback languages',
-        );
+
         _languages = _getDefaultLanguages();
       }
     } catch (e) {
       // Fallback to default languages if API fails
-      print('Exception while fetching languages: $e');
       _languages = _getDefaultLanguages();
     }
 
@@ -150,9 +130,6 @@ class LocaleProvider extends ChangeNotifier {
       // If current locale is not supported, switch to the first available language
       _locale = Locale(_languages.first.code ?? 'en');
       SecurePreferencesUtil.saveLanguage(_locale.languageCode);
-      print(
-        'Current locale not supported, switched to: ${_locale.languageCode}',
-      );
     }
   }
 

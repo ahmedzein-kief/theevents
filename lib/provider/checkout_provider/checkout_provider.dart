@@ -38,9 +38,6 @@ class CheckoutProvider with ChangeNotifier {
       'tracked_start_checkout': checkoutToken,
     };
 
-    log('token $tokenLogin');
-    log('checkoutToken $checkoutToken');
-
     if (marketPlaceList.isNotEmpty) {
       for (final value in marketPlaceList) {
         // Add to postDataMap

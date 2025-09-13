@@ -140,7 +140,5 @@ class HomePageProvider with ChangeNotifier {
         'attributes': attributes,
       });
     });
-
-    log('Extracted data for locale: $_extractedData');
   }
 }

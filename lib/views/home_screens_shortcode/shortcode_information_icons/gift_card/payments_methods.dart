@@ -1,3 +1,5 @@
+import 'dart:io' show Platform;
+
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -41,12 +43,12 @@ class _PaymentMethodsState extends State<PaymentMethods> {
     );
   }
 
-  void _setDefaultSelection(List<Map<String, dynamic>> filteredOptions) {
-    if (!_hasSetDefault && filteredOptions.isNotEmpty) {
+  void _setDefaultSelection(List<Map<String, dynamic>> allOptions) {
+    if (!_hasSetDefault && allOptions.isNotEmpty) {
       // Find the first "Card" option or just the first option
-      final defaultOption = filteredOptions.firstWhere(
+      final defaultOption = allOptions.firstWhere(
         (opt) => opt['label'].toString().toLowerCase() == 'card',
-        orElse: () => filteredOptions.first,
+        orElse: () => allOptions.first,
       );
 
       selectedOption = defaultOption['optionValue'];
@@ -61,6 +63,98 @@ class _PaymentMethodsState extends State<PaymentMethods> {
         ));
       });
     }
+  }
+
+  Widget _buildApplePayOption(bool isSelected, bool isDarkMode) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      decoration: BoxDecoration(
+        color: isDarkMode ? Colors.grey[900] : Colors.white,
+        border: Border.all(
+          color: isSelected ? Colors.blue : Colors.grey.shade300,
+          width: isSelected ? 2 : 1,
+        ),
+        borderRadius: BorderRadius.circular(6),
+        boxShadow: isSelected
+            ? [
+                BoxShadow(
+                  color: Colors.blue.withOpacity(0.2),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ]
+            : null,
+      ),
+      child: RadioListTile<String>(
+        activeColor: Colors.blue,
+        value: 'apple_pay',
+        groupValue: selectedOption,
+        onChanged: (value) {
+          setState(() {
+            selectedOption = value;
+          });
+          widget.onSelectionChanged?.call({
+            'payment_method': 'apple_pay',
+            'sub_option_key': 'payment_type',
+            'sub_option_value': 'apple_pay',
+          });
+        },
+        title: Row(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(4),
+              child: Image.asset(
+                'assets/apple_pay_logo.png',
+                color: Theme.of(context).colorScheme.onPrimary,
+                width: 32,
+                height: 32,
+                fit: BoxFit.contain,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    width: 32,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade200,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: const Icon(
+                      Icons.apple,
+                      size: 20,
+                      color: Colors.grey,
+                    ),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Apple Pay',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                      color: isSelected ? Colors.blue : null,
+                    ),
+                  ),
+                  Text(
+                    'Pay with your Apple Wallet',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey[600],
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -133,112 +227,135 @@ class _PaymentMethodsState extends State<PaymentMethods> {
           return 0;
         });
 
+        // Add Apple Pay option if on iOS and not restricted payment type
+        final allOptions = <Map<String, dynamic>>[...filteredOptions];
+        final bool shouldShowApplePay =
+            Platform.isIOS && widget.paymentType != 'gift_card' && widget.paymentType != 'subscription';
+
+        if (shouldShowApplePay) {
+          allOptions.insert(0, {
+            'label': 'Apple Pay',
+            'method': 'apple_pay',
+            'optionKey': 'payment_type',
+            'optionValue': 'apple_pay',
+            'image': 'assets/apple_pay_logo.png',
+            'isApplePay': true,
+          });
+        }
+
         // Set default selection after options are available
-        _setDefaultSelection(filteredOptions);
+        _setDefaultSelection(allOptions);
 
-        return ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: filteredOptions.length,
-          itemBuilder: (context, index) {
-            final item = filteredOptions[index];
-            final isSelected = selectedOption == item['optionValue'];
+        return Column(
+          children: [
+            // Apple Pay option (if available)
+            if (shouldShowApplePay) _buildApplePayOption(selectedOption == 'apple_pay', isDarkMode),
 
-            return Container(
-              margin: const EdgeInsets.symmetric(vertical: 8),
-              decoration: BoxDecoration(
-                color: isDarkMode ? Colors.grey[900] : Colors.white,
-                border: Border.all(
-                  color: isSelected ? Colors.blue : Colors.grey.shade300,
-                  width: isSelected ? 2 : 1, // Make selected border thicker
-                ),
-                borderRadius: BorderRadius.circular(6),
-                // Add subtle shadow for selected item
-                boxShadow: isSelected
-                    ? [
-                        BoxShadow(
-                          color: Colors.blue.withOpacity(0.2),
-                          blurRadius: 4,
-                          offset: const Offset(0, 2),
-                        ),
-                      ]
-                    : null,
-              ),
-              child: RadioListTile<String>(
-                activeColor: Colors.blue,
-                value: item['optionValue'],
-                groupValue: selectedOption,
-                onChanged: (value) {
-                  setState(() {
-                    selectedOption = value;
-                  });
+            // Other payment methods
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: filteredOptions.length,
+              itemBuilder: (context, index) {
+                final item = filteredOptions[index];
+                final isSelected = selectedOption == item['optionValue'];
 
-                  widget.onSelectionChanged?.call(updatePaymentMethod(
-                    item['method'],
-                    item['optionKey'],
-                    value ?? '',
-                  ));
-                },
-                title: Row(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(4),
-                      child: Image.network(
-                        item['image'],
-                        width: 32,
-                        height: 32,
-                        fit: BoxFit.contain,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
+                return Container(
+                  margin: const EdgeInsets.symmetric(vertical: 8),
+                  decoration: BoxDecoration(
+                    color: isDarkMode ? Colors.grey[900] : Colors.white,
+                    border: Border.all(
+                      color: isSelected ? Colors.blue : Colors.grey.shade300,
+                      width: isSelected ? 2 : 1,
+                    ),
+                    borderRadius: BorderRadius.circular(6),
+                    boxShadow: isSelected
+                        ? [
+                            BoxShadow(
+                              color: Colors.blue.withOpacity(0.2),
+                              blurRadius: 4,
+                              offset: const Offset(0, 2),
+                            ),
+                          ]
+                        : null,
+                  ),
+                  child: RadioListTile<String>(
+                    activeColor: Colors.blue,
+                    value: item['optionValue'],
+                    groupValue: selectedOption,
+                    onChanged: (value) {
+                      setState(() {
+                        selectedOption = value;
+                      });
+
+                      widget.onSelectionChanged?.call(updatePaymentMethod(
+                        item['method'],
+                        item['optionKey'],
+                        value ?? '',
+                      ));
+                    },
+                    title: Row(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(4),
+                          child: Image.network(
+                            item['image'],
                             width: 32,
                             height: 32,
-                            decoration: BoxDecoration(
-                              color: Colors.grey.shade200,
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: const Icon(
-                              Icons.payment,
-                              size: 20,
-                              color: Colors.grey,
-                            ),
-                          );
-                        },
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return Container(
-                            width: 32,
-                            height: 32,
-                            decoration: BoxDecoration(
-                              color: Colors.grey.shade100,
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: const SizedBox(
-                              width: 16,
-                              height: 16,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        item['label'],
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                          color: isSelected ? Colors.blue : null,
+                            fit: BoxFit.contain,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                width: 32,
+                                height: 32,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey.shade200,
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: const Icon(
+                                  Icons.payment,
+                                  size: 20,
+                                  color: Colors.grey,
+                                ),
+                              );
+                            },
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return Container(
+                                width: 32,
+                                height: 32,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey.shade100,
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: const SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
                         ),
-                      ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            item['label'],
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                              color: isSelected ? Colors.blue : null,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
-            );
-          },
+                  ),
+                );
+              },
+            ),
+          ],
         );
       },
     );

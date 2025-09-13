@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/models/orders/order_history_model.dart';
 import 'package:event_app/views/home_screens_shortcode/shortcode_information_icons/order_pages_screens/order_detail_screen.dart';
@@ -56,7 +57,8 @@ class _OrderHistoryViewState extends State<OrderHistoryView> {
                           widget.order.orderRecord?.statusArr.label ?? '',
                           style: TextStyle(
                             color: _getStatusColor(
-                                widget.order.orderRecord?.statusArr.label,),
+                              widget.order.orderRecord?.statusArr.label,
+                            ),
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
                           ),
@@ -136,8 +138,7 @@ class _OrderHistoryViewState extends State<OrderHistoryView> {
                           context,
                           MaterialPageRoute(
                             builder: (context) => OrderDetailsScreen(
-                              orderID:
-                                  widget.order.orderRecord?.id.toString() ?? '',
+                              orderID: widget.order.orderRecord?.id.toString() ?? '',
                             ),
                           ),
                         );
@@ -146,12 +147,11 @@ class _OrderHistoryViewState extends State<OrderHistoryView> {
                         });
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            isOrderViewed ? Colors.grey : Colors.black,
+                        backgroundColor: isOrderViewed ? Colors.grey : Colors.black,
                       ),
-                      child: Text(isOrderViewed
-                          ? AppStrings.orderViewed.tr
-                          : AppStrings.viewOrder.tr,),
+                      child: Text(
+                        isOrderViewed ? AppStrings.orderViewed.tr : AppStrings.viewOrder.tr,
+                      ),
                     ),
                     ElevatedButton(
                       onPressed: () {
@@ -159,7 +159,8 @@ class _OrderHistoryViewState extends State<OrderHistoryView> {
                           context,
                           MaterialPageRoute(
                             builder: (context) => ProductDetailScreen(
-                                slug: widget.order.productSlug,),
+                              slug: widget.order.productSlug,
+                            ),
                           ),
                         );
                       },
@@ -179,7 +180,8 @@ class _OrderHistoryViewState extends State<OrderHistoryView> {
                     Column(
                       children: [
                         _buildCircleAvatar(
-                            widget.order.orderRecord?.store.thumb ?? '',),
+                          widget.order.orderRecord?.store.thumb ?? '',
+                        ),
                         const SizedBox(height: 4),
                         Text(AppStrings.reviewSeller.tr),
                       ],
@@ -199,7 +201,7 @@ class _OrderHistoryViewState extends State<OrderHistoryView> {
         ),
       );
 
-  Widget _buildCircleAvatar(String imageUrl) => Container(
+  Widget _buildCircleAvatar(String? imageUrl) => Container(
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           border: Border.all(color: Colors.grey[300]!, width: 2),
@@ -208,13 +210,38 @@ class _OrderHistoryViewState extends State<OrderHistoryView> {
           radius: 24,
           backgroundColor: Colors.grey[200],
           child: ClipOval(
-            child: Image.network(
-              imageUrl,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) =>
-                  const Icon(Icons.error, size: 24, color: Colors.red),
-            ),
+            child: _buildImageWidget(imageUrl),
           ),
         ),
       );
+
+  Widget _buildImageWidget(String? imageUrl) {
+    // Check if imageUrl is null, empty, or invalid
+    if (imageUrl == null ||
+        imageUrl.isEmpty ||
+        Uri.tryParse(imageUrl)?.hasAbsolutePath != true ||
+        (!imageUrl.startsWith('http://') && !imageUrl.startsWith('https://'))) {
+      return const Icon(
+        Icons.person,
+        size: 24,
+        color: Colors.grey,
+      );
+    }
+
+    return CachedNetworkImage(
+      imageUrl: imageUrl,
+      width: 48,
+      height: 48,
+      fit: BoxFit.cover,
+      placeholder: (context, url) => const CircularProgressIndicator(
+        strokeWidth: 2,
+        valueColor: AlwaysStoppedAnimation<Color>(Colors.grey),
+      ),
+      errorWidget: (context, url, error) => const Icon(
+        Icons.person,
+        size: 24,
+        color: Colors.grey,
+      ),
+    );
+  }
 }

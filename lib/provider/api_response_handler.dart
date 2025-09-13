@@ -12,18 +12,20 @@ class ApiResponseHandler {
   ApiResponseHandler({Dio? dio}) : dio = dio ?? locator.get<Dio>();
   final Dio dio;
 
-  Future<dynamic> getRequest(
-    String url, {
-    Map<String, String> headers = const {},
-    Map<String, String> queryParams = const {},
-    bool authService = false,
-    required BuildContext context,
-  }) async {
+  Future<dynamic> getRequest(String url,
+      {Map<String, String> headers = const {},
+      Map<String, String> queryParams = const {},
+      bool authService = false,
+      required BuildContext context,
+      ResponseType? responseType}) async {
     try {
       final response = await dio.get(
         url,
         queryParameters: queryParams.isNotEmpty ? queryParams : null,
-        options: Options(headers: headers.isNotEmpty ? headers : null),
+        options: Options(
+          headers: headers.isNotEmpty ? headers : null,
+          responseType: responseType,
+        ),
       );
       if (response.statusCode != 401) {
         return authService ? _handleDioResponse(response) : response;
@@ -35,9 +37,7 @@ class ApiResponseHandler {
         throw Exception('Failed with status code: ${response.statusCode}');
       }
     } catch (e) {
-      throw authService
-          ? _handleException(e)
-          : Exception('Error during API request: $e');
+      throw authService ? _handleException(e) : Exception('Error during API request: $e');
     }
   }
 
@@ -91,9 +91,7 @@ class ApiResponseHandler {
 
       return authService ? _handleDioResponse(response) : response;
     } catch (e) {
-      throw authService
-          ? _handleException(e)
-          : Exception('Error during API request: $e');
+      throw authService ? _handleException(e) : Exception('Error during API request: $e');
     }
   }
 
@@ -101,7 +99,8 @@ class ApiResponseHandler {
   Exception _handleException(Object e) {
     if (e is SocketException) {
       return Exception(
-          'No internet connection. Please check your network settings.',);
+        'No internet connection. Please check your network settings.',
+      );
     } else if (e is TimeoutException) {
       return Exception('Request timed out. Please try again.');
     } else if (e is DioException) {
@@ -110,10 +109,12 @@ class ApiResponseHandler {
         case DioExceptionType.sendTimeout:
         case DioExceptionType.receiveTimeout:
           return Exception(
-              'Connection timeout. Please check your internet connection.',);
+            'Connection timeout. Please check your internet connection.',
+          );
         case DioExceptionType.connectionError:
           return Exception(
-              'No internet connection. Please check your network.',);
+            'No internet connection. Please check your network.',
+          );
         case DioExceptionType.badResponse:
           final message = e.response?.data?['message'] ?? 'Request failed';
           return Exception('Server error: $message');
@@ -175,8 +176,7 @@ class ApiResponseHandler {
   }
 
   Future<Map<String, dynamic>> _handleDioResponse(Response response) async {
-    final responseBody =
-        response.data is String ? json.decode(response.data) : response.data;
+    final responseBody = response.data is String ? json.decode(response.data) : response.data;
     switch (response.statusCode) {
       case HttpStatus.ok:
         return {
@@ -196,8 +196,7 @@ class ApiResponseHandler {
       case HttpStatus.forbidden:
         return {
           'status': false,
-          'message':
-              'Forbidden. You do not have permission to access this resource.',
+          'message': 'Forbidden. You do not have permission to access this resource.',
         };
       case HttpStatus.internalServerError:
         return {
@@ -205,8 +204,7 @@ class ApiResponseHandler {
           'message': 'Internal server error. Please try again later.',
         };
       default:
-        final errorMessages =
-            responseBody['message'] ?? 'Unknown error occurred';
+        final errorMessages = responseBody['message'] ?? 'Unknown error occurred';
         return {'status': false, 'message': errorMessages};
     }
   }

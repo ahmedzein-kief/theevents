@@ -3,7 +3,6 @@ import 'dart:async';
 
 import 'package:event_app/core/constants/app_assets.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
-import 'package:event_app/provider/shortcode_vendor_type_by_provider/vendor_type_by_provider.dart';
 import 'package:event_app/views/base_screens/user_profile_login.dart';
 import 'package:event_app/views/home_screens_shortcode/shortcode_user_by_type/user_by_types_items_screen.dart';
 import 'package:flutter/material.dart';
@@ -12,16 +11,14 @@ import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../provider/home_shortcode_provider/featured_brands_provider.dart';
 import '../../provider/locale_provider.dart';
-import '../../provider/shortcode_featured_categories_provider/featured_categories_provider.dart';
 import '../../provider/shortcode_home_page_provider.dart';
 import '../../views/base_screens/home_screen.dart';
 import '../../views/base_screens/profile_screen.dart';
 import '../../views/home_screens_shortcode/shorcode_featured_brands/featured_brands_view_all.dart';
 import '../../views/home_screens_shortcode/shortcode_featured_categories/featured_categories_items_screen.dart';
+import '../../views/home_screens_shortcode/shortcode_information_icons/order_pages_screens/order_detail_screen.dart';
 import '../constants/app_strings.dart';
-import '../router/app_routes.dart';
 import '../services/shared_preferences_helper.dart';
 import '../utils/app_utils.dart';
 
@@ -31,11 +28,13 @@ class BaseHomeScreen extends StatefulWidget {
     this.data,
     this.typeId,
     this.shouldNavigateToOrders = false,
+    this.orderId,
   });
 
   final dynamic data;
   final int? typeId;
   final bool shouldNavigateToOrders;
+  final String? orderId;
 
   @override
   State<BaseHomeScreen> createState() => _HomeScreenState();
@@ -60,25 +59,25 @@ class _HomeScreenState extends State<BaseHomeScreen> {
     _currentLocale = Provider.of<LocaleProvider>(context, listen: false).locale;
     _loadInitialData();
 
-    // Handle navigation to orders page with delay
-    if (widget.shouldNavigateToOrders) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          // Show success toast immediately after build
-          AppUtils.showToast(
-            AppStrings.orderPlacedSuccessfully.tr,
-            isSuccess: true,
-          );
-
-          // Delay ONLY the navigation to orders page
-          Future.delayed(const Duration(seconds: 1), () {
-            if (mounted) {
-              debugPrint('Navigating to orders page after delay');
-              Navigator.pushNamed(context, AppRoutes.orderPage);
-            }
-          });
-        }
-      });
+    if (widget.shouldNavigateToOrders && widget.orderId != null && widget.orderId!.isNotEmpty) {
+      if (mounted) {
+        AppUtils.showToast(
+          AppStrings.orderPlacedSuccessfully.tr,
+          isSuccess: true,
+        );
+        Future.microtask(() {
+          if (mounted) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => OrderDetailsScreen(
+                  orderID: widget.orderId!,
+                ),
+              ),
+            );
+          }
+        });
+      }
     }
   }
 
@@ -129,9 +128,9 @@ class _HomeScreenState extends State<BaseHomeScreen> {
         // Refresh all providers that depend on locale with mounted checks
         await Future.wait([
           _fetchHomePageDataSafely(),
-          _fetchCelebritiesDataSafely(),
-          _fetchBrandsDataSafely(),
-          _fetchFeaturedCategoriesDataSafely(),
+          // _fetchCelebritiesDataSafely(),
+          // _fetchBrandsDataSafely(),
+          // _fetchFeaturedCategoriesDataSafely(),
         ]);
       } catch (e) {
         debugPrint('Error reFetching data on locale change: $e');
@@ -155,67 +154,6 @@ class _HomeScreenState extends State<BaseHomeScreen> {
     await homePageProvider.fetchHomePageData(contextToUse, forceRefresh: true);
   }
 
-  Future<void> _fetchCelebritiesDataSafely() async {
-    if (!mounted) return;
-    final contextToUse = _lastValidContext ?? context;
-
-    final typeId = widget.typeId ?? 2;
-    final vendorProvider = Provider.of<VendorByTypeProvider>(contextToUse, listen: false);
-    await vendorProvider.fetchVendorTypeById(typeId, contextToUse);
-
-    if (!mounted) return;
-    await vendorProvider.fetchVendors(typeId: typeId, contextToUse);
-  }
-
-  Future<void> _fetchFeaturedCategoriesDataSafely() async {
-    if (!mounted) return;
-    final contextToUse = _lastValidContext ?? context;
-
-    final featuredCategoriesProvider = Provider.of<FeaturedCategoriesProvider>(contextToUse, listen: false);
-    await featuredCategoriesProvider.fetchPageData(contextToUse);
-
-    if (!mounted) return;
-    await featuredCategoriesProvider.fetchCategories(
-      perPage: 12,
-      contextToUse,
-      page: 1,
-      sortBy: 'default_sorting',
-    );
-  }
-
-  Future<void> _fetchBrandsDataSafely() async {
-    if (!mounted) return;
-    final contextToUse = _lastValidContext ?? context;
-
-    final provider = Provider.of<FeaturedBrandsProvider>(contextToUse, listen: false);
-    await provider.fetchFeaturedBrands(contextToUse);
-
-    if (!mounted) return;
-    await Provider.of<FeaturedBrandsProvider>(contextToUse, listen: false).fetchBrandsItems(
-      perPage: 12,
-      contextToUse,
-      page: 1,
-      sortBy: 'default_sorting',
-    );
-  }
-
-  // Legacy methods kept for backward compatibility but made safe
-  Future<void> _fetchHomePageData() async {
-    await _fetchHomePageDataSafely();
-  }
-
-  Future<void> _fetchCelebritiesData() async {
-    await _fetchCelebritiesDataSafely();
-  }
-
-  Future<void> _fetchFeaturedCategoriesData() async {
-    await _fetchFeaturedCategoriesDataSafely();
-  }
-
-  Future<void> _fetchBrandsData() async {
-    await _fetchBrandsDataSafely();
-  }
-
   Future<void> _loadLoginState() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final isTempLoggedIn = (await SecurePreferencesUtil.getToken() ?? '').isNotEmpty;
@@ -232,11 +170,6 @@ class _HomeScreenState extends State<BaseHomeScreen> {
     if (!mounted) return; // Safety check
 
     await _loadLoginState();
-
-    // Only fetch vendor data when actually navigating to that tab
-    if (index == 0) {
-      await _fetchCelebritiesDataSafely();
-    }
 
     if (mounted) {
       setState(() {

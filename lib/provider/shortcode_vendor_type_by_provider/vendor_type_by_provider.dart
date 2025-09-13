@@ -16,27 +16,15 @@ class VendorByTypeProvider extends ChangeNotifier {
 
   bool get isLoading => _isLoading;
 
-  // Cache for vendor type banner data
-  final Map<String, VendorTypeData> _cachedVendorTypeData = {};
+  void resetVendorTypeData() {
+    vendorTypeData = null;
+  }
 
-  Future<void> fetchVendorTypeById(
-    int typeId,
-    BuildContext context, {
-    bool forceRefresh = false,
-  }) async {
+  Future<void> fetchVendorTypeById(int typeId, BuildContext context) async {
     _isLoading = true;
     notifyListeners();
 
     final currentLocale = Provider.of<LocaleProvider>(context, listen: false).locale.languageCode;
-    final cacheKey = 'vendor-type-$typeId-$currentLocale';
-
-    // Check cache first (unless forcing refresh)
-    if (_cachedVendorTypeData[cacheKey] != null && !forceRefresh) {
-      vendorTypeData = _cachedVendorTypeData[cacheKey];
-      _isLoading = false;
-      notifyListeners();
-      return;
-    }
 
     final url = '${ApiEndpoints.userByTypeBanner}$typeId';
 
@@ -50,31 +38,16 @@ class VendorByTypeProvider extends ChangeNotifier {
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = response.data;
         final VendorTypeBy vendorType = VendorTypeBy.fromJson(responseData);
-
         vendorTypeData = vendorType.data;
-        if (vendorType.data != null) {
-          _cachedVendorTypeData[cacheKey] = vendorType.data!; // Cache the data
-        }
         errorMessage = '';
       } else {
         errorMessage = 'Failed to load data: ${response.statusCode}';
 
-        // Fallback to cached data if available
-        if (_cachedVendorTypeData[cacheKey] != null) {
-          vendorTypeData = _cachedVendorTypeData[cacheKey];
-        } else {
-          throw Exception(errorMessage);
-        }
+        throw Exception(errorMessage);
       }
     } catch (error) {
       errorMessage = error.toString();
-
-      // Fallback to cached data if available
-      if (_cachedVendorTypeData[cacheKey] != null) {
-        vendorTypeData = _cachedVendorTypeData[cacheKey];
-      } else {
-        rethrow;
-      }
+      vendorTypeData = null;
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -96,16 +69,12 @@ class VendorByTypeProvider extends ChangeNotifier {
 
   bool get isMoreLoading => _isMoreLoading;
 
-  // Cache for vendors list data (per page and locale)
-  final Map<String, VendorResponse> _cachedVendorsData = {};
-
   Future<void> fetchVendors(
     BuildContext context, {
     required int typeId,
     String sortBy = 'default_sorting',
     int page = 1,
     int perPage = 12,
-    bool forceRefresh = false,
   }) async {
     if (page == 1) {
       userLoader = true;
@@ -115,20 +84,6 @@ class VendorByTypeProvider extends ChangeNotifier {
     notifyListeners();
 
     final currentLocale = Provider.of<LocaleProvider>(context, listen: false).locale.languageCode;
-    final cacheKey = 'vendors-$typeId-$sortBy-$page-$perPage-$currentLocale';
-
-    // Check cache first for first page (unless forcing refresh)
-    if (page == 1 && _cachedVendorsData[cacheKey] != null && !forceRefresh) {
-      final cachedResponse = _cachedVendorsData[cacheKey]!;
-      _vendors = cachedResponse.records;
-      _paginationUser = cachedResponse.pagination;
-      _errorMessage = '';
-
-      userLoader = false;
-      _isMoreLoading = false;
-      notifyListeners();
-      return;
-    }
 
     try {
       final url = '${ApiEndpoints.customerByType}/$typeId?limit=$perPage&page=$page&sort-by=$sortBy';
@@ -147,73 +102,19 @@ class VendorByTypeProvider extends ChangeNotifier {
         if (page == 1) {
           _vendors = vendorResponse.records;
           _paginationUser = vendorResponse.pagination;
-          // Cache first page data
-          _cachedVendorsData[cacheKey] = vendorResponse;
         } else {
           _vendors.addAll(vendorResponse.records);
           _paginationUser = vendorResponse.pagination;
         }
       } else {
         _errorMessage = 'Failed to load data: ${response.statusCode}';
-
-        // Fallback to cached data if available for first page
-        if (page == 1 && _cachedVendorsData[cacheKey] != null) {
-          final cachedResponse = _cachedVendorsData[cacheKey]!;
-          _vendors = cachedResponse.records;
-          _paginationUser = cachedResponse.pagination;
-        }
       }
     } catch (error) {
       _errorMessage = error.toString();
-
-      // Fallback to cached data if available for first page
-      if (page == 1 && _cachedVendorsData[cacheKey] != null) {
-        final cachedResponse = _cachedVendorsData[cacheKey]!;
-        _vendors = cachedResponse.records;
-        _paginationUser = cachedResponse.pagination;
-      }
     } finally {
       userLoader = false;
       _isMoreLoading = false;
       notifyListeners();
     }
-  }
-
-  // Clear cache methods
-  void clearVendorTypeCache() {
-    _cachedVendorTypeData.clear();
-  }
-
-  void clearVendorTypeCacheForType(int typeId, String locale) {
-    final cacheKey = 'vendor-type-$typeId-$locale';
-    _cachedVendorTypeData.remove(cacheKey);
-  }
-
-  void clearVendorsCache() {
-    _cachedVendorsData.clear();
-  }
-
-  void clearVendorsCacheForType(int typeId, String locale) {
-    // Remove all cache entries for this typeId and locale
-    final keysToRemove = _cachedVendorsData.keys
-        .where(
-          (key) => key.contains('vendors-$typeId-') && key.contains('-$locale'),
-        )
-        .toList();
-
-    for (final key in keysToRemove) {
-      _cachedVendorsData.remove(key);
-    }
-  }
-
-  // Refresh method for locale changes
-  Future<void> refreshForLocaleChange(BuildContext context, int typeId) async {
-    await fetchVendorTypeById(typeId, context, forceRefresh: true);
-    await fetchVendors(
-      context,
-      typeId: typeId,
-      page: 1,
-      forceRefresh: true,
-    );
   }
 }

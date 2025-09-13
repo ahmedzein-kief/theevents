@@ -1,7 +1,10 @@
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../constants/app_strings.dart';
 import '../../styles/custom_text_styles.dart';
+import '../../utils/app_utils.dart';
 
 class CustomTextFieldWithCoupon extends StatefulWidget {
   const CustomTextFieldWithCoupon({
@@ -12,6 +15,7 @@ class CustomTextFieldWithCoupon extends StatefulWidget {
     required this.onCouponApplyRemove,
     required this.onValueChange,
   });
+
   final String labelText;
   final String hintText;
   final Map<String, dynamic> couponData;
@@ -19,8 +23,7 @@ class CustomTextFieldWithCoupon extends StatefulWidget {
   final void Function(String? value) onValueChange;
 
   @override
-  State<CustomTextFieldWithCoupon> createState() =>
-      _CustomTextFieldWithCouponState();
+  State<CustomTextFieldWithCoupon> createState() => _CustomTextFieldWithCouponState();
 }
 
 class _CustomTextFieldWithCouponState extends State<CustomTextFieldWithCoupon> {
@@ -35,8 +38,7 @@ class _CustomTextFieldWithCouponState extends State<CustomTextFieldWithCoupon> {
   @override
   void didUpdateWidget(covariant CustomTextFieldWithCoupon oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.couponData['coupon_code'] !=
-        oldWidget.couponData['coupon_code']) {
+    if (widget.couponData['coupon_code'] != oldWidget.couponData['coupon_code']) {
       _couponController.text = widget.couponData['coupon_code'] ?? '';
     }
   }
@@ -44,14 +46,15 @@ class _CustomTextFieldWithCouponState extends State<CustomTextFieldWithCoupon> {
   @override
   Widget build(BuildContext context) {
     final validCoupon =
-        (widget.couponData['coupon_code'] as String).isNotEmpty &&
-            (widget.couponData['is_valid_coupon'] as bool);
+        (widget.couponData['coupon_code'] as String).isNotEmpty && (widget.couponData['is_valid_coupon'] as bool);
     final invalidCoupon =
-        (widget.couponData['coupon_code'] as String).isNotEmpty &&
-            !(widget.couponData['is_valid_coupon'] as bool);
+        (widget.couponData['coupon_code'] as String).isNotEmpty && !(widget.couponData['is_valid_coupon'] as bool);
 
     final dynamic screenWidth = MediaQuery.sizeOf(context).width;
     final dynamic screenHeight = MediaQuery.sizeOf(context).height;
+
+    // Check if the current locale is RTL
+    final bool isRTL = AppUtils.isRTL(context);
 
     return Padding(
       padding: EdgeInsets.only(
@@ -83,15 +86,14 @@ class _CustomTextFieldWithCouponState extends State<CustomTextFieldWithCoupon> {
                         hintStyle: const TextStyle(color: Colors.grey),
                         enabledBorder: const OutlineInputBorder(
                           borderSide: BorderSide(
-                              color: Colors.grey,), // Unfocused border
+                            color: Colors.grey,
+                          ), // Unfocused border
                         ),
                         focusedBorder: const OutlineInputBorder(
-                          borderSide:
-                              BorderSide(color: Colors.grey), // Focused border
+                          borderSide: BorderSide(color: Colors.grey), // Focused border
                         ),
                         focusedErrorBorder: const OutlineInputBorder(
-                          borderSide:
-                              BorderSide(color: Colors.red), // Focused border
+                          borderSide: BorderSide(color: Colors.red), // Focused border
                         ),
                         disabledBorder: const OutlineInputBorder(
                           borderSide: BorderSide(color: Colors.grey),
@@ -99,23 +101,28 @@ class _CustomTextFieldWithCouponState extends State<CustomTextFieldWithCoupon> {
                         errorBorder: const OutlineInputBorder(
                           borderSide: BorderSide(color: Colors.red),
                         ),
-                        errorText:
-                            invalidCoupon ? widget.couponData['message'] : null,
+                        errorText: invalidCoupon ? widget.couponData['message'] : null,
                         filled: true,
                       ),
                     ),
                     Positioned(
-                      right: 8,
+                      // Use conditional positioning based on text direction
+                      right: isRTL ? null : 8,
+                      left: isRTL ? 8 : null,
                       top: 8,
                       bottom: 8,
                       child: GestureDetector(
                         onTap: () {
                           if (validCoupon) {
                             widget.onCouponApplyRemove(
-                                _couponController.text, false,);
+                              _couponController.text,
+                              false,
+                            );
                           } else {
                             widget.onCouponApplyRemove(
-                                _couponController.text, true,);
+                              _couponController.text,
+                              true,
+                            );
                           }
                         },
                         child: Container(
@@ -124,7 +131,7 @@ class _CustomTextFieldWithCouponState extends State<CustomTextFieldWithCoupon> {
                             borderRadius: BorderRadius.circular(8.0),
                           ),
                           child: Text(
-                            validCoupon ? 'Remove' : 'Apply',
+                            validCoupon ? AppStrings.delete.tr : AppStrings.apply.tr,
                             style: GoogleFonts.inter(
                               color: Colors.blue,
                               fontSize: 14,

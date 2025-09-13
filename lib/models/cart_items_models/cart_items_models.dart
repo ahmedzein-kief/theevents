@@ -16,6 +16,7 @@ class Data {
     required this.content,
     required this.products,
     required this.rawTotal,
+    required this.finalTotal,
     required this.rawSubTotal,
     required this.rawTax,
     required this.formattedRawSubTotal,
@@ -37,8 +38,7 @@ class Data {
     try {
       if (json['content'] is Map<String, dynamic>) {
         final contentMap = json['content'] as Map<String, dynamic>;
-        content = contentMap
-            .map((key, value) => MapEntry(key, CartItem.fromJson(value)));
+        content = contentMap.map((key, value) => MapEntry(key, CartItem.fromJson(value)));
       } else {}
     } catch (e) {}
 
@@ -57,21 +57,23 @@ class Data {
       content: content,
       products: products,
       rawTotal: (json['rawTotal'] as num).toDouble(),
+      finalTotal: (json['finalTotal'] as num).toDouble(),
       rawSubTotal: (json['rawSubTotal'] as num).toDouble(),
       rawTax: (json['rawTax'] as num).toDouble(),
-      formattedRawSubTotal:
-          json['formatedRawSubTotal']?.toString() ?? 'AED0.00',
+      formattedRawSubTotal: json['formatedRawSubTotal']?.toString() ?? 'AED0.00',
       formattedRawTax: json['formatedRawTax']?.toString() ?? 'AED0.00',
       formattedFinalTotal: json['formatedFinalTotal']?.toString() ?? 'AED0.00',
       isTaxEnabled: json['isTaxEnabled'] ?? false,
       tracked_start_checkout: json['tracked_start_checkout']?.toString() ?? '',
     );
   }
+
   final int count;
   final String totalPrice;
   final Map<String, CartItem> content;
   final List<Product> products;
   final double rawTotal;
+  final double finalTotal;
   final double rawSubTotal;
   final double rawTax;
   final String formattedRawSubTotal;
@@ -146,22 +148,15 @@ class Options {
     return Options(
       image: json['image'] ?? '',
       attributes: json['attributes'] ?? '',
-      taxRate: (json['taxRate'] is String
-              ? double.tryParse(json['taxRate'])
-              : json['taxRate']?.toDouble()) ??
-          0.0,
+      taxRate: (json['taxRate'] is String ? double.tryParse(json['taxRate']) : json['taxRate']?.toDouble()) ?? 0.0,
       taxClasses: taxClasses,
-      options: json['options'] != null
-          ? CartExtraOptionData.fromJson(json['options'])
-          : null,
+      options: json['options'] != null ? CartExtraOptionData.fromJson(json['options']) : null,
       extras: json['extras'] ?? [],
       sku: json['sku'] ?? '',
-      weight: (json['weight'] is String
-              ? double.tryParse(json['weight'])
-              : json['weight']?.toDouble()) ??
-          0.0,
+      weight: (json['weight'] is String ? double.tryParse(json['weight']) : json['weight']?.toDouble()) ?? 0.0,
     );
   }
+
   final String image;
   final String attributes;
   final double taxRate;
@@ -175,21 +170,16 @@ class Options {
 class CartExtraOptionData {
   CartExtraOptionData({this.optionCartValue, this.optionInfo});
 
-  factory CartExtraOptionData.fromJson(Map<String, dynamic> json) =>
-      CartExtraOptionData(
+  factory CartExtraOptionData.fromJson(Map<String, dynamic> json) => CartExtraOptionData(
         optionCartValue: json['optionCartValue'] != null
             ? (json['optionCartValue'] as Map<String, dynamic>).map(
                 (key, value) => MapEntry(
                   key,
-                  (value as List<dynamic>)
-                      .map((item) => OptionCartValue.fromJson(item))
-                      .toList(),
+                  (value as List<dynamic>).map((item) => OptionCartValue.fromJson(item)).toList(),
                 ),
               )
             : null,
-        optionInfo: json['optionInfo'] != null
-            ? Map<String, String>.from(json['optionInfo'])
-            : null,
+        optionInfo: json['optionInfo'] != null ? Map<String, String>.from(json['optionInfo']) : null,
       );
   final Map<String, List<OptionCartValue>>? optionCartValue;
   final Map<String, String>? optionInfo;
@@ -203,8 +193,7 @@ class OptionCartValue {
     this.optionType,
   });
 
-  factory OptionCartValue.fromJson(Map<String, dynamic> json) =>
-      OptionCartValue(
+  factory OptionCartValue.fromJson(Map<String, dynamic> json) => OptionCartValue(
         optionValue: json['option_value'],
         affectPrice: json['affect_price'],
         affectType: json['affect_type'],
@@ -267,9 +256,7 @@ class ProductDetails {
         reviewEnabled: json['review_enabled'] ?? false,
         review: Review.fromJson(json['review'] ?? {}),
         prices: Prices.fromJson(json['prices'] ?? {}),
-        store: (json['store'] != null && json['store'] is Map<String, dynamic>)
-            ? Store.fromJson(json['store'])
-            : null,
+        store: (json['store'] != null && json['store'] is Map<String, dynamic>) ? Store.fromJson(json['store']) : null,
         // Updated line
         brand: (json['brand'] != null && json['brand'] is Map<String, dynamic>)
             ? Brand.fromJson(json['brand'])
@@ -316,9 +303,7 @@ class Prices {
   factory Prices.fromJson(Map<String, dynamic> json) => Prices(
         frontSalePrice: (json['front_sale_price'] is String
             ? double.tryParse(json['front_sale_price']) ?? 0.0
-            : (json['front_sale_price'] is num
-                ? json['front_sale_price'].toDouble()
-                : 0.0)),
+            : (json['front_sale_price'] is num ? json['front_sale_price'].toDouble() : 0.0)),
         price: (json['price'] is String
             ? double.tryParse(json['price']) ?? 0.0
             : (json['price'] is num ? json['price'].toDouble() : 0.0)),

@@ -17,17 +17,15 @@ class GiftCardHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String coverImage = data?.coverImage ?? '';
-
+    final String coverImage = data?.mobileCoverImage ?? data?.coverImage ?? '';
     return Column(
       children: [
         ClipRRect(
-          borderRadius: BorderRadius.circular(5),
+          borderRadius: BorderRadius.circular(15),
           child: Image.network(
             coverImage,
-            height: screenHeight * 0.15,
-            width: screenWidth,
             fit: BoxFit.cover,
+            width: double.infinity,
             errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image, size: 40), // fallback
           ),
         ),

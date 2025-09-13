@@ -98,8 +98,6 @@ class FeaturedCategoriesProvider with ChangeNotifier {
       _isMoreLoading = true;
       notifyListeners();
     }
-    // isLoading = true;
-    // notifyListeners();
 
     final url = '${ApiEndpoints.categoryViewAllItems}?per_page=$perPage&page=$page&sort-by=$sortBy';
 
@@ -117,9 +115,8 @@ class FeaturedCategoriesProvider with ChangeNotifier {
         _paginationCategory = categoryResponse.data.pagination;
       } else {
         categories.addAll(categoryResponse.data.records);
+        _paginationCategory = categoryResponse.data.pagination;
       }
-
-      // categories = categoryResponse.data.records;
     } else {
       throw Exception('Failed to load categories');
     }

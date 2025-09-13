@@ -1,3 +1,6 @@
+import 'dart:developer';
+import 'dart:typed_data';
+
 import 'package:dio/dio.dart';
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/models/orders/order_detail_model.dart';
@@ -51,6 +54,7 @@ class OrderDataProvider with ChangeNotifier {
         headers: headers,
         context: context,
       );
+
       if (response.statusCode == 200) {
         final jsonData = response.data;
         if (isPending) {
@@ -67,6 +71,7 @@ class OrderDataProvider with ChangeNotifier {
         CustomSnackbar.showError(context, 'No Orders Found');
       }
     } catch (e) {
+      log('Error in getOrders: ${e.toString()}');
       _orderHistoryModel = null;
       _completedOrderHistoryModel = null;
       _isLoading = false;
@@ -189,6 +194,7 @@ class OrderDataProvider with ChangeNotifier {
         _isLoading = false;
         notifyListeners();
       }
+      getOrderDetails(context, orderId);
       return CommonDataResponse.fromJson(response.data);
     } catch (e) {
       print(e.toString());
@@ -201,7 +207,8 @@ class OrderDataProvider with ChangeNotifier {
     }
   }
 
-  Future<String?> downloadProof(BuildContext context, String orderId) async {
+// Replace your existing downloadProof method with this:
+  Future<Uint8List?> downloadProof(BuildContext context, String orderId) async {
     _isLoading = true;
     final token = await SecurePreferencesUtil.getToken();
     final url = '${ApiEndpoints.customerOrders}/$orderId/${ApiEndpoints.downloadProof}';
@@ -213,12 +220,13 @@ class OrderDataProvider with ChangeNotifier {
       final response = await _apiResponseHandler.getRequest(
         url,
         headers: headers,
+        responseType: ResponseType.bytes,
         context: context,
       );
       if (response.statusCode == 200) {
         _isLoading = false;
         notifyListeners();
-        return response.data;
+        return Uint8List.fromList(response.data);
       } else {
         _isLoading = false;
         notifyListeners();
@@ -233,7 +241,8 @@ class OrderDataProvider with ChangeNotifier {
     return null;
   }
 
-  Future<String?> getInvoice(BuildContext context, String orderID) async {
+// Replace your existing getInvoice method with this:
+  Future<Uint8List?> getInvoice(BuildContext context, String orderID) async {
     _isLoading = true;
     final token = await SecurePreferencesUtil.getToken();
     final url = '${ApiEndpoints.customerOrdersPrint}/$orderID';
@@ -245,12 +254,13 @@ class OrderDataProvider with ChangeNotifier {
       final response = await _apiResponseHandler.getRequest(
         url,
         headers: headers,
+        responseType: ResponseType.bytes,
         context: context,
       );
       if (response.statusCode == 200) {
         _isLoading = false;
         notifyListeners();
-        return response.data;
+        return Uint8List.fromList(response.data);
       } else {
         _isLoading = false;
         notifyListeners();

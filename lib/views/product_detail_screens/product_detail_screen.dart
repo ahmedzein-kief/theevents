@@ -59,8 +59,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       final provider = Provider.of<ProductItemsProvider>(context, listen: false);
       provider.resetData();
       await fetchItems();
-      await _isBrandFetched();
-      await fetchBrandStoreData();
+      // await _isBrandFetched();
+      // await fetchBrandStoreData();
       fetchCustomerReviews();
       provider.addListener(() {
         if (provider.apiResponse?.data?.record?.images != null && _selectedImageUrl == null) {

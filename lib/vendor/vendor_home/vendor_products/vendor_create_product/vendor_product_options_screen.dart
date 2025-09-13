@@ -2,12 +2,12 @@ import 'package:event_app/core/constants/vendor_app_strings.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/core/styles/app_sizes.dart';
+import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/core/widgets/custom_auth_views/app_custom_button.dart';
 import 'package:event_app/models/vendor_models/products/create_product/global_options_data_response.dart';
 import 'package:event_app/models/vendor_models/products/vendor_get_product_general_settings_model.dart';
 import 'package:event_app/vendor/components/dropdowns/generic_dropdown.dart';
 import 'package:event_app/vendor/components/text_fields/custom_text_form_field.dart';
-import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/vendor/components/vendor_text_style.dart';
 import 'package:event_app/vendor/view_models/vendor_products/vendor_create_product_view_model.dart';
 import 'package:flutter/cupertino.dart';
@@ -151,6 +151,8 @@ class _VendorProductOptionsScreenState extends State<VendorProductOptionsScreen>
                     Row(
                       children: [
                         Checkbox(
+                          activeColor: Theme.of(context).colorScheme.onPrimary,
+                          checkColor: Theme.of(context).colorScheme.primary,
                           value: section.required == 1,
                           onChanged: (value) {
                             setState(() {

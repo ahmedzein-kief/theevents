@@ -62,6 +62,7 @@ class Data {
     String? slug,
     String? image,
     String? coverImage,
+    String? mobileCoverImage,
     SeoMeta? seoMeta,
     String? content,
   }) {
@@ -70,6 +71,7 @@ class Data {
     _slug = slug;
     _image = image;
     _coverImage = coverImage;
+    _mobileCoverImage = mobileCoverImage;
     _seoMeta = seoMeta;
     _content = content;
   }
@@ -80,8 +82,8 @@ class Data {
     _slug = json['slug'];
     _image = json['image'];
     _coverImage = json['cover_image'];
-    _seoMeta =
-        json['seo_meta'] != null ? SeoMeta.fromJson(json['seo_meta']) : null;
+    _mobileCoverImage = json['cover_image_for_mobile'];
+    _seoMeta = json['seo_meta'] != null ? SeoMeta.fromJson(json['seo_meta']) : null;
     _content = json['content'];
   }
 
@@ -90,6 +92,7 @@ class Data {
   String? _slug;
   String? _image;
   String? _coverImage;
+  String? _mobileCoverImage;
   SeoMeta? _seoMeta;
   String? _content;
 
@@ -99,6 +102,7 @@ class Data {
     String? slug,
     String? image,
     String? coverImage,
+    String? mobileCoverImage,
     SeoMeta? seoMeta,
     String? content,
   }) =>
@@ -108,6 +112,7 @@ class Data {
         slug: slug ?? _slug,
         image: image ?? _image,
         coverImage: coverImage ?? _coverImage,
+        mobileCoverImage: mobileCoverImage ?? _mobileCoverImage,
         seoMeta: seoMeta ?? _seoMeta,
         content: content ?? _content,
       );
@@ -122,6 +127,8 @@ class Data {
 
   String? get coverImage => _coverImage;
 
+  String? get mobileCoverImage => _mobileCoverImage;
+
   SeoMeta? get seoMeta => _seoMeta;
 
   String? get content => _content;
@@ -133,6 +140,7 @@ class Data {
     map['slug'] = _slug;
     map['image'] = _image;
     map['cover_image'] = _coverImage;
+    map['mobile_cover_image'] = _mobileCoverImage;
     if (_seoMeta != null) {
       map['seo_meta'] = _seoMeta?.toJson();
     }

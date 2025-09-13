@@ -4,6 +4,12 @@ import 'app_strings.dart';
 
 final Map<String, Map<String, String>> appTranslations = {
   'en': {
+    'confirmPaymentCancel': 'Cancel Payment?',
+    'paymentCancelWarning': 'Are you sure you want to cancel the payment? This action cannot be undone.',
+    'continuePayment': 'Continue Payment',
+    'cancelPayment': 'Cancel Payment',
+    'noOrderDetailsFound': 'No order details found',
+    'retry': 'Retry',
     'orderPlacedSuccessfully': 'Order placed successfully! Check your orders for details.',
     'payment_successful': 'Payment was successful',
     'payment_failed': 'Payment failed',
@@ -702,6 +708,12 @@ final Map<String, Map<String, String>> appTranslations = {
     VendorAppStrings.areYouAuthorizedSignatory: VendorAppStrings.areYouAuthorizedSignatory,
   },
   'ar': {
+    'confirmPaymentCancel': 'إلغاء الدفع؟',
+    'paymentCancelWarning': 'هل أنت متأكد من أنك تريد إلغاء الدفع؟ لا يمكن التراجع عن هذا الإجراء.',
+    'continuePayment': 'متابعة الدفع',
+    'cancelPayment': 'إلغاء الدفع',
+    'noOrderDetailsFound': 'لم يتم العثور على تفاصيل الطلب',
+    'retry': 'إعادة المحاولة',
     'orderPlacedSuccessfully': 'تم تقديم الطلب بنجاح! تحقق من طلباتك للحصول على التفاصيل.',
     'payment_successful': 'تم الدفع بنجاح',
     'payment_failed': 'فشل الدفع',
@@ -1396,6 +1408,12 @@ final Map<String, Map<String, String>> appTranslations = {
     VendorAppStrings.areYouAuthorizedSignatory: 'هل أنت الموقع المفوض؟',
   },
   'ru': {
+    'confirmPaymentCancel': 'Отменить платёж?',
+    'paymentCancelWarning': 'Вы уверены, что хотите отменить платёж? Это действие нельзя будет отменить.',
+    'continuePayment': 'Продолжить платёж',
+    'cancelPayment': 'Отменить платёж',
+    'noOrderDetailsFound': 'Детали заказа не найдены',
+    'retry': 'Повторить',
     'orderPlacedSuccessfully': 'Заказ успешно оформлен! Проверьте свои заказы для получения деталей.',
 
     'payment_successful': 'Оплата прошла успешно',
@@ -1870,8 +1888,13 @@ final Map<String, Map<String, String>> appTranslations = {
     AppStrings.fiftyPercentOffPrice: AppStrings.fiftyPercentOffPrice,
   },
   'zh': {
+    'confirmPaymentCancel': '取消支付？',
+    'paymentCancelWarning': '您确定要取消支付吗？此操作无法撤销。',
+    'continuePayment': '继续支付',
+    'cancelPayment': '取消支付',
+    'noOrderDetailsFound': '未找到订单详情',
+    'retry': '重试',
     'orderPlacedSuccessfully': '订单已成功提交！请查看您的订单以获取详细信息。',
-
     'payment_successful': '支付成功',
     'payment_failed': '支付失败',
     'payment_cancelled': '支付已取消',
@@ -2249,6 +2272,12 @@ final Map<String, Map<String, String>> appTranslations = {
     AppStrings.fiftyPercentOffPrice: AppStrings.fiftyPercentOffPrice,
   },
   'hi': {
+    'confirmPaymentCancel': 'भुगतान रद्द करें?',
+    'paymentCancelWarning': 'क्या आप वाकई भुगतान रद्द करना चाहते हैं? यह क्रिया पूर्ववत नहीं हो सकती।',
+    'continuePayment': 'भुगतान जारी रखें',
+    'cancelPayment': 'भुगतान रद्द करें',
+    'noOrderDetailsFound': 'ऑर्डर विवरण नहीं मिला',
+    'retry': 'पुनः प्रयास करें',
     'orderPlacedSuccessfully': 'ऑर्डर सफलतापूर्वक किया गया! विवरण के लिए अपने ऑर्डर देखें।',
 
     'payment_successful': 'भुगतान सफल हुआ',
@@ -2642,6 +2671,12 @@ final Map<String, Map<String, String>> appTranslations = {
     AppStrings.fiftyPercentOffPrice: AppStrings.fiftyPercentOffPrice,
   },
   'ur': {
+    'confirmPaymentCancel': 'ادائیگی منسوخ کریں؟',
+    'paymentCancelWarning': 'کیا آپ واقعی ادائیگی منسوخ کرنا چاہتے ہیں؟ یہ عمل واپس نہیں ہو سکتا۔',
+    'continuePayment': 'ادائیگی جاری رکھیں',
+    'cancelPayment': 'ادائیگی منسوخ کریں',
+    'noOrderDetailsFound': 'آرڈر کی تفصیلات نہیں ملیں',
+    'retry': 'دوبارہ کوشش کریں',
     'orderPlacedSuccessfully': 'آرڈر کامیابی سے دیا گیا! تفصیلات کے لیے اپنے آرڈرز چیک کریں۔',
     'payment_successful': 'ادائیگی کامیاب ہوگئی',
     'payment_failed': 'ادائیگی ناکام ہوگئی',

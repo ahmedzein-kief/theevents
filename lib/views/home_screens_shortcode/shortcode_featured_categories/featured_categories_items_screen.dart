@@ -56,9 +56,9 @@ class _HomeAllGiftItemsState extends State<FeaturedCategoriesItemsScreen> {
 
   @override
   void dispose() {
-    _scrollController.dispose();
-    _debounceTimer?.cancel();
     _searchController.dispose();
+    _debounceTimer?.cancel();
+    _scrollController.dispose();
     super.dispose();
   }
 

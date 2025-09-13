@@ -3,11 +3,9 @@ library;
 
 import 'dart:convert';
 
-OrderHistoryModel orderHistoryModelFromJson(String str) =>
-    OrderHistoryModel.fromJson(json.decode(str));
+OrderHistoryModel orderHistoryModelFromJson(String str) => OrderHistoryModel.fromJson(json.decode(str));
 
-String orderHistoryModelToJson(OrderHistoryModel data) =>
-    json.encode(data.toJson());
+String orderHistoryModelToJson(OrderHistoryModel data) => json.encode(data.toJson());
 
 class OrderHistoryModel {
   OrderHistoryModel({
@@ -15,8 +13,7 @@ class OrderHistoryModel {
     required this.error,
   });
 
-  factory OrderHistoryModel.fromJson(Map<dynamic, dynamic> json) =>
-      OrderHistoryModel(
+  factory OrderHistoryModel.fromJson(Map<dynamic, dynamic> json) => OrderHistoryModel(
         data: Data.fromJson(json['data']),
         error: json['error'],
       );
@@ -39,7 +36,8 @@ class Data {
   factory Data.fromJson(Map<dynamic, dynamic> json) => Data(
         pagination: Pagination.fromJson(json['pagination']),
         records: List<OrderRecord>.from(
-            json['records'].map((x) => OrderRecord.fromJson(x)),),
+          json['records'].map((x) => OrderRecord.fromJson(x)),
+        ),
       );
 
   Pagination pagination;
@@ -104,7 +102,8 @@ class OrderRecord {
         store: Store.fromJson(json['store']),
         status: json['status'],
         products: List<OrderProduct>.from(
-            json['products'].map((x) => OrderProduct.fromJson(x)),),
+          json['products'].map((x) => OrderProduct.fromJson(x)),
+        ),
       );
 
   int total;
@@ -153,23 +152,32 @@ class OrderProduct {
   });
 
   factory OrderProduct.fromJson(Map<dynamic, dynamic> json) => OrderProduct(
-        productSlugPrefix:
-            productSlugPrefixValues.map[json['product_slug_prefix']]!,
-        productSlug: json['product_slug'],
-        imageUrl: json['image_url'],
-        productName: json['product_name'],
-        imageThumb: json['image_thumb'],
-        imageSmall: json['image_small'],
-        productType: productTypeValues.map[json['product_type']]!,
-        productOptions: json['product_options'],
+        productSlugPrefix: _parseProductSlugPrefix(json['product_slug_prefix']),
+        productSlug: json['product_slug'] ?? '',
+        imageUrl: json['image_url'] ?? '',
+        productName: json['product_name'] ?? '',
+        imageThumb: json['image_thumb'] ?? '',
+        imageSmall: json['image_small'] ?? '',
+        productType: _parseProductType(json['product_type']),
+        productOptions: json['product_options'] ?? '',
         review: Review.fromJson(json['review']),
-        qty: json['qty'],
-        indexNum: json['index_num'],
-        attributes: json['attributes'],
-        sku: json['sku'],
-        amountFormat: json['amount_format'],
-        totalFormat: json['total_format'],
+        qty: json['qty'] ?? 0,
+        indexNum: json['index_num'] ?? 0,
+        attributes: json['attributes'] ?? '',
+        sku: json['sku'] ?? '',
+        amountFormat: json['amount_format'] ?? '',
+        totalFormat: json['total_format'] ?? '',
       );
+
+  static ProductSlugPrefix _parseProductSlugPrefix(value) {
+    if (value == null || value == '') return ProductSlugPrefix.EMPTY;
+    return productSlugPrefixValues.map[value] ?? ProductSlugPrefix.PRODUCTS;
+  }
+
+  static ProductType _parseProductType(value) {
+    if (value == null) return ProductType.PHYSICAL;
+    return productTypeValues.map[value] ?? ProductType.PHYSICAL;
+  }
 
   ProductSlugPrefix productSlugPrefix;
   String productSlug;
@@ -189,8 +197,7 @@ class OrderProduct {
   OrderRecord? orderRecord;
 
   Map<dynamic, dynamic> toJson() => {
-        'product_slug_prefix':
-            productSlugPrefixValues.reverse[productSlugPrefix],
+        'product_slug_prefix': productSlugPrefixValues.reverse[productSlugPrefix],
         'product_slug': productSlug,
         'image_url': imageUrl,
         'product_name': productName,
@@ -208,32 +215,56 @@ class OrderProduct {
       };
 }
 
-enum ProductSlugPrefix { PRODUCTS }
+enum ProductSlugPrefix { PRODUCTS, EMPTY }
 
-final productSlugPrefixValues =
-    EnumValues({'products': ProductSlugPrefix.PRODUCTS});
+final productSlugPrefixValues = EnumValues({
+  'products': ProductSlugPrefix.PRODUCTS,
+  '': ProductSlugPrefix.EMPTY,
+});
 
-enum ProductType { PHYSICAL }
+enum ProductType { PHYSICAL, PRODUCT }
 
-final productTypeValues = EnumValues({'physical': ProductType.PHYSICAL});
+final productTypeValues = EnumValues({
+  'physical': ProductType.PHYSICAL,
+  'product': ProductType.PRODUCT,
+});
 
 class Review {
   Review({
     required this.showAvgRating,
     required this.ratingFormated,
+    this.rating,
+    this.reviewsCount,
   });
 
-  factory Review.fromJson(Map<dynamic, dynamic> json) => Review(
-        showAvgRating: json['show_avg_rating'],
-        ratingFormated: json['rating_formated'],
+  factory Review.fromJson(json) {
+    if (json == null || json is List) {
+      return Review(
+        showAvgRating: false,
+        ratingFormated: '0.00',
+        rating: null,
+        reviewsCount: null,
       );
+    }
+
+    return Review(
+      showAvgRating: json['show_avg_rating'] ?? false,
+      ratingFormated: json['rating_formated']?.toString() ?? '0.00',
+      rating: json['rating'],
+      reviewsCount: json['reviews_count'],
+    );
+  }
 
   bool showAvgRating;
   String ratingFormated;
+  dynamic rating;
+  dynamic reviewsCount;
 
   Map<dynamic, dynamic> toJson() => {
         'show_avg_rating': showAvgRating,
         'rating_formated': ratingFormated,
+        if (rating != null) 'rating': rating,
+        if (reviewsCount != null) 'reviews_count': reviewsCount,
       };
 }
 
@@ -245,9 +276,9 @@ class StatusArr {
   });
 
   factory StatusArr.fromJson(Map<dynamic, dynamic> json) => StatusArr(
-        textClass: json['textClass'],
-        label: json['label'],
-        type: json['type'],
+        textClass: json['textClass'] ?? '',
+        label: json['label'] ?? '',
+        type: json['type'] ?? '',
       );
 
   String textClass;
@@ -269,12 +300,18 @@ class Store {
     required this.slug,
   });
 
-  factory Store.fromJson(Map<dynamic, dynamic> json) => Store(
-        thumb: json['thumb'],
-        name: json['name'],
-        logo: json['logo'],
-        slug: json['slug'],
-      );
+  factory Store.fromJson(dynamic json) {
+    if (json == null || json is List) {
+      return Store(thumb: '', name: '', logo: '', slug: '');
+    }
+
+    return Store(
+      thumb: json['thumb'] ?? '',
+      name: json['name'] ?? '',
+      logo: json['logo'] ?? '',
+      slug: json['slug'] ?? '',
+    );
+  }
 
   String thumb;
   String name;
@@ -291,11 +328,12 @@ class Store {
 
 class EnumValues<T> {
   EnumValues(this.map);
+
   Map<String, T> map;
-  late Map<T, String> reverseMap;
+  late Map<T, String> _reverseMap;
 
   Map<T, String> get reverse {
-    reverseMap = map.map((k, v) => MapEntry(v, k));
-    return reverseMap;
+    _reverseMap = map.map((k, v) => MapEntry(v, k));
+    return _reverseMap;
   }
 }

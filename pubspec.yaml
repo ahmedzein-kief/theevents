@@ -2,7 +2,7 @@ name: event_app
 description: "A new Flutter project."
 publish_to: 'none'
 
-version: 1.1.1+18
+version: 1.1.2+19
 
 environment:
   sdk: '>=3.4.3 <4.0.0'
@@ -81,6 +81,7 @@ dependencies:
   printing: ^5.14.2
   syncfusion_flutter_pdf: ^30.2.5
   calendar_date_picker2: ^2.0.1
+  pay: ^3.2.1
 
   flutter_localizations:
     sdk: flutter

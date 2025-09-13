@@ -121,9 +121,18 @@ class _GiftCardFormState extends State<GiftCardForm> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              AppStrings.selectGiftCardAmount.tr,
-              style: giftSelectAmountText(context),
+            RichText(
+              text: TextSpan(
+                text: AppStrings.selectGiftCardAmount.tr.replaceAll('*', ''),
+                style: giftSelectAmountText(context),
+                children: [
+                  TextSpan(
+                    text: ' *',
+                    style: giftSelectAmountText(context).copyWith(color: Colors.red),
+                  ),
+                ],
+              ),
+              softWrap: true,
             ),
             Padding(
               padding: const EdgeInsets.only(top: 8),
@@ -224,10 +233,18 @@ class _GiftCardFormState extends State<GiftCardForm> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                AppStrings.enterReceiptName.tr,
+                              RichText(
+                                text: TextSpan(
+                                  text: AppStrings.enterReceiptName.tr.replaceAll('*', ''),
+                                  style: giftSelectAmountText(context),
+                                  children: [
+                                    TextSpan(
+                                      text: ' *',
+                                      style: giftSelectAmountText(context).copyWith(color: Colors.red),
+                                    ),
+                                  ],
+                                ),
                                 softWrap: true,
-                                style: giftSelectAmountText(context),
                               ),
                               Padding(
                                 padding: const EdgeInsets.only(top: 8),
@@ -247,10 +264,18 @@ class _GiftCardFormState extends State<GiftCardForm> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                AppStrings.enterReceiptEmail.tr,
+                              RichText(
+                                text: TextSpan(
+                                  text: AppStrings.enterReceiptEmail.tr.replaceAll('*', ''),
+                                  style: giftSelectAmountText(context),
+                                  children: [
+                                    TextSpan(
+                                      text: ' *',
+                                      style: giftSelectAmountText(context).copyWith(color: Colors.red),
+                                    ),
+                                  ],
+                                ),
                                 softWrap: true,
-                                style: giftSelectAmountText(context),
                               ),
                               Padding(
                                 padding: const EdgeInsets.only(top: 8),

@@ -21,8 +21,6 @@ class NewProductsProvider extends ChangeNotifier {
     // const newProductUrl = "https://apistaging.theevents.ae/api/v1/pages/products";
     const newProductUrl = ApiEndpoints.newProductsBanner;
 
-    print('URL $newProductUrl');
-
     try {
       // _isLoading = true;
       _errorMessage = null;
@@ -119,7 +117,6 @@ class NewProductsProvider extends ChangeNotifier {
         final jsonData = response.data;
         // final newProducts = NewProductsModels.fromJson(jsonData).data?.records ?? [];
         final Map<String, dynamic> jsonResponse = response.data;
-        print('json response $jsonResponse');
         final NewProductsModels apiResponse = NewProductsModels.fromJson(jsonResponse);
 
         if (page == 1) {

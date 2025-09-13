@@ -29,9 +29,11 @@ class SaveAddressScreen extends StatefulWidget {
     required this.tracked_start_checkout,
     this.isEditable = false,
     this.addressModel,
+    required this.finalAmount,
   });
 
   final bool isEditable;
+  final String finalAmount;
   final String tracked_start_checkout;
   final AddressModel? addressModel;
 
@@ -617,6 +619,7 @@ class _SaveAddressScreenState extends State<SaveAddressScreen> {
                                             builder: (context) => StepperScreen(
                                               isNewAddress: isNewAddress,
                                               tracked_start_checkout: widget.tracked_start_checkout,
+                                              amount: widget.finalAmount,
                                             ),
                                           ),
                                         );
@@ -908,6 +911,7 @@ class _SaveAddressScreenState extends State<SaveAddressScreen> {
             context,
             MaterialPageRoute(
               builder: (context) => StepperScreen(
+                amount: widget.finalAmount,
                 isNewAddress: isNewAddress,
                 tracked_start_checkout: widget.tracked_start_checkout,
               ),

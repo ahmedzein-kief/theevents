@@ -1,14 +1,14 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/widgets/custom_app_views/search_bar.dart';
 import 'package:event_app/views/base_screens/base_app_bar.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/constants/app_strings.dart';
+import '../../../core/network/api_endpoints/api_contsants.dart';
 import '../../../core/styles/app_colors.dart';
 import '../../../core/styles/custom_text_styles.dart';
+import '../../../core/widgets/padded_network_banner.dart';
 import '../../../provider/shortcode_fresh_picks_provider/fresh_picks_provider.dart';
 import '../../filters/items_sorting_drop_down.dart';
 import 'e_com_tags_screens.dart';
@@ -128,52 +128,12 @@ class _FreshPicksDetailScreenState extends State<FreshPicksDetailScreen> {
                               ),
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(5),
-                                child: CachedNetworkImage(
-                                  imageUrl: provider.tagsModel?.data?.coverImage ?? '',
+                                child: PaddedNetworkBanner(
+                                  imageUrl: provider.tagsModel?.data?.coverImage ?? ApiConstants.placeholderImage,
                                   fit: BoxFit.cover,
-                                  height: screenHeight * 0.14,
-                                  errorListener: (object) {
-                                    Image.asset(
-                                      'assets/placeholder.png',
-                                      // Replace with your actual image path
-                                      fit: BoxFit.cover,
-                                      // Adjust fit if needed
-                                      height: MediaQuery.sizeOf(context).height * 0.28,
-                                      width: double.infinity,
-                                    );
-                                  },
-                                  errorWidget: (context, object, error) => Image.asset(
-                                    'assets/placeholder.png',
-                                    // Replace with your actual image path
-                                    fit: BoxFit.cover,
-                                    // Adjust fit if needed
-                                    height: MediaQuery.sizeOf(context).height * 0.28,
-                                    width: double.infinity,
-                                  ),
-                                  placeholder: (BuildContext context, String url) => Container(
-                                    height: MediaQuery.sizeOf(context).height * 0.28,
-                                    width: double.infinity,
-                                    color: Colors.blueGrey[300],
-                                    // Background color
-                                    child: Stack(
-                                      alignment: Alignment.center,
-                                      children: [
-                                        Image.asset(
-                                          'assets/placeholder.png',
-                                          // Replace with your actual image path
-                                          fit: BoxFit.cover,
-                                          // Adjust fit if needed
-                                          height: MediaQuery.sizeOf(context).height * 0.28,
-                                          width: double.infinity,
-                                        ),
-                                        const CupertinoActivityIndicator(
-                                          radius: 16,
-                                          // Adjust size of the loader
-                                          animating: true,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
+                                  height: 160,
+                                  width: double.infinity,
+                                  padding: EdgeInsets.zero,
                                 ),
                               ),
                             ),
@@ -259,60 +219,12 @@ class _FreshPicksDetailScreenState extends State<FreshPicksDetailScreen> {
                                             decoration: const BoxDecoration(
                                               color: AppColors.freshItemsBack,
                                             ),
-                                            child: CachedNetworkImage(
+                                            child: PaddedNetworkBanner(
                                               imageUrl: record.image,
-                                              height: 100,
+                                              height: 160,
                                               fit: BoxFit.cover,
                                               width: double.infinity,
-                                              errorListener: (object) {
-                                                Image.asset(
-                                                  'assets/placeholder.png',
-                                                  // Replace with your actual image path
-                                                  fit: BoxFit.cover,
-                                                  // Adjust fit if needed
-                                                  height: MediaQuery.sizeOf(context).height * 0.28,
-                                                  width: double.infinity,
-                                                );
-                                              },
-                                              errorWidget: (context, object, error) => Image.asset(
-                                                'assets/placeholder.png',
-                                                // Replace with your actual image path
-                                                fit: BoxFit.cover,
-                                                // Adjust fit if needed
-                                                height: MediaQuery.sizeOf(context).height * 0.28,
-                                                width: double.infinity,
-                                              ),
-                                              placeholder: (
-                                                BuildContext context,
-                                                String url,
-                                              ) =>
-                                                  Container(
-                                                height: MediaQuery.sizeOf(context).height * 0.28,
-                                                width: double.infinity,
-                                                color: Colors.blueGrey[300],
-                                                // Background color
-                                                child: Stack(
-                                                  alignment: Alignment.center,
-                                                  children: [
-                                                    Image.asset(
-                                                      'assets/placeholder.png',
-                                                      // Replace with your actual image path
-                                                      fit: BoxFit.cover,
-                                                      // Adjust fit if needed
-                                                      height: MediaQuery.sizeOf(
-                                                            context,
-                                                          ).height *
-                                                          0.28,
-                                                      width: double.infinity,
-                                                    ),
-                                                    const CupertinoActivityIndicator(
-                                                      radius: 16,
-                                                      // Adjust size of the loader
-                                                      animating: true,
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
+                                              padding: EdgeInsets.zero,
                                             ),
                                           ),
                                         ),

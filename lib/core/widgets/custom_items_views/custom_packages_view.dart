@@ -9,6 +9,7 @@ import '../../../views/auth_screens/auth_page_view.dart';
 import '../../services/shared_preferences_helper.dart';
 import '../../styles/custom_text_styles.dart';
 import 'custom_toast.dart';
+import '../padded_network_banner.dart';
 
 class CustomPackagesView extends StatefulWidget {
   const CustomPackagesView({
@@ -140,30 +141,11 @@ class _CustomPackagesViewState extends State<CustomPackagesView> {
                 right: 5,
                 top: 5,
                 bottom: 5,
-                child: CachedNetworkImage(
+                child: PaddedNetworkBanner(
                   imageUrl: widget.imageUrl,
                   height: 200,
-                  placeholder: (BuildContext context, String url) => Container(
-                    height: MediaQuery.sizeOf(context).height * 0.28,
-                    width: double.infinity,
-                    color: Colors.blueGrey[300], // Background color
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Image.asset(
-                          'assets/placeholder.png', // Replace with your actual image path
-                          fit: BoxFit.cover, // Adjust fit if needed
-                          height: MediaQuery.sizeOf(context).height * 0.28,
-                          width: double.infinity,
-                        ),
-                        const CupertinoActivityIndicator(
-                          radius: 16, // Adjust size of the loader
-                          animating: true,
-                        ),
-                      ],
-                    ),
-                  ),
                   fit: BoxFit.cover,
+                  padding: EdgeInsets.zero,
                 ),
               ),
               Positioned(

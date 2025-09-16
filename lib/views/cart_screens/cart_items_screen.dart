@@ -2,7 +2,7 @@ import 'package:event_app/core/constants/app_strings.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/models/cart_items_models/cart_items_models.dart';
 import 'package:event_app/views/base_screens/base_app_bar.dart';
-import 'package:event_app/views/cart_screens/save_address_screen.dart';
+import 'package:event_app/views/cart_screens/stepper_payment_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import '../../core/services/shared_preferences_helper.dart';
 import '../../core/styles/app_colors.dart';
 import '../../core/styles/custom_text_styles.dart';
+import '../../core/widgets/PriceRow.dart';
 import '../../core/widgets/custom_auth_views/app_custom_button.dart';
 import '../../core/widgets/custom_items_views/custom_product_cart_items.dart';
 import '../../provider/auth_provider/get_user_provider.dart';
@@ -210,7 +211,7 @@ class _CartItemsScreensState extends State<CartItemsScreen> {
                                   attributes: productCart?.cartItem.options.attributes ?? '',
                                   ceoData: productCart?.cartItem.options.options,
                                   offPrice: offPercentage.isNotEmpty ? '$offPercentage${AppStrings.percentOff.tr}' : '',
-                                  actualPrice: '${AppStrings.aed.tr} ${productCart?.cartItem.price}',
+                                  actualPrice: '${productCart?.cartItem.price}',
                                   standardPrice: (productCart?.product.prices.frontSalePrice ?? 0) <
                                           (productCart?.product.prices.price ?? 0)
                                       ? (productCart?.product.prices.priceWithTaxes ?? '')
@@ -259,14 +260,14 @@ class _CartItemsScreensState extends State<CartItemsScreen> {
                           8,
                         ), // Radius for the top-right corner
                       ),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors.black,
-                          spreadRadius: 1,
-                          blurRadius: 5,
-                          offset: Offset(0, 3),
-                        ),
-                      ],
+                      // boxShadow: const [
+                      //   BoxShadow(
+                      //     color: Colors.black,
+                      //     spreadRadius: 1,
+                      //     blurRadius: 5,
+                      //     offset: Offset(0, 3),
+                      //   ),
+                      // ],
                     ),
                     child: Padding(
                       padding: EdgeInsets.only(
@@ -287,26 +288,52 @@ class _CartItemsScreensState extends State<CartItemsScreen> {
                               crossAxisAlignment: CrossAxisAlignment.end,
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text(
-                                  '${AppStrings.subTotalColon.tr}${provider.cartResponse?.data.totalPrice}',
-                                  style: cartSubtotal(context),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    Text(
+                                      AppStrings.subTotalColon.tr,
+                                      style: cartSubtotal(context),
+                                    ),
+                                    PriceRow(
+                                      currencySize: 12,
+                                      currencyColor: AppColors.totalItemsText,
+                                      price: provider.cartResponse?.data.totalPrice,
+                                      style: cartSubtotal(context),
+                                    ),
+                                  ],
                                 ),
                                 Padding(
                                   padding: EdgeInsets.symmetric(
                                     vertical: screenHeight * 0.02,
                                   ),
-                                  child: Text(
-                                    "${AppStrings.taxColon.tr}${provider.cartResponse?.data.formattedRawTax ?? ''}",
-                                    style: cartSubtotal(context),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                        AppStrings.taxColon.tr,
+                                        style: cartSubtotal(context),
+                                      ),
+                                      PriceRow(
+                                        currencySize: 12,
+                                        currencyColor: AppColors.totalItemsText,
+                                        price: provider.cartResponse?.data.formattedRawTax,
+                                        style: cartSubtotal(context),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  mainAxisSize: MainAxisSize.max,
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
                                     Text(
-                                      '${AppStrings.totalColon.tr}${provider.cartResponse?.data.formattedFinalTotal}',
+                                      AppStrings.totalColon.tr,
+                                      style: cartTotal(context),
+                                    ),
+                                    PriceRow(
+                                      currencySize: 12,
+                                      currencyColor: AppColors.totalItemsText,
+                                      price: provider.cartResponse?.data.formattedFinalTotal,
                                       style: cartTotal(context),
                                     ),
                                   ],
@@ -346,9 +373,10 @@ class _CartItemsScreensState extends State<CartItemsScreen> {
                                       context,
                                       CupertinoPageRoute(
                                         builder: (builder) {
-                                          return SaveAddressScreen(
+                                          return StepperScreen(
                                             tracked_start_checkout: checkoutToken,
-                                            finalAmount: provider.cartResponse?.data.finalTotal.toString() ?? '',
+                                            amount: provider.cartResponse?.data.finalTotal.toString() ?? '',
+                                            isNewAddress: false,
                                           );
                                         },
                                       ),

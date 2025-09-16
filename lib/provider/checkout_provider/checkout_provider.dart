@@ -138,12 +138,12 @@ class CheckoutProvider with ChangeNotifier {
     // Add address fields
     final session = data.sessionCheckoutData;
     formData.fields.addAll([
-      MapEntry('address[name]', session.name ?? ''),
-      MapEntry('address[email]', session.email ?? ''),
-      MapEntry('address[phone]', session.phone ?? ''),
-      MapEntry('address[country]', session.country ?? ''),
-      MapEntry('address[city]', session.city ?? ''),
-      MapEntry('address[address]', session.address ?? ''),
+      MapEntry('address[name]', session.name),
+      MapEntry('address[email]', session.email),
+      MapEntry('address[phone]', session.phone),
+      MapEntry('address[country]', session.country),
+      MapEntry('address[city]', session.city),
+      MapEntry('address[address]', session.address),
       MapEntry('address[address_id]', isNewAddress ? 'new' : data.sessionCheckoutData.addressId.toString()),
     ]);
 
@@ -151,8 +151,8 @@ class CheckoutProvider with ChangeNotifier {
     final vendorData = data.sessionCheckoutData.marketplace;
     vendorData.forEach((key, value) {
       final id = key;
-      final method = data.defaultShippingMethod ?? 'default';
-      final option = data.defaultShippingOption ?? '';
+      final method = data.defaultShippingMethod;
+      final option = data.defaultShippingOption;
       formData.fields.addAll([
         MapEntry('shipping_method[$id]', method),
         MapEntry('shipping_option[$id]', option),

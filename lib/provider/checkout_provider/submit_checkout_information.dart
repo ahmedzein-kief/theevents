@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:dio/dio.dart';
 import 'package:event_app/provider/api_response_handler.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -38,6 +41,7 @@ class SubMitCheckoutInformationProvider extends ChangeNotifier {
     required String token, // Token parameter
     String? billingAddressSameAsShippingAddress,
   }) async {
+    log('country=>< $country');
     _isLoading = true;
     notifyListeners();
     setStatus(ApiStatus.loading);
@@ -46,25 +50,31 @@ class SubMitCheckoutInformationProvider extends ChangeNotifier {
       'Authorization': token,
     };
 
-    final Map<String, dynamic> postDataMap = {
+    final FormData formData = FormData.fromMap({
       'tracked_start_checkout': trackedStartCheckout,
-      'address': {
-        'address_id': addressId,
-        'name': name.trim(),
-        'email': email.trim(),
-        'phone': phone.toString().trim(),
-        'country': country,
-        'city': city,
-        'state': state,
-        'address': address,
-      },
-    };
+      'address[address_id]': addressId,
+      'address[name]': name.trim(),
+      'address[email]': email.trim(),
+      'address[phone]': phone.toString().trim(),
+      'address[country]': country,
+      'address[city]': city,
+      'address[state]': state,
+      'address[address]': address,
+      'vendor_id': vendorId.toString(),
+      'shipping_method': shippingMethod,
+      'shipping_option': shippingOption,
+    });
+
+    // Add optional parameters if they exist
+    if (billingAddressSameAsShippingAddress != null) {
+      formData.fields.add(MapEntry('billing_address_same_as_shipping_address', billingAddressSameAsShippingAddress));
+    }
 
     try {
-      final response = await _apiResponseHandler.postRequest(
+      final response = await _apiResponseHandler.postDioMultipartRequest(
         url,
-        headers: headers,
-        body: postDataMap,
+        headers,
+        formData,
       );
       if (response.statusCode == 200) {
         setStatus(ApiStatus.completed);
@@ -74,7 +84,9 @@ class SubMitCheckoutInformationProvider extends ChangeNotifier {
         _isLoading = false;
         notifyListeners();
         return response;
-      } else {}
+      } else {
+        setStatus(ApiStatus.error);
+      }
     } catch (error) {
       setStatus(ApiStatus.error);
     }

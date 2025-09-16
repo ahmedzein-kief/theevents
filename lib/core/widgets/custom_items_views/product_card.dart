@@ -1,15 +1,16 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:event_app/core/constants/app_strings.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/views/auth_screens/auth_page_view.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 
+import '../../network/api_endpoints/api_contsants.dart';
 import '../../services/shared_preferences_helper.dart';
 import '../../styles/app_colors.dart';
 import '../../styles/custom_text_styles.dart';
+import '../PriceRow.dart';
+import '../padded_network_banner.dart';
 import 'custom_toast.dart';
 
 class ProductCard extends StatefulWidget {
@@ -110,7 +111,8 @@ class _ProductCardState extends State<ProductCard> {
   Future<void> _onCartTap() async {
     if (widget.isOutOfStock) return;
     final bool loggedIn = await _isLoggedIn();
-    if (!loggedIn) {   if (!mounted) return;
+    if (!loggedIn) {
+      if (!mounted) return;
       // Navigate to the login screen if not logged in
       PersistentNavBarNavigator.pushNewScreen(
         context,
@@ -162,45 +164,12 @@ class _ProductCardState extends State<ProductCard> {
                   Stack(
                     children: [
                       // Your image or background widget should be here
-                      CachedNetworkImage(
-                        imageUrl: widget.imageUrl ?? '',
+                      PaddedNetworkBanner(
+                        imageUrl: widget.imageUrl ?? ApiConstants.placeholderImage,
                         width: double.infinity,
                         fit: BoxFit.cover,
                         height: MediaQuery.sizeOf(context).height * 0.28,
-                        errorListener: (object) {
-                          Image.asset(
-                            'assets/placeholder.png', // Replace with your actual image path
-                            fit: BoxFit.cover, // Adjust fit if needed
-                            height: MediaQuery.sizeOf(context).height * 0.28,
-                            width: double.infinity,
-                          );
-                        },
-                        errorWidget: (context, _, error) => Image.asset(
-                          'assets/placeholder.png', // Replace with your actual image path
-                          fit: BoxFit.cover, // Adjust fit if needed
-                          height: MediaQuery.sizeOf(context).height * 0.28,
-                          width: double.infinity,
-                        ),
-                        placeholder: (BuildContext context, String url) => Container(
-                          height: MediaQuery.sizeOf(context).height * 0.28,
-                          width: double.infinity,
-                          color: Colors.blueGrey[300], // Background color
-                          child: Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              Image.asset(
-                                'assets/placeholder.png', // Replace with your actual image path
-                                fit: BoxFit.cover, // Adjust fit if needed
-                                height: MediaQuery.sizeOf(context).height * 0.28,
-                                width: double.infinity,
-                              ),
-                              const CupertinoActivityIndicator(
-                                radius: 16, // Adjust size of the loader
-                                animating: true,
-                              ),
-                            ],
-                          ),
-                        ),
+                        padding: EdgeInsets.zero,
                       ),
                       Positioned(
                         left: 5,
@@ -341,11 +310,7 @@ class _ProductCardState extends State<ProductCard> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Expanded(
-                                child: Text(
-                                  widget.price != null ? 'AED${widget.price}' : '',
-                                  maxLines: 1,
-                                  style: priceStyle(context),
-                                ),
+                                child: PriceRow(price: widget.price),
                               ),
                               Expanded(
                                 child: Text(

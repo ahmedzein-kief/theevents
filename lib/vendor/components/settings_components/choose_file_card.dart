@@ -5,6 +5,8 @@ import 'package:event_app/core/styles/app_sizes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../core/network/api_endpoints/api_contsants.dart';
+
 class ChooseFileCard extends StatefulWidget {
   ChooseFileCard({
     super.key,
@@ -15,6 +17,7 @@ class ChooseFileCard extends StatefulWidget {
     this.width,
     this.height,
   });
+
   final File? file;
   final String? imageLink;
   final VoidCallback? onChoose;
@@ -58,11 +61,11 @@ class _ChooseFileCardState extends State<ChooseFileCard> {
               GestureDetector(
                 onTap: widget.onChoose,
                 child: ClipRRect(
-                    borderRadius: BorderRadius.circular(kFileCardRadius),
-                    child: _buildImageContent(),),
+                  borderRadius: BorderRadius.circular(kFileCardRadius),
+                  child: _buildImageContent(),
+                ),
               ),
-              if (widget.file != null || widget.imageLink != null)
-                _buildCloseButton(),
+              if (widget.file != null || widget.imageLink != null) _buildCloseButton(),
             ],
           ),
         ),
@@ -101,7 +104,7 @@ class _ChooseFileCardState extends State<ChooseFileCard> {
 
   /// Builds an image from a Network URL
   Widget _buildNetworkImage() => CachedNetworkImage(
-        imageUrl: widget.imageLink ?? '',
+        imageUrl: widget.imageLink ?? ApiConstants.placeholderImage,
         fit: BoxFit.fill,
         errorWidget: (context, error, stackTrace) => _buildPlaceholder(),
       );

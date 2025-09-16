@@ -16,6 +16,7 @@ import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
 
 import '../../../../core/constants/app_strings.dart';
+import '../../../../core/widgets/padded_network_banner.dart';
 
 class OrderDetailsScreen extends StatefulWidget {
   const OrderDetailsScreen({super.key, required this.orderID});
@@ -545,20 +546,13 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   Widget _buildProductRow(OrderDetailProduct product) => ListTile(
         leading: ClipRRect(
           borderRadius: BorderRadius.circular(8),
-          child: Image.network(
-            product.imageUrl,
+          child: PaddedNetworkBanner(
+            imageUrl: product.imageUrl,
             height: 80,
             width: 80,
             fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) => Container(
-              height: 80,
-              width: 80,
-              color: Colors.grey[200],
-              child: const Icon(
-                Icons.image_not_supported,
-                color: Colors.grey,
-              ),
-            ),
+            padding: EdgeInsets.zero,
+            borderRadius: 0,
           ),
         ),
         title: Text(

@@ -30,6 +30,7 @@ class ProductCategoryData {
     required this.coverImage,
     required this.items,
     required this.seoMeta,
+    this.coverImageForMobile,
   });
 
   factory ProductCategoryData.fromJson(Map<String, dynamic> json) => ProductCategoryData(
@@ -42,6 +43,7 @@ class ProductCategoryData {
         image: json['image'] ?? '',
         thumb: json['thumb'] ?? '',
         coverImage: json['cover_image'] ?? '',
+        coverImageForMobile: json['cover_image_for_mobile'] ?? '',
         items: json['items'] ?? 0,
         seoMeta: SeoMeta.fromJson(
           json['seo_meta'] ?? {},
@@ -55,6 +57,7 @@ class ProductCategoryData {
   final String image;
   final String thumb;
   final String coverImage;
+  final String? coverImageForMobile;
   final int items;
   final SeoMeta seoMeta;
 }

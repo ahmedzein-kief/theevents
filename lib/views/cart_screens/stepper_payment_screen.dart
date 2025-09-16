@@ -1,13 +1,13 @@
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/styles/app_colors.dart';
-import 'package:event_app/views/cart_screens/shipping_address_screen.dart';
+import 'package:event_app/views/cart_screens/consolidated_payment_screen.dart';
+import 'package:event_app/views/cart_screens/stepper_address_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../core/constants/app_strings.dart';
 import '../../core/styles/custom_text_styles.dart';
 import '../base_screens/base_app_bar.dart';
-import 'payment_screen.dart';
 
 class StepperScreen extends StatefulWidget {
   const StepperScreen({super.key, this.tracked_start_checkout, required this.isNewAddress, required this.amount});
@@ -26,8 +26,8 @@ class _StepperScreenState extends State<StepperScreen> {
   Map<String, String> paymentMethod = {};
 
   final List<String> stepsName = [
-    'Shipping',
-    'Payment', /*, 'Review'*/
+    AppStrings.address,
+    AppStrings.payment,
   ];
 
   @override
@@ -119,18 +119,15 @@ class _StepperScreenState extends State<StepperScreen> {
                                 : null,
                           ),
                           alignment: Alignment.center,
-                          child: Text(
-                            '${index + 1}',
-                            style: TextStyle(
-                              color: _getStepTextColor(index, isDarkMode),
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
+                          child: Icon(
+                            _getStepIcon(index),
+                            color: _getStepTextColor(index, isDarkMode),
+                            size: 16,
                           ),
                         ),
                         const SizedBox(width: 5),
                         Text(
-                          stepsName[index],
+                          index == 0 ? AppStrings.address.tr : AppStrings.payment.tr,
                           style: GoogleFonts.inter(
                             color: isDarkMode
                                 ? (index <= activeStep ? Colors.white : Colors.grey[400])
@@ -193,42 +190,46 @@ class _StepperScreenState extends State<StepperScreen> {
     return isDarkMode ? Colors.grey[400]! : Colors.grey[600]!;
   }
 
+  /// Get step icon based on index
+  IconData _getStepIcon(int index) {
+    switch (index) {
+      case 0:
+        return Icons.location_on; // Address step
+      case 1:
+        return Icons.credit_card; // Payment step
+      default:
+        return Icons.location_on;
+    }
+  }
+
   // Switch between step widgets
   Widget getStepWidget() {
     switch (activeStep) {
       case 0:
-        return ShippingAddressScreen(
-          onNext: (payment) {
+        return StepperAddressScreen(
+          tracked_start_checkout: widget.tracked_start_checkout ?? '',
+          finalAmount: widget.amount,
+          onAddressSelected: () {
             setState(() {
-              paymentMethod = payment;
               activeStep += 1;
             });
           },
         );
       case 1:
-        return PaymentScreen(
+        return ConsolidatedPaymentScreen(
           tracked_start_checkout: widget.tracked_start_checkout,
-          paymentMethod: paymentMethod,
           isNewAddress: widget.isNewAddress,
           onNext: () {
-            setState(() {
-              activeStep += 1;
-            });
+            // Payment completed, navigate back or to success screen
+            Navigator.of(context).pop();
           },
         );
-      /*case 2:
-        return OrderConfirmationScreen(
-          onPrevious: () {
-            setState(() {
-              activeStep -= 1;
-            });
-          },
-        );*/
       default:
-        return ShippingAddressScreen(
-          onNext: (payment) {
+        return StepperAddressScreen(
+          tracked_start_checkout: widget.tracked_start_checkout ?? '',
+          finalAmount: widget.amount,
+          onAddressSelected: () {
             setState(() {
-              paymentMethod = payment;
               activeStep += 1;
             });
           },

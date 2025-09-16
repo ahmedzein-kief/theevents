@@ -11,6 +11,7 @@ import '../../../../core/constants/app_strings.dart';
 import '../../../../core/services/shared_preferences_helper.dart';
 import '../../../../core/styles/app_colors.dart';
 import '../../../../core/styles/custom_text_styles.dart';
+import '../../../../core/widgets/padded_network_banner.dart';
 import '../../../../core/widgets/custom_app_views/search_bar.dart';
 import '../../../../core/widgets/custom_items_views/product_card.dart';
 import '../../../../provider/cart_item_provider/cart_item_provider.dart';
@@ -177,31 +178,12 @@ class _BestSellerScreenState extends State<BestSellerScreen> {
                                   ///  TOP BANNER  ----------------------------------------------------------------
                                   ClipRRect(
                                     borderRadius: BorderRadius.circular(5),
-                                    child: CachedNetworkImage(
+                                    child: PaddedNetworkBanner(
                                       imageUrl: collection.coverImage,
-                                      height: screenHeight * 0.14,
+                                      height: 160,
                                       fit: BoxFit.cover,
                                       width: screenWidth,
-                                      placeholder: (BuildContext context, String url) => Container(
-                                        height: MediaQuery.sizeOf(context).height * 0.28,
-                                        width: double.infinity,
-                                        color: Colors.blueGrey[300], // Background color
-                                        child: Stack(
-                                          alignment: Alignment.center,
-                                          children: [
-                                            Image.asset(
-                                              'assets/placeholder.png', // Replace with your actual image path
-                                              fit: BoxFit.cover, // Adjust fit if needed
-                                              height: MediaQuery.sizeOf(context).height * 0.28,
-                                              width: double.infinity,
-                                            ),
-                                            const CupertinoActivityIndicator(
-                                              radius: 16, // Adjust size of the loader
-                                              animating: true,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
+                                      padding: EdgeInsets.zero,
                                     ),
                                   ),
 

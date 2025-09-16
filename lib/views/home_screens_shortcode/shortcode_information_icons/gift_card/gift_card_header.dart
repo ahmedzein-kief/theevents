@@ -1,5 +1,6 @@
 import 'package:event_app/models/dashboard/information_icons_models/gift_card_models/gift_card_models.dart';
 import 'package:flutter/material.dart';
+import '../../../../core/widgets/padded_network_banner.dart';
 
 class GiftCardHeader extends StatelessWidget {
   final double screenHeight;
@@ -22,11 +23,12 @@ class GiftCardHeader extends StatelessWidget {
       children: [
         ClipRRect(
           borderRadius: BorderRadius.circular(15),
-          child: Image.network(
-            coverImage,
+          child: PaddedNetworkBanner(
+            imageUrl: coverImage,
             fit: BoxFit.cover,
             width: double.infinity,
-            errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image, size: 40), // fallback
+            padding: EdgeInsets.zero,
+            borderRadius: 0,
           ),
         ),
         Text(giftCard ?? ''),

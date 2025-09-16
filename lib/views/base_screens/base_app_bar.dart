@@ -9,6 +9,7 @@ import '../../core/services/shared_preferences_helper.dart';
 import '../../core/styles/app_colors.dart';
 import '../../core/widgets/custom_app_views/app_bar.dart';
 import '../../core/widgets/custom_slider_route.dart';
+import '../../core/widgets/padded_network_banner.dart';
 import '../../models/dashboard/feature_categories_model/product_category_model.dart';
 import '../../provider/cart_item_provider/cart_item_provider.dart';
 import '../../provider/search_suggestions_provider.dart';
@@ -275,11 +276,13 @@ class _BaseScreenState extends State<BaseAppBar> {
                           leading: suggestion.image != null
                               ? ClipRRect(
                                   borderRadius: BorderRadius.circular(6),
-                                  child: Image.network(
-                                    suggestion.image!,
+                                  child: PaddedNetworkBanner(
+                                    imageUrl: suggestion.image!,
                                     width: 32,
                                     height: 32,
                                     fit: BoxFit.cover,
+                                    padding: EdgeInsets.zero,
+                                    borderRadius: 6,
                                   ),
                                 )
                               : const Icon(Icons.shopping_bag_outlined),

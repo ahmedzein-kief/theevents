@@ -45,13 +45,6 @@ class _SaveAddressScreenState extends State<SaveAddressScreen> {
   int? defaultAddressId;
   String countryCode = '';
   bool _countryLoader = false;
-  bool _isNameEditable = false;
-  bool _isEmailEditable = false;
-  bool _isPhoneEditable = false;
-  bool _isCountryEditable = false;
-  bool _isStateEditable = false;
-  bool _isCityEditable = false;
-  bool _isAddressEditable = false;
   bool isNewAddress = false; // Tracks whether a new address is being added
 
   final _formKey = GlobalKey<FormState>();
@@ -97,8 +90,12 @@ class _SaveAddressScreenState extends State<SaveAddressScreen> {
   @override
   void initState() {
     super.initState();
-    fetchCountryData();
     isNewAddress = widget.addressModel == null; // Initialize based on addressModel
+
+    // Only fetch country data if we're editing an existing address
+    if (widget.addressModel != null || widget.isEditable) {
+      fetchCountryData();
+    }
   }
 
   Future<void> fetchCountryData() async {
@@ -106,7 +103,11 @@ class _SaveAddressScreenState extends State<SaveAddressScreen> {
       _countryLoader = true;
       countryModel = await fetchCountries(context);
       _countryLoader = false;
-      populateData();
+
+      // Only populate data if we're editing an existing address
+      if (widget.addressModel != null || widget.isEditable) {
+        populateData();
+      }
     } catch (error) {
       _countryLoader = false;
     }
@@ -128,7 +129,6 @@ class _SaveAddressScreenState extends State<SaveAddressScreen> {
 
       setState(() {
         _stateLoader = false;
-        _isStateEditable = true;
       });
     } catch (error) {
       setState(() {
@@ -150,7 +150,6 @@ class _SaveAddressScreenState extends State<SaveAddressScreen> {
 
       setState(() {
         _cityLoader = false;
-        _isCityEditable = true;
       });
     } catch (error) {
       setState(() {
@@ -171,6 +170,11 @@ class _SaveAddressScreenState extends State<SaveAddressScreen> {
         _cityController.text = widget.addressModel?.city ?? '';
         _addressController.text = widget.addressModel?.address ?? '';
 
+        // Set country code and ID for editing
+        if (widget.addressModel!.countryId != null && widget.addressModel!.countryId!.isNotEmpty) {
+          selectedCountryId = int.tryParse(widget.addressModel!.countryId!);
+        }
+
         selectedAddress = CustomerRecords(
           id: int.parse(widget.addressModel!.id),
           name: widget.addressModel!.name,
@@ -185,12 +189,29 @@ class _SaveAddressScreenState extends State<SaveAddressScreen> {
       }
 
       if (widget.addressModel == null) {
-        _isNameEditable = _isEmailEditable =
-            _isPhoneEditable = _isCountryEditable = _isStateEditable = _isCityEditable = _isAddressEditable = true;
+        // Clear all fields when adding new address
+        _newAddressController.clear();
+        _NamController.clear();
+        _emailController.clear();
+        _phoneController.clear();
+        _countryController.clear();
+        _stateController.clear();
+        _cityController.clear();
+        _addressController.clear();
+
+        // Reset selections
+        selectedAddress = null;
+        selectedCountryId = null;
+        selectedState = null;
+        selectedCity = null;
+        countryCode = '';
       }
 
-      await fetchDataOfCustomer();
-      await fetchUserData();
+      // Only fetch customer data if we're not adding a new address
+      if (widget.addressModel != null || widget.isEditable) {
+        await fetchDataOfCustomer();
+        await fetchUserData();
+      }
     });
   }
 
@@ -212,50 +233,14 @@ class _SaveAddressScreenState extends State<SaveAddressScreen> {
       });
       final token = await SecurePreferencesUtil.getToken();
       final provider = Provider.of<CustomerAddressProvider>(context, listen: false);
-      final result = await provider.fetchCustomerAddresses(
+      await provider.fetchCustomerAddresses(
         token ?? '',
         context,
         perPage: 12,
         page: _currentPage,
       );
 
-      if (!widget.isEditable) {
-        setState(() {
-          final list = result?.data?.records ?? [];
-
-          if (list.isNotEmpty) {
-            final CustomerRecords address = list.firstWhere(
-              (address) => address.isDefault == 1,
-              orElse: () => list.first,
-            );
-
-            selectedAddress = address;
-            _newAddressController.text = address.fullAddress ?? AppStrings.unknownAddress.tr;
-            _NamController.text = address.name ?? AppStrings.unknownName.tr;
-            _emailController.text = address.email ?? AppStrings.unknownEmail.tr;
-            _phoneController.text = address.phone ?? AppStrings.unknownPhone.tr;
-            _countryController.text = address.country ?? '';
-            _stateController.text = address.state ?? '';
-            _cityController.text = address.city ?? '';
-            _addressController.text = address.address ?? AppStrings.unknownAddress.tr;
-
-            // Check if country is null or empty to enable country selection
-            final bool hasCountry = address.country != null && address.country!.isNotEmpty;
-            final bool hasState = address.state != null && address.state!.isNotEmpty;
-            final bool hasCity = address.city != null && address.city!.isNotEmpty;
-
-            _isNameEditable = false;
-            _isEmailEditable = false;
-            _isPhoneEditable = false;
-            _isCountryEditable = !hasCountry; // Enable if country is missing
-            _isStateEditable = !hasState; // Enable if state is missing
-            _isCityEditable = !hasCity; // Enable if city is missing
-            _isAddressEditable = false;
-
-            isNewAddress = false; // Existing address selected
-          }
-        });
-      }
+      // Removed automatic population logic to ensure empty fields for new addresses
 
       setState(() {
         _isFetchingMore = false;
@@ -355,17 +340,6 @@ class _SaveAddressScreenState extends State<SaveAddressScreen> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     SizedBox(height: screeHeight * 0.02),
-                    CustomFieldSaveAddress(
-                      hintText: AppStrings.addNewAddress.tr,
-                      focusNode: _newAddressFocusNode,
-                      nextFocusNode: _NameFocusNode,
-                      isEditable: false,
-                      suffixIcon: const Icon(Icons.arrow_drop_down),
-                      controller: _newAddressController,
-                      onTap: () async {
-                        _showAddressBottomSheet();
-                      },
-                    ),
                     Form(
                       key: _formKey,
                       child: Column(
@@ -376,8 +350,11 @@ class _SaveAddressScreenState extends State<SaveAddressScreen> {
                             focusNode: _NameFocusNode,
                             nextFocusNode: _emailFocusNode,
                             keyboardType: TextInputType.name,
-                            displayName: user?.name ?? '${AppStrings.loading.tr}...',
-                            isEditable: _isNameEditable,
+                            displayName: (widget.addressModel != null || widget.isEditable)
+                                ? (user?.name ?? '${AppStrings.loading.tr}...')
+                                : null,
+                            isEditable: true,
+                            // Always editable
                             formFieldValidator: (value) {
                               if (value == null || value.isEmpty) {
                                 return AppStrings.nameIsRequired.tr;
@@ -387,12 +364,15 @@ class _SaveAddressScreenState extends State<SaveAddressScreen> {
                           ),
                           CustomFieldSaveAddress(
                             hintText: AppStrings.email.tr,
-                            displayName: user?.email ?? '${AppStrings.loading.tr}...',
+                            displayName: (widget.addressModel != null || widget.isEditable)
+                                ? (user?.email ?? '${AppStrings.loading.tr}...')
+                                : null,
                             controller: _emailController,
                             focusNode: _emailFocusNode,
                             keyboardType: TextInputType.emailAddress,
                             nextFocusNode: _phoneFocusNode,
-                            isEditable: _isEmailEditable,
+                            isEditable: true,
+                            // Always editable
                             formFieldValidator: Validator.email,
                           ),
                           CustomFieldSaveAddress(
@@ -401,7 +381,8 @@ class _SaveAddressScreenState extends State<SaveAddressScreen> {
                             controller: _phoneController,
                             focusNode: _phoneFocusNode,
                             nextFocusNode: _countryFocusNode,
-                            isEditable: _isPhoneEditable,
+                            isEditable: true,
+                            // Always editable
                             formFieldValidator: Validator.phone,
                           ),
                           CustomFieldSaveAddress(
@@ -409,7 +390,8 @@ class _SaveAddressScreenState extends State<SaveAddressScreen> {
                             controller: _countryController,
                             focusNode: _countryFocusNode,
                             nextFocusNode: _stateFocusNode,
-                            isEditable: false,
+                            isEditable: true,
+                            // Always editable
                             formFieldValidator: (value) {
                               if (value == null || value.isEmpty) {
                                 return AppStrings.countryIsRequired.tr;
@@ -418,27 +400,30 @@ class _SaveAddressScreenState extends State<SaveAddressScreen> {
                             },
                             suffixIcon: const Icon(Icons.arrow_drop_down_outlined),
                             onTap: () async {
-                              if (_isCountryEditable) {
-                                if (countryModel != null && countryModel?.data != null) {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) => CountryPickerDialog(
-                                      countryList: countryModel?.data?.list ?? [],
-                                      currentSelection: _countryController.text,
-                                      onCountrySelected: (selectedCountry) {
-                                        setState(() {
-                                          countryCode = selectedCountry.code ?? '';
-                                          selectedCountryId = selectedCountry.id ?? 0;
-                                          _countryController.text = selectedCountry.name ?? '';
-                                        });
+                              // Fetch country data if not already loaded
+                              if (countryModel == null || countryModel?.data == null) {
+                                await fetchCountryData();
+                              }
 
-                                        if (selectedCountryId != null) {
-                                          fetchStateData(selectedCountryId!);
-                                        }
-                                      },
-                                    ),
-                                  );
-                                }
+                              if (countryModel != null && countryModel?.data != null) {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => CountryPickerDialog(
+                                    countryList: countryModel?.data?.list ?? [],
+                                    currentSelection: _countryController.text,
+                                    onCountrySelected: (selectedCountry) {
+                                      setState(() {
+                                        countryCode = selectedCountry.code ?? '';
+                                        selectedCountryId = selectedCountry.id ?? 0;
+                                        _countryController.text = selectedCountry.name ?? '';
+                                      });
+
+                                      if (selectedCountryId != null) {
+                                        fetchStateData(selectedCountryId!);
+                                      }
+                                    },
+                                  ),
+                                );
                               }
                             },
                           ),
@@ -447,7 +432,8 @@ class _SaveAddressScreenState extends State<SaveAddressScreen> {
                             controller: _stateController,
                             focusNode: _stateFocusNode,
                             nextFocusNode: _cityFocusNode,
-                            isEditable: false,
+                            isEditable: true,
+                            // Always editable
                             formFieldValidator: (value) {
                               if (value == null || value.isEmpty) {
                                 return AppStrings.stateIsRequired.tr;
@@ -466,30 +452,28 @@ class _SaveAddressScreenState extends State<SaveAddressScreen> {
                                   )
                                 : const Icon(Icons.arrow_drop_down_outlined),
                             onTap: () async {
-                              if (_isStateEditable) {
-                                if (countryModel != null && countryModel?.data != null) {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) => StatePickerDialog(
-                                      stateList: stateModel?.data ?? [],
-                                      currentSelection: selectedState,
-                                      onStateSelected: (state) {
-                                        setState(() {
-                                          selectedState = state;
-                                          _stateController.text = selectedState?.name ?? '';
-                                        });
-                                        if (selectedState != null &&
-                                            selectedState?.id != null &&
-                                            selectedCountryId != null) {
-                                          fetchCityData(
-                                            selectedState!.id!,
-                                            selectedCountryId!,
-                                          );
-                                        }
-                                      },
-                                    ),
-                                  );
-                                }
+                              if (countryModel != null && countryModel?.data != null) {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => StatePickerDialog(
+                                    stateList: stateModel?.data ?? [],
+                                    currentSelection: selectedState,
+                                    onStateSelected: (state) {
+                                      setState(() {
+                                        selectedState = state;
+                                        _stateController.text = selectedState?.name ?? '';
+                                      });
+                                      if (selectedState != null &&
+                                          selectedState?.id != null &&
+                                          selectedCountryId != null) {
+                                        fetchCityData(
+                                          selectedState!.id!,
+                                          selectedCountryId!,
+                                        );
+                                      }
+                                    },
+                                  ),
+                                );
                               }
                             },
                           ),
@@ -498,7 +482,8 @@ class _SaveAddressScreenState extends State<SaveAddressScreen> {
                             controller: _cityController,
                             focusNode: _cityFocusNode,
                             nextFocusNode: _addressFocusNode,
-                            isEditable: _isCityEditable,
+                            isEditable: true,
+                            // Always editable
                             formFieldValidator: (value) {
                               if (value == null || value.isEmpty) {
                                 return AppStrings.cityIsRequired.tr;
@@ -517,22 +502,20 @@ class _SaveAddressScreenState extends State<SaveAddressScreen> {
                                   )
                                 : const Icon(Icons.arrow_drop_down_outlined),
                             onTap: () async {
-                              if (_isCityEditable) {
-                                if (stateModel != null && stateModel?.data != null && selectedState != null) {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) => CityPickerDialog(
-                                      cityList: cityModel?.data ?? [],
-                                      currentSelection: selectedCity,
-                                      onCitySelected: (city) {
-                                        setState(() {
-                                          selectedCity = city;
-                                          _cityController.text = selectedCity?.name ?? '';
-                                        });
-                                      },
-                                    ),
-                                  );
-                                }
+                              if (stateModel != null && stateModel?.data != null && selectedState != null) {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => CityPickerDialog(
+                                    cityList: cityModel?.data ?? [],
+                                    currentSelection: selectedCity,
+                                    onCitySelected: (city) {
+                                      setState(() {
+                                        selectedCity = city;
+                                        _cityController.text = selectedCity?.name ?? '';
+                                      });
+                                    },
+                                  ),
+                                );
                               }
                             },
                           ),
@@ -541,7 +524,8 @@ class _SaveAddressScreenState extends State<SaveAddressScreen> {
                             controller: _addressController,
                             focusNode: _addressFocusNode,
                             keyboardType: TextInputType.text,
-                            isEditable: _isAddressEditable,
+                            isEditable: true,
+                            // Always editable
                             formFieldValidator: Validator.addressValidator,
                           ),
                         ],
@@ -569,7 +553,7 @@ class _SaveAddressScreenState extends State<SaveAddressScreen> {
                                               (selectedAddress!.state == null || selectedAddress!.state!.isEmpty) ||
                                               (selectedAddress!.city == null || selectedAddress!.city!.isEmpty));
 
-                                      if (needsUpdate && (_isCountryEditable || _isStateEditable || _isCityEditable)) {
+                                      if (needsUpdate) {
                                         // Validate the form first
                                         if (!(_formKey.currentState?.validate() ?? false)) {
                                           CustomSnackbar.showError(
@@ -662,30 +646,29 @@ class _SaveAddressScreenState extends State<SaveAddressScreen> {
                             ),
                             child: AppCustomButton(
                               onPressed: () async {
-                                final token = await SecurePreferencesUtil.getToken();
+                                // Validate the form first
+                                if (!(_formKey.currentState?.validate() ?? false)) {
+                                  CustomSnackbar.showError(
+                                    context,
+                                    AppStrings.enterCorrectDetails.tr,
+                                  );
+                                  return;
+                                }
 
-                                final result = await Provider.of<SubMitCheckoutInformationProvider>(
-                                  context,
-                                  listen: false,
-                                ).submitCheckoutInformation(
-                                  context: context,
-                                  token: token ?? '123456789',
-                                  trackedStartCheckout: widget.tracked_start_checkout,
-                                  addressId: selectedAddress?.id.toString() ?? 'new',
-                                  name: _NamController.text,
-                                  email: _emailController.text,
-                                  city: _cityController.text,
-                                  state: _stateController.text,
-                                  address: _addressController.text,
-                                  phone: int.tryParse(_phoneController.text) ?? 0,
-                                  country: countryCode,
-                                  vendorId: 23,
-                                  shippingMethod: 'default',
-                                  shippingOption: '3',
-                                );
+                                // Update the existing address using _updateAddress method
+                                final updateSuccess = await _updateAddress(selectedAddress!.id!);
 
-                                if (result != null) {
-                                  Navigator.pop(context, true);
+                                if (updateSuccess) {
+                                  CustomSnackbar.showSuccess(
+                                    context,
+                                    'Address updated successfully',
+                                  );
+                                  Navigator.pop(context, true); // Return true to indicate success
+                                } else {
+                                  CustomSnackbar.showError(
+                                    context,
+                                    'Failed to update address. Please try again.',
+                                  );
                                 }
                               },
                               title: AppStrings.updateAddress.tr,
@@ -733,7 +716,6 @@ class _SaveAddressScreenState extends State<SaveAddressScreen> {
                   '${AppStrings.addNewAddressTitle.tr}...',
                   style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
-                //
                 onTap: () {
                   setState(() {
                     selectedAddress = null;
@@ -746,8 +728,6 @@ class _SaveAddressScreenState extends State<SaveAddressScreen> {
                     _stateController.clear();
                     _addressController.clear();
 
-                    _isNameEditable = _isEmailEditable = _isPhoneEditable =
-                        _isCountryEditable = _isStateEditable = _isCityEditable = _isAddressEditable = true;
                     isNewAddress = true; // New address being added
                   });
                   Navigator.of(context).pop();
@@ -806,19 +786,6 @@ class _SaveAddressScreenState extends State<SaveAddressScreen> {
                                       _cityController.text = address.city ?? '';
                                       _stateController.text = address.state ?? '';
                                       _addressController.text = address.address ?? AppStrings.unknownAddress.tr;
-
-                                      // Check if country is null or empty to enable country selection
-                                      final bool hasCountry = address.country != null && address.country!.isNotEmpty;
-                                      final bool hasState = address.state != null && address.state!.isNotEmpty;
-                                      final bool hasCity = address.city != null && address.city!.isNotEmpty;
-
-                                      _isNameEditable = false;
-                                      _isEmailEditable = false;
-                                      _isPhoneEditable = false;
-                                      _isCountryEditable = !hasCountry; // Enable if country is missing
-                                      _isStateEditable = !hasState; // Enable if state is missing
-                                      _isCityEditable = !hasCity; // Enable if city is missing
-                                      _isAddressEditable = false;
 
                                       isNewAddress = false; // Existing address selected
                                     });

@@ -8,6 +8,7 @@ class PageData {
     this.slug,
     this.image,
     this.coverImage,
+    this.coverImageForMobile,
     this.seoMeta,
     this.content,
   });
@@ -21,17 +22,18 @@ class PageData {
       slug: data?['slug'] as String?,
       image: data?['image'] as String?,
       coverImage: data?['cover_image'] as String?,
-      seoMeta: data?['seo_meta'] != null
-          ? SeoMeta.fromJson(data!['seo_meta'])
-          : null,
+      coverImageForMobile: data?['cover_image_for_mobile'] as String?,
+      seoMeta: data?['seo_meta'] != null ? SeoMeta.fromJson(data!['seo_meta']) : null,
       content: data?['content'] as String?,
     );
   }
+
   final String? view;
   final String? name;
   final String? slug;
   final String? image;
   final String? coverImage;
+  final String? coverImageForMobile;
   final SeoMeta? seoMeta;
   final String? content;
 }

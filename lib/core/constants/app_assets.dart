@@ -30,4 +30,5 @@ class AppAssets {
   static const String eventsDark = '$baseNavIconsPath/events_dark.svg';
   static const String celebrities = '$baseNavIconsPath/cele.svg';
   static const String aboutBanner = '$baseAssetsPath/about_banner.png';
+  static const dirham = '$baseAssetsPath/dirham.svg';
 }

@@ -1,14 +1,13 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/views/home_screens_shortcode/shortcode_events_bazaar/events_bazzar_items_screen.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/constants/app_strings.dart';
 import '../../core/styles/custom_text_styles.dart';
 import '../../core/widgets/custom_auto_slider_home.dart';
 import '../../core/widgets/custom_home_views/custom_home_text_row.dart';
+import '../../core/widgets/padded_network_banner.dart';
 import '../../provider/locale_provider.dart';
 import '../../provider/shortcode_events_bazaar_provider/events_bazaar_provider.dart';
 
@@ -98,37 +97,12 @@ class _EventBazaarViewState extends State<EventBazaarScreen> {
                         flex: 3,
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(15),
-                          child: CachedNetworkImage(
+                          child: PaddedNetworkBanner(
                             imageUrl: 'https://apistaging.theevents.ae/storage/flags/${event.iso!.toLowerCase()}.png',
                             fit: BoxFit.cover,
                             width: double.infinity,
                             height: 80,
-                            errorWidget: (context, url, error) => Image.asset(
-                              'assets/placeholder.png',
-                              fit: BoxFit.cover,
-                              height: 80,
-                              width: double.infinity,
-                            ),
-                            placeholder: (context, url) => Container(
-                              height: 80,
-                              width: double.infinity,
-                              color: Colors.blueGrey[300],
-                              child: Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  Image.asset(
-                                    'assets/placeholder.png',
-                                    fit: BoxFit.cover,
-                                    height: 80,
-                                    width: double.infinity,
-                                  ),
-                                  const CupertinoActivityIndicator(
-                                    radius: 16,
-                                    animating: true,
-                                  ),
-                                ],
-                              ),
-                            ),
+                            padding: EdgeInsets.zero,
                           ),
                         ),
                       ),

@@ -485,9 +485,7 @@ class Validator {
     if (value.length > 100) {
       return 'Address must not exceed 100 characters.';
     }
-    if (!RegExp(r'^[a-zA-Z0-9\s,.-]+$').hasMatch(value)) {
-      return 'Address contains invalid characters.';
-    }
+
     return null; // Valid address
   }
 

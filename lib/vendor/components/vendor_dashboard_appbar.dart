@@ -106,6 +106,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../../core/network/api_endpoints/api_contsants.dart';
 import '../../core/styles/custom_text_styles.dart';
 import '../Components/vendor_text_style.dart';
 
@@ -141,7 +142,7 @@ class CustomAppBarVendor extends StatelessWidget implements PreferredSizeWidget 
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(35),
                     child: CachedNetworkImage(
-                      imageUrl: imageUrl ?? '',
+                      imageUrl: imageUrl ?? ApiConstants.placeholderImage,
                       fit: BoxFit.cover,
                       errorWidget: (context, url, error) => Image.asset(
                         'assets/boy.png',

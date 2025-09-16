@@ -54,7 +54,8 @@ class _ShippingAddressScreenState extends State<PaymentScreen> {
   };
 
   // Apple Pay configuration
-  static const String defaultApplePayConfigString = '''{
+  static const String defaultApplePayConfigString = '''
+{
     "provider": "apple_pay",
     "data": {
       "merchantIdentifier": "merchant.com.yourapp.id",

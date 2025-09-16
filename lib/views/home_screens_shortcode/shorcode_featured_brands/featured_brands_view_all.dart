@@ -1,13 +1,13 @@
 import 'dart:async';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/constants/app_strings.dart';
+import '../../../core/network/api_endpoints/api_contsants.dart';
 import '../../../core/styles/custom_text_styles.dart';
+import '../../../core/widgets/padded_network_banner.dart';
 import '../../../provider/home_shortcode_provider/featured_brands_provider.dart';
 import '../../../provider/locale_provider.dart';
 import '../../base_screens/base_app_bar.dart';
@@ -208,65 +208,17 @@ class _FeaturedCategoriesScreenState extends State<FeaturedBrandsScreenViewAll> 
                           mainAxisAlignment: MainAxisAlignment.start,
                           mainAxisSize: MainAxisSize.max,
                           children: [
-                            Padding(
+                            PaddedNetworkBanner(
+                              imageUrl: provider.featuredBrandsBanner?.data.coverImageForMobile ??
+                                  provider.featuredBrandsBanner?.data.coverImage ??
+                                  ApiConstants.placeholderImage,
+                              height: 160,
+                              borderRadius: 0,
+                              fit: BoxFit.cover,
                               padding: EdgeInsets.only(
                                 left: screenWidth * 0.02,
                                 right: screenWidth * 0.02,
                                 top: screenHeight * 0.02,
-                              ),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(0),
-                                child: CachedNetworkImage(
-                                  imageUrl: provider.featuredBrandsBanner?.data.coverImage ?? '',
-                                  fit: BoxFit.cover,
-                                  errorListener: (object) {
-                                    Container(
-                                      height: screenHeight,
-                                      width: screenWidth,
-                                      decoration: const BoxDecoration(
-                                        gradient: LinearGradient(
-                                          colors: [
-                                            Colors.grey,
-                                            Colors.black,
-                                          ],
-                                        ),
-                                      ),
-                                      child: const CupertinoActivityIndicator(
-                                        color: Colors.black,
-                                        radius: 10,
-                                        animating: true,
-                                      ),
-                                    );
-                                  },
-                                  errorWidget: (context, object, error) => Container(
-                                    height: screenHeight,
-                                    width: screenWidth,
-                                    decoration: const BoxDecoration(
-                                      gradient: LinearGradient(
-                                        colors: [Colors.grey, Colors.black],
-                                      ),
-                                    ),
-                                    child: const CupertinoActivityIndicator(
-                                      color: Colors.black,
-                                      radius: 10,
-                                      animating: true,
-                                    ),
-                                  ),
-                                  placeholder: (BuildContext context, String url) => Container(
-                                    height: screenHeight,
-                                    width: screenWidth,
-                                    decoration: const BoxDecoration(
-                                      gradient: LinearGradient(
-                                        colors: [Colors.grey, Colors.black],
-                                      ),
-                                    ),
-                                    child: const CupertinoActivityIndicator(
-                                      color: Colors.black,
-                                      radius: 10,
-                                      animating: true,
-                                    ),
-                                  ),
-                                ),
                               ),
                             ),
                             Padding(
@@ -364,46 +316,26 @@ class _FeaturedCategoriesScreenState extends State<FeaturedBrandsScreenViewAll> 
                                           // Image container with rounded top corners
                                           SizedBox(
                                             height: 100, // Fixed height for consistency
-
-                                            child: CachedNetworkImage(
-                                              imageUrl: brand.image,
-                                              fit: BoxFit.contain,
-                                              // Changed to contain to maintain aspect ratio
-                                              width: double.infinity,
-                                              height: double.infinity,
-                                              errorWidget: (context, object, error) => Container(
-                                                decoration: BoxDecoration(
-                                                  color: Colors.grey[100],
-                                                  borderRadius: const BorderRadius.only(
-                                                    topLeft: Radius.circular(8.0),
-                                                    topRight: Radius.circular(8.0),
-                                                  ),
-                                                ),
-                                                child: const Center(
-                                                  child: Icon(
-                                                    Icons.image_not_supported,
-                                                    color: Colors.grey,
-                                                    size: 24,
-                                                  ),
-                                                ),
+                                            child: ClipRRect(
+                                              borderRadius: const BorderRadius.only(
+                                                topLeft: Radius.circular(8.0),
+                                                topRight: Radius.circular(8.0),
                                               ),
-                                              placeholder: (BuildContext context, String url) => Container(
-                                                decoration: BoxDecoration(
-                                                  color: Colors.grey[100],
-                                                  borderRadius: const BorderRadius.only(
-                                                    topLeft: Radius.circular(8.0),
-                                                    topRight: Radius.circular(8.0),
-                                                  ),
-                                                ),
-                                                child: const Center(
-                                                  child: CupertinoActivityIndicator(
-                                                    color: Colors.grey,
-                                                    radius: 15,
-                                                  ),
-                                                ),
+                                              child: PaddedNetworkBanner(
+                                                imageUrl: brand.image,
+                                                fit: BoxFit.contain,
+                                                // Keep logos clean
+                                                height: 100,
+                                                width: double.infinity,
+                                                borderRadius: 0,
+                                                // clip already handles corners
+                                                gradientColors: const [Colors.transparent, Colors.transparent],
+                                                cacheKey: 'brand_${brand.image.hashCode}',
+                                                alignment: Alignment.center,
                                               ),
                                             ),
                                           ),
+
                                           // Brand name section
                                           Padding(
                                             padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -418,7 +350,7 @@ class _FeaturedCategoriesScreenState extends State<FeaturedBrandsScreenViewAll> 
                                               overflow: TextOverflow.ellipsis,
                                             ),
                                           ),
-                                          const SizedBox(height: 8)
+                                          const SizedBox(height: 8),
                                         ],
                                       ),
                                     ),

@@ -1,17 +1,17 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/widgets/items_empty_view.dart';
 import 'package:event_app/views/base_screens/base_app_bar.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/constants/app_strings.dart';
+import '../../../core/network/api_endpoints/api_contsants.dart';
 import '../../../core/services/shared_preferences_helper.dart';
 import '../../../core/styles/app_colors.dart';
 import '../../../core/styles/custom_text_styles.dart';
 import '../../../core/widgets/custom_app_views/search_bar.dart';
 import '../../../core/widgets/custom_items_views/product_card.dart';
+import '../../../core/widgets/padded_network_banner.dart';
 import '../../../provider/cart_item_provider/cart_item_provider.dart';
 import '../../../provider/home_shortcode_provider/featured_brands_provider.dart';
 import '../../../provider/shortcode_fresh_picks_provider/fresh_picks_provider.dart';
@@ -183,48 +183,12 @@ class _FeaturedBrandsItemsScreenState extends State<FeaturedBrandsItemsScreen> {
                                   children: [
                                     ClipRRect(
                                       borderRadius: BorderRadius.circular(5),
-                                      child: CachedNetworkImage(
-                                        imageUrl: brandData?.coverImage ?? '',
+                                      child: PaddedNetworkBanner(
+                                        imageUrl: brandData?.coverImage ?? ApiConstants.placeholderImage,
                                         height: 100,
                                         fit: BoxFit.cover,
                                         width: double.infinity,
-                                        errorListener: (object) {
-                                          print('Cover image error: $object');
-                                        },
-                                        errorWidget: (context, object, error) => Container(
-                                          height: 100,
-                                          width: double.infinity,
-                                          decoration: BoxDecoration(
-                                            color: Colors.grey[300],
-                                            borderRadius: BorderRadius.circular(5),
-                                          ),
-                                          child: Image.asset(
-                                            'assets/placeholder.png',
-                                            fit: BoxFit.cover,
-                                            height: 100,
-                                            width: double.infinity,
-                                          ),
-                                        ),
-                                        placeholder: (BuildContext context, String url) => Container(
-                                          height: 100,
-                                          width: double.infinity,
-                                          color: Colors.blueGrey[300],
-                                          child: Stack(
-                                            alignment: Alignment.center,
-                                            children: [
-                                              Image.asset(
-                                                'assets/placeholder.png',
-                                                fit: BoxFit.cover,
-                                                height: 100,
-                                                width: double.infinity,
-                                              ),
-                                              const CupertinoActivityIndicator(
-                                                radius: 16,
-                                                animating: true,
-                                              ),
-                                            ],
-                                          ),
-                                        ),
+                                        padding: EdgeInsets.zero,
                                       ),
                                     ),
                                     // Brand logo and name with better visibility
@@ -248,38 +212,12 @@ class _FeaturedBrandsItemsScreenState extends State<FeaturedBrandsItemsScreen> {
                                             child: ClipRRect(
                                               borderRadius: BorderRadius.circular(6),
                                               child: brandData?.image != null && brandData!.image.isNotEmpty
-                                                  ? CachedNetworkImage(
+                                                  ? PaddedNetworkBanner(
                                                       imageUrl: brandData.image,
                                                       fit: BoxFit.cover,
                                                       width: 55,
                                                       height: 55,
-                                                      errorWidget: (context, url, error) {
-                                                        return Container(
-                                                          decoration: BoxDecoration(
-                                                            color: Colors.grey[100],
-                                                            borderRadius: BorderRadius.circular(6),
-                                                          ),
-                                                          child: const Center(
-                                                            child: Icon(
-                                                              Icons.business,
-                                                              color: Colors.grey,
-                                                              size: 20,
-                                                            ),
-                                                          ),
-                                                        );
-                                                      },
-                                                      placeholder: (BuildContext context, String url) => Container(
-                                                        decoration: BoxDecoration(
-                                                          color: Colors.grey[100],
-                                                          borderRadius: BorderRadius.circular(6),
-                                                        ),
-                                                        child: const Center(
-                                                          child: CupertinoActivityIndicator(
-                                                            color: Colors.grey,
-                                                            radius: 10,
-                                                          ),
-                                                        ),
-                                                      ),
+                                                      padding: EdgeInsets.zero,
                                                     )
                                                   : Container(
                                                       decoration: BoxDecoration(

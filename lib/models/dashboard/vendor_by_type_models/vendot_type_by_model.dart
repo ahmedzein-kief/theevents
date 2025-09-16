@@ -9,8 +9,7 @@ class VendorTypeBy {
 
   factory VendorTypeBy.fromJson(Map<String, dynamic> json) => VendorTypeBy(
         error: json['error'] ?? false,
-        data:
-            json['data'] != null ? VendorTypeData.fromJson(json['data']) : null,
+        data: json['data'] != null ? VendorTypeData.fromJson(json['data']) : null,
         message: json['message'],
       );
   final bool error;
@@ -88,6 +87,7 @@ class VendorTypeData {
     this.image,
     this.thumbnail,
     this.coverImage,
+    this.coverImageForMobile,
     this.seoMetaManual,
   });
 
@@ -100,9 +100,8 @@ class VendorTypeData {
         image: json['image'] as String?,
         thumbnail: json['thumb'] as String?,
         coverImage: json['cover_image'] as String?,
-        seoMetaManual: json['seo_meta_manual'] != null
-            ? SeoMetaManual.fromJson(json['seo_meta_manual'])
-            : null,
+        coverImageForMobile: json['cover_image_for_mobile'] as String?,
+        seoMetaManual: json['seo_meta_manual'] != null ? SeoMetaManual.fromJson(json['seo_meta_manual']) : null,
       );
   final int? id; // Nullable
   final String? name; // Nullable
@@ -112,6 +111,7 @@ class VendorTypeData {
   final String? image; // Nullable
   final String? thumbnail; // Nullable
   final String? coverImage; // Nullable
+  final String? coverImageForMobile; // Nullable
   final SeoMetaManual? seoMetaManual;
 
   Map<String, dynamic> toJson() => {
@@ -123,6 +123,7 @@ class VendorTypeData {
         'image': image,
         'thumb': thumbnail,
         'cover_image': coverImage,
+        'cover_image_for_mobile': coverImageForMobile,
         'seo_meta_manual': seoMetaManual?.toJson(),
       };
 }

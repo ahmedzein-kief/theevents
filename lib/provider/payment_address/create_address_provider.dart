@@ -50,20 +50,22 @@ class AddressModel {
         'is_default': isDefault ? 1 : 0,
       };
 
-  Map<String, dynamic> toJsonString() => {
-        'id': id,
-        'name': name,
-        'email': email,
-        'phone': phone,
-        'address': address,
-        'country': country,
-        'city': city,
-        'state': state,
-        'country_id': countryId,
-        'state_id': stateId,
-        'city_id': cityId,
-        'is_default': isDefault ? '1' : '0',
-      };
+  Map<String, dynamic> toJsonString() {
+    return {
+      'id': id,
+      'name': name,
+      'email': email,
+      'phone': phone,
+      'address': address,
+      'country': country,
+      'city': city,
+      'state': state,
+      'country_id': countryId,
+      'state_id': stateId,
+      'city_id': cityId,
+      'is_default': isDefault ? '1' : '0',
+    };
+  }
 
   Map<String, dynamic> vendorOrderDetailsUpdateShippingAddressToJson() => {
         'order_id': id,

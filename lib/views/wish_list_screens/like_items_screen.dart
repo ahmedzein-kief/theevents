@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/services/shared_preferences_helper.dart';
 import 'package:event_app/models/wishlist_models/wishlist_items_models.dart';
@@ -14,6 +13,8 @@ import '../../core/constants/app_strings.dart';
 import '../../core/services/image_picker.dart';
 import '../../core/styles/app_colors.dart';
 import '../../core/styles/custom_text_styles.dart';
+import '../../core/widgets/PriceRow.dart';
+import '../../core/widgets/padded_network_banner.dart';
 import '../../provider/store_provider/brand_store_provider.dart';
 import '../../provider/wishlist_items_provider/wishlist_provider.dart';
 import '../product_detail_screens/product_detail_screen.dart';
@@ -125,8 +126,7 @@ class _WishListScreenState extends State<WishListScreen> {
                         radius: 16.5,
                         backgroundImage: _selectedImage != null
                             ? FileImage(_selectedImage!)
-                            : const AssetImage('assets/boy.png')
-                                as ImageProvider,
+                            : const AssetImage('assets/boy.png') as ImageProvider,
                       ),
                     ],
                   ),
@@ -139,8 +139,7 @@ class _WishListScreenState extends State<WishListScreen> {
                             strokeWidth: 0.5,
                           ),
                         )
-                      : wishlistProvider.wishlist?.data?.products.isEmpty ??
-                              true
+                      : wishlistProvider.wishlist?.data?.products.isEmpty ?? true
                           ? Center(
                               child: Padding(
                                 padding: EdgeInsets.only(
@@ -162,8 +161,7 @@ class _WishListScreenState extends State<WishListScreen> {
                                       child: Text(
                                         AppStrings.emptyWishList.tr,
                                         style: wishListText(context).copyWith(
-                                          color:
-                                              isDarkMode ? Colors.white : null,
+                                          color: isDarkMode ? Colors.white : null,
                                         ),
                                       ),
                                     ),
@@ -174,24 +172,17 @@ class _WishListScreenState extends State<WishListScreen> {
                           : ListView.builder(
                               shrinkWrap: true,
                               physics: const BouncingScrollPhysics(),
-                              itemCount: wishlistProvider
-                                      .wishlist?.data?.products.length ??
-                                  0,
+                              itemCount: wishlistProvider.wishlist?.data?.products.length ?? 0,
                               itemBuilder: (context, index) {
-                                final product = wishlistProvider
-                                    .wishlist?.data?.products[index];
+                                final product = wishlistProvider.wishlist?.data?.products[index];
 
                                 /// Calculate the percentage off
-                                final dynamic frontSalePrice =
-                                    product?.frontSalePrice;
+                                final dynamic frontSalePrice = product?.frontSalePrice;
                                 final dynamic price = product?.price;
                                 String offPercentage = '';
 
-                                if (frontSalePrice != null &&
-                                    price != null &&
-                                    price > 0) {
-                                  final dynamic discount =
-                                      100 - ((frontSalePrice / price) * 100);
+                                if (frontSalePrice != null && price != null && price > 0) {
+                                  final dynamic discount = 100 - ((frontSalePrice / price) * 100);
                                   if (discount > 0) {
                                     offPercentage = discount.toStringAsFixed(0);
                                   }
@@ -204,14 +195,14 @@ class _WishListScreenState extends State<WishListScreen> {
                                 /// wishlist product widget
                                 return Padding(
                                   padding: EdgeInsets.only(
-                                      bottom: screenHeight * 0.035,),
+                                    bottom: screenHeight * 0.035,
+                                  ),
                                   child: GestureDetector(
                                     onTap: () {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) =>
-                                              ProductDetailScreen(
+                                          builder: (context) => ProductDetailScreen(
                                             key: ValueKey(product.slug),
                                             slug: product.slug,
                                           ),
@@ -229,81 +220,37 @@ class _WishListScreenState extends State<WishListScreen> {
                                             blurRadius: 0.5,
                                             spreadRadius: 0.5,
                                             color: isDarkMode
-                                                ? Colors.grey[700]!
-                                                    .withOpacity(0.3)
+                                                ? Colors.grey[700]!.withOpacity(0.3)
                                                 : Colors.white.withOpacity(0.3),
                                           ),
                                         ],
                                       ),
                                       child: Padding(
                                         padding: EdgeInsets.only(
-                                            left: screenWidth * 0.02,
-                                            right: screenWidth * 0.02,
-                                            top: screenHeight * 0.02,
-                                            bottom: screenHeight * 0.02,),
+                                          left: screenWidth * 0.02,
+                                          right: screenWidth * 0.02,
+                                          top: screenHeight * 0.02,
+                                          bottom: screenHeight * 0.02,
+                                        ),
                                         child: IntrinsicHeight(
                                           child: Row(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            mainAxisAlignment: MainAxisAlignment.start,
                                             children: [
                                               Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
+                                                mainAxisAlignment: MainAxisAlignment.start,
+                                                crossAxisAlignment: CrossAxisAlignment.start,
                                                 children: [
                                                   SizedBox(
                                                     width: screenWidth * 0.25,
                                                     height: screenHeight * 0.1,
-                                                    child: CachedNetworkImage(
+                                                    child: PaddedNetworkBanner(
                                                       imageUrl: product.image,
                                                       fit: BoxFit.cover,
-                                                      alignment:
-                                                          Alignment.centerLeft,
+                                                      alignment: Alignment.centerLeft,
                                                       width: screenWidth * 0.25,
-                                                      height:
-                                                          screenHeight * 0.1,
-                                                      placeholder:
-                                                          (BuildContext context,
-                                                                  String url,) =>
-                                                              Container(
-                                                        height:
-                                                            MediaQuery.sizeOf(
-                                                                        context,)
-                                                                    .height *
-                                                                0.28,
-                                                        width: double.infinity,
-                                                        color: isDarkMode
-                                                            ? Colors.grey[700]
-                                                            : Colors
-                                                                .blueGrey[300],
-                                                        child: Stack(
-                                                          alignment:
-                                                              Alignment.center,
-                                                          children: [
-                                                            Image.asset(
-                                                              'assets/placeholder.png',
-                                                              fit: BoxFit.cover,
-                                                              height: MediaQuery
-                                                                          .sizeOf(
-                                                                              context,)
-                                                                      .height *
-                                                                  0.28,
-                                                              width: double
-                                                                  .infinity,
-                                                            ),
-                                                            CupertinoActivityIndicator(
-                                                              radius: 16,
-                                                              animating: true,
-                                                              color: isDarkMode
-                                                                  ? Colors.white
-                                                                  : null,
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
+                                                      height: screenHeight * 0.1,
+                                                      padding: EdgeInsets.zero,
                                                     ),
                                                   ),
                                                 ],
@@ -314,164 +261,112 @@ class _WishListScreenState extends State<WishListScreen> {
                                                     left: screenWidth * 0.03,
                                                   ),
                                                   child: Column(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceBetween,
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
+                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
                                                     children: [
                                                       Text(
                                                         product.name ?? '',
                                                         style: wishTopItemStyle(
-                                                                context,)
-                                                            .copyWith(
-                                                          color: isDarkMode
-                                                              ? Colors.white
-                                                              : null,
+                                                          context,
+                                                        ).copyWith(
+                                                          color: isDarkMode ? Colors.white : null,
                                                         ),
                                                       ),
                                                       Text(
                                                         '${AppStrings.soldBy.tr}: ${product.store.name}',
                                                         maxLines: 1,
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
+                                                        overflow: TextOverflow.ellipsis,
                                                         style: TextStyle(
                                                           fontSize: 8,
-                                                          color: isDarkMode
-                                                              ? Colors.grey[400]
-                                                              : Colors
-                                                                  .grey[600],
+                                                          color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
                                                         ),
                                                       ),
                                                       Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceEvenly,
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
+                                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
                                                         children: [
                                                           Expanded(
-                                                            child: Text(
-                                                              'AED${product.price.toString()}',
-                                                              style:
-                                                                  wishTopItemStyle(
-                                                                          context,)
-                                                                      .copyWith(
-                                                                color: isDarkMode
-                                                                    ? Colors
-                                                                        .white
-                                                                    : null,
+                                                            child: PriceRow(
+                                                              price: product.price.toString(),
+                                                              style: wishTopItemStyle(
+                                                                context,
+                                                              ).copyWith(
+                                                                color: isDarkMode ? Colors.white : null,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          Expanded(
+                                                            child: PriceRow(
+                                                              price:
+                                                                  (product.frontSalePrice ?? 0) < (product.price ?? 0)
+                                                                      ? (product.priceWithTaxes.toString())
+                                                                      : '',
+                                                              style: wishItemSalePrice(
+                                                                context,
+                                                              ).copyWith(
+                                                                color: isDarkMode ? Colors.grey[400] : null,
                                                               ),
                                                             ),
                                                           ),
                                                           Expanded(
                                                             child: Text(
-                                                              (product.frontSalePrice ??
-                                                                          0) <
-                                                                      (product.price ??
-                                                                          0)
-                                                                  ? (product
-                                                                          .priceWithTaxes
-                                                                          .toString() ??
-                                                                      '')
-                                                                  : '',
-                                                              style:
-                                                                  wishItemSalePrice(
-                                                                          context,)
-                                                                      .copyWith(
-                                                                color: isDarkMode
-                                                                    ? Colors
-                                                                        .grey[400]
-                                                                    : null,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                          Expanded(
-                                                            child: Text(
-                                                              offPercentage
-                                                                      .isNotEmpty
-                                                                  ? '$offPercentage%off'
-                                                                  : '',
-                                                              style:
-                                                                  wishItemSaleOff()
-                                                                      .copyWith(
-                                                                color: isDarkMode
-                                                                    ? Colors
-                                                                        .green[300]
-                                                                    : null,
+                                                              offPercentage.isNotEmpty ? '$offPercentage%off' : '',
+                                                              style: wishItemSaleOff().copyWith(
+                                                                color: isDarkMode ? Colors.green[300] : null,
                                                               ),
                                                             ),
                                                           ),
                                                         ],
                                                       ),
                                                       Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceBetween,
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
+                                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
                                                         children: [
                                                           GestureDetector(
                                                             onTap: () async {
-                                                              final token =
-                                                                  await SecurePreferencesUtil
-                                                                      .getToken();
-                                                              if (token !=
-                                                                  null) {
-                                                                await cartProvider
-                                                                    .addToCart(
-                                                                        product
-                                                                            .id,
-                                                                        context,
-                                                                        1,);
+                                                              final token = await SecurePreferencesUtil.getToken();
+                                                              if (token != null) {
+                                                                await cartProvider.addToCart(
+                                                                  product.id,
+                                                                  context,
+                                                                  1,
+                                                                );
                                                               }
                                                             },
                                                             child: Container(
-                                                              decoration:
-                                                                  BoxDecoration(
-                                                                color:
-                                                                    _getAddToCartButtonColor(
-                                                                        context,),
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            4,),
+                                                              decoration: BoxDecoration(
+                                                                color: _getAddToCartButtonColor(
+                                                                  context,
+                                                                ),
+                                                                borderRadius: BorderRadius.circular(
+                                                                  4,
+                                                                ),
                                                               ),
                                                               height: 24,
                                                               width: 85,
                                                               child: Row(
-                                                                crossAxisAlignment:
-                                                                    CrossAxisAlignment
-                                                                        .center,
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .center,
+                                                                crossAxisAlignment: CrossAxisAlignment.center,
+                                                                mainAxisAlignment: MainAxisAlignment.center,
                                                                 children: [
                                                                   Padding(
-                                                                    padding: const EdgeInsets
-                                                                        .only(
-                                                                        right:
-                                                                            4,),
+                                                                    padding: const EdgeInsets.only(
+                                                                      right: 4,
+                                                                    ),
                                                                     child: Icon(
-                                                                      Icons
-                                                                          .shopping_cart,
+                                                                      Icons.shopping_cart,
                                                                       size: 13,
                                                                       color: _getAddToCartTextColor(
-                                                                          context,),
+                                                                        context,
+                                                                      ),
                                                                     ),
                                                                   ),
                                                                   Text(
-                                                                    AppStrings
-                                                                        .addToCart,
-                                                                    style:
-                                                                        TextStyle(
-                                                                      fontSize:
-                                                                          10,
+                                                                    AppStrings.addToCart,
+                                                                    style: TextStyle(
+                                                                      fontSize: 10,
                                                                       color: _getAddToCartTextColor(
-                                                                          context,),
+                                                                        context,
+                                                                      ),
                                                                     ),
                                                                   ),
                                                                 ],
@@ -481,20 +376,18 @@ class _WishListScreenState extends State<WishListScreen> {
                                                           GestureDetector(
                                                             onTap: () async {
                                                               removeWishlistConfirmationDialog(
-                                                                  context,
-                                                                  product,);
+                                                                context,
+                                                                product,
+                                                              );
                                                             },
                                                             child: Icon(
-                                                              CupertinoIcons
-                                                                  .delete,
+                                                              CupertinoIcons.delete,
                                                               size: 22,
                                                               color: isDarkMode
-                                                                  ? Colors
-                                                                      .red[300]
-                                                                  : Colors
-                                                                      .deepOrangeAccent
-                                                                      .withOpacity(
-                                                                          0.5,),
+                                                                  ? Colors.red[300]
+                                                                  : Colors.deepOrangeAccent.withOpacity(
+                                                                      0.5,
+                                                                    ),
                                                             ),
                                                           ),
                                                         ],
@@ -549,8 +442,7 @@ class _WishListScreenState extends State<WishListScreen> {
               Navigator.of(context).pop();
             },
             style: TextButton.styleFrom(
-              foregroundColor:
-                  isDarkMode ? Colors.blue[300] : AppColors.peachyPink,
+              foregroundColor: isDarkMode ? Colors.blue[300] : AppColors.peachyPink,
               textStyle: const TextStyle(
                 fontSize: 16.0,
                 fontWeight: FontWeight.bold,
@@ -564,8 +456,7 @@ class _WishListScreenState extends State<WishListScreen> {
               await handleDelete(product.id);
             },
             style: TextButton.styleFrom(
-              foregroundColor:
-                  isDarkMode ? Colors.red[300] : AppColors.peachyPink,
+              foregroundColor: isDarkMode ? Colors.red[300] : AppColors.peachyPink,
               textStyle: const TextStyle(
                 fontSize: 16.0,
                 fontWeight: FontWeight.bold,

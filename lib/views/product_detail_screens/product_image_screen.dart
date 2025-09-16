@@ -1,13 +1,13 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/models/product_packages_models/product_details_models.dart';
 import 'package:event_app/views/product_detail_screens/full_screen_image_view.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/constants/app_strings.dart';
+import '../../core/network/api_endpoints/api_contsants.dart';
 import '../../core/styles/app_colors.dart';
 import '../../core/styles/custom_text_styles.dart';
+import '../../core/widgets/padded_network_banner.dart';
 
 class ProductImageScreen extends StatefulWidget {
   const ProductImageScreen({
@@ -88,45 +88,13 @@ class _ProductImageScreenState extends State<ProductImageScreen> {
                               ),
                             );
                           },
-                          child: CachedNetworkImage(
-                            imageUrl: currentImageUrl ?? '',
+                          child: PaddedNetworkBanner(
+                            imageUrl: currentImageUrl ?? ApiConstants.placeholderImage,
                             height: widget.screenWidth * 0.55,
                             width: widget.screenWidth * 0.6,
                             fit: BoxFit.cover,
-                            errorWidget: (context, object, error) => Image.asset(
-                              'assets/placeholder.png',
-                              fit: BoxFit.cover,
-                              height: MediaQuery.sizeOf(context).height * 0.28,
-                              width: double.infinity,
-                            ),
-                            errorListener: (object) {
-                              Image.asset(
-                                'assets/placeholder.png',
-                                fit: BoxFit.cover,
-                                height: MediaQuery.sizeOf(context).height * 0.28,
-                                width: double.infinity,
-                              );
-                            },
-                            placeholder: (BuildContext context, String url) => Container(
-                              height: MediaQuery.sizeOf(context).height * 0.28,
-                              width: double.infinity,
-                              color: Colors.blueGrey[300],
-                              child: Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  Image.asset(
-                                    'assets/placeholder.png',
-                                    fit: BoxFit.cover,
-                                    height: MediaQuery.sizeOf(context).height * 0.28,
-                                    width: double.infinity,
-                                  ),
-                                  const CupertinoActivityIndicator(
-                                    radius: 16,
-                                    animating: true,
-                                  ),
-                                ],
-                              ),
-                            ),
+                            padding: EdgeInsets.zero,
+                            borderRadius: 0,
                           ),
                         ),
                       ),
@@ -168,52 +136,13 @@ class _ProductImageScreenState extends State<ProductImageScreen> {
                                         ),
                                         child: ClipRRect(
                                           borderRadius: BorderRadius.circular(4),
-                                          child: CachedNetworkImage(
+                                          child: PaddedNetworkBanner(
                                             imageUrl: image.small,
                                             height: widget.screenWidth * 0.18,
                                             width: widget.screenWidth,
                                             fit: BoxFit.cover,
-                                            errorListener: (object) {
-                                              Image.asset(
-                                                'assets/placeholder.png',
-                                                fit: BoxFit.cover,
-                                                height: MediaQuery.sizeOf(context).height * 0.28,
-                                                width: double.infinity,
-                                              );
-                                            },
-                                            errorWidget: (context, object, error) => Image.asset(
-                                              'assets/placeholder.png',
-                                              fit: BoxFit.cover,
-                                              height: MediaQuery.sizeOf(context).height * 0.28,
-                                              width: double.infinity,
-                                            ),
-                                            placeholder: (
-                                              BuildContext context,
-                                              String url,
-                                            ) =>
-                                                Container(
-                                              height: MediaQuery.sizeOf(context).height * 0.28,
-                                              width: double.infinity,
-                                              color: Colors.blueGrey[300],
-                                              child: Stack(
-                                                alignment: Alignment.center,
-                                                children: [
-                                                  Image.asset(
-                                                    'assets/placeholder.png',
-                                                    fit: BoxFit.cover,
-                                                    height: MediaQuery.sizeOf(
-                                                          context,
-                                                        ).height *
-                                                        0.28,
-                                                    width: double.infinity,
-                                                  ),
-                                                  const CupertinoActivityIndicator(
-                                                    radius: 16,
-                                                    animating: true,
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
+                                            padding: EdgeInsets.zero,
+                                            borderRadius: 4,
                                           ),
                                         ),
                                       ),

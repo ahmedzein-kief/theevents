@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/constants/app_strings.dart';
+import '../../../core/network/api_endpoints/api_contsants.dart';
 import '../../../core/styles/custom_text_styles.dart';
 import '../../../core/widgets/custom_app_views/search_bar.dart';
 import '../../../core/widgets/custom_home_views/custom_grid_items.dart';
+import '../../../core/widgets/padded_network_banner.dart';
 import '../../../provider/shortcode_events_bazaar_provider/events_bazaar_provider.dart';
 
 class EventsBazaarDetailScreen extends StatefulWidget {
@@ -107,28 +109,15 @@ class _EventsBazaarDetailScreenState extends State<EventsBazaarDetailScreen> {
                               top: screenHeight * 0.02,
                             ),
                             child: SizedBox(
-                              height: 100,
+                              height: 160,
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(5),
-                                child: Image.network(
-                                  data ?? '',
-                                  fit: BoxFit.contain,
-                                  errorBuilder: (context, provider, error) => const SizedBox.shrink(),
-                                  loadingBuilder: (context, child, loadingProcessor) {
-                                    if (loadingProcessor == null) return child;
-                                    return Container(
-                                      height: 100,
-                                      width: double.infinity,
-                                      decoration: const BoxDecoration(
-                                        gradient: LinearGradient(
-                                          colors: [
-                                            Colors.grey,
-                                            Colors.black,
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  },
+                                child: PaddedNetworkBanner(
+                                  imageUrl: data ?? ApiConstants.placeholderImage,
+                                  height: 160,
+                                  width: double.infinity,
+                                  fit: BoxFit.cover,
+                                  padding: EdgeInsets.zero,
                                 ),
                               ),
                             ),

@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider_plus/carousel_slider_plus.dart';
 import 'package:event_app/core/constants/app_strings.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
@@ -7,7 +6,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/network/api_endpoints/api_contsants.dart';
 import '../../../core/widgets/custom_auto_slider_home.dart';
+import '../../../core/widgets/padded_network_banner.dart';
 import '../../../provider/home_shortcode_provider/featured_brands_items_provider.dart';
 import '../../../provider/home_shortcode_provider/simple_slider_provider.dart';
 import '../shortcode_fresh_picks/e_com_tags_screens.dart';
@@ -51,7 +52,6 @@ class _SimpleSliderState extends State<SliderTwoTagsWithAdScreen> {
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.sizeOf(context).height;
     final double screenWidth = MediaQuery.sizeOf(context).width;
-
     final sliderProvider = Provider.of<BottomSliderProvider>(context);
     final homeBanner = sliderProvider.homeBanner;
     final slides = homeBanner?.data?.slides ?? [];
@@ -87,93 +87,22 @@ class _SimpleSliderState extends State<SliderTwoTagsWithAdScreen> {
                   borderRadius: BorderRadius.circular(8),
                   child: CarouselSlider(
                     items: slides.map((slide) {
-                      if (slide.image != null) {
-                        return CachedNetworkImage(
-                          imageUrl: slide.image ?? '',
-                          alignment: Alignment.center,
-                          fit: BoxFit.cover,
-                          errorListener: (object) {
-                            Image.asset(
-                              'assets/placeholder.png',
-                              fit: BoxFit.cover,
-                              height: MediaQuery.sizeOf(context).height * 0.28,
-                              width: double.infinity,
-                            );
-                          },
-                          errorWidget: (context, object, error) => Image.asset(
-                            'assets/placeholder.png',
-                            fit: BoxFit.cover,
-                            height: MediaQuery.sizeOf(context).height * 0.28,
-                            width: double.infinity,
-                          ),
-                          placeholder: (BuildContext context, String url) => Container(
-                            height: MediaQuery.sizeOf(context).height * 0.28,
-                            width: double.infinity,
-                            color: Colors.blueGrey[300],
-                            child: Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                Image.asset(
-                                  'assets/placeholder.png',
-                                  fit: BoxFit.cover,
-                                  height: MediaQuery.sizeOf(context).height * 0.28,
-                                  width: double.infinity,
-                                ),
-                                const CupertinoActivityIndicator(
-                                  radius: 16,
-                                  animating: true,
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      } else {
-                        return CachedNetworkImage(
-                          imageUrl: 'assets/containing.png',
-                          alignment: Alignment.center,
-                          fit: BoxFit.cover,
-                          width: screenWidth,
-                          errorListener: (object) {
-                            Image.asset(
-                              'assets/placeholder.png',
-                              fit: BoxFit.cover,
-                              height: MediaQuery.sizeOf(context).height * 0.28,
-                              width: double.infinity,
-                            );
-                          },
-                          errorWidget: (context, object, error) => Image.asset(
-                            'assets/placeholder.png',
-                            fit: BoxFit.cover,
-                            height: MediaQuery.sizeOf(context).height * 0.28,
-                            width: double.infinity,
-                          ),
-                          placeholder: (BuildContext context, String url) => Container(
-                            height: MediaQuery.sizeOf(context).height * 0.28,
-                            width: double.infinity,
-                            color: Colors.blueGrey[300],
-                            child: Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                Image.asset(
-                                  'assets/placeholder.png',
-                                  fit: BoxFit.cover,
-                                  height: MediaQuery.sizeOf(context).height * 0.28,
-                                  width: double.infinity,
-                                ),
-                                const CupertinoActivityIndicator(
-                                  radius: 16,
-                                  animating: true,
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      }
+                      return PaddedNetworkBanner(
+                        imageUrl: slide.mobileImage ?? 'assets/containing.png',
+                        height: 160,
+                        width: screenWidth,
+                        fit: BoxFit.cover,
+                        padding: EdgeInsets.zero,
+                        borderRadius: 8,
+                        alignment: Alignment.center,
+                        gradientColors: const [Color(0xFFF5F5F5), Color(0xFFE0E0E0)],
+                        cacheKey: slide.mobileImage != null ? 'slide_${slide.mobileImage.hashCode}' : null,
+                      );
                     }).toList(),
                     options: CarouselOptions(
                       scrollPhysics: const BouncingScrollPhysics(),
                       autoPlay: true,
-                      aspectRatio: screenWidth / (screenHeight / 6),
+                      height: 160,
                       viewportFraction: 1,
                       onPageChanged: (index, reason) {
                         setState(() {
@@ -341,17 +270,20 @@ class _BrandsSlotsState extends State<BrandsSlots> {
                                 Expanded(
                                   flex: 3,
                                   child: Center(
-                                    child: CachedNetworkImage(
-                                      imageUrl: record.image ?? '',
+                                    child: PaddedNetworkBanner(
+                                      imageUrl: record.image ?? ApiConstants.placeholderImage,
+                                      height: 60,
+                                      // you can tweak this to fit your layout
+                                      width: exactItemWidth,
                                       fit: BoxFit.contain,
-                                      errorWidget: (context, object, error) => Image.asset(
-                                        'assets/placeholder.png',
-                                        fit: BoxFit.contain,
-                                      ),
-                                      placeholder: (context, url) => Container(
-                                        color: Colors.transparent,
-                                        child: const CupertinoActivityIndicator(),
-                                      ),
+                                      borderRadius: 0,
+                                      // keeps image square inside the card
+                                      gradientColors: const [
+                                        Colors.transparent,
+                                        Colors.transparent, // no gradient overlay for brand logos
+                                      ],
+                                      cacheKey: record.image != null ? 'brand_${record.image.hashCode}' : null,
+                                      alignment: Alignment.center,
                                     ),
                                   ),
                                 ),

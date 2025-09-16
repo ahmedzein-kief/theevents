@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import '../padded_network_banner.dart';
 
 ///****************************     SCREEN FOR CUSTOM VIEW USER BY TYPES =============================================================        *//
 
@@ -45,30 +46,11 @@ class UserByTypeSeeAll extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(4), topRight: Radius.circular(4),),
-                child: CachedNetworkImage(
+                child: PaddedNetworkBanner(
                   imageUrl: imageUrl,
                   fit: BoxFit.cover,
                   width: double.infinity,
-                  placeholder: (BuildContext context, String url) => Container(
-                    height: MediaQuery.sizeOf(context).height * 0.28,
-                    width: double.infinity,
-                    color: Colors.blueGrey[300], // Background color
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Image.asset(
-                          'assets/placeholder.png', // Replace with your actual image path
-                          fit: BoxFit.cover, // Adjust fit if needed
-                          height: MediaQuery.sizeOf(context).height * 0.28,
-                          width: double.infinity,
-                        ),
-                        const CupertinoActivityIndicator(
-                          radius: 16, // Adjust size of the loader
-                          animating: true,
-                        ),
-                      ],
-                    ),
-                  ),
+                  padding: EdgeInsets.zero,
                 ),
               ),
             ),

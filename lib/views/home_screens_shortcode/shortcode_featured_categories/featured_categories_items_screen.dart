@@ -1,16 +1,16 @@
 import 'dart:async';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/views/base_screens/base_app_bar.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/constants/app_strings.dart';
+import '../../../core/network/api_endpoints/api_contsants.dart';
 import '../../../core/styles/app_colors.dart';
 import '../../../core/styles/custom_text_styles.dart';
 import '../../../core/widgets/custom_home_views/custom_grid_items.dart';
+import '../../../core/widgets/padded_network_banner.dart';
 import '../../../provider/locale_provider.dart';
 import '../../../provider/shortcode_featured_categories_provider/featured_categories_provider.dart';
 import '../../filters/items_sorting_drop_down.dart';
@@ -236,38 +236,13 @@ class _HomeAllGiftItemsState extends State<FeaturedCategoriesItemsScreen> {
                                 right: screenWidth * 0.02,
                                 top: screenHeight * 0.02,
                               ),
-                              child: CachedNetworkImage(
-                                imageUrl: provider.pageData?.coverImage ?? '',
+                              child: PaddedNetworkBanner(
+                                imageUrl: provider.pageData?.coverImageForMobile ??
+                                    provider.pageData?.coverImage ??
+                                    ApiConstants.placeholderImage,
                                 fit: BoxFit.cover,
                                 width: double.infinity,
-                                errorWidget: (context, _, error) => Container(
-                                  height: 100,
-                                  width: double.infinity,
-                                  decoration: const BoxDecoration(
-                                    gradient: LinearGradient(
-                                      colors: [Colors.grey, Colors.black],
-                                    ),
-                                  ),
-                                  child: const CupertinoActivityIndicator(
-                                    color: Colors.black,
-                                    radius: 10,
-                                    animating: true,
-                                  ),
-                                ),
-                                placeholder: (BuildContext context, String url) => Container(
-                                  height: 100,
-                                  width: double.infinity,
-                                  decoration: const BoxDecoration(
-                                    gradient: LinearGradient(
-                                      colors: [Colors.grey, Colors.black],
-                                    ),
-                                  ),
-                                  child: const CupertinoActivityIndicator(
-                                    color: Colors.black,
-                                    radius: 10,
-                                    animating: true,
-                                  ),
-                                ),
+                                height: 160,
                               ),
                             ),
                             Padding(

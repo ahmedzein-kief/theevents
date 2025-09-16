@@ -48,7 +48,7 @@ class _HomeScreenViewState extends State<HomeScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await Future.wait([
         _loadLoginState(),
-        _fetchAllHomePageData(),
+        _refreshHomePage(),
       ]);
     });
     super.initState();
@@ -93,7 +93,7 @@ class _HomeScreenViewState extends State<HomeScreen> {
       }
 
       try {
-        await _fetchAllHomePageData();
+        await _refreshHomePage();
       } catch (e) {
         debugPrint('Error refetching home page data: $e');
       } finally {
@@ -104,20 +104,10 @@ class _HomeScreenViewState extends State<HomeScreen> {
     });
   }
 
-  // NEW: Fetch all home page related data
-  Future<void> _fetchAllHomePageData() async {
-    final provider = Provider.of<HomePageProvider>(context, listen: false);
-    final freshPicksProvider = Provider.of<FreshPicksProvider>(context, listen: false);
-
-    await Future.wait([
-      provider.fetchHomePageData(context, forceRefresh: true),
-      // Add fresh picks refresh if method exists
-      // freshPicksProvider.fetchFreshPicks(context),
-    ]);
-  }
-
   Future<void> _refreshHomePage() async {
-    await _fetchAllHomePageData();
+    final provider = Provider.of<HomePageProvider>(context, listen: false);
+
+    await provider.fetchHomePageData(context, forceRefresh: true);
   }
 
   Widget _buildLoadingOverlay() {

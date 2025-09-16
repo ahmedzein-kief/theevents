@@ -1,10 +1,12 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/models/cart_items_models/cart_items_models.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../../network/api_endpoints/api_contsants.dart';
 import '../../styles/custom_text_styles.dart';
+import '../PriceRow.dart';
+import '../padded_network_banner.dart';
 
 class ProductCartItems extends StatelessWidget {
   const ProductCartItems({
@@ -76,34 +78,12 @@ class ProductCartItems extends StatelessWidget {
                             child: SizedBox(
                               width: screenWidth * 0.3,
                               height: screenHeight * 0.1,
-                              child: CachedNetworkImage(
-                                imageUrl: imageUrl ?? '',
+                              child: PaddedNetworkBanner(
+                                imageUrl: imageUrl ?? ApiConstants.placeholderImage,
                                 fit: BoxFit.contain,
                                 width: screenWidth * 0.3,
                                 height: screenHeight * 0.1,
-                                placeholder: (BuildContext context, String url) => Container(
-                                  height: MediaQuery.sizeOf(context).height * 0.28,
-                                  width: double.infinity,
-                                  color: Theme.of(context).colorScheme.surfaceContainerHighest, // theme-aware
-                                  child: Stack(
-                                    alignment: Alignment.center,
-                                    children: [
-                                      Image.asset(
-                                        'assets/placeholder.png',
-                                        fit: BoxFit.cover,
-                                        height: MediaQuery.sizeOf(context).height * 0.28,
-                                        width: double.infinity,
-                                        color: Theme.of(context).brightness == Brightness.dark
-                                            ? Colors.white.withOpacity(0.2)
-                                            : null,
-                                        colorBlendMode: BlendMode.modulate,
-                                      ),
-                                      const CupertinoActivityIndicator(
-                                        radius: 16,
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                                padding: EdgeInsets.zero,
                               ),
                             ),
                           ),
@@ -171,19 +151,16 @@ class ProductCartItems extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Expanded(
-                                  child: Text(
-                                    actualPrice,
-                                    style: wishTopItemStyle(context),
-                                  ),
+                                  child: PriceRow(price: actualPrice, style: wishTopItemStyle(context)),
                                 ),
                                 Expanded(
-                                  child: Text(
-                                    standardPrice,
+                                  child: PriceRow(
+                                    price: standardPrice,
                                     style: wishItemSalePrice(context),
                                   ),
                                 ),
                                 Expanded(
-                                  child: Text(offPrice, style: wishItemSaleOff()),
+                                  child: PriceRow(price: offPrice, style: wishItemSaleOff()),
                                 ),
                               ],
                             ),

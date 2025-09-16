@@ -100,8 +100,12 @@ class CustomerRecords {
     this.country,
     this.city,
     this.address,
-    this.zip_code,
+    this.zipCode,
     this.state,
+    this.countryId, // Added
+    this.stateId, // Added
+    this.cityId, // Added
+    this.phoneCountryCode, // Added from API response
   });
 
   CustomerRecords.fromJson(Map<String, dynamic> json) {
@@ -115,7 +119,11 @@ class CustomerRecords {
     city = json['city'];
     address = json['address'];
     state = json['state'];
-    zip_code = json['zip_code'];
+    zipCode = json['zip_code'];
+    countryId = json['country_id']; // Added
+    stateId = json['state_id']; // Added
+    cityId = json['city_id']; // Added
+    phoneCountryCode = json['phone_country_code']; // Added
   }
 
   int? id;
@@ -123,12 +131,16 @@ class CustomerRecords {
   int? isDefault;
   String? fullAddress;
   String? email;
-  String? zip_code;
+  String? zipCode; // Fixed naming convention
   String? phone;
   String? country;
   String? city;
   String? address;
   String? state;
+  String? countryId; // Added
+  String? stateId; // Added
+  String? cityId; // Added
+  String? phoneCountryCode; // Added
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
@@ -142,7 +154,11 @@ class CustomerRecords {
     data['city'] = city;
     data['address'] = address;
     data['state'] = state;
-    data['zip_code'] = zip_code;
+    data['zip_code'] = zipCode;
+    data['country_id'] = countryId; // Added
+    data['state_id'] = stateId; // Added
+    data['city_id'] = cityId; // Added
+    data['phone_country_code'] = phoneCountryCode; // Added
     return data;
   }
 }

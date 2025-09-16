@@ -28,6 +28,7 @@ class Data {
     required this.slug,
     required this.image,
     required this.coverImage,
+    this.coverImageForMobile,
     required this.seoMeta,
     required this.content,
   });
@@ -37,7 +38,8 @@ class Data {
         name: json['name'],
         slug: json['slug'],
         image: json['image'],
-        coverImage: json['cover_image'],
+        coverImage: json['cover_image_for_mobile'],
+        coverImageForMobile: json['cover_image'],
         seoMeta: SeoMeta.fromJson(json['seo_meta']),
         content: json['content'],
       );
@@ -46,6 +48,7 @@ class Data {
   final String slug;
   final String image;
   final String coverImage;
+  final String? coverImageForMobile;
   final SeoMeta seoMeta;
   final String content;
 
@@ -55,6 +58,7 @@ class Data {
         'slug': slug,
         'image': image,
         'cover_image': coverImage,
+        'cover_image_for_mobile': coverImageForMobile,
         'seo_meta': seoMeta.toJson(),
         'content': content,
       };

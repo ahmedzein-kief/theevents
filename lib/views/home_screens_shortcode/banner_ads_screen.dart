@@ -1,9 +1,10 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:event_app/core/router/app_routes.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../core/network/api_endpoints/api_contsants.dart';
+import '../../core/widgets/padded_network_banner.dart';
 import '../../provider/home_shortcode_provider/banner_ads_provider.dart';
 
 class BannerAdsScreen extends StatefulWidget {
@@ -53,48 +54,13 @@ class _ApplyBannerState extends State<BannerAdsScreen> {
                 },
                 child: SizedBox(
                   width: screenWidth,
-                  child: CachedNetworkImage(
-                    imageUrl: provider.homeBannerModels?.data?.tabletImageUrl ?? '',
+                  child: PaddedNetworkBanner(
+                    imageUrl: provider.homeBannerModels?.data?.tabletImageUrl ?? ApiConstants.placeholderImage,
                     fit: BoxFit.cover,
                     height: screenHeight * 0.14,
                     width: double.infinity,
-                    errorWidget: (context, child, loadingProcessor) => Container(
-                      width: double.infinity,
-                      height: 100,
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Colors.blue, Colors.purple],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(
-                          12,
-                        ), // Optional: to round the corners
-                      ),
-                      child: const Center(
-                        child: CupertinoActivityIndicator(
-                          color: Colors.black,
-                          radius: 10,
-                          animating: true,
-                        ),
-                      ),
-                    ),
-                    errorListener: (object) {
-                      Container(
-                        width: double.infinity,
-                        height: 100,
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [Colors.blue, Colors.purple],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(
-                            12,
-                          ), // Optional: to round the corners
-                        ),
-                      );
-                    },
+                    padding: EdgeInsets.zero,
+                    borderRadius: 0,
                   ),
                 ),
               ),

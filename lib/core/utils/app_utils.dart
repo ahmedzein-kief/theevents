@@ -14,6 +14,16 @@ import '../../vendor/Components/data_tables/custom_data_tables.dart';
 import '../styles/app_colors.dart';
 
 class AppUtils {
+  /// remove unwanted currency codes from price text
+  static String cleanPrice(String input) {
+    const codes = ['AED', 'USD', 'EUR', 'SAR', 'EGP'];
+    var result = input;
+    for (final code in codes) {
+      result = result.replaceAll(code, '').trim();
+    }
+    return result;
+  }
+
   static void showToast(String text, {bool isSuccess = false, bool isInfo = false, bool long = false}) {
     Color color = Colors.red;
     if (isInfo) {

@@ -126,12 +126,7 @@ class _HomeScreenState extends State<BaseHomeScreen> {
         homePageProvider.clearHomePageCache();
 
         // Refresh all providers that depend on locale with mounted checks
-        await Future.wait([
-          _fetchHomePageDataSafely(),
-          // _fetchCelebritiesDataSafely(),
-          // _fetchBrandsDataSafely(),
-          // _fetchFeaturedCategoriesDataSafely(),
-        ]);
+        await _fetchHomePageDataSafely();
       } catch (e) {
         debugPrint('Error reFetching data on locale change: $e');
         // Only show error if widget is still mounted and context is available

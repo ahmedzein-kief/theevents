@@ -4,11 +4,12 @@ import 'package:event_app/core/constants/app_strings.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/views/base_screens/base_app_bar.dart';
 import 'package:event_app/views/home_screens_shortcode/shortcode_user_by_type/user_type_inner_page_screen.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/network/api_endpoints/api_contsants.dart';
 import '../../../core/styles/custom_text_styles.dart';
+import '../../../core/widgets/padded_network_banner.dart';
 import '../../../core/widgets/user_by_type_view/custom_user_type_container.dart';
 import '../../../provider/locale_provider.dart';
 import '../../../provider/shortcode_vendor_type_by_provider/vendor_type_by_provider.dart';
@@ -211,32 +212,14 @@ class _UserByTypeItemsScreenState extends State<UserByTypeItemsScreen> {
                             ),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(5),
-                              child: Image.network(
+                              child: PaddedNetworkBanner(
+                                imageUrl: provider.vendorTypeData?.coverImageForMobile ??
+                                    provider.vendorTypeData?.coverImage ??
+                                    ApiConstants.placeholderImage,
+                                height: 160,
+                                width: double.infinity,
                                 fit: BoxFit.cover,
-                                provider.vendorTypeData?.coverImage ?? '',
-                                errorBuilder: (context, provider, error) => const SizedBox.shrink(),
-                                loadingBuilder: (context, child, loadingProcessor) {
-                                  if (loadingProcessor == null) {
-                                    return child;
-                                  }
-                                  return Container(
-                                    height: 100,
-                                    width: double.infinity,
-                                    decoration: const BoxDecoration(
-                                      gradient: LinearGradient(
-                                        colors: [
-                                          Colors.grey,
-                                          Colors.black,
-                                        ],
-                                      ),
-                                    ),
-                                    child: const CupertinoActivityIndicator(
-                                      color: Colors.black,
-                                      radius: 10,
-                                      animating: true,
-                                    ),
-                                  );
-                                },
+                                padding: EdgeInsets.zero,
                               ),
                             ),
                           ),
@@ -267,61 +250,58 @@ class _UserByTypeItemsScreenState extends State<UserByTypeItemsScreen> {
                               ],
                             ),
                           ),
-                          Container(
-                            // color: AppColors.infoBackGround,
-                            child: Padding(
-                              padding: EdgeInsets.only(
-                                left: screenWidth * 0.02,
-                                right: screenWidth * 0.02,
-                                bottom: screenHeight * 0.02,
-                                top: screenHeight * 0.01,
+                          Padding(
+                            padding: EdgeInsets.only(
+                              left: screenWidth * 0.02,
+                              right: screenWidth * 0.02,
+                              bottom: screenHeight * 0.02,
+                              top: screenHeight * 0.01,
+                            ),
+                            child: GridView.builder(
+                              shrinkWrap: true,
+                              scrollDirection: Axis.vertical,
+                              physics: const NeverScrollableScrollPhysics(),
+                              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 3,
+                                crossAxisSpacing: 8,
+                                mainAxisSpacing: 20,
+                                mainAxisExtent: screenHeight * 0.16,
                               ),
-                              child: GridView.builder(
-                                shrinkWrap: true,
-                                scrollDirection: Axis.vertical,
-                                physics: const NeverScrollableScrollPhysics(),
-                                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 3,
-                                  crossAxisSpacing: 8,
-                                  mainAxisSpacing: 20,
-                                  mainAxisExtent: screenHeight * 0.16,
-                                ),
-                                itemCount: provider.vendors.length + (_isFetchingMore ? 1 : 0),
-                                itemBuilder: (context, index) {
-                                  if (_isFetchingMore && index == provider.vendors.length) {
-                                    return const Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        Center(
-                                          child: CircularProgressIndicator(
-                                            color: Colors.black,
-                                            strokeWidth: 0.5,
-                                          ),
+                              itemCount: provider.vendors.length + (_isFetchingMore ? 1 : 0),
+                              itemBuilder: (context, index) {
+                                if (_isFetchingMore && index == provider.vendors.length) {
+                                  return const Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      Center(
+                                        child: CircularProgressIndicator(
+                                          color: Colors.black,
+                                          strokeWidth: 0.5,
                                         ),
-                                      ],
-                                    );
-                                  }
-                                  final vendor = provider.vendors[index];
-                                  return UserByTypeSeeAll(
-                                    imageUrl: vendor.avatar ?? '',
-                                    name: vendor.name ?? '',
-                                    textStyle: homeItemsStyle(context),
-                                    onTap: () {
-                                      /// User Type Details
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => UserTypeInnerPageScreen(
-                                            typeId: widget.typeId,
-                                            id: vendor.id,
-                                          ),
-                                        ),
-                                      );
-                                    },
+                                      ),
+                                    ],
                                   );
-                                },
-                              ),
+                                }
+                                final vendor = provider.vendors[index];
+                                return UserByTypeSeeAll(
+                                  imageUrl: vendor.avatar ?? '',
+                                  name: vendor.name ?? '',
+                                  textStyle: homeItemsStyle(context),
+                                  onTap: () {
+                                    /// User Type Details
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => UserTypeInnerPageScreen(
+                                          typeId: widget.typeId,
+                                          id: vendor.id,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
                             ),
                           ),
                         ],

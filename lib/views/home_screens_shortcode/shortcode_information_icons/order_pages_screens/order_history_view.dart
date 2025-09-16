@@ -1,10 +1,10 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/models/orders/order_history_model.dart';
 import 'package:event_app/views/home_screens_shortcode/shortcode_information_icons/order_pages_screens/order_detail_screen.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_strings.dart';
+import '../../../../core/widgets/padded_network_banner.dart';
 import '../../../product_detail_screens/product_detail_screen.dart';
 
 class OrderHistoryView extends StatefulWidget {
@@ -95,10 +95,15 @@ class _OrderHistoryViewState extends State<OrderHistoryView> {
                           color: Colors.grey[300]!,
                           width: 2,
                         ),
-                        image: DecorationImage(
-                          image: NetworkImage(widget.order.imageUrl),
-                          fit: BoxFit.cover,
-                        ),
+                      ),
+                      clipBehavior: Clip.antiAlias,
+                      child: PaddedNetworkBanner(
+                        imageUrl: widget.order.imageUrl,
+                        width: 80,
+                        height: 80,
+                        fit: BoxFit.cover,
+                        padding: EdgeInsets.zero,
+                        borderRadius: 12,
                       ),
                     ),
                     const SizedBox(width: 16),
@@ -228,20 +233,15 @@ class _OrderHistoryViewState extends State<OrderHistoryView> {
       );
     }
 
-    return CachedNetworkImage(
+    return PaddedNetworkBanner(
       imageUrl: imageUrl,
       width: 48,
       height: 48,
       fit: BoxFit.cover,
-      placeholder: (context, url) => const CircularProgressIndicator(
-        strokeWidth: 2,
-        valueColor: AlwaysStoppedAnimation<Color>(Colors.grey),
-      ),
-      errorWidget: (context, url, error) => const Icon(
-        Icons.person,
-        size: 24,
-        color: Colors.grey,
-      ),
+      padding: EdgeInsets.zero,
+      borderRadius: 24,
+      // Make it circular
+      gradientColors: const [Colors.grey, Colors.transparent],
     );
   }
 }

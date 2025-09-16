@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 
 import '../../core/network/api_endpoints/api_end_point.dart';
@@ -102,7 +100,6 @@ Future<CityModels?> fetchCities(
     url,
     context: context,
   );
-  log('fetchCities $response $url');
   if (response.statusCode == 200) {
     final jsonResponse = response.data;
     return CityModels.fromJson(jsonResponse);

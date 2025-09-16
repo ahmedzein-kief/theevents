@@ -282,12 +282,34 @@ class AppStrings {
   static const String unknownCity = 'Unknown City';
   static const String unknownZipCode = 'Unknown Zip code';
   static const String choosePaymentMethod = 'Choose Payment Method';
+  static const String orderSummary = 'Order Summary';
+  static const String subtotalUpper = 'Subtotal';
+  static const String taxVat = 'Tax (VAT)';
+  static const String shipping = 'Shipping';
+  static const String couponDiscount = 'Coupon Discount';
+  static const String promotionDiscount = 'Promotion Discount';
+  static const String totalUpper = 'Total';
+  static const String deliverTo = 'Deliver to';
+  static const String noAddressSelected = 'No address selected';
+  static const String addressDetailsNotFound = 'Address details not found';
+  static const String areaState = 'Area/State';
+  static const String phoneNumber = 'Phone Number';
+  static const String grandTotal = 'Grand Total';
+  static const String payNowTitle = 'Pay Now';
+  static const String totalLabel = 'Total';
+  static const String paymentCompletedSuccessfully = 'Payment completed successfully';
+  static const String applePayFailed = 'Apple Pay payment failed. Please try again.';
+  static const String applePayErrorPrefix = 'Apple Pay payment error: ';
+  static const String termsNote =
+      'By placing an order, you confirm that you have read and approve Terms and Conditions';
   static const String shippingAddressDescription =
       'You will not be charged until you review this order on the next page.';
   static const String shippingAddress = 'Shipping address';
+  static const String selectShippingAddress = 'Select Shipping Address';
   static const String shippingMethod = 'Shipping Method';
   static const String checkout = 'Checkout';
   static const String selectCountry = 'Select Country';
+  static const String selectFromExistingAddresses = 'Select from existing addresses';
 
   static const String sortOption = 'Sort option';
   static const String filters = 'Filters';
@@ -295,6 +317,13 @@ class AppStrings {
   static const String filterOptions = 'Filter Options';
   static const String noNotifications = 'You Don\'t Have Any Notification Yet';
   static const String payment = 'Payment';
+
+  // Payment method labels
+  static const String applePay = 'Apple Pay';
+  static const String applePaySubtitle = 'Pay with your Apple Wallet';
+  static const String paymentCard = 'Card';
+  static const String paymentTabby = 'Tabby';
+  static const String paymentTamara = 'Tamara';
   static const String enterYourMessage = 'Enter your message here';
   static const String selectLocation = 'Select Location';
   static const String selectDate = 'Select Date';
@@ -474,4 +503,5 @@ class AppStrings {
   static const String continuePayment = 'continuePayment';
   static const String cancelPayment = 'cancelPayment';
   static const String processing = 'Processing';
+  static const String was = 'Was: ';
 }

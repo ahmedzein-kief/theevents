@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../../models/dashboard/user_by_type_model/home_celebraties_models.dart';
 import '../../styles/custom_text_styles.dart';
+import '../padded_network_banner.dart';
 import 'custom_home_text_row.dart';
 
 class CustomUserByTypeBox extends StatelessWidget {
@@ -89,32 +90,13 @@ class CustomUserByTypeBox extends StatelessWidget {
                                 topRight: Radius.circular(5),
                                 topLeft: Radius.circular(5),
                               ),
-                              child: CachedNetworkImage(
+                              child: PaddedNetworkBanner(
                                 imageUrl: item.avatar ?? 'assets/Background.png',
                                 fit: BoxFit.cover,
                                 height: screenHeight * 0.12,
                                 width: screenWidth * 0.23,
-                                placeholder: (BuildContext context, String url) => Container(
-                                  height: MediaQuery.sizeOf(context).height * 0.28,
-                                  width: double.infinity,
-                                  color: Colors.blueGrey[300], // Background color
-                                  child: Stack(
-                                    alignment: Alignment.center,
-                                    children: [
-                                      Image.asset(
-                                        'assets/placeholder.png',
-                                        // Replace with your actual image path
-                                        fit: BoxFit.cover, // Adjust fit if needed
-                                        height: MediaQuery.sizeOf(context).height * 0.28,
-                                        width: double.infinity,
-                                      ),
-                                      const CupertinoActivityIndicator(
-                                        radius: 16, // Adjust size of the loader
-                                        animating: true,
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                                padding: EdgeInsets.zero,
+                                borderRadius: 0,
                               ),
                             ),
                           ),

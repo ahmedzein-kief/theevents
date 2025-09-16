@@ -345,34 +345,85 @@ class PaymentViewState extends State<PaymentViewScreen> {
     // Show confirmation dialog for manual back press
     final shouldPop = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        actionsPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 16),
-        title: Text(AppStrings.confirmPaymentCancel.tr),
-        content: Text(AppStrings.paymentCancelWarning.tr),
-        actions: [
-          Row(
+      barrierDismissible: false,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Expanded(
-                child: TextButton(
-                  style: TextButton.styleFrom(
-                    foregroundColor: Colors.green,
-                  ),
-                  onPressed: () => Navigator.pop(context, false),
-                  child: Text(AppStrings.continuePayment.tr),
+              // Sad face icon
+
+              const Icon(
+                Icons.sentiment_very_dissatisfied,
+                color: Colors.red,
+                size: 64,
+              ),
+
+              const SizedBox(height: 24),
+
+              // Title text
+              Text(
+                AppStrings.paymentCancelWarning.tr,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
                 ),
               ),
-              Expanded(
-                child: TextButton(
-                  style: TextButton.styleFrom(
-                    foregroundColor: Colors.red,
+              const SizedBox(height: 32),
+
+              // Action buttons
+              Row(
+                children: [
+                  Expanded(
+                    child: TextButton(
+                      style: TextButton.styleFrom(
+                        foregroundColor: Colors.black54,
+                        backgroundColor: Colors.grey[100],
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      onPressed: () => Navigator.pop(context, false),
+                      child: Text(
+                        AppStrings.no.tr,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
                   ),
-                  onPressed: () => Navigator.pop(context, true),
-                  child: Text(AppStrings.cancelPayment.tr),
-                ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: TextButton(
+                      style: TextButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: Colors.black,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      onPressed: () => Navigator.pop(context, true),
+                      child: Text(
+                        AppStrings.yes.tr,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
-          )
-        ],
+          ),
+        ),
       ),
     );
 

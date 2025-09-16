@@ -7,6 +7,8 @@ import 'package:event_app/vendor/components/text_fields/custom_text_form_field.d
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../../../core/network/api_endpoints/api_contsants.dart';
+
 class SearchDropdown extends StatefulWidget {
   const SearchDropdown({
     super.key,
@@ -44,9 +46,7 @@ class _SearchDropdownState extends State<SearchDropdown> {
     } else {
       _filteredOptions = widget.searchDropdownModel.records
           .where(
-            (option) =>
-                option.name?.toLowerCase().contains(query.toLowerCase()) ??
-                false,
+            (option) => option.name?.toLowerCase().contains(query.toLowerCase()) ?? false,
           )
           .toList();
     }
@@ -70,30 +70,29 @@ class _SearchDropdownState extends State<SearchDropdown> {
               borderRadius: BorderRadius.circular(10),
             ),
             constraints: BoxConstraints(
-              maxHeight: MediaQuery.of(context).size.height *
-                  0.3, // Limits height to 30% of the screen
+              maxHeight: MediaQuery.of(context).size.height * 0.3, // Limits height to 30% of the screen
             ),
             child: _filteredOptions.isEmpty
                 ? Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child:
-                        Center(child: Text(VendorAppStrings.noResultsFound.tr)),
+                    child: Center(child: Text(VendorAppStrings.noResultsFound.tr)),
                   )
                 : ListView.separated(
                     shrinkWrap: true,
                     itemCount: _filteredOptions.length,
                     separatorBuilder: (context, index) => Divider(
-                        height: 1, color: Colors.grey.shade300,), // Separator
+                      height: 1,
+                      color: Colors.grey.shade300,
+                    ), // Separator
                     itemBuilder: (context, index) {
                       final option = _filteredOptions[index];
                       return ListTile(
                         leading: CachedNetworkImage(
-                          imageUrl: option.image ?? '',
+                          imageUrl: option.image ?? ApiConstants.placeholderImage,
                           fit: BoxFit.cover,
                           width: 32,
                           height: 32,
-                          placeholder: (BuildContext context, String url) =>
-                              Container(
+                          placeholder: (BuildContext context, String url) => Container(
                             height: MediaQuery.sizeOf(context).height * 0.28,
                             width: double.infinity,
                             color: Colors.blueGrey[300],
@@ -103,8 +102,7 @@ class _SearchDropdownState extends State<SearchDropdown> {
                                 Image.asset(
                                   'assets/placeholder.png',
                                   fit: BoxFit.cover,
-                                  height:
-                                      MediaQuery.sizeOf(context).height * 0.28,
+                                  height: MediaQuery.sizeOf(context).height * 0.28,
                                   width: double.infinity,
                                 ),
                                 const CupertinoActivityIndicator(

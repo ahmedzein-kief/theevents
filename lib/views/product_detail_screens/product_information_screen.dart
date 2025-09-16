@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../core/constants/app_strings.dart'; // <--- IMPORT AppStrings
 import '../../core/styles/custom_text_styles.dart';
+import '../../core/widgets/PriceRow.dart';
 import '../../models/product_packages_models/product_details_models.dart';
 
 class ProductInformationScreen extends StatefulWidget {
@@ -80,30 +81,63 @@ class _ProductInformationScreenState extends State<ProductInformationScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    '${AppStrings.currencyAED.tr}${widget.productPrice}', // <--- REFACTORED
-                    softWrap: true,
-                    style: productValueItemsStyle(context),
-                  ),
-                  Text(
-                    " ${(widget.record.prices?.frontSalePrice ?? 0) < (widget.record.prices?.price ?? 0) ? widget.record.prices!.priceWithTaxes : ''}",
-                    softWrap: true,
-                    style: productPriceStyle(context),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 20),
-                    child: Text(
-                      widget.offPercentage.isNotEmpty
-                          ? '${widget.offPercentage}${AppStrings.percentOff.tr}' // <--- REFACTORED
-                          : '',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(color: Colors.orange, fontSize: 10),
+                  if (widget.offPercentage.isNotEmpty) // ✅ Has Offer
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              '${widget.offPercentage}${AppStrings.percentOff.tr}',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                color: Colors.red,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            PriceRow(
+                              price: widget.productPrice,
+                              currencySize: 16,
+                              style: productValueItemsStyle(context),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            Text(
+                              AppStrings.was.tr,
+                              style: productPriceStyle(context).copyWith(
+                                decoration: TextDecoration.none,
+                              ),
+                            ),
+                            PriceRow(
+                              price:
+                                  " ${(widget.record.prices?.frontSalePrice ?? 0) < (widget.record.prices?.price ?? 0) ? widget.record.prices!.priceWithTaxes : ''}",
+                              currencySize: 11,
+                              currencyColor: Colors.grey,
+                              style: productPriceStyle(context).copyWith(
+                                decoration: TextDecoration.lineThrough, // strike through
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    )
+                  else // ❌ No Offer → Only show price
+                    PriceRow(
+                      price: widget.productPrice,
+                      currencySize: 16,
+                      style: productValueItemsStyle(context),
                     ),
-                  ),
                 ],
               ),
             ),
+
+            const SizedBox(height: 10),
             Text(
               AppStrings.includingVAT.tr,
               style: loginOrStyle(context),

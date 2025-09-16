@@ -1,9 +1,8 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider_plus/carousel_slider_plus.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../core/widgets/padded_network_banner.dart';
 import '../../provider/home_shortcode_provider/simple_slider_provider.dart';
 
 class SimpleSlider extends StatefulWidget {
@@ -68,43 +67,14 @@ class _SimpleSliderState extends State<SimpleSlider> {
                   borderRadius: BorderRadius.circular(8),
                   child: CarouselSlider(
                     items: slides.map((slide) {
-                      if (slide.image != null) {
-                        return CachedNetworkImage(
-                          cacheKey: slide.image,
-                          imageUrl: '${slide.image}?v=${DateTime.now().millisecondsSinceEpoch}',
+                      if (slide.mobileImage != null) {
+                        return PaddedNetworkBanner(
+                          cacheKey: slide.mobileImage,
+                          imageUrl: '${slide.mobileImage}?v=${DateTime.now().millisecondsSinceEpoch}',
                           alignment: Alignment.center,
                           width: double.infinity,
-                          // height: screenHeight * 0.14,
                           fit: BoxFit.cover,
-                          filterQuality: FilterQuality.high,
-                          errorWidget: (context, error, object) => Image.asset(
-                            'assets/placeholder.png', // Replace with your actual image path
-                            fit: BoxFit.cover, // Adjust fit if needed
-                            height: MediaQuery.sizeOf(context).height * 0.28,
-                            width: double.infinity,
-                          ),
-                          errorListener: (object) {
-                            Image.asset(
-                              'assets/placeholder.png', // Replace with your actual image path
-                              fit: BoxFit.cover, // Adjust fit if needed
-                              height: MediaQuery.sizeOf(context).height * 0.28,
-                              width: double.infinity,
-                            );
-                          },
-                          placeholder: (BuildContext context, String url) => Container(
-                            height: MediaQuery.sizeOf(context).height * 0.28,
-                            width: double.infinity,
-                            color: Colors.blueGrey[100], // Background color
-                            child: const Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                CupertinoActivityIndicator(
-                                  radius: 16, // Adjust size of the loader
-                                  animating: true,
-                                ),
-                              ],
-                            ),
-                          ),
+                          height: 160,
                         );
                       } else {
                         return const SizedBox.shrink();
@@ -129,7 +99,8 @@ class _SimpleSliderState extends State<SimpleSlider> {
                       // Avoid zooming the current slide
                       viewportFraction: 1,
                       // Show one slide at a time
-                      aspectRatio: screenWidth / (screenHeight / 6),
+                      // aspectRatio: screenWidth / (screenHeight / 6),
+                      height: 160,
                       // Adjust aspect ratio
                       onPageChanged: (index, reason) {
                         setState(() {

@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 
 import '../../../core/widgets/custom_auto_slider_home.dart';
 import '../../../core/widgets/custom_home_views/custom_home_text_row.dart';
+import '../../../core/widgets/padded_network_banner.dart';
 import '../../../provider/home_shortcode_provider/featured_brands_provider.dart';
 import 'featured_brands_items_screen.dart';
 
@@ -109,37 +110,12 @@ class _TopBrandsState extends State<FeaturedBrandsScreen> {
                                       ),
                                     );
                                   },
-                                  child: CachedNetworkImage(
+                                  child: PaddedNetworkBanner(
                                     imageUrl: brand.logo ?? 'https://via.placeholder.com/110x80',
                                     width: double.infinity,
                                     height: double.infinity,
                                     fit: BoxFit.cover,
-                                    errorWidget: (context, object, error) => Image.asset(
-                                      'assets/placeholder.png',
-                                      fit: BoxFit.cover,
-                                      width: double.infinity,
-                                      height: double.infinity,
-                                    ),
-                                    placeholder: (BuildContext context, String url) => Container(
-                                      width: double.infinity,
-                                      height: double.infinity,
-                                      color: Colors.blueGrey[300],
-                                      child: Stack(
-                                        alignment: Alignment.center,
-                                        children: [
-                                          Image.asset(
-                                            'assets/placeholder.png',
-                                            fit: BoxFit.cover,
-                                            width: double.infinity,
-                                            height: double.infinity,
-                                          ),
-                                          const CupertinoActivityIndicator(
-                                            radius: 16,
-                                            animating: true,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
+                                    padding: EdgeInsets.zero,
                                   ),
                                 ),
                               ),

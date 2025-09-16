@@ -31,6 +31,7 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/widgets/language_dropdown_item.dart';
+import '../../core/widgets/padded_network_banner.dart';
 import '../../core/widgets/theme_toggle_switch.dart';
 
 class UserProfileLoginScreen extends StatefulWidget {
@@ -294,13 +295,12 @@ class _UserProfileLoginScreenState extends State<UserProfileLoginScreen> {
     return ClipRRect(
       borderRadius: BorderRadius.circular(45),
       child: _avatarImage.isNotEmpty && !_avatarImage.startsWith('data:image')
-          ? CachedNetworkImage(
+          ? PaddedNetworkBanner(
               imageUrl: _avatarImage,
               width: 90,
               height: 90,
               fit: BoxFit.cover,
-              placeholder: (context, url) => _buildImagePlaceholder(),
-              errorWidget: (context, url, error) => _buildImageError(),
+              padding: EdgeInsets.zero,
             )
           : Image.asset(
               'assets/boy.png',

@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/views/home_screens_shortcode/shortcode_featured_categories/featured_categories_items_screen.dart';
 import 'package:event_app/views/home_screens_shortcode/shortcode_featured_categories/featured_categories_viewall_inner.dart';
@@ -7,9 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/constants/app_strings.dart';
+import '../../core/network/api_endpoints/api_contsants.dart';
 import '../../core/styles/custom_text_styles.dart';
 import '../../core/widgets/custom_auto_slider_home.dart'; // For SimpleBazaarAutoSlider
 import '../../core/widgets/custom_home_views/custom_home_text_row.dart';
+import '../../core/widgets/padded_network_banner.dart';
 import '../../provider/shortcode_featured_categories_provider/featured_categories_provider.dart';
 
 class FeaturedCategoriesScreen extends StatefulWidget {
@@ -101,37 +102,12 @@ class _GiftByOccasionViewState extends State<FeaturedCategoriesScreen> {
                                 flex: 3,
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(8),
-                                  child: CachedNetworkImage(
-                                    imageUrl: gift.image ?? '',
+                                  child: PaddedNetworkBanner(
+                                    imageUrl: gift.image ?? ApiConstants.placeholderImage,
                                     fit: BoxFit.cover,
                                     width: double.infinity,
                                     height: 80,
-                                    errorWidget: (context, object, _) => Image.asset(
-                                      'assets/placeholder.png',
-                                      fit: BoxFit.cover,
-                                      height: 80,
-                                      width: double.infinity,
-                                    ),
-                                    placeholder: (BuildContext context, String url) => Container(
-                                      height: 80,
-                                      width: double.infinity,
-                                      color: Colors.blueGrey[300],
-                                      child: Stack(
-                                        alignment: Alignment.center,
-                                        children: [
-                                          Image.asset(
-                                            'assets/placeholder.png',
-                                            fit: BoxFit.cover,
-                                            height: 80,
-                                            width: double.infinity,
-                                          ),
-                                          const CupertinoActivityIndicator(
-                                            radius: 16,
-                                            animating: true,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
+                                    padding: EdgeInsets.zero,
                                   ),
                                 ),
                               ),

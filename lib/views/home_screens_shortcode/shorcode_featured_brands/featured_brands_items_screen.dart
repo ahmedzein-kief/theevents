@@ -184,8 +184,9 @@ class _FeaturedBrandsItemsScreenState extends State<FeaturedBrandsItemsScreen> {
                                     ClipRRect(
                                       borderRadius: BorderRadius.circular(5),
                                       child: PaddedNetworkBanner(
-                                        imageUrl: brandData?.coverImage ?? ApiConstants.placeholderImage,
-                                        height: 100,
+                                        imageUrl: brandData?.coverImage ??
+                                            brandData?.coverImageForMobile ??
+                                            ApiConstants.placeholderImage,
                                         fit: BoxFit.cover,
                                         width: double.infinity,
                                         padding: EdgeInsets.zero,

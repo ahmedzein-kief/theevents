@@ -43,7 +43,7 @@ class ProductCategoryData {
         image: json['image'] ?? '',
         thumb: json['thumb'] ?? '',
         coverImage: json['cover_image'] ?? '',
-        coverImageForMobile: json['cover_image_for_mobile'] ?? '',
+        coverImageForMobile: json['cover_image_for_mobile'],
         items: json['items'] ?? 0,
         seoMeta: SeoMeta.fromJson(
           json['seo_meta'] ?? {},

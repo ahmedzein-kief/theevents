@@ -52,6 +52,7 @@ class ProfileItem extends StatelessWidget {
             children: [
               SvgPicture.asset(
                 imagePath,
+                fit: BoxFit.scaleDown,
                 width: width ?? 30, // Default width is 30
                 height: height ?? 30, // Default height is 30
                 color: Theme.of(context).colorScheme.onPrimary,

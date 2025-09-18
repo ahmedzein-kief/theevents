@@ -13,6 +13,7 @@ class PriceRow extends StatelessWidget {
   final String? currencySvg; // optional SVG for currency icon
   final String? currencyText; // optional fallback text (like $, USD, €)
   final double? gap;
+  final MainAxisAlignment? alignment;
 
   const PriceRow({
     super.key,
@@ -23,6 +24,7 @@ class PriceRow extends StatelessWidget {
     this.currencySvg,
     this.currencyText,
     this.gap,
+    this.alignment,
   });
 
   @override
@@ -30,6 +32,8 @@ class PriceRow extends StatelessWidget {
     if (price == null || price!.isEmpty) return const SizedBox.shrink();
 
     return Row(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: alignment ?? MainAxisAlignment.start,
       children: [
         if (currencySvg != null) // 👈 custom icon provided
           SvgPicture.asset(

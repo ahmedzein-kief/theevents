@@ -38,8 +38,8 @@ class Data {
         name: json['name'],
         slug: json['slug'],
         image: json['image'],
-        coverImage: json['cover_image_for_mobile'],
-        coverImageForMobile: json['cover_image'],
+        coverImage: json['cover_image'],
+        coverImageForMobile: json['cover_image_for_mobile'],
         seoMeta: SeoMeta.fromJson(json['seo_meta']),
         content: json['content'],
       );

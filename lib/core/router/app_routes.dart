@@ -1,6 +1,8 @@
 import 'package:event_app/vendor/vendor_home/vendor_settings/vendor_profile_settings_view.dart';
 import 'package:event_app/views/home_screens_shortcode/shortcode_information_icons/gift_card/gift_card_screen.dart';
+import 'package:event_app/wallet/ui/screens/wallet_drawer.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
 import '../../provider/shortcode_home_page_provider.dart';
@@ -11,6 +13,10 @@ import '../../views/home_screens_shortcode/shortcode_information_icons/events_br
 import '../../views/home_screens_shortcode/shortcode_information_icons/fifty_discount_screens/discounts_screen.dart';
 import '../../views/home_screens_shortcode/shortcode_information_icons/new_product.dart';
 import '../../views/home_screens_shortcode/shortcode_information_icons/order_pages_screens/order_page.dart';
+import '../../wallet/data/repo/wallet_repository.dart';
+import '../../wallet/logic/deposit/deposit_cubit.dart';
+import '../../wallet/logic/drawer/drawer_cubit.dart';
+import '../../wallet/logic/wallet/wallet_cubit.dart';
 
 class AppRoutes {
   /// +++++++++++++++++++++ USER SIDE HOME INFORMATION ICONS ROUTES +++++++++++++++++
@@ -27,6 +33,7 @@ class AppRoutes {
   static const String vendorCouponView = '/vendorCouponView';
   static const String vendorCreateCouponView = '/vendorCreateCouponView';
   static const String vendorEditOrderView = '/vendorEditOrderView';
+  static const String wallet = '/wallet';
 
   static Map<String, WidgetBuilder> getRoutes(BuildContext context) {
     final homePageProvider = Provider.of<HomePageProvider>(context);
@@ -40,6 +47,20 @@ class AppRoutes {
       vendorProfileSettingsView: (context) => VendorProfileSettingsView(),
       vendorCouponView: (context) => const VendorCouponView(),
       vendorCreateCouponView: (context) => const VendorCreateCouponView(),
+      wallet: (context) => MultiBlocProvider(
+            providers: [
+              BlocProvider(
+                create: (context) => WalletCubit(WalletRepositoryImpl())..loadWalletData(),
+              ),
+              BlocProvider(
+                create: (context) => DepositCubit(WalletRepositoryImpl()),
+              ),
+              BlocProvider(
+                create: (context) => DrawerCubit(),
+              ),
+            ],
+            child: const WalletDrawer(),
+          ),
     };
   }
 }

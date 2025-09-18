@@ -504,4 +504,28 @@ class AppStrings {
   static const String cancelPayment = 'cancelPayment';
   static const String processing = 'Processing';
   static const String was = 'Was: ';
+  static const String wallet = 'wallet';
+
+  // Wallet module
+  static const String digitalWallet = 'digitalWallet';
+  static const String expirySoon = 'expirySoon';
+  static const String currentBalanceTitle = 'currentBalanceTitle';
+  static const String rewardsEarnedTitle = 'rewardsEarnedTitle';
+  static const String walletBalanceTitle = 'Wallet Balance';
+  static const String lastUpdatedPrefix = 'Last updated';
+  static const String addFunds = 'Add Funds';
+  static const String history = 'History';
+  static const String notifications = 'Notifications';
+  static const String deposits = 'Deposits';
+  static const String overview = 'Overview';
+  static const String addFundsToWallet = 'Add Funds to Wallet';
+  static const String selectDepositMethod = 'Select Deposit Method';
+  static const String couponCodeGiftCard = 'Coupon Code (Gift Card)';
+  static const String amountAed = 'Amount (AED)';
+  static const String instant = 'Instant';
+  static const String giftCard = 'Gift Card';
+  static const String creditDebitCard = 'Credit/Debit Card';
+  static const String visaMasterAccepted = 'Visa, Master Card accepted';
+  static const String processingFeeSuffix = 'processing fee';
+  static const String balanceLabel = 'Balance:';
 }

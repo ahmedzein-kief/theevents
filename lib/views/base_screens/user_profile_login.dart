@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:camera_gallery_image_picker/camera_gallery_image_picker.dart';
 import 'package:event_app/core/constants/app_strings.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
@@ -433,6 +432,12 @@ class _UserProfileLoginScreenState extends State<UserProfileLoginScreen> {
         title: AppStrings.giftCards.tr,
         routeName: AppRoutes.giftCard,
         arguments: const {'title': 'Gift Card'},
+      ),
+      ProfileItem(
+        imagePath: 'assets/wallet.svg',
+        title: AppStrings.wallet.tr,
+        routeName: AppRoutes.wallet,
+        arguments: const {'title': 'Wallet'},
       ),
       _buildProfileItem('assets/Address.svg', AppStrings.address.tr, () => _navigateTo(const ProfileAddressScreen())),
       _buildProfileItem(

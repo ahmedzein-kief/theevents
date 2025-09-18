@@ -8,6 +8,7 @@ class FeaturedBrand {
     required this.image,
     required this.thumb,
     required this.coverImage,
+    this.coverImageForMobile,
     required this.items,
     this.website,
     required this.isFeatured,
@@ -23,6 +24,7 @@ class FeaturedBrand {
         image: json['image'] ?? '',
         thumb: json['thumb'] ?? '',
         coverImage: json['cover_image'] ?? '',
+        coverImageForMobile: json['cover_image_for_mobile'],
         items: json['items'] ?? 0,
         website: json['website'],
         isFeatured: json['is_featured'] ?? 0,
@@ -36,6 +38,7 @@ class FeaturedBrand {
   final String image;
   final String thumb;
   final dynamic coverImage;
+  final String? coverImageForMobile;
   final int items;
   final String? website;
   final int isFeatured;

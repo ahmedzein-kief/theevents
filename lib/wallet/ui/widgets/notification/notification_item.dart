@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../data/model/notification_model.dart';
+import '../../../data/model/notification_model.dart';
 
 class NotificationItem extends StatelessWidget {
   final NotificationModel notification;
@@ -9,14 +9,17 @@ class NotificationItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Container(
       padding: const EdgeInsets.all(16),
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: notification.isRead ? Colors.grey[50] : Colors.blue[50],
+        color: _getBackgroundColor(isDark),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: notification.isRead ? Colors.grey[200]! : Colors.blue[200]!,
+          color: _getBorderColor(isDark),
         ),
       ),
       child: Row(
@@ -47,7 +50,7 @@ class NotificationItem extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: notification.isRead ? Colors.grey[700] : Colors.black,
+                          color: _getTitleColor(theme, isDark),
                         ),
                       ),
                     ),
@@ -56,7 +59,7 @@ class NotificationItem extends StatelessWidget {
                         width: 8,
                         height: 8,
                         decoration: const BoxDecoration(
-                          color: Colors.blue,
+                          color: Colors.red,
                           shape: BoxShape.circle,
                         ),
                       ),
@@ -67,7 +70,7 @@ class NotificationItem extends StatelessWidget {
                   notification.message,
                   style: TextStyle(
                     fontSize: 14,
-                    color: notification.isRead ? Colors.grey[600] : Colors.grey[700],
+                    color: _getMessageColor(theme, isDark),
                     height: 1.4,
                   ),
                 ),
@@ -76,7 +79,7 @@ class NotificationItem extends StatelessWidget {
                   _formatDateTime(notification.date),
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.grey[500],
+                    color: theme.textTheme.bodySmall?.color?.withOpacity(0.6),
                   ),
                 ),
               ],
@@ -85,6 +88,41 @@ class NotificationItem extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Color _getBackgroundColor(bool isDark) {
+    if (notification.isRead) {
+      return isDark ? Colors.grey[850]! : Colors.grey[50]!;
+    } else {
+      return isDark ? Colors.blue[900]!.withAlpha((0.3 * 255).toInt()) : Colors.blue[50]!;
+    }
+  }
+
+  Color _getBorderColor(bool isDark) {
+    if (notification.isRead) {
+      return isDark ? Colors.grey[700]! : Colors.grey[200]!;
+    } else {
+      return isDark ? Colors.blue[700]! : Colors.blue[200]!;
+    }
+  }
+
+  Color _getTitleColor(ThemeData theme, bool isDark) {
+    if (notification.isRead) {
+      return theme.textTheme.titleMedium?.color?.withAlpha((0.7 * 255).toInt()) ??
+          (isDark ? Colors.grey[400]! : Colors.grey[700]!);
+    } else {
+      return theme.textTheme.titleLarge?.color ?? (isDark ? Colors.white : Colors.black);
+    }
+  }
+
+  Color _getMessageColor(ThemeData theme, bool isDark) {
+    if (notification.isRead) {
+      return theme.textTheme.bodyMedium?.color?.withAlpha((0.6 * 255).toInt()) ??
+          (isDark ? Colors.grey[500]! : Colors.grey[600]!);
+    } else {
+      return theme.textTheme.bodyMedium?.color?.withAlpha((0.8 * 255).toInt()) ??
+          (isDark ? Colors.grey[300]! : Colors.grey[700]!);
+    }
   }
 
   IconData _getNotificationIcon() {

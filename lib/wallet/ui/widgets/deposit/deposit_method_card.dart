@@ -1,9 +1,9 @@
+import 'package:event_app/core/constants/app_strings.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
-import 'package:event_app/core/constants/app_strings.dart';
 
-import '../../data/model/deposit_method.dart';
+import '../../../data/model/deposit_method.dart';
 
 class DepositMethodCard extends StatelessWidget {
   final DepositMethod method;
@@ -19,6 +19,9 @@ class DepositMethodCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -26,11 +29,12 @@ class DepositMethodCard extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 12),
         decoration: BoxDecoration(
           border: Border.all(
-            color: isSelected ? Colors.black : Colors.grey[300]!,
+            color:
+                isSelected ? (isDark ? Colors.white : Colors.black) : (isDark ? Colors.grey[600]! : Colors.grey[300]!),
             width: isSelected ? 2 : 1,
           ),
           borderRadius: BorderRadius.circular(5),
-          color: Colors.white,
+          color: theme.cardColor,
         ),
         child: Row(
           children: [
@@ -39,9 +43,11 @@ class DepositMethodCard extends StatelessWidget {
               height: 8,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: isSelected ? Colors.black : Colors.transparent,
+                color: isSelected ? (isDark ? Colors.white : Colors.black) : Colors.transparent,
                 border: Border.all(
-                  color: isSelected ? Colors.black : Colors.grey[400]!,
+                  color: isSelected
+                      ? (isDark ? Colors.white : Colors.black)
+                      : (isDark ? Colors.grey[500]! : Colors.grey[400]!),
                   width: 2,
                 ),
               ),
@@ -50,7 +56,7 @@ class DepositMethodCard extends StatelessWidget {
             Icon(
               method.type == DepositMethodType.giftCard ? Icons.card_giftcard : Icons.credit_card,
               size: 30,
-              color: Colors.grey[600],
+              color: theme.iconTheme.color?.withOpacity(0.7) ?? (isDark ? Colors.grey[400] : Colors.grey[600]),
             ),
             const SizedBox(width: 15),
             Expanded(
@@ -63,7 +69,7 @@ class DepositMethodCard extends StatelessWidget {
                         method.title,
                         style: GoogleFonts.openSans(
                           fontSize: 14,
-                          color: const Color(0xFF101828),
+                          color: theme.textTheme.titleMedium?.color,
                         ),
                       ),
                       if (method.isInstant) ...[
@@ -71,14 +77,14 @@ class DepositMethodCard extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                           decoration: BoxDecoration(
-                            color: Colors.grey[200],
+                            color: isDark ? Colors.grey[700] : Colors.grey[200],
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(
                             AppStrings.instant.tr,
                             style: GoogleFonts.openSans(
                               fontSize: 10,
-                              color: const Color(0xFF4A5565),
+                              color: theme.textTheme.bodySmall?.color,
                             ),
                           ),
                         ),
@@ -90,7 +96,7 @@ class DepositMethodCard extends StatelessWidget {
                     method.subtitle,
                     style: GoogleFonts.openSans(
                       fontSize: 12,
-                      color: const Color(0xFF4A5565),
+                      color: theme.textTheme.bodyMedium?.color?.withOpacity(0.8),
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -98,7 +104,7 @@ class DepositMethodCard extends StatelessWidget {
                     method.processingInfo,
                     style: GoogleFonts.openSans(
                       fontSize: 10,
-                      color: const Color(0xFF4A5565),
+                      color: theme.textTheme.bodySmall?.color?.withOpacity(0.7),
                     ),
                   ),
                 ],

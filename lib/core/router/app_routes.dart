@@ -17,6 +17,7 @@ import '../../wallet/data/repo/wallet_repository.dart';
 import '../../wallet/logic/deposit/deposit_cubit.dart';
 import '../../wallet/logic/drawer/drawer_cubit.dart';
 import '../../wallet/logic/wallet/wallet_cubit.dart';
+import '../../wallet/ui/screens/add_funds_screen.dart';
 
 class AppRoutes {
   /// +++++++++++++++++++++ USER SIDE HOME INFORMATION ICONS ROUTES +++++++++++++++++
@@ -34,6 +35,7 @@ class AppRoutes {
   static const String vendorCreateCouponView = '/vendorCreateCouponView';
   static const String vendorEditOrderView = '/vendorEditOrderView';
   static const String wallet = '/wallet';
+  static const String addFundsScreen = '/AddFundsScreen';
 
   static Map<String, WidgetBuilder> getRoutes(BuildContext context) {
     final homePageProvider = Provider.of<HomePageProvider>(context);
@@ -47,6 +49,10 @@ class AppRoutes {
       vendorProfileSettingsView: (context) => VendorProfileSettingsView(),
       vendorCouponView: (context) => const VendorCouponView(),
       vendorCreateCouponView: (context) => const VendorCreateCouponView(),
+      addFundsScreen: (context) => BlocProvider(
+            create: (context) => DepositCubit(WalletRepositoryImpl()),
+            child: const AddFundsScreen(),
+          ),
       wallet: (context) => MultiBlocProvider(
             providers: [
               BlocProvider(

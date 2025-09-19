@@ -79,6 +79,8 @@ class _CartItemsScreensState extends State<CartItemsScreen> {
   }
 
   Future<void> update(String rowId, int qty, List<Product>? products) async {
+    if (qty < 1) return;
+
     final token = await SecurePreferencesUtil.getToken();
     if (token == null) return;
     final provider = Provider.of<CartProvider>(context, listen: false);

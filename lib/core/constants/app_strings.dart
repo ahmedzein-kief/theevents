@@ -528,4 +528,7 @@ class AppStrings {
   static const String visaMasterAccepted = 'Visa, Master Card accepted';
   static const String processingFeeSuffix = 'processing fee';
   static const String balanceLabel = 'Balance:';
+  static const String searchTransactions = 'searchTransactions';
+  static const String export = 'export';
+  static const String markAllRead = 'markAllRead';
 }

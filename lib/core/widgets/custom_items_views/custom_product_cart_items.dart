@@ -217,7 +217,7 @@ class ProductCartItems extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            // const SizedBox(height: 8),
+                            const SizedBox(height: 8),
                             GestureDetector(
                               onTap: onDeletePressed,
                               child: Padding(

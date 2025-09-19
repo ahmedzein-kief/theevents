@@ -2,8 +2,8 @@ import 'package:event_app/core/widgets/PriceRow.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../../core/utils/formatters.dart';
-import '../../data/model/transaction_model.dart';
+import '../../../../core/utils/formatters.dart';
+import '../../../data/model/transaction_model.dart';
 
 class TransactionItem extends StatelessWidget {
   final TransactionModel transaction;
@@ -53,7 +53,7 @@ class TransactionItem extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style: GoogleFonts.openSans(
                           fontSize: 14,
-                          color: const Color(0xFF101828),
+                          color: Theme.of(context).textTheme.bodyMedium?.color,
                         ),
                       ),
                     ),
@@ -94,14 +94,14 @@ class TransactionItem extends StatelessWidget {
                               Formatters.formatDate(transaction.date),
                               style: GoogleFonts.openSans(
                                 fontSize: 12,
-                                color: const Color(0xFF4A5565),
+                                color: Theme.of(context).textTheme.bodyMedium?.color,
                               ),
                             ),
                             Text(
                               Formatters.formatTime(transaction.date),
                               style: GoogleFonts.openSans(
                                 fontSize: 12,
-                                color: const Color(0xFF4A5565),
+                                color: Theme.of(context).textTheme.bodyMedium?.color,
                               ),
                             ),
                           ],
@@ -118,14 +118,14 @@ class TransactionItem extends StatelessWidget {
                     Icon(
                       _getPaymentMethodIcon(),
                       size: 16,
-                      color: const Color(0xFF101828),
+                      color: Theme.of(context).textTheme.bodyMedium?.color,
                     ),
                     const SizedBox(width: 6),
                     Text(
                       _getPaymentMethodText(),
                       style: GoogleFonts.openSans(
                         fontSize: 12,
-                        color: const Color(0xFF101828),
+                        color: Theme.of(context).textTheme.bodyMedium?.color,
                       ),
                     ),
                   ],
@@ -135,11 +135,11 @@ class TransactionItem extends StatelessWidget {
                 /// Row 3: Chips + Balance aligned
                 Wrap(
                   crossAxisAlignment: WrapCrossAlignment.center,
-                  spacing: 8,
+                  spacing: 4,
                   runSpacing: 6,
                   children: [
-                    _buildStatusChip(),
-                    _buildTransactionIdChip(),
+                    _buildStatusChip(context),
+                    _buildTransactionIdChip(context),
                     _buildBalanceChip(),
                   ],
                 ),
@@ -153,9 +153,9 @@ class TransactionItem extends StatelessWidget {
 
   // --- Helper Widgets ---
 
-  Widget _buildStatusChip() {
+  Widget _buildStatusChip(context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
       decoration: BoxDecoration(
         color: _getStatusColor(),
         borderRadius: BorderRadius.circular(24),
@@ -170,26 +170,23 @@ class TransactionItem extends StatelessWidget {
     );
   }
 
-  Widget _buildTransactionIdChip() {
+  Widget _buildTransactionIdChip(context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
       decoration: BoxDecoration(
         color: _getStatusColor(),
         borderRadius: BorderRadius.circular(24),
       ),
       child: Text(
         'GC01234567', // TODO: replace with actual transaction id
-        style: GoogleFonts.openSans(
-          fontSize: 11,
-          color: const Color(0xFF101828),
-        ),
+        style: GoogleFonts.openSans(fontSize: 11, color: const Color(0xFF101828)),
       ),
     );
   }
 
   Widget _buildBalanceChip() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 4),
       decoration: BoxDecoration(
         color: const Color(0xFFF3A195),
         borderRadius: BorderRadius.circular(4),

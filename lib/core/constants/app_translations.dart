@@ -4,6 +4,9 @@ import 'app_strings.dart';
 
 final Map<String, Map<String, String>> appTranslations = {
   'en': {
+    '7Days': '7 Days',
+    '30Days': '30 Days',
+    '90Days': '90 Days',
     'transactionHistory': 'Transaction History',
     'export': 'Export',
     'searchTransactions': 'Search transactions...',
@@ -776,6 +779,9 @@ final Map<String, Map<String, String>> appTranslations = {
     VendorAppStrings.areYouAuthorizedSignatory: VendorAppStrings.areYouAuthorizedSignatory,
   },
   'ar': {
+    '7Days': '٧ أيام',
+    '30Days': '٣٠ يومًا',
+    '90Days': '٩٠ يومًا',
     'transactionHistory': 'تاريخ المعاملات',
     'export': 'تصدير',
     'searchTransactions': 'البحث في المعاملات...',
@@ -1544,6 +1550,10 @@ final Map<String, Map<String, String>> appTranslations = {
     VendorAppStrings.areYouAuthorizedSignatory: 'هل أنت الموقع المفوض؟',
   },
   'ru': {
+    '7Days': '7 дней',
+    '30Days': '30 дней',
+    '90Days': '90 дней',
+
     // History Screen translations
     'transactionHistory': 'История транзакций',
     'export': 'Экспорт',
@@ -2096,6 +2106,9 @@ final Map<String, Map<String, String>> appTranslations = {
     AppStrings.fiftyPercentOffPrice: AppStrings.fiftyPercentOffPrice,
   },
   'zh': {
+    '7Days': '7天',
+    '30Days': '30天',
+    '90Days': '90天',
     // History Screen translations
     'transactionHistory': '交易历史',
     'export': '导出',
@@ -2553,6 +2566,9 @@ final Map<String, Map<String, String>> appTranslations = {
     AppStrings.fiftyPercentOffPrice: AppStrings.fiftyPercentOffPrice,
   },
   'hi': {
+    '7Days': '7 दिन',
+    '30Days': '30 दिन',
+    '90Days': '90 दिन',
     // History Screen translations
     'transactionHistory': 'लेन-देन इतिहास',
     'export': 'निर्यात',
@@ -3026,6 +3042,9 @@ final Map<String, Map<String, String>> appTranslations = {
     AppStrings.fiftyPercentOffPrice: AppStrings.fiftyPercentOffPrice,
   },
   'ur': {
+    '7Days': '7 دن',
+    '30Days': '30 دن',
+    '90Days': '90 دن',
     // History Screen translations
     'transactionHistory': 'لین دین کی تاریخ',
     'export': 'برآمد',

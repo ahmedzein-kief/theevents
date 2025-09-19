@@ -41,7 +41,7 @@ class PriceRow extends StatelessWidget {
             width: currencySize ?? 9,
             height: currencySize ?? 9,
             colorFilter: ColorFilter.mode(
-              currencyColor ?? Colors.black,
+              currencyColor ?? Theme.of(context).colorScheme.onPrimary,
               BlendMode.srcIn,
             ),
           )
@@ -50,7 +50,7 @@ class PriceRow extends StatelessWidget {
             currencyText!,
             style: style?.copyWith(
               fontSize: currencySize ?? style?.fontSize,
-              color: currencyColor ?? style?.color,
+              color: currencyColor ?? style?.color ?? Theme.of(context).colorScheme.onPrimary,
             ),
           )
         else // 👈 default = dirham asset
@@ -59,7 +59,7 @@ class PriceRow extends StatelessWidget {
             width: currencySize ?? 9,
             height: currencySize ?? 9,
             colorFilter: ColorFilter.mode(
-              currencyColor ?? Colors.black,
+              currencyColor ?? Theme.of(context).colorScheme.onPrimary,
               BlendMode.srcIn,
             ),
           ),

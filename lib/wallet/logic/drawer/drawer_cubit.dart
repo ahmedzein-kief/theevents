@@ -1,11 +1,28 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class DrawerCubit extends Cubit<bool> {
-  DrawerCubit() : super(false);
+import 'drawer_state.dart';
 
-  void toggleDrawer() => emit(!state);
+class DrawerCubit extends Cubit<DrawerState> {
+  DrawerCubit() : super(const DrawerState(isOpen: false, selectedIndex: 0));
 
-  void closeDrawer() => emit(false);
+  void toggleDrawer() => emit(DrawerState(
+        isOpen: !state.isOpen,
+        selectedIndex: state.selectedIndex,
+      ));
 
-  void openDrawer() => emit(true);
+  void closeDrawer() => emit(DrawerState(
+        isOpen: false,
+        selectedIndex: state.selectedIndex,
+      ));
+
+  void openDrawer() => emit(DrawerState(
+        isOpen: true,
+        selectedIndex: state.selectedIndex,
+      ));
+
+  // New method that your WalletOverviewScreen is already trying to call
+  void setSelectedScreen(int index) => emit(DrawerState(
+        isOpen: false, // Close drawer when selecting screen
+        selectedIndex: index,
+      ));
 }

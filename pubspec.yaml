@@ -84,6 +84,7 @@ dependencies:
   pay: ^3.2.1
   equatable: ^2.0.7
   flutter_bloc: ^9.1.1
+  dartz: ^0.10.1
 
   flutter_localizations:
     sdk: flutter
@@ -113,6 +114,7 @@ flutter:
     - assets/vendor_assets/dashboard/
     - assets/vendor_assets/product/
     - assets/nav/
+    - assets/wallet/
 
   fonts:
     - family: FontSf

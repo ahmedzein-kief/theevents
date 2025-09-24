@@ -141,7 +141,7 @@ class EComTagProvider with ChangeNotifier {
     _isPackagesLoading = true;
     notifyListeners();
 
-    // final url = Uri.parse('https://apistaging.theevents.ae/api/v1/tag-packages/$slug?per-page=$perPage&page=$page&sort-by=$sortBy');
+    // final url = Uri.parse('https://newapistaging.theevents.ae/api/v1/tag-packages/$slug?per-page=$perPage&page=$page&sort-by=$sortBy');
     final url = '${ApiEndpoints.packagesECom}$slug?per-page=$perPage&page=$page&sort-by=$sortBy';
 
     try {

@@ -18,7 +18,7 @@ class NotificationsEmptyState extends StatelessWidget {
           Text(
             AppStrings.noNotifications.tr,
             style: TextStyle(
-              fontSize: 18,
+              fontSize: 14,
               fontWeight: FontWeight.w600,
               color: theme.textTheme.titleMedium?.color?.withOpacity(0.8),
             ),

@@ -1,7 +1,6 @@
 import 'package:event_app/core/router/app_routes.dart';
 import 'package:event_app/core/services/shared_preferences_helper.dart';
 import 'package:event_app/core/styles/app_colors.dart';
-import 'package:event_app/core/widgets/bottom_navigation_bar.dart';
 import 'package:event_app/provider/auth_provider/forgot_password.dart';
 import 'package:event_app/provider/auth_provider/get_user_provider.dart';
 import 'package:event_app/provider/auth_provider/user_auth_provider.dart';
@@ -60,7 +59,6 @@ import 'package:event_app/vendor/view_models/vendor_reviews/vendor_reviews_view_
 import 'package:event_app/vendor/view_models/vendor_settings/vendor_get_settings_view_model.dart';
 import 'package:event_app/vendor/view_models/vendor_settings/vendor_settings_view_model.dart';
 import 'package:event_app/vendor/view_models/vendor_withdrawal/vendor_withdrawal_view_model.dart';
-import 'package:event_app/views/auth_screens/splash_screen.dart';
 import 'package:event_app/views/profile_page_screens/privacy_policy_screen.dart';
 import 'package:event_app/views/profile_page_screens/terms_and_condtion_screen.dart';
 import 'package:flutter/material.dart';
@@ -180,12 +178,8 @@ class MyApp extends StatelessWidget {
                 title: 'Events',
                 debugShowCheckedModeBanner: false,
                 themeMode: theme.isLightTheme ? ThemeMode.light : ThemeMode.dark,
-                home: const SplashScreen(),
-                // home: VendorCreatePhysicalProductView(),
-                routes: {
-                  '/homeScreen': (context) => const BaseHomeScreen(),
-                  ...AppRoutes.getRoutes(context),
-                },
+                onGenerateRoute: AppRoutes.onGenerateRoute,
+                initialRoute: AppRoutes.home, // This will show SplashScreen first
               ),
             );
           },

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:dio/dio.dart';
 import 'package:event_app/provider/api_response_handler.dart';
 import 'package:flutter/cupertino.dart';
@@ -41,11 +39,10 @@ class SubMitCheckoutInformationProvider extends ChangeNotifier {
     required String token, // Token parameter
     String? billingAddressSameAsShippingAddress,
   }) async {
-    log('country=>< $country');
     _isLoading = true;
     notifyListeners();
     setStatus(ApiStatus.loading);
-    final url = 'https://apistaging.theevents.ae/api/v1/checkout/$trackedStartCheckout/information';
+    final url = 'https://newapistaging.theevents.ae/api/v1/checkout/$trackedStartCheckout/information';
     final headers = {
       'Authorization': token,
     };
@@ -73,8 +70,8 @@ class SubMitCheckoutInformationProvider extends ChangeNotifier {
     try {
       final response = await _apiResponseHandler.postDioMultipartRequest(
         url,
-        headers,
-        formData,
+        headers: headers,
+        formData: formData,
       );
       if (response.statusCode == 200) {
         setStatus(ApiStatus.completed);

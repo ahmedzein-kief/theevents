@@ -83,7 +83,7 @@ class StoreProvider with ChangeNotifier {
     String slug,
     BuildContext context,
   ) async {
-    // final url = 'https://apistaging.theevents.ae/api/v1/stores/$slug';
+    // final url = 'https://newapistaging.theevents.ae/api/v1/stores/$slug';
     const urlApi = ApiEndpoints.brandStore;
     final url = '$urlApi$slug';
     log(url);

@@ -17,7 +17,7 @@ class UsersByTypeProvider with ChangeNotifier {
   Future<void> fetchCelebrities(BuildContext context, {required data}) async {
     final typeId = int.tryParse(data['attributes']['type_id'].toString()) ?? 0;
     final limit = data['attributes']['limit'].toString();
-    // final url = Uri.parse('https://apistaging.theevents.ae/api/v1/customers-by-type/$typeId');
+    // final url = Uri.parse('https://newapistaging.theevents.ae/api/v1/customers-by-type/$typeId');
     final url = '${ApiEndpoints.customerByType}/$typeId';
 
     // final params = {'limit': limit};

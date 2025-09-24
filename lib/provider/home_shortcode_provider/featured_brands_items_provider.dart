@@ -14,7 +14,7 @@ class FeaturedBrandsItemsProvider with ChangeNotifier {
     List<int> ids,
     BuildContext context,
   ) async {
-    const String url = 'https://apistaging.theevents.ae/api/v1/ecom-tags';
+    const String url = 'https://newapistaging.theevents.ae/api/v1/ecom-tags';
     final queryParameters = {
       'ids': ids.map((id) => id.toString()).join(','), // Join IDs with a comma
       // Add any other parameters needed, for example:

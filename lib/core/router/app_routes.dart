@@ -1,27 +1,31 @@
 import 'package:event_app/vendor/vendor_home/vendor_settings/vendor_profile_settings_view.dart';
-import 'package:event_app/views/home_screens_shortcode/shortcode_information_icons/gift_card/gift_card_screen.dart';
+import 'package:event_app/wallet/logic/history/history_cubit.dart';
 import 'package:event_app/wallet/ui/screens/wallet_drawer.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:provider/provider.dart';
 
-import '../../provider/shortcode_home_page_provider.dart';
 import '../../vendor/vendor_home/vendor_coupons/vendor_coupon_view.dart';
 import '../../vendor/vendor_home/vendor_coupons/vendor_create_coupon_view.dart';
+import '../../views/auth_screens/splash_screen.dart';
 import '../../views/home_screens_shortcode/shortcode_information_icons/best_seller_screens/best_seller.dart';
 import '../../views/home_screens_shortcode/shortcode_information_icons/events_brands_screens/event_brand_view.dart';
 import '../../views/home_screens_shortcode/shortcode_information_icons/fifty_discount_screens/discounts_screen.dart';
+import '../../views/home_screens_shortcode/shortcode_information_icons/gift_card/gift_card_list_screen.dart';
 import '../../views/home_screens_shortcode/shortcode_information_icons/new_product.dart';
 import '../../views/home_screens_shortcode/shortcode_information_icons/order_pages_screens/order_page.dart';
-import '../../wallet/data/repo/wallet_repository.dart';
 import '../../wallet/logic/deposit/deposit_cubit.dart';
 import '../../wallet/logic/drawer/drawer_cubit.dart';
+import '../../wallet/logic/fund_expiry/fund_expiry_cubit.dart';
+import '../../wallet/logic/notification/notification_cubit.dart';
 import '../../wallet/logic/wallet/wallet_cubit.dart';
-import '../../wallet/ui/screens/add_funds_screen.dart';
+import '../../wallet/ui/screens/fund_expiry_alert_screen.dart';
+import '../helper/di/locator.dart';
+import '../widgets/bottom_navigation_bar.dart';
 
 class AppRoutes {
   /// +++++++++++++++++++++ USER SIDE HOME INFORMATION ICONS ROUTES +++++++++++++++++
   static const String home = '/';
+  static const String homeScreen = '/homeScreen';
   static const String orderPage = '/orderPage';
   static const String newProduct = '/newProduct';
   static const String giftCard = '/giftCard';
@@ -36,30 +40,121 @@ class AppRoutes {
   static const String vendorEditOrderView = '/vendorEditOrderView';
   static const String wallet = '/wallet';
   static const String addFundsScreen = '/AddFundsScreen';
+  static const String fundExpiryAlertScreen = '/fundExpiryAlertScreen';
 
-  static Map<String, WidgetBuilder> getRoutes(BuildContext context) {
-    final homePageProvider = Provider.of<HomePageProvider>(context);
-    return {
-      orderPage: (context) => const OrderPageScreen(),
-      newProduct: (context) => const NewProductPageScreen(),
-      giftCard: (context) => const GiftCardScreen(),
-      eventBrand: (context) => const EventBrandScreen(),
-      bestSeller: (context) => const BestSellerScreen(),
-      discountScreen: (context) => const DiscountScreen(),
-      vendorProfileSettingsView: (context) => VendorProfileSettingsView(),
-      vendorCouponView: (context) => const VendorCouponView(),
-      vendorCreateCouponView: (context) => const VendorCreateCouponView(),
-      addFundsScreen: (context) => BlocProvider(
-            create: (context) => DepositCubit(WalletRepositoryImpl()),
-            child: const AddFundsScreen(),
-          ),
-      wallet: (context) => MultiBlocProvider(
+  static Route<dynamic>? onGenerateRoute(RouteSettings settings) {
+    // Optional: Helper method to get route arguments safely
+    T? getArguments<T>() {
+      final arguments = settings.arguments;
+      if (arguments is T) {
+        return arguments;
+      }
+      return null;
+    }
+
+    switch (settings.name) {
+      case home:
+        return MaterialPageRoute(
+          builder: (context) => const SplashScreen(),
+          settings: settings,
+        );
+
+      case '/homeScreen':
+        return MaterialPageRoute(
+          builder: (context) => const BaseHomeScreen(),
+          settings: settings,
+        );
+
+      case orderPage:
+        return MaterialPageRoute(
+          builder: (context) => const OrderPageScreen(),
+          settings: settings,
+        );
+
+      case newProduct:
+        return MaterialPageRoute(
+          builder: (context) => const NewProductPageScreen(),
+          settings: settings,
+        );
+
+      case giftCard:
+        return MaterialPageRoute(
+          builder: (context) => const GiftCardListScreen(),
+          settings: settings,
+        );
+
+      case eventBrand:
+        return MaterialPageRoute(
+          builder: (context) => const EventBrandScreen(),
+          settings: settings,
+        );
+
+      case bestSeller:
+        return MaterialPageRoute(
+          builder: (context) => const BestSellerScreen(),
+          settings: settings,
+        );
+
+      case discountScreen:
+        return MaterialPageRoute(
+          builder: (context) => const DiscountScreen(),
+          settings: settings,
+        );
+
+      case vendorProfileSettingsView:
+        return MaterialPageRoute(
+          builder: (context) => VendorProfileSettingsView(),
+          settings: settings,
+        );
+
+      case vendorCouponView:
+        return MaterialPageRoute(
+          builder: (context) => const VendorCouponView(),
+          settings: settings,
+        );
+
+      case vendorCreateCouponView:
+        return MaterialPageRoute(
+          builder: (context) => const VendorCreateCouponView(),
+          settings: settings,
+        );
+
+      case fundExpiryAlertScreen:
+        final walletCubit = getArguments<WalletCubit>();
+
+        return MaterialPageRoute(
+          builder: (context) => MultiBlocProvider(
             providers: [
               BlocProvider(
-                create: (context) => WalletCubit(WalletRepositoryImpl())..loadWalletData(),
+                create: (context) => locator<FundExpiryCubit>()..loadExpiringFunds(),
+              ),
+              if (walletCubit != null)
+                BlocProvider<WalletCubit>.value(value: walletCubit)
+              else
+                BlocProvider(
+                  create: (context) => locator<WalletCubit>()..loadWalletData(),
+                ),
+            ],
+            child: const FundExpiryAlertScreen(),
+          ),
+          settings: settings,
+        );
+
+      case wallet:
+        return MaterialPageRoute(
+          builder: (context) => MultiBlocProvider(
+            providers: [
+              BlocProvider(
+                create: (context) => locator<WalletCubit>()..loadWalletData(),
               ),
               BlocProvider(
-                create: (context) => DepositCubit(WalletRepositoryImpl()),
+                create: (context) => locator<DepositCubit>(),
+              ),
+              BlocProvider(
+                create: (context) => locator<HistoryCubit>(),
+              ),
+              BlocProvider(
+                create: (context) => locator<NotificationsCubit>(),
               ),
               BlocProvider(
                 create: (context) => DrawerCubit(),
@@ -67,6 +162,19 @@ class AppRoutes {
             ],
             child: const WalletDrawer(),
           ),
-    };
+          settings: settings,
+        );
+
+      default:
+        // Return null to let Flutter handle unknown routes
+        // or return a custom 404 page
+        return null;
+
+      // Alternative: Return a 404 page
+      // return MaterialPageRoute(
+      //   builder: (context) => const NotFoundPage(),
+      //   settings: settings,
+      // );
+    }
   }
 }

@@ -102,9 +102,7 @@ class _CartItemsScreensState extends State<CartItemsScreen> {
       }
     }
 
-    final Map<String, dynamic> requestBody = {
-      'items': items,
-    };
+    final Map<String, dynamic> requestBody = {'items': items};
 
     await provider.updateCart(token, context, requestBody);
   }

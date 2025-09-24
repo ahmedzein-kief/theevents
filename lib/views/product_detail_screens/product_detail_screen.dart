@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/utils/custom_toast.dart';
 import 'package:event_app/views/base_screens/base_app_bar.dart';
@@ -45,36 +47,114 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   Map<String, dynamic> selectedExtraOptions = {};
   List<Map<String, dynamic>> extraOptionErrorData = [];
 
+  // Add listener reference to properly dispose
+  VoidCallback? _providerListener;
+
   @override
   void initState() {
     super.initState();
     initRequests();
   }
 
+  @override
+  void didUpdateWidget(ProductDetailScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // Check if the slug has changed (new product)
+    if (widget.slug != oldWidget.slug) {
+      // Remove old listener if exists
+      if (_providerListener != null) {
+        final provider = Provider.of<ProductItemsProvider>(context, listen: false);
+        provider.removeListener(_providerListener!);
+        _providerListener = null;
+      }
+
+      // Reset all state variables for new product
+      setState(() {
+        _selectedImageUrl = null;
+        selectedAttributes.clear();
+        isAttributesChanged = false;
+        unavailableAttributes.clear();
+        selectedExtraOptions.clear();
+        extraOptionErrorData.clear();
+        cartItemQuantity = 1;
+        productID = '';
+        productPrice = '';
+        updateProductAttributePrice = '';
+        productVariationId = -1;
+      });
+
+      // Reinitialize for new product
+      initRequests();
+    }
+  }
+
+  @override
+  void dispose() {
+    // Remove listener to prevent setState after dispose
+    if (_providerListener != null) {
+      try {
+        final provider = Provider.of<ProductItemsProvider>(context, listen: false);
+        provider.removeListener(_providerListener!);
+      } catch (e) {
+        // Provider might already be disposed
+        log('Error removing listener: $e');
+      }
+    }
+    super.dispose();
+  }
+
   void initRequests() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+
       final provider = Provider.of<ProductItemsProvider>(context, listen: false);
       provider.resetData();
+
+      // Reset the selected image URL when initializing a new product
+      if (mounted) {
+        setState(() {
+          _selectedImageUrl = null;
+        });
+      }
+
       await fetchItems();
       fetchCustomerReviews();
-      provider.addListener(() {
-        if (provider.apiResponse?.data?.record?.images != null && _selectedImageUrl == null) {
-          WidgetsBinding.instance.addPostFrameCallback((callback) {
-            setState(() {
-              _selectedImageUrl = provider.apiResponse?.data?.record?.images.first.small;
+
+      // Remove old listener if exists
+      if (_providerListener != null) {
+        provider.removeListener(_providerListener!);
+      }
+
+      // Create new listener
+      _providerListener = () {
+        if (mounted && provider.apiResponse?.data?.record?.images.isNotEmpty == true) {
+          try {
+            WidgetsBinding.instance.addPostFrameCallback((callback) {
+              if (mounted && provider.apiResponse?.data?.record?.images.isNotEmpty == true) {
+                setState(() {
+                  _selectedImageUrl = provider.apiResponse?.data?.record?.images.first.small;
+                });
+              }
             });
-          });
+          } catch (e) {
+            log('Error updating selected image: $e');
+          }
         }
-      });
+      };
+
+      provider.addListener(_providerListener!);
     });
   }
 
   Future<void> fetchBrandStoreData() async {
+    if (!mounted) return;
     final brandStore = Provider.of<StoreProvider>(context, listen: false);
     await brandStore.fetchStore(widget.slug, context);
   }
 
   Future<void> fetchCustomerReviews() async {
+    if (!mounted) return;
     final provider = Provider.of<ProductItemsProvider>(context, listen: false);
     await provider.fetchCustomerReviews(
       provider.apiResponse?.data?.record?.id?.toString() ?? '',
@@ -83,9 +163,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   }
 
   Future<void> fetchItems() async {
+    if (!mounted) return;
     final provider = Provider.of<ProductItemsProvider>(context, listen: false);
     final result = await provider.fetchProductData(widget.slug, context);
-    if (result != null) {
+    if (result != null && result.data?.record?.attributes?.isNotEmpty == true && mounted) {
       final record = result.data?.record;
       if (record?.attributes?.isNotEmpty == true) {
         record?.attributes?.forEach(
@@ -115,8 +196,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           },
         );
         final resultAttributes = await updateProductAttributes(selectedAttributes);
-        if (resultAttributes != null) {
-          updateProductAttributePrice = resultAttributes.data.price.toString() ?? '';
+        if (resultAttributes != null && mounted) {
+          updateProductAttributePrice = resultAttributes.data.price.toString();
           productVariationId = resultAttributes.data.id;
           unavailableAttributes =
               resultAttributes.data.unavailableAttributeIds.map((e) => int.tryParse(e.toString()) ?? 0).toList();
@@ -128,6 +209,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   Future<ProductVariationModel?> updateProductAttributes(
     List<Map<String, dynamic>?> selectedAttributes,
   ) async {
+    if (!mounted) return null;
     final provider = Provider.of<ProductItemsProvider>(context, listen: false);
     return provider.updateProductAttributes(
       productID,
@@ -137,13 +219,16 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   }
 
   Future<void> _isBrandFetched() async {
+    if (!mounted) return;
     final brandStore = Provider.of<StoreProvider>(context, listen: false);
     await brandStore.fetchStore(widget.slug, context);
   }
 
   void _handleAttributeUpdate(List<Map<String, dynamic>?> selectedAttribute, dynamic record) async {
+    if (!mounted) return;
+
     final result = await updateProductAttributes(selectedAttribute);
-    if (result != null) {
+    if (result != null && mounted) {
       if (result.data.successMessage == null) {
         CustomSnackbar.showError(context, 'Out of stock');
       }
@@ -185,14 +270,16 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         }
       });
 
-      setState(() {
-        isAttributesChanged = true;
-        updateProductAttributePrice = result.data.price.toString();
-        unavailableAttributes =
-            result.data.unavailableAttributeIds.map((e) => int.tryParse(e.toString()) ?? 0).toList();
-        productVariationId = result.data.id;
-        selectedAttributes = selectedAttribute;
-      });
+      if (mounted) {
+        setState(() {
+          isAttributesChanged = true;
+          updateProductAttributePrice = result.data.price.toString();
+          unavailableAttributes =
+              result.data.unavailableAttributeIds.map((e) => int.tryParse(e.toString()) ?? 0).toList();
+          productVariationId = result.data.id;
+          selectedAttributes = selectedAttribute;
+        });
+      }
     }
   }
 
@@ -244,7 +331,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
                     final data = provider.apiResponse?.data;
                     final record = data?.record;
-                    productID = (record?.id ?? 0).toString();
+
+                    // Add null safety checks for all assignments
+                    if (record?.id != null) {
+                      productID = record!.id.toString();
+                    }
+
                     productPrice = isAttributesChanged
                         ? updateProductAttributePrice
                         : record?.prices?.frontSalePrice?.toString() ?? '';
@@ -286,7 +378,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
                     final images = record?.images;
 
-                    if (record == null || images == null) {
+                    if (record == null) {
                       return Center(child: Text('${AppStrings.loading.tr}...'));
                     }
 
@@ -310,16 +402,18 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                               children: [
                                 // Product Header Section
                                 ProductHeaderSection(
-                                  selectedImageUrl: _selectedImageUrl,
+                                  selectedImageUrl: images?.isNotEmpty == true ? _selectedImageUrl : null,
                                   screenWidth: screenWidth,
                                   record: record,
                                   images: images,
                                   productPrice: productPrice,
                                   offPercentage: offPercentage,
                                   onImageUpdate: (selectedImageUrl) {
-                                    setState(() {
-                                      _selectedImageUrl = selectedImageUrl;
-                                    });
+                                    if (mounted) {
+                                      setState(() {
+                                        _selectedImageUrl = selectedImageUrl;
+                                      });
+                                    }
                                   },
                                 ),
 
@@ -338,9 +432,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                     _handleAttributeUpdate(selectedAttribute, record);
                                   },
                                   onExtraOptionsChanged: (Map<String, dynamic> selectedExtraOptions) {
-                                    setState(() {
-                                      this.selectedExtraOptions = selectedExtraOptions;
-                                    });
+                                    if (mounted) {
+                                      setState(() {
+                                        this.selectedExtraOptions = selectedExtraOptions;
+                                      });
+                                    }
                                   },
                                 ),
 
@@ -350,18 +446,22 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                 ),
 
                                 // Related Products Section
-                                if (record.relatedProducts.isNotEmpty)
+                                if (record.relatedProducts.isNotEmpty == true)
                                   ProductRelatedItemsScreen(
                                     screenWidth: screenWidth,
                                     relatedProducts: record.relatedProducts,
                                     offPercentage: offPercentage,
                                     onBackNavigation: () {
-                                      initRequests();
+                                      if (mounted) {
+                                        initRequests();
+                                      }
                                     },
                                     onActionUpdate: (loader) {
-                                      setState(() {
-                                        actionLoading = loader;
-                                      });
+                                      if (mounted) {
+                                        setState(() {
+                                          actionLoading = loader;
+                                        });
+                                      }
                                     },
                                   ),
 
@@ -388,12 +488,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 child: ((mainRecord?.id ?? 0) != 0 || productVariationId != -1)
                     ? ProductActions(
                         onExtraOptionsError: (errorData) {
-                          setState(() {
-                            extraOptionErrorData = errorData;
-                          });
+                          if (mounted) {
+                            setState(() {
+                              extraOptionErrorData = errorData;
+                            });
+                          }
                         },
-                        productVariationID: productVariationId != -1 ? productVariationId : mainRecord?.id,
-                        mainProductID: mainRecord?.id,
+                        productVariationID: productVariationId != -1 ? productVariationId : (mainRecord?.id ?? 0),
+                        mainProductID: mainRecord?.id ?? 0,
                         wishlistProvider: wishlistProvider,
                         freshPicksProvider: freshPicksProvider,
                         productItemsProvider: mainProvider,
@@ -401,9 +503,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         selectedExtraOptions: selectedExtraOptions,
                         selectedAttributes: selectedAttributes,
                         updateLoader: (loader) {
-                          setState(() {
-                            actionLoading = loader;
-                          });
+                          if (mounted) {
+                            setState(() {
+                              actionLoading = loader;
+                            });
+                          }
                         },
                       )
                     : Container(),

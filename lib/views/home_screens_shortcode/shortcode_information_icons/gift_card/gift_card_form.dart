@@ -12,6 +12,7 @@ import '../../../../core/constants/vendor_app_strings.dart';
 import '../../../../core/helper/validators/validator.dart';
 import '../../../../core/utils/app_utils.dart';
 import '../../../../core/widgets/custom_input_decoration.dart';
+import '../../../../provider/information_icons_provider/gift_card_list_provider.dart';
 import 'gift_card_bottom.dart';
 import 'payments_methods.dart';
 
@@ -381,6 +382,10 @@ class _GiftCardFormState extends State<GiftCardForm> {
                                             AppStrings.paymentSuccessful.tr,
                                             isSuccess: true,
                                           );
+
+                                          final provider = Provider.of<GiftCardListProvider>(context, listen: false);
+                                          provider.fetchGiftCardList(context);
+
                                           Navigator.pop(context, true);
                                         }
                                       } else if (result == false) {
@@ -421,7 +426,9 @@ class _GiftCardFormState extends State<GiftCardForm> {
                       ],
                     ),
                   ),
-                  const GiftCardBottom(),
+                  const GiftCardBottom(
+                    imageUrl: 'https://theevents.ae/assets/frontend/img/gift_card.webp',
+                  ),
                 ],
               ),
             ),

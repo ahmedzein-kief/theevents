@@ -403,7 +403,7 @@ class AppStrings {
   static const String cancellingTheOrder = 'CANCELING THE ORDER';
   static const String cancellationInfo = 'We are not able to cancel the order but you need to then no way?';
   static const String cancelWithinOneHour = 'Cancel within one hour';
-  static const String returnOrder = 'RETURN ORDER';
+  static const String returnOrder = 'Return order';
   static const String viewOrderUppercase = 'VIEW ORDER';
 
   // Note: These are placeholders from your code, consider if they need to be here
@@ -531,4 +531,10 @@ class AppStrings {
   static const String searchTransactions = 'searchTransactions';
   static const String export = 'export';
   static const String markAllRead = 'markAllRead';
+  static const String totalTransactions = 'transactionsCount';
+  static const String fundExpiryAlert = 'fundExpiryAlert';
+  static const String criticalActionRequired = 'criticalActionRequired';
+  static const String notificationSettings = 'notificationSettings';
+  static const String notificationTypes = 'notificationTypes';
+  static const String noExpiringFundsFound = 'noExpiringFundsFound';
 }

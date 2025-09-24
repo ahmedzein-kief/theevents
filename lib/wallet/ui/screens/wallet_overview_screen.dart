@@ -1,3 +1,4 @@
+import 'package:event_app/core/widgets/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -18,31 +19,40 @@ class WalletOverviewScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
-        child: Column(
-          children: [
-            WalletHeader(isDark: isDark),
-            Expanded(
-              child: Container(
-                color: isDark ? Colors.grey[900] : const Color(0xFFF5F5F5),
-                child: BlocBuilder<WalletCubit, WalletState>(
-                  builder: (context, state) {
-                    if (state is WalletLoading) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                    if (state is WalletError) {
-                      return OverviewErrorView(message: state.message);
-                    }
-                    if (state is WalletLoaded) {
-                      return OverviewContent(isDark: isDark, state: state);
-                    }
-                    return const SizedBox();
-                  },
+        child: BlocBuilder<WalletCubit, WalletState>(
+          builder: (context, state) {
+            final expiryCount = state is WalletLoaded ? state.wallet.expiringLotsCount : 0;
+
+            return Column(
+              children: [
+                WalletHeader(
+                  isDark: isDark,
+                  expiryCount: expiryCount,
                 ),
-              ),
-            ),
-          ],
+                Expanded(
+                  child: Container(
+                    color: isDark ? Colors.grey[900] : const Color(0xFFF5F5F5),
+                    child: _buildBody(context, state, isDark),
+                  ),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
+  }
+
+  Widget _buildBody(BuildContext context, WalletState state, bool isDark) {
+    if (state is WalletLoading) {
+      return const LoadingIndicator();
+    }
+    if (state is WalletError) {
+      return OverviewErrorView(message: state.message);
+    }
+    if (state is WalletLoaded) {
+      return OverviewContent(isDark: isDark, state: state);
+    }
+    return const SizedBox();
   }
 }

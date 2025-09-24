@@ -635,6 +635,7 @@ class _ConsolidatedPaymentScreenState extends State<ConsolidatedPaymentScreen> {
 
   Widget _buildPaymentButtons(CheckoutProvider provider, bool isDarkMode) {
     final bool isApplePaySelected = paymentMethod['payment_method'] == 'apple_pay';
+    final bool isWalletSelected = paymentMethod['payment_method'] == 'wallet';
 
     return Row(
       children: [
@@ -662,33 +663,38 @@ class _ConsolidatedPaymentScreenState extends State<ConsolidatedPaymentScreen> {
           Expanded(
             child: AppCustomButton(
               onPressed: () async {
-                final checkoutURL = await checkoutPayment(
-                  provider.checkoutData,
-                  paymentMethod,
-                  widget.isNewAddress,
-                );
-
-                if (checkoutURL != null) {
-                  await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => PaymentViewScreen(
-                        checkoutUrl: checkoutURL,
-                      ),
-                    ),
-                  );
-
-                  setState(() {
-                    provider.isLoading = false;
-                  });
+                if (isWalletSelected) {
+                  Provider.of<CheckoutProvider>(context, listen: false).payWithWallet(
+                      context, widget.tracked_start_checkout ?? '', provider.checkoutData, widget.isNewAddress);
                 } else {
-                  setState(() {
-                    provider.isLoading = false;
-                  });
-                  CustomSnackbar.showError(
-                    context,
-                    VendorAppStrings.paymentLinkError.tr,
+                  final checkoutURL = await checkoutPayment(
+                    provider.checkoutData,
+                    paymentMethod,
+                    widget.isNewAddress,
                   );
+
+                  if (checkoutURL != null) {
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PaymentViewScreen(
+                          checkoutUrl: checkoutURL,
+                        ),
+                      ),
+                    );
+
+                    setState(() {
+                      provider.isLoading = false;
+                    });
+                  } else {
+                    setState(() {
+                      provider.isLoading = false;
+                    });
+                    CustomSnackbar.showError(
+                      context,
+                      VendorAppStrings.paymentLinkError.tr,
+                    );
+                  }
                 }
               },
               icon: CupertinoIcons.forward,

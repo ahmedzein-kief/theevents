@@ -1,15 +1,15 @@
 class ApiEndpoints {
-  // static const String baseUrl = 'https://apistaging.theevents.ae/api/v1/';
+  // static const String baseUrl = 'https://newapistaging.theevents.ae/api/v1/';
 
-  static const String baseUrl = 'https://apistaging.theevents.ae/api/v1/';
+  static const String baseUrl = 'https://newapistaging.theevents.ae/api/v1/';
 
-  // static const String imageBaseURL = 'https://apistaging.theevents.ae/storage/';
+  // static const String imageBaseURL = 'https://newapistaging.theevents.ae/storage/';
 
-  static const String imageBaseURL = 'https://apistaging.theevents.ae/storage/';
+  static const String imageBaseURL = 'https://newapistaging.theevents.ae/storage/';
 
   // static const String payBaseURL = 'https://paystaging.theevents.ae/api/v1/';
 
-  static const String payBaseURL = 'https://paystaging.theevents.ae/api/v1/';
+  static const String payBaseURL = 'https://newpaystaging.theevents.ae/api/v1/';
 
   /*static const String baseUrl = 'https://events-api.clientswork.in/api/v1/';
   static const String imageBaseURL = 'https://events-api.clientswork.in/storage/';*/
@@ -89,6 +89,8 @@ class ApiEndpoints {
 
   static const String createGiftCard = '${baseUrl}gift-cards/create';
 
+  static const String giftCardList = '${baseUrl}gift-cards/list';
+
   static const String customerAddressEdit = '${baseUrl}customer/address/edit/';
   static const String customerAddressDelete = '${baseUrl}customer/address/delete/';
 
@@ -126,6 +128,24 @@ class ApiEndpoints {
   static const String customerDeleteReview = '${baseUrl}review/delete/';
 
   static const String getAllActiveLanguages = '${baseUrl}languages';
+
+  /// wallet
+  static const String wallet = '${baseUrl}wallet/';
+  static const String walletOverview = '${wallet}overview';
+  static const String depositByCoupon = '${wallet}gift-card/redeem';
+  static const String depositByCreditCard = '${baseUrl}customer-wallet/create';
+  static const String transactions = '${wallet}transactions';
+  static const String expiringLots = '${wallet}expiring-lots';
+
+  // Notification endpoints
+  static const String notificationList = '${wallet}notification-list';
+  static const String notificationRead = '${wallet}notification/{id}/read';
+  static const String notificationUnread = '${wallet}notification/{id}/unread';
+  static const String notificationMarkAllRead = '${wallet}notification-mark-all-read';
+  static const String notificationDelete = '${wallet}notification/{id}';
+  static const String notificationDeleteAll = '${wallet}notification';
+  static const String notificationPreferences = '${wallet}notification-preferences';
+  static const String notificationPreferencesByType = '${wallet}notification-preferences/{type}';
 }
 
 class CommonVariables {

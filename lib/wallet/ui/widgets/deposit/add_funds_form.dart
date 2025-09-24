@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../core/widgets/loading_indicator.dart';
 import '../../../data/model/deposit_method.dart';
 import '../../../logic/deposit/deposit_cubit.dart';
 import '../../../logic/deposit/deposit_state.dart';
@@ -31,19 +32,9 @@ class AddFundsForm extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    if (state is DepositMethodsLoading) {
-      return const Center(child: CircularProgressIndicator());
+    if (state.isLoading) {
+      return const LoadingIndicator();
     }
-
-    if (state is DepositError) {
-      return _buildErrorState(context, theme);
-    }
-
-    if (state is! DepositMethodsLoaded) {
-      return const SizedBox();
-    }
-
-    final loadedState = state as DepositMethodsLoaded;
 
     return Container(
       color: isDark ? Colors.grey[900] : const Color(0xFFF5F5F5),
@@ -68,24 +59,37 @@ class AddFundsForm extends StatelessWidget {
             children: [
               const FormTitle(),
               const SizedBox(height: 24),
-              DepositMethodsList(
-                methods: loadedState.methods,
-                selectedMethod: loadedState.selectedMethod,
-              ),
-              if (loadedState.selectedMethod == DepositMethodType.giftCard) ...[
-                const SizedBox(height: 24),
-                CouponCodeField(controller: couponController),
+
+              // Show error message if exists
+              if (state.hasError) ...[
+                _buildErrorMessage(context, theme),
+                const SizedBox(height: 16),
               ],
-              if (loadedState.selectedMethod == DepositMethodType.creditCard) ...[
-                const SizedBox(height: 24),
-                AmountInputSection(
-                  controller: amountController,
-                  quickAmounts: quickAmounts,
-                  currentAmount: loadedState.amount,
+
+              // Show form content if methods are loaded
+              if (state.methods.isNotEmpty) ...[
+                DepositMethodsList(
+                  methods: state.methods,
+                  selectedMethod: state.selectedMethod,
                 ),
+                if (state.selectedMethod == DepositMethodType.giftCard) ...[
+                  const SizedBox(height: 24),
+                  CouponCodeField(controller: couponController),
+                ],
+                if (state.selectedMethod == DepositMethodType.creditCard) ...[
+                  const SizedBox(height: 24),
+                  AmountInputSection(
+                    controller: amountController..text = state.amount.toString(),
+                    quickAmounts: quickAmounts,
+                    currentAmount: state.amount,
+                  ),
+                ],
+                const SizedBox(height: 32),
+                ContinueButton(isProcessing: state.isProcessing),
+              ] else if (state.hasError) ...[
+                // Show retry button if no methods loaded due to error
+                _buildRetryButton(context),
               ],
-              const SizedBox(height: 32),
-              ContinueButton(isProcessing: state is DepositProcessing),
             ],
           ),
         ),
@@ -93,20 +97,54 @@ class AddFundsForm extends StatelessWidget {
     );
   }
 
-  Widget _buildErrorState(BuildContext context, ThemeData theme) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+  Widget _buildErrorMessage(BuildContext context, ThemeData theme) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.error.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: theme.colorScheme.error.withOpacity(0.3),
+        ),
+      ),
+      child: Row(
         children: [
-          Text(
-            'Error: ${(state as DepositError).message}',
-            style: TextStyle(color: theme.textTheme.bodyLarge?.color),
+          Icon(
+            Icons.error_outline,
+            color: theme.colorScheme.error,
+            size: 20,
           ),
-          ElevatedButton(
-            onPressed: () => context.read<DepositCubit>().loadDepositMethods(),
-            child: const Text('Retry'),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              state.errorMessage!,
+              style: TextStyle(
+                color: theme.colorScheme.error,
+                fontSize: 14,
+              ),
+            ),
+          ),
+          IconButton(
+            onPressed: () => context.read<DepositCubit>().clearError(),
+            icon: Icon(
+              Icons.close,
+              color: theme.colorScheme.error,
+              size: 18,
+            ),
+            constraints: const BoxConstraints(),
+            padding: EdgeInsets.zero,
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildRetryButton(BuildContext context) {
+    return Center(
+      child: ElevatedButton.icon(
+        onPressed: () => context.read<DepositCubit>().loadDepositMethods(),
+        icon: const Icon(Icons.refresh),
+        label: const Text('Retry'),
       ),
     );
   }

@@ -127,16 +127,16 @@ class CustomUserByTypeBox extends StatelessWidget {
 
 //  SUPERTYPE  APIS BOTTOM BANNER
 
-//    https://apistaging.theevents.ae/api/v1/vendor-data/62
+//    https://newapistaging.theevents.ae/api/v1/vendor-data/62
 
-//     https://apistaging.theevents.ae/api/v1/vendor-data/64
+//     https://newapistaging.theevents.ae/api/v1/vendor-data/64
 
 //   THIS IS FOR PACKAGES
 
 // THIS IS PRODUCT AND PACKAGES LIST COMES IN THE API UPPER URL
 
-// https://apistaging.theevents.ae/api/v1/packages?per-page=12&page=1&sort-by=default_sorting&store_id=39
+// https://newapistaging.theevents.ae/api/v1/packages?per-page=12&page=1&sort-by=default_sorting&store_id=39
 
 //  THIS IS FOR PRODUCTS
 
-// https://apistaging.theevents.ae/api/v1/products?per-page=12&page=1&sort-by=default_sorting&store_id=39
+// https://newapistaging.theevents.ae/api/v1/products?per-page=12&page=1&sort-by=default_sorting&store_id=39

@@ -14,6 +14,7 @@ class ApiResponseHandler {
 
   Future<dynamic> getRequest(String url,
       {Map<String, String> headers = const {},
+      Map<String, dynamic>? extra,
       Map<String, String> queryParams = const {},
       bool authService = false,
       required BuildContext context,
@@ -25,6 +26,7 @@ class ApiResponseHandler {
         options: Options(
           headers: headers.isNotEmpty ? headers : null,
           responseType: responseType,
+          extra: extra,
         ),
       );
       if (response.statusCode != 401) {
@@ -41,16 +43,49 @@ class ApiResponseHandler {
     }
   }
 
+  Future<dynamic> putRequest(
+    String url, {
+    Map<String, String> headers = const {},
+    Map<String, dynamic> body = const {},
+    String bodyString = '',
+    Map<String, dynamic>? extra,
+  }) async {
+    try {
+      final dynamic data = body.isNotEmpty
+          ? body
+          : bodyString.isNotEmpty
+              ? bodyString
+              : null;
+
+      final response = await dio.put(
+        url,
+        data: data,
+        options: Options(
+          headers: headers.isNotEmpty ? headers : null,
+          extra: extra,
+          validateStatus: (status) {
+            return status! < 500; // Only reject server errors (5xx)
+          },
+        ),
+      );
+
+      return response;
+    } catch (e) {
+      throw Exception('Error during API request: $e');
+    }
+  }
+
   Future<dynamic> deleteRequest(
     String url, {
     Map<String, String> headers = const {},
+    Map<String, dynamic>? extra,
     Map<String, String> queryParams = const {},
   }) async {
     try {
       final response = await dio.delete(
         url,
         queryParameters: queryParams.isNotEmpty ? queryParams : null,
-        options: Options(headers: headers.isNotEmpty ? headers : null),
+        options: Options(headers: headers.isNotEmpty ? headers : null, extra: extra),
       );
       if (response.statusCode != 401) {
         return response;
@@ -66,6 +101,7 @@ class ApiResponseHandler {
     String url, {
     Map<String, String> headers = const {},
     Map<String, dynamic> body = const {},
+    Map<String, dynamic>? extra,
     String bodyString = '',
     Map<String, dynamic> queryParams = const {},
     bool authService = false,
@@ -83,6 +119,7 @@ class ApiResponseHandler {
         queryParameters: queryParams.isNotEmpty ? queryParams : null,
         options: Options(
           headers: headers.isNotEmpty ? headers : null,
+          extra: extra,
           validateStatus: (status) {
             return status! < 500; // Only reject server errors (5xx)
           },
@@ -127,10 +164,11 @@ class ApiResponseHandler {
   }
 
   Future<Response<dynamic>> postDioMultipartRequest(
-    String url,
-    Map<String, String> headers,
-    FormData formData,
-  ) {
+    String url, {
+    required FormData formData,
+    Map<String, String>? headers,
+    Map<String, dynamic>? extra,
+  }) {
     // Make Dio request
     try {
       return dio.post(
@@ -140,6 +178,7 @@ class ApiResponseHandler {
           method: 'POST',
           headers: headers,
           contentType: 'multipart/form-data',
+          extra: extra,
         ),
       );
     } catch (e) {
@@ -154,6 +193,7 @@ class ApiResponseHandler {
   Future<Response<dynamic>> getDioRequest(
     String url, {
     Map<String, String> headers = const {},
+    Map<String, dynamic>? extra,
     ResponseType? responseType,
   }) {
     // Make Dio request
@@ -164,14 +204,11 @@ class ApiResponseHandler {
           method: 'GET',
           headers: headers,
           responseType: responseType,
+          extra: extra,
         ),
       );
     } catch (e) {
-      if (e is DioException) {
-        final errorDetails = e.response?.data;
-      } else {}
-      // Re-throw the exception or return a dummy response if needed
-      throw Exception('Dio request failed: $e');
+      rethrow;
     }
   }
 

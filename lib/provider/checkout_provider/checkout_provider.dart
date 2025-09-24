@@ -2,12 +2,14 @@ import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
-import 'package:event_app/core/utils/custom_toast.dart';
+import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/models/dashboard/information_icons_models/gift_card_models/checkout_payment_model.dart';
 import 'package:event_app/provider/api_response_handler.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../../core/constants/app_strings.dart';
+import '../../core/network/api_endpoints/api_contsants.dart';
+import '../../core/widgets/bottom_navigation_bar.dart';
 import '../../models/checkout_models/checkout_data_models.dart';
 
 class CheckoutProvider with ChangeNotifier {
@@ -114,8 +116,6 @@ class CheckoutProvider with ChangeNotifier {
     Map paymentMethod,
     bool isNewAddress,
   ) async {
-    log('checkoutData checkoutPaymentLink');
-
     final data = checkoutData.data;
     if (data == null) return null;
 
@@ -170,8 +170,8 @@ class CheckoutProvider with ChangeNotifier {
       // Use the multipart request method
       final response = await _apiResponseHandler.postDioMultipartRequest(
         url,
-        headers,
-        formData,
+        headers: headers,
+        formData: formData,
       );
 
       if (response.statusCode == 200) {
@@ -181,7 +181,7 @@ class CheckoutProvider with ChangeNotifier {
         return paymentData.data.checkoutUrl;
       } else {
         final jsonResponse = response.data;
-        CustomSnackbar.showError(context, '${jsonResponse["message"]}');
+        AppUtils.showToast('${AppStrings.paymentFailed} ${jsonResponse["message"]}');
         throw Exception('Failed to load data');
       }
     } catch (e) {
@@ -190,14 +190,119 @@ class CheckoutProvider with ChangeNotifier {
       // Handle DioException specifically to get better error messages
       if (e is DioException) {
         final errorMessage = e.response?.data?['message'] ?? e.message;
-        log('Dio error details: $errorMessage');
-        CustomSnackbar.showError(context, 'Payment failed: $errorMessage');
+        AppUtils.showToast('${AppStrings.paymentFailed} $errorMessage');
       } else {
-        CustomSnackbar.showError(context, 'Payment failed: ${e.toString()}');
+        AppUtils.showToast('${AppStrings.paymentFailed} ${e.toString()}');
       }
     }
 
     notifyListeners();
     return null;
+  }
+
+  Future<void> payWithWallet(
+    BuildContext context,
+    String checkoutToken,
+    CheckoutResponse? checkoutData,
+    bool isNewAddress,
+  ) async {
+    if (checkoutData == null || checkoutData.data == null) return;
+    final data = checkoutData.data!;
+
+    // Create FormData
+    final formData = FormData.fromMap({
+      'tracked_start_checkout': checkoutToken,
+      'amount': data.orderAmount.toString(),
+      'is_mobile': '1',
+      'payment_method': 'wallet',
+    });
+
+    // Add address fields
+    final session = data.sessionCheckoutData;
+    formData.fields.addAll([
+      MapEntry('address[name]', session.name),
+      MapEntry('address[email]', session.email),
+      MapEntry('address[phone]', session.phone),
+      MapEntry('address[country]', session.country),
+      MapEntry('address[city]', session.city),
+      MapEntry('address[address]', session.address),
+      MapEntry('address[address_id]', isNewAddress ? 'new' : data.sessionCheckoutData.addressId.toString()),
+    ]);
+
+    // Add shipping info per vendor
+    final vendorData = data.sessionCheckoutData.marketplace;
+    vendorData.forEach((key, value) {
+      final id = key;
+      final method = data.defaultShippingMethod;
+      final option = data.defaultShippingOption;
+      formData.fields.addAll([
+        MapEntry('shipping_method[$id]', method),
+        MapEntry('shipping_option[$id]', option),
+      ]);
+    });
+
+    final url = '${ApiEndpoints.checkout}$checkoutToken/process';
+    try {
+      isLoading = true;
+      notifyListeners();
+
+      // Use the multipart request method
+      final response = await _apiResponseHandler.postDioMultipartRequest(
+        url,
+        extra: {ApiConstants.requireAuthKey: true},
+        formData: formData,
+      );
+
+      if (response.statusCode == 200) {
+        final url = response.data['data']['url'];
+
+        final urlMobile = '$url?is_mobilesam=1';
+
+        final urlResponse = await _apiResponseHandler.getDioRequest(urlMobile);
+
+        if (urlResponse.statusCode == 200) {
+          final jsonData = urlResponse.data;
+
+          AppUtils.showToast(AppStrings.paymentSuccessful, isSuccess: true);
+
+          final orderId = jsonData['data']['order_id'];
+
+          // Navigate directly to BaseHomeScreen with orderId
+          if (context.mounted && orderId != null) {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                builder: (context) => BaseHomeScreen(
+                  shouldNavigateToOrders: true,
+                  orderId: orderId,
+                ),
+              ),
+              (route) => false,
+            );
+          }
+        } else {
+          final jsonResponse = urlResponse.data;
+          AppUtils.showToast('${AppStrings.paymentFailed} ${jsonResponse["message"]}');
+          throw Exception('Failed to load data');
+        }
+      } else {
+        final jsonResponse = response.data;
+        AppUtils.showToast('${AppStrings.paymentFailed} ${jsonResponse["message"]}');
+        throw Exception('Failed to load data');
+      }
+    } catch (e) {
+      log('payWithWallet error: $e');
+
+      // Handle DioException specifically to get better error messages
+      if (e is DioException) {
+        final errorMessage = e.response?.data?['message'] ?? e.message;
+        AppUtils.showToast('${AppStrings.paymentFailed}: $errorMessage');
+      } else {
+        AppUtils.showToast('${AppStrings.paymentFailed}: ${e.toString()}');
+      }
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
   }
 }

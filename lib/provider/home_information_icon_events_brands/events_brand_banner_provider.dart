@@ -88,7 +88,7 @@ class EventsBrandProvider extends ChangeNotifier {
   final ApiResponseHandler _apiResponseHandler = ApiResponseHandler();
 
   Future<void> fetchEventsBrand(BuildContext context) async {
-    const url = 'https://apistaging.theevents.ae/api/v1/collections/events-brand';
+    const url = 'https://newapistaging.theevents.ae/api/v1/collections/events-brand';
 
     try {
       isLoading = true;

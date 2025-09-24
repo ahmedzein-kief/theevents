@@ -3,11 +3,9 @@ library;
 
 import 'dart:convert';
 
-OrderDetailModel orderDetailModelFromJson(String str) =>
-    OrderDetailModel.fromJson(json.decode(str));
+OrderDetailModel orderDetailModelFromJson(String str) => OrderDetailModel.fromJson(json.decode(str));
 
-String orderDetailModelToJson(OrderDetailModel data) =>
-    json.encode(data.toJson());
+String orderDetailModelToJson(OrderDetailModel data) => json.encode(data.toJson());
 
 class OrderDetailModel {
   OrderDetailModel({
@@ -15,8 +13,7 @@ class OrderDetailModel {
     required this.error,
   });
 
-  factory OrderDetailModel.fromJson(Map<dynamic, dynamic> json) =>
-      OrderDetailModel(
+  factory OrderDetailModel.fromJson(Map<dynamic, dynamic> json) => OrderDetailModel(
         data: OrderDetailData.fromJson(json['data']),
         error: json['error'],
       );
@@ -44,7 +41,7 @@ class OrderDetailData {
     required this.isCanceled,
     required this.proofFile,
     required this.canBeCanceled,
-    required this.invoiceId,
+    this.invoiceId,
     required this.id,
     required this.coupon,
     required this.canBeReturned,
@@ -58,8 +55,7 @@ class OrderDetailData {
     required this.status,
   });
 
-  factory OrderDetailData.fromJson(Map<dynamic, dynamic> json) =>
-      OrderDetailData(
+  factory OrderDetailData.fromJson(Map<dynamic, dynamic> json) => OrderDetailData(
         isInvoiceAvailable: json['is_invoice_available'],
         taxAmount: json['tax_amount'],
         code: json['code'],
@@ -67,7 +63,8 @@ class OrderDetailData {
         createdAt: json['created_at'],
         fullAddress: json['full_address'],
         products: List<OrderDetailProduct>.from(
-            json['products'].map((x) => OrderDetailProduct.fromJson(x)),),
+          json['products'].map((x) => OrderDetailProduct.fromJson(x)),
+        ),
         shipping: Shipping.fromJson(json['shipping']),
         price: json['price'],
         isCanceled: json['is_canceled'],
@@ -99,7 +96,7 @@ class OrderDetailData {
   bool isCanceled;
   String? proofFile;
   bool canBeCanceled;
-  int invoiceId;
+  int? invoiceId;
   int id;
   String coupon;
   bool canBeReturned;
@@ -158,8 +155,7 @@ class OrderDetailProduct {
     required this.totalFormat,
   });
 
-  factory OrderDetailProduct.fromJson(Map<dynamic, dynamic> json) =>
-      OrderDetailProduct(
+  factory OrderDetailProduct.fromJson(Map<dynamic, dynamic> json) => OrderDetailProduct(
         productSlugPrefix: json['product_slug_prefix'],
         productSlug: json['product_slug'],
         imageUrl: json['image_url'],
@@ -212,7 +208,7 @@ class Store {
     required this.slug,
   });
 
-  factory Store.fromJson(dynamic json) {
+  factory Store.fromJson(json) {
     if (json == null || json is List) {
       return Store(name: '', slug: '');
     }

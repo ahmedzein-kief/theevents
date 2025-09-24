@@ -178,7 +178,7 @@ class TransactionItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
       ),
       child: Text(
-        'GC01234567', // TODO: replace with actual transaction id
+        '#${transaction.id}${transaction.refId != null ? '-${transaction.refId}' : ''}',
         style: GoogleFonts.openSans(fontSize: 11, color: const Color(0xFF101828)),
       ),
     );
@@ -202,7 +202,7 @@ class TransactionItem extends StatelessWidget {
             ),
           ),
           PriceRow(
-            price: transaction.amount.toStringAsFixed(2),
+            price: transaction.currentBalance.toStringAsFixed(2),
             currencyColor: Colors.white,
             style: GoogleFonts.openSans(
               fontSize: 12,
@@ -219,12 +219,9 @@ class TransactionItem extends StatelessWidget {
   IconData _getTransactionIcon() {
     switch (transaction.type) {
       case TransactionType.deposit:
-        if (transaction.description.contains('Gift Card')) {
-          return Icons.card_giftcard;
-        }
-        return Icons.refresh; // Wallet recharge
+        return transaction.method == PaymentMethod.giftCard ? Icons.card_giftcard : Icons.account_balance_wallet;
       case TransactionType.payment:
-        return Icons.error_outline; // Purchase
+        return Icons.shopping_bag_outlined;
       case TransactionType.reward:
         return Icons.star_outline;
       case TransactionType.refund:
@@ -246,36 +243,51 @@ class TransactionItem extends StatelessWidget {
   }
 
   IconData _getPaymentMethodIcon() {
-    if (transaction.description.contains('Gift Card')) {
-      return Icons.card_giftcard;
+    switch (transaction.method) {
+      case PaymentMethod.creditCard:
+        return Icons.credit_card;
+      case PaymentMethod.giftCard:
+        return Icons.card_giftcard;
+      case PaymentMethod.bankTransfer:
+        return Icons.account_balance;
+      case PaymentMethod.other:
+      case null:
+        return Icons.payment;
     }
-    return Icons.credit_card;
   }
 
   String _getPaymentMethodText() {
-    if (transaction.description.contains('Gift Card')) {
-      return 'Gift Card';
+    switch (transaction.method) {
+      case PaymentMethod.creditCard:
+        return 'Credit Card';
+      case PaymentMethod.giftCard:
+        return 'Gift Card';
+      case PaymentMethod.bankTransfer:
+        return 'Bank Transfer';
+      case PaymentMethod.other:
+        return 'Other';
+      case null:
+        return 'Unknown';
     }
-    return 'Credit Card';
   }
 
   Color _getStatusColor() {
     switch (transaction.status) {
       case TransactionStatus.pending:
-        return Colors.teal;
+        return Colors.orange.shade100;
       case TransactionStatus.completed:
         return const Color(0xFFF5F5F5);
       case TransactionStatus.failed:
-        return Colors.red;
+        return Colors.red.shade100;
       case TransactionStatus.cancelled:
-        return Colors.grey;
+        return Colors.grey.shade100;
     }
   }
 
   String _getStatusText() {
     switch (transaction.status) {
       case TransactionStatus.pending:
-        return 'Progress';
+        return 'Pending';
       case TransactionStatus.completed:
         return 'Completed';
       case TransactionStatus.failed:

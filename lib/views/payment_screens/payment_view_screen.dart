@@ -245,6 +245,8 @@ class PaymentViewState extends State<PaymentViewScreen> {
         return ['subsuccess', 'sub_success', 'success'];
       case 'gift_card':
         return ['giftcardsuccess', 'giftcard_success', 'success'];
+      case 'wallet':
+        return ['wallettopupSuccess', 'success'];
       default:
         return ['success'];
     }

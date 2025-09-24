@@ -7,68 +7,103 @@ import 'deposit_state.dart';
 class DepositCubit extends Cubit<DepositState> {
   final WalletRepository _repository;
 
-  DepositCubit(this._repository) : super(DepositInitial());
+  DepositCubit(this._repository) : super(const DepositState());
 
   Future<void> loadDepositMethods() async {
     try {
-      emit(DepositMethodsLoading());
+      emit(state.toLoading());
       final methods = await _repository.getDepositMethods();
-      emit(DepositMethodsLoaded(
-        methods: methods,
-        selectedMethod: methods.first.type,
-      ));
+      emit(state.toLoaded(methods: methods));
     } catch (e) {
-      emit(DepositError(e.toString()));
+      emit(state.toError(e.toString()));
     }
   }
 
   void selectDepositMethod(DepositMethodType method) {
-    if (state is DepositMethodsLoaded) {
-      final currentState = state as DepositMethodsLoaded;
-      emit(currentState.copyWith(selectedMethod: method, amount: 100));
+    if (state.isLoaded) {
+      emit(state.copyWith(
+        selectedMethod: method,
+        amount: 100,
+        clearError: true, // Clear any existing errors
+      ));
     }
   }
 
   void updateAmount(double amount) {
-    if (state is DepositMethodsLoaded) {
-      final currentState = state as DepositMethodsLoaded;
-      emit(currentState.copyWith(amount: amount));
+    if (state.isLoaded) {
+      emit(state.copyWith(
+        amount: amount,
+        clearError: true, // Clear any existing errors
+      ));
     }
   }
 
   void updateCouponCode(String code) {
-    if (state is DepositMethodsLoaded) {
-      final currentState = state as DepositMethodsLoaded;
-      emit(currentState.copyWith(couponCode: code));
+    if (state.isLoaded) {
+      emit(state.copyWith(
+        couponCode: code,
+        clearError: true, // Clear any existing errors
+      ));
+    }
+  }
+
+  void clearError() {
+    emit(state.copyWith(clearError: true));
+  }
+
+  // Add this method to reset the state back to loaded
+  void resetToLoaded() {
+    if (state.methods.isNotEmpty) {
+      emit(state.copyWith(
+        status: DepositStatus.loaded,
+        clearError: true,
+        // Clear success-related fields
+        clearSuccess: true,
+      ));
     }
   }
 
   Future<void> processDeposit() async {
-    if (state is! DepositMethodsLoaded) return;
+    if (!state.isLoaded) return;
 
-    final currentState = state as DepositMethodsLoaded;
-
-    if (currentState.amount <= 0) {
-      emit(const DepositError('Please enter a valid amount'));
+    if (state.selectedMethod == DepositMethodType.giftCard && state.couponCode.isEmpty) {
+      emit(state.toError('Please enter a coupon code'));
       return;
     }
 
-    try {
-      emit(DepositProcessing());
+    emit(state.toProcessing());
 
-      final success = await _repository.addFunds(
-        currentState.amount,
-        currentState.selectedMethod,
-        couponCode: currentState.couponCode.isNotEmpty ? currentState.couponCode : null,
-      );
+    final result = await _repository.deposit(
+      state.selectedMethod!,
+      amount: state.amount,
+      couponCode: state.couponCode.isNotEmpty ? state.couponCode : null,
+    );
 
-      if (success) {
-        emit(DepositSuccess(currentState.amount));
-      } else {
-        emit(const DepositError('Failed to process deposit'));
-      }
-    } catch (e) {
-      emit(DepositError(e.toString()));
-    }
+    result.fold(
+      (failure) => emit(state.toError(failure.message)),
+      (deposit) {
+        if (deposit.isGiftCardRedeem) {
+          emit(state.toGiftCardSuccess(
+            deposit: deposit,
+            message: deposit.message ?? 'Gift card redeemed successfully!',
+            newBalance: deposit.newBalance ?? '0',
+            totalCredit: deposit.totalCredit ?? '0',
+          ));
+        } else if (deposit.isCreditCardPayment) {
+          emit(state.toCreditCardSuccess(
+            deposit: deposit,
+            checkoutUrl: deposit.checkoutUrl!,
+            message: deposit.message ?? 'Redirecting to payment gateway...',
+          ));
+        } else {
+          emit(state.toGiftCardSuccess(
+            deposit: deposit,
+            message: deposit.message ?? 'Deposit completed successfully!',
+            newBalance: deposit.newBalance ?? '0',
+            totalCredit: deposit.amount ?? '0',
+          ));
+        }
+      },
+    );
   }
 }

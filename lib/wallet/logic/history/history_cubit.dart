@@ -1,22 +1,38 @@
-import 'dart:developer';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/helper/enums/enums.dart';
 import '../../data/model/transaction_model.dart';
+import '../../data/repo/wallet_repository.dart';
 import 'history_state.dart';
 
 class HistoryCubit extends Cubit<HistoryState> {
-  HistoryCubit() : super(const HistoryState()) {
-    loadTransactions();
-  }
+  final WalletRepository _walletRepository;
 
-  void loadTransactions() {
-    final transactions = _mockTransactionHistory();
-    emit(state.copyWith(
-      transactions: transactions,
-      filteredTransactions: transactions,
-    ));
+  HistoryCubit(this._walletRepository) : super(const HistoryState());
+
+  Future<void> loadTransactions() async {
+    emit(state.copyWith(isLoading: true, errorMessage: null));
+
+    final result = await _walletRepository.getTransactions(
+      TransactionTypeFilter.all,
+      MethodFilter.all,
+      PeriodFilter.allTime,
+    );
+
+    result.fold(
+      (failure) => emit(state.copyWith(
+        isLoading: false,
+        errorMessage: failure.message,
+        transactions: [],
+        filteredTransactions: [],
+      )),
+      (transactionsModel) => emit(state.copyWith(
+        isLoading: false,
+        errorMessage: null,
+        transactions: transactionsModel.transactions,
+        filteredTransactions: transactionsModel.transactions,
+      )),
+    );
   }
 
   void updateSearch(String searchTerm) {
@@ -51,7 +67,6 @@ class HistoryCubit extends Cubit<HistoryState> {
 
   void _applyFilters() {
     final search = state.searchTerm.toLowerCase();
-
     final filtered = state.transactions.where((tx) {
       // 🔹 Search filter
       final matchesSearch = search.isEmpty || tx.description.toLowerCase().contains(search);
@@ -60,10 +75,9 @@ class HistoryCubit extends Cubit<HistoryState> {
       final matchesType =
           state.selectedType == TransactionTypeFilter.all || _mapTypeToFilter(tx.type) == state.selectedType;
 
-      // 🔹 Method filter - IMPROVED with direct field comparison
+      // 🔹 Method filter
       bool matchesMethod = true;
       if (state.selectedMethod != MethodFilter.all) {
-        log('selectedMethod: ${state.selectedMethod}');
         switch (state.selectedMethod) {
           case MethodFilter.creditCard:
             matchesMethod = tx.method == PaymentMethod.creditCard;
@@ -80,7 +94,7 @@ class HistoryCubit extends Cubit<HistoryState> {
         }
       }
 
-      // 🔹 Period filter - FIXED logic
+      // 🔹 Period filter
       bool matchesPeriod = true;
       if (state.selectedPeriod != PeriodFilter.allTime) {
         final now = DateTime.now();
@@ -97,11 +111,10 @@ class HistoryCubit extends Cubit<HistoryState> {
             cutoffDate = now.subtract(const Duration(days: 90));
             break;
           case PeriodFilter.allTime:
-            cutoffDate = DateTime(1900); // Very old date
+            cutoffDate = DateTime(1900);
             break;
         }
 
-        // Transaction must be AFTER the cutoff date to be included
         matchesPeriod = tx.date.isAfter(cutoffDate) || tx.date.isAtSameMomentAs(cutoffDate);
       }
 
@@ -111,7 +124,6 @@ class HistoryCubit extends Cubit<HistoryState> {
     emit(state.copyWith(filteredTransactions: filtered));
   }
 
-  // 🔹 Helper method to map TransactionType to TransactionTypeFilter
   TransactionTypeFilter _mapTypeToFilter(TransactionType type) {
     switch (type) {
       case TransactionType.deposit:
@@ -124,73 +136,4 @@ class HistoryCubit extends Cubit<HistoryState> {
         return TransactionTypeFilter.refund;
     }
   }
-
-  // 🔹 Updated Mock Data with PaymentMethod field
-  List<TransactionModel> _mockTransactionHistory() => [
-        // Recent gift card redemption
-        TransactionModel(
-          id: '1',
-          type: TransactionType.deposit,
-          amount: 500.0,
-          description: 'Gift Card Redemption - Events Gift Card',
-          date: DateTime.now().subtract(const Duration(hours: 2)),
-          status: TransactionStatus.completed,
-          method: PaymentMethod.giftCard,
-        ),
-
-        // Bank transfer refund from yesterday
-        TransactionModel(
-          id: '2',
-          type: TransactionType.refund,
-          amount: 500.0,
-          description: 'Refund - Cancelled City Perfume Order',
-          date: DateTime.now().subtract(const Duration(days: 1)),
-          status: TransactionStatus.completed,
-          method: PaymentMethod.bankTransfer,
-        ),
-
-        // Credit card purchase from 2 days ago
-        TransactionModel(
-          id: '3',
-          type: TransactionType.payment,
-          amount: 500.0,
-          description: 'Purchased Gissah Perfume',
-          date: DateTime.now().subtract(const Duration(days: 2)),
-          status: TransactionStatus.completed,
-          method: PaymentMethod.creditCard,
-        ),
-
-        // Additional test data for better filtering demonstration
-        TransactionModel(
-          id: '4',
-          type: TransactionType.reward,
-          amount: 50.0,
-          description: 'Loyalty Points Reward',
-          date: DateTime.now().subtract(const Duration(days: 5)),
-          status: TransactionStatus.completed,
-          method: null, // Some transactions might not have a payment method
-        ),
-
-        // Old transaction (beyond 30 days) for period filter testing
-        TransactionModel(
-          id: '5',
-          type: TransactionType.payment,
-          amount: 250.0,
-          description: 'Old Purchase - Test Product',
-          date: DateTime.now().subtract(const Duration(days: 45)),
-          status: TransactionStatus.completed,
-          method: PaymentMethod.creditCard,
-        ),
-
-        // Credit card transaction within 7 days
-        TransactionModel(
-          id: '6',
-          type: TransactionType.payment,
-          amount: 150.0,
-          description: 'Recent Credit Card Purchase',
-          date: DateTime.now().subtract(const Duration(days: 3)),
-          status: TransactionStatus.completed,
-          method: PaymentMethod.creditCard,
-        ),
-      ];
 }

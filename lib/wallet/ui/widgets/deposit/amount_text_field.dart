@@ -19,6 +19,7 @@ class AmountTextField extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     return TextField(
+      enabled: false,
       controller: controller,
       keyboardType: TextInputType.number,
       style: TextStyle(color: theme.textTheme.bodySmall?.color?.withOpacity(0.6)),
@@ -35,6 +36,10 @@ class AmountTextField extends StatelessWidget {
           borderSide: BorderSide(color: isDark ? Colors.grey[700]! : Colors.grey[300]!),
         ),
         enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(5),
+          borderSide: BorderSide(color: isDark ? Colors.grey[700]! : Colors.grey[300]!),
+        ),
+        disabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(5),
           borderSide: BorderSide(color: isDark ? Colors.grey[700]! : Colors.grey[300]!),
         ),

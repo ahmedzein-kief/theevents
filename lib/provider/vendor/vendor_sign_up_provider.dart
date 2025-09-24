@@ -323,8 +323,8 @@ class VendorSignUpProvider with ChangeNotifier {
     try {
       final response = await _apiResponseHandler.postDioMultipartRequest(
         url,
-        headers,
-        formData,
+        headers: headers,
+        formData: formData,
       );
 
       if (response.statusCode == 200) {
@@ -391,8 +391,8 @@ class VendorSignUpProvider with ChangeNotifier {
     try {
       final response = await _apiResponseHandler.postDioMultipartRequest(
         url,
-        headers,
-        formData,
+        headers: headers,
+        formData: formData,
       );
 
       if (response.statusCode == 200) {
@@ -462,8 +462,8 @@ class VendorSignUpProvider with ChangeNotifier {
     try {
       final response = await _apiResponseHandler.postDioMultipartRequest(
         url,
-        headers,
-        formData,
+        headers: headers,
+        formData: formData,
       );
       if (response.statusCode == 200) {
         final dataModel = ContractAgreementResponse.fromJson(response.data);
@@ -512,8 +512,8 @@ class VendorSignUpProvider with ChangeNotifier {
     try {
       final response = await _apiResponseHandler.postDioMultipartRequest(
         url,
-        headers,
-        formData,
+        headers: headers,
+        formData: formData,
       );
 
       if (response.statusCode == 200) {

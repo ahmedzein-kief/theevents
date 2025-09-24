@@ -1,7 +1,6 @@
 import 'package:event_app/core/router/app_routes.dart';
 import 'package:event_app/core/services/shared_preferences_helper.dart';
 import 'package:event_app/core/styles/app_colors.dart';
-import 'package:event_app/core/widgets/bottom_navigation_bar.dart';
 import 'package:event_app/provider/auth_provider/forgot_password.dart';
 import 'package:event_app/provider/auth_provider/get_user_provider.dart';
 import 'package:event_app/provider/auth_provider/user_auth_provider.dart';
@@ -21,6 +20,7 @@ import 'package:event_app/provider/home_shortcode_provider/users_by_type_provide
 import 'package:event_app/provider/home_shortcode_provider/vendor_by_types_provider.dart';
 import 'package:event_app/provider/information_icons_provider/best_seller_provider.dart';
 import 'package:event_app/provider/information_icons_provider/fifty_discount_provider.dart';
+import 'package:event_app/provider/information_icons_provider/gift_card_list_provider.dart';
 import 'package:event_app/provider/information_icons_provider/gift_card_payments_provider.dart';
 import 'package:event_app/provider/information_icons_provider/gift_card_provider.dart';
 import 'package:event_app/provider/information_icons_provider/new_products_provider.dart';
@@ -76,7 +76,6 @@ import 'package:event_app/vendor/view_models/vendor_settings/vendor_get_settings
 import 'package:event_app/vendor/view_models/vendor_settings/vendor_settings_view_model.dart';
 import 'package:event_app/vendor/view_models/vendor_withdrawal/vendor_show_withdrawal_view_model.dart';
 import 'package:event_app/vendor/view_models/vendor_withdrawal/vendor_withdrawal_view_model.dart';
-import 'package:event_app/views/auth_screens/splash_screen.dart';
 import 'package:event_app/views/profile_page_screens/privacy_policy_screen.dart';
 import 'package:event_app/views/profile_page_screens/terms_and_condtion_screen.dart';
 import 'package:flutter/material.dart';
@@ -235,6 +234,9 @@ class MyApp extends StatelessWidget {
           /// Localization
           ChangeNotifierProvider(create: (_) => LocaleProvider()..loadLocale()),
           ChangeNotifierProvider(create: (_) => SearchSuggestionsProvider()),
+          ChangeNotifierProvider<GiftCardListProvider>(
+            create: (_) => GiftCardListProvider(),
+          ),
         ],
         child: Consumer<LocaleProvider>(
           builder: (context, localProvider, _) => Consumer<ThemeNotifier>(
@@ -286,12 +288,8 @@ class MyApp extends StatelessWidget {
                     }
                     return supportedLocales.first;
                   },
-
-                  home: const SplashScreen(),
-                  routes: {
-                    '/homeScreen': (context) => const BaseHomeScreen(),
-                    ...AppRoutes.getRoutes(context),
-                  },
+                  onGenerateRoute: AppRoutes.onGenerateRoute,
+                  initialRoute: AppRoutes.home, // This will show SplashScreen first
                 ),
               );
             },

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/core/services/shared_preferences_helper.dart';
 import 'package:event_app/models/product_packages_models/customer_reviews_data_response.dart';
@@ -70,6 +72,7 @@ class ProductItemsProvider with ChangeNotifier {
         _errorMessage = '';
         _FetchLoading = false;
         notifyListeners();
+
         return _apiResponse;
       } else {
         _errorMessage = 'Failed to load product data';
@@ -78,6 +81,7 @@ class ProductItemsProvider with ChangeNotifier {
         return null;
       }
     } catch (error) {
+      log('Error: $error', name: 'fetchProductData');
       _errorMessage = error.toString();
     }
 

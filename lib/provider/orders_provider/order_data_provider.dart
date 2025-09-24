@@ -114,6 +114,7 @@ class OrderDataProvider with ChangeNotifier {
         CustomSnackbar.showError(context, 'No Orders Detail Found');
       }
     } catch (e) {
+      log('Error in getOrderDetails: ${e.toString()}');
       _orderDetailModel = null;
       _isLoading = false;
       notifyListeners();
@@ -184,8 +185,8 @@ class OrderDataProvider with ChangeNotifier {
     try {
       final response = await _apiResponseHandler.postDioMultipartRequest(
         url,
-        headers,
-        formData,
+        headers: headers,
+        formData: formData,
       );
       if (response.statusCode == 200) {
         _isLoading = false;

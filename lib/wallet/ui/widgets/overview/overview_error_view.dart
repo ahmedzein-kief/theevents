@@ -19,6 +19,12 @@ class OverviewErrorView extends StatelessWidget {
           Text('Error: $message', style: TextStyle(color: theme.textTheme.bodyLarge?.color)),
           const SizedBox(height: 12),
           ElevatedButton(
+            style: ElevatedButton.styleFrom(
+                backgroundColor: theme.cardColor,
+                foregroundColor: theme.textTheme.bodyLarge?.color,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(33),
+                )),
             onPressed: () => context.read<WalletCubit>().loadWalletData(),
             child: const Text('Retry'),
           ),

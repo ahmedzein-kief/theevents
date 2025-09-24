@@ -16,11 +16,7 @@ class OverviewContent extends StatelessWidget {
       child: Column(
         children: [
           // Balance cards
-          WalletCurrentRewardsCards(
-            currentBalance: state.wallet.currentBalance,
-            rewards: state.wallet.rewardsEarned,
-            currency: state.wallet.currency,
-          ),
+          const WalletCurrentRewardsCards(),
 
           const SizedBox(height: 24),
           Padding(

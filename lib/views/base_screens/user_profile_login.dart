@@ -219,7 +219,7 @@ class _UserProfileLoginScreenState extends State<UserProfileLoginScreen> {
   }
 
   /// Build main content
-  Widget _buildMainContent(Size screenSize, dynamic user) {
+  Widget _buildMainContent(Size screenSize, user) {
     return Padding(
       padding: EdgeInsets.symmetric(
         horizontal: screenSize.width * 0.05,
@@ -250,7 +250,7 @@ class _UserProfileLoginScreenState extends State<UserProfileLoginScreen> {
   }
 
   /// Build profile section with avatar and user info
-  Widget _buildProfileSection(Size screenSize, dynamic user) {
+  Widget _buildProfileSection(Size screenSize, user) {
     return Row(
       children: [
         _buildProfileAvatar(),
@@ -354,7 +354,7 @@ class _UserProfileLoginScreenState extends State<UserProfileLoginScreen> {
   }
 
   /// Build user information section
-  Widget _buildUserInfo(dynamic user) {
+  Widget _buildUserInfo(user) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

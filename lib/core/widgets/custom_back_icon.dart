@@ -11,23 +11,22 @@ class BackIcon extends StatelessWidget {
         onTap: () {
           Navigator.pop(context); // Close the current screen
         },
-        child: Container(
-          width: double.infinity, // Makes the button take the full width
-          padding: const EdgeInsets.all(8), // Padding around the icon and text
-          child: Row(
-            mainAxisAlignment:
-                MainAxisAlignment.center, // Centers the content in the row
-            children: [
-              Icon(Icons.arrow_back_ios_sharp,
-                  size: 16,
-                  color: Theme.of(context).colorScheme.onPrimary,), // Back icon
-              const SizedBox(width: 5),
-              Text(AppStrings.back.tr,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onPrimary,
-                  ),), // Back text
-            ],
-          ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center, // Centers the content in the row
+          children: [
+            Icon(
+              Icons.arrow_back_ios_sharp,
+              size: 16,
+              color: Theme.of(context).colorScheme.onPrimary,
+            ), // Back icon
+            const SizedBox(width: 5),
+            Text(
+              AppStrings.back.tr,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onPrimary,
+              ),
+            ), // Back text
+          ],
         ),
       );
 }

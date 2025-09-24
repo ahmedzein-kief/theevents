@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 
-import '../services/shared_preferences_helper.dart'; // adjust path as needed
+import '../services/shared_preferences_helper.dart';
+import 'api_endpoints/api_contsants.dart'; // adjust path as needed
 
 class ApiInterceptor implements Interceptor {
   @override
@@ -15,6 +18,12 @@ class ApiInterceptor implements Interceptor {
 
     if (langCode != null && langCode != 'en') {
       options.queryParameters['language'] = langCode;
+    }
+
+    // Add Authorization header if endpoint requires authentication
+    if (options.extra.containsKey(ApiConstants.requireAuthKey)) {
+      final accessToken = await SecurePreferencesUtil.getToken();
+      options.headers[HttpHeaders.authorizationHeader] = accessToken;
     }
 
     return handler.next(options);

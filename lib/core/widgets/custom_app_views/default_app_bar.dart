@@ -25,6 +25,7 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return AppBar(
+      actionsPadding: const EdgeInsetsGeometry.directional(end: 20),
       backgroundColor: backgroundColor ?? Theme.of(context).colorScheme.primary,
       leading: leading,
       leadingWidth: leadingWidth,

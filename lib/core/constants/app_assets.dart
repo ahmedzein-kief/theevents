@@ -5,6 +5,7 @@ const baseGifPath = '$baseAssetsPath/gif';
 const baseNavImagesPath = '$baseAssetsPath/nav';
 const baseAvatarPath = '$baseAssetsPath/images/avatars';
 const baseNavIconsPath = '$baseAssetsPath/nav';
+const baseWalletPath = '$baseAssetsPath/wallet';
 
 class AppAssets {
   ///   APP TOP BAR ICONS
@@ -31,4 +32,10 @@ class AppAssets {
   static const String celebrities = '$baseNavIconsPath/cele.svg';
   static const String aboutBanner = '$baseAssetsPath/about_banner.png';
   static const dirham = '$baseAssetsPath/dirham.svg';
+  static const info = '$baseWalletPath/info.png';
+  static const reward = '$baseWalletPath/reward.png';
+  static const success = '$baseWalletPath/success.png';
+  static const warning = '$baseWalletPath/warning.png';
+  static const error = '$baseWalletPath/error.png';
+  static const delete = '$baseWalletPath/delete.png';
 }

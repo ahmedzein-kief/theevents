@@ -10,6 +10,8 @@ class HistoryState extends Equatable {
   final MethodFilter selectedMethod;
   final PeriodFilter selectedPeriod;
   final String searchTerm;
+  final bool isLoading;
+  final String? errorMessage;
 
   const HistoryState({
     this.transactions = const [],
@@ -18,6 +20,8 @@ class HistoryState extends Equatable {
     this.selectedMethod = MethodFilter.all,
     this.selectedPeriod = PeriodFilter.days30,
     this.searchTerm = '',
+    this.isLoading = false,
+    this.errorMessage,
   });
 
   HistoryState copyWith({
@@ -27,6 +31,8 @@ class HistoryState extends Equatable {
     MethodFilter? selectedMethod,
     PeriodFilter? selectedPeriod,
     String? searchTerm,
+    bool? isLoading,
+    String? errorMessage,
   }) {
     return HistoryState(
       transactions: transactions ?? this.transactions,
@@ -35,6 +41,8 @@ class HistoryState extends Equatable {
       selectedMethod: selectedMethod ?? this.selectedMethod,
       selectedPeriod: selectedPeriod ?? this.selectedPeriod,
       searchTerm: searchTerm ?? this.searchTerm,
+      isLoading: isLoading ?? this.isLoading,
+      errorMessage: errorMessage,
     );
   }
 
@@ -46,5 +54,7 @@ class HistoryState extends Equatable {
         selectedMethod,
         selectedPeriod,
         searchTerm,
+        isLoading,
+        errorMessage,
       ];
 }

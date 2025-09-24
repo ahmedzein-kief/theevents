@@ -334,6 +334,17 @@ class _PaymentMethodsState extends State<PaymentMethods> {
               });
             }
           }
+
+          // Add Wallet payment method
+          if (method.code == 'wallet') {
+            paymentOptions.add({
+              'label': 'Wallet',
+              'method': method.code,
+              'optionKey': 'wallet_payment_type', // Default key for wallet
+              'optionValue': 'wallet', // Default value for wallet
+              'image': method.image,
+            });
+          }
         }
 
         // Filter options based on payment type

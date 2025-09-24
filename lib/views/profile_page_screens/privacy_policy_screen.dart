@@ -345,7 +345,7 @@ class PrivacyPolicyProvider with ChangeNotifier {
 //
 //     try {
 //       final response = await http.get(
-//           Uri.parse('https://apistaging.theevents.ae/api/v1/pages/privacy-policy'));
+//           Uri.parse('https://newapistaging.theevents.ae/api/v1/pages/privacy-policy'));
 //
 //       if (response.statusCode == 200) {
 //         final responseBody = response.data;

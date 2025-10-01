@@ -524,6 +524,8 @@ class AppStrings {
   static const String amountAed = 'Amount (AED)';
   static const String instant = 'Instant';
   static const String giftCard = 'Gift Card';
+  static const String redeemYourGiftCard = 'redeemYourGiftCard';
+  static const String noFees = 'noFees';
   static const String creditDebitCard = 'Credit/Debit Card';
   static const String visaMasterAccepted = 'Visa, Master Card accepted';
   static const String processingFeeSuffix = 'processing fee';
@@ -531,10 +533,13 @@ class AppStrings {
   static const String searchTransactions = 'searchTransactions';
   static const String export = 'export';
   static const String markAllRead = 'markAllRead';
+  static const String markAsUnread = 'markAsUnread';
+  static const String markAsRead = 'markAsRead';
   static const String totalTransactions = 'transactionsCount';
   static const String fundExpiryAlert = 'fundExpiryAlert';
   static const String criticalActionRequired = 'criticalActionRequired';
   static const String notificationSettings = 'notificationSettings';
   static const String notificationTypes = 'notificationTypes';
   static const String noExpiringFundsFound = 'noExpiringFundsFound';
+  static const String card = 'card';
 }

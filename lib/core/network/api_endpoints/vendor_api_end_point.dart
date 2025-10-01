@@ -1,7 +1,7 @@
 class VendorApiEndpoints {
-  static const String baseUrl = 'https://newapistaging.theevents.ae/api/v1/vendor/';
-  static const String baseUrlSettings = 'https://newapistaging.theevents.ae/api/v1/';
-  static const String imageBaseURL = 'https://newapistaging.theevents.ae/storage/';
+  static const String baseUrl = 'https://apistaging.theevents.ae/api/v1/vendor/';
+  static const String baseUrlSettings = 'https://apistaging.theevents.ae/api/v1/';
+  static const String imageBaseURL = 'https://apistaging.theevents.ae/storage/';
   static const String vendorProductBaseUrl = 'https://theevents.ae/products/';
 
   /*static const String baseUrl = 'https://events-api.clientswork.in/api/v1/';
@@ -10,7 +10,7 @@ class VendorApiEndpoints {
   //   Urls Of Api Endpoints  new one
   static const String signup = '${baseUrl}register';
   static const String meta = '${baseUrl}meta';
-  static const String vendorTypes = 'https://newapistaging.theevents.ae/api/v1/getVendorsTypes';
+  static const String vendorTypes = 'https://apistaging.theevents.ae/api/v1/getVendorsTypes';
   static const String vendorPermissions = '${baseUrl}getPermissions';
   static const String settings_subscription = '${baseUrlSettings}settings/subscription';
   static const String pay = '${baseUrlSettings}payment-methods';

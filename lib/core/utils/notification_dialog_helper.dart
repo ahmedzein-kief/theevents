@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../wallet/data/model/notification_model.dart';
+import '../../wallet/logic/notification/notification_cubit.dart';
 import 'notification_formatter.dart';
 import 'notification_style_helper.dart';
 
@@ -100,6 +101,36 @@ class NotificationDialogHelper {
           ),
         ),
       ],
+    );
+  }
+
+  static void showDeleteAllConfirmation(BuildContext context, NotificationsCubit notificationsCubit) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Delete All Notifications'),
+        content: const Text('Are you sure you want to delete all notifications? This action cannot be undone.'),
+        actions: [
+          TextButton(
+            style: TextButton.styleFrom(
+              foregroundColor: Theme.of(context).textTheme.bodyLarge?.color,
+            ),
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              // Use the captured cubit reference instead of trying to read from dialogContext
+              notificationsCubit.deleteAllNotification();
+              Navigator.of(dialogContext).pop();
+            },
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.red,
+            ),
+            child: const Text('Delete All'),
+          ),
+        ],
+      ),
     );
   }
 }

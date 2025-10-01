@@ -1,10 +1,12 @@
 enum ProductFilter { categories, brands, tags, prices, colors }
 
+enum NotificationCategoryFilter { all, transaction, expiryReminder, promotional, security, system, achievements }
+
 enum TransactionTypeFilter { all, deposit, payment, reward, refund }
 
 enum MethodFilter { all, creditCard, giftCard, bankTransfer }
 
-enum PeriodFilter { days7, days30, days90, allTime }
+enum PeriodFilter { days7, days30, days90, currentMonth, lastMonth, currentYear, lastYear, allTime }
 
 enum GenderType { male, female }
 

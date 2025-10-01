@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/models/product_packages_models/product_filters_model.dart';
 import 'package:event_app/provider/api_response_handler.dart';
@@ -17,8 +19,10 @@ class FeaturedCategoriesDetailProvider with ChangeNotifier {
 
   bool get isLoading => _isLoading;
 
-  Future<void> fetchFeaturedCategoryBanner(BuildContext context,
-      {required String slug,}) async {
+  Future<void> fetchFeaturedCategoryBanner(
+    BuildContext context, {
+    required String slug,
+  }) async {
     _isLoading = true;
     notifyListeners();
 
@@ -95,11 +99,8 @@ class FeaturedCategoriesDetailProvider with ChangeNotifier {
       }
     }).join('&');
 
-    final baseUrl =
-        '${ApiEndpoints.categoryProducts}$slug?per-page=$perPage&page=$page&sort-by=$sortBy';
-    final url = filtersQuery.isNotEmpty
-        ? '$baseUrl&$filtersQuery&allcategories=1'
-        : baseUrl;
+    final baseUrl = '${ApiEndpoints.categoryProducts}$slug?per-page=$perPage&page=$page&sort-by=$sortBy';
+    final url = filtersQuery.isNotEmpty ? '$baseUrl&$filtersQuery&allcategories=1' : baseUrl;
 
     try {
       final response = await _apiResponseHandler.getRequest(
@@ -109,8 +110,7 @@ class FeaturedCategoriesDetailProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonResponse = response.data;
-        final FeaturedCategoryProductsModels apiResponse =
-            FeaturedCategoryProductsModels.fromJson(jsonResponse);
+        final FeaturedCategoryProductsModels apiResponse = FeaturedCategoryProductsModels.fromJson(jsonResponse);
         if (page == 1) {
           _recordsProducts = apiResponse.data.records;
           _paginations = apiResponse.data.pagination;
@@ -156,10 +156,9 @@ class FeaturedCategoriesDetailProvider with ChangeNotifier {
     } else {}
     notifyListeners();
 
-    final url =
-        '${ApiEndpoints.categoryPackages}$slug?per-page=$perPage&page=$page&sort-by=$sortBy';
+    final url = '${ApiEndpoints.categoryPackages}$slug?per-page=$perPage&page=$page&sort-by=$sortBy';
 
-    print(url);
+    log(url);
 
     try {
       final response = await _apiResponseHandler.getRequest(
@@ -167,13 +166,11 @@ class FeaturedCategoriesDetailProvider with ChangeNotifier {
         context: context,
       );
 
-      print(response.statusCode);
+      log(response.statusCode);
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonResponse = response.data;
-        final FeaturedCategoryProductsModels apiResponse =
-            FeaturedCategoryProductsModels.fromJson(jsonResponse);
-        print(apiResponse.data.records);
+        final FeaturedCategoryProductsModels apiResponse = FeaturedCategoryProductsModels.fromJson(jsonResponse);
         notifyListeners();
 
         if (page == 1) {
@@ -190,7 +187,7 @@ class FeaturedCategoriesDetailProvider with ChangeNotifier {
         throw Exception('Failed to load products');
       }
     } catch (error) {
-      print(error.toString());
+      log(error.toString());
       throw Exception('Failed to load products: $error');
     } finally {
       _isLoadingPackages = false;

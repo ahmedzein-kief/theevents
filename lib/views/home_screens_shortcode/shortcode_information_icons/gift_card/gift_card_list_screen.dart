@@ -36,7 +36,7 @@ class _GiftCardListScreenState extends State<GiftCardListScreen> {
 
   Future<void> fetchGiftCardList() async {
     final provider = Provider.of<GiftCardListProvider>(context, listen: false);
-    provider.fetchGiftCardList(context);
+    provider.fetchGiftCardList(refresh: true);
   }
 
   @override
@@ -163,7 +163,7 @@ class _GiftCardListScreenState extends State<GiftCardListScreen> {
                           borderRadius: BorderRadius.circular(12),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.04),
+                              color: Colors.black.withAlpha((0.04 * 255).toInt()),
                               spreadRadius: 0,
                               blurRadius: 8,
                               offset: const Offset(0, 2),
@@ -176,7 +176,6 @@ class _GiftCardListScreenState extends State<GiftCardListScreen> {
                         ),
                         child: SingleChildScrollView(
                           controller: _horizontalScrollController, // Single controller for horizontal scrolling
-                          physics: const NeverScrollableScrollPhysics(),
                           scrollDirection: Axis.horizontal,
                           child: SizedBox(
                             width:

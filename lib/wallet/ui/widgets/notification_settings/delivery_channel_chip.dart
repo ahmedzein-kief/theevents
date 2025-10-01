@@ -33,5 +33,3 @@ class DeliveryChannelChip extends StatelessWidget {
     );
   }
 }
-
-// co

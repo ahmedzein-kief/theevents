@@ -156,6 +156,14 @@ class FilterRow extends StatelessWidget {
         return '30Days'.tr;
       case PeriodFilter.days90:
         return '90Days'.tr;
+      case PeriodFilter.currentMonth:
+        return 'currentMonth'.tr;
+      case PeriodFilter.lastMonth:
+        return 'lastMonth'.tr;
+      case PeriodFilter.currentYear:
+        return 'currentYear'.tr;
+      case PeriodFilter.lastYear:
+        return 'lastYear'.tr;
       case PeriodFilter.allTime:
         return 'allTime'.tr;
     }

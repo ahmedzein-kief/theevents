@@ -63,7 +63,7 @@ class NotificationSettingsView extends StatelessWidget {
       );
     } else if (state is NotificationSettingsLoaded) {
       return NotificationSettingsContent(
-        preferences: state.preferences,
+        notificationPreferences: state.preferences,
       );
     }
     return const SizedBox.shrink();

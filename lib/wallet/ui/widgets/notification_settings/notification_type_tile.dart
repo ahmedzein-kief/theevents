@@ -1,3 +1,5 @@
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
+import 'package:event_app/core/styles/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -9,22 +11,22 @@ import 'delivery_channel_chips.dart';
 
 class NotificationTypeTile extends StatelessWidget {
   final NotificationTypeConfig config;
-  final NotificationPreferences preferences;
+  final NotificationPreferences notificationPreferences;
 
   const NotificationTypeTile({
     super.key,
     required this.config,
-    required this.preferences,
+    required this.notificationPreferences,
   });
 
   @override
   Widget build(BuildContext context) {
     final themeHelper = NotificationSettingsTheme(context);
-    final preference =
-        preferences.preferences[config.type] ?? const NotificationTypePreference(enabled: false, channels: []);
+    final preference = notificationPreferences.preferences[config.type] ??
+        const NotificationTypePreference(enabled: false, channels: []);
 
     return Container(
-      margin: const EdgeInsets.all(20),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       padding: const EdgeInsets.all(16),
       decoration: themeHelper.tileDecoration,
       child: Column(
@@ -35,7 +37,7 @@ class NotificationTypeTile extends StatelessWidget {
             const Divider(),
             const SizedBox(height: 8),
             DeliveryChannelChips(
-              preferences: preferences,
+              notificationPreferences: notificationPreferences,
               notificationType: config.type,
             ),
           ],
@@ -52,7 +54,7 @@ class NotificationTypeTile extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                config.title,
+                config.title.tr,
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -61,7 +63,7 @@ class NotificationTypeTile extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                config.subtitle,
+                config.subtitle.tr,
                 style: TextStyle(
                   fontSize: 14,
                   color: theme.textTheme.bodySmall?.color,
@@ -73,7 +75,7 @@ class NotificationTypeTile extends StatelessWidget {
         Switch(
           value: preference.enabled,
           activeColor: Colors.white,
-          activeTrackColor: const Color(0xFFF3A195),
+          activeTrackColor: AppColors.peachyPink.withAlpha((0.8 * 255).toInt()),
           onChanged: (value) => _toggleNotificationType(context, value),
         ),
       ],

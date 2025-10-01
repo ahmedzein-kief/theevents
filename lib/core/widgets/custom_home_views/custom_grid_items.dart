@@ -1,15 +1,17 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
 import '../padded_network_banner.dart';
 
 class GridItemsHomeSeeAll extends StatelessWidget {
-  const GridItemsHomeSeeAll(
-      {super.key,
-      required this.imageUrl,
-      required this.name,
-      required this.onTap,
-      required this.textStyle,});
+  const GridItemsHomeSeeAll({
+    super.key,
+    required this.imageUrl,
+    required this.name,
+    required this.onTap,
+    required this.textStyle,
+  });
+
   final String imageUrl;
   final String name;
   final VoidCallback onTap;

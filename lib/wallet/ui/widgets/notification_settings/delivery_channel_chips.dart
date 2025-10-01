@@ -7,32 +7,30 @@ import '../../../logic/notification/notification_settings_cubit.dart';
 import 'delivery_channel_chip.dart';
 
 class DeliveryChannelChips extends StatelessWidget {
-  final NotificationPreferences preferences;
+  final NotificationPreferences notificationPreferences;
   final String notificationType;
 
   const DeliveryChannelChips({
     super.key,
-    required this.preferences,
+    required this.notificationPreferences,
     required this.notificationType,
   });
 
   @override
   Widget build(BuildContext context) {
-    final preference =
-        preferences.preferences[notificationType] ?? const NotificationTypePreference(enabled: false, channels: []);
+    final preference = notificationPreferences.preferences[notificationType] ??
+        const NotificationTypePreference(enabled: false, channels: []);
 
     return Row(
-      children: DeliveryChannelsConfig.channels
+      children: (preference.availableChannels?.keys.toList() ?? [])
           .map(
-            (channel) => Expanded(
+            (channelKey) => Expanded(
               child: Padding(
-                padding: EdgeInsets.only(
-                  right: channel != DeliveryChannelsConfig.channels.last ? 6 : 0,
-                ),
+                padding: const EdgeInsets.only(right: 6),
                 child: DeliveryChannelChip(
-                  channel: channel,
-                  isSelected: preference.channels.contains(channel.key),
-                  onTap: () => _toggleChannel(context, channel.key, preference),
+                  channel: DeliveryChannelConfig.fromChannelKey(channelKey),
+                  isSelected: preference.channels.contains(channelKey),
+                  onTap: () => _toggleChannel(context, channelKey, preference),
                 ),
               ),
             ),

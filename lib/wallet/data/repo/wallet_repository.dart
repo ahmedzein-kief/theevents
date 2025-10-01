@@ -1,6 +1,8 @@
 import 'dart:developer';
 
 import 'package:dartz/dartz.dart';
+import 'package:event_app/core/constants/app_strings.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 
 import '../../../core/helper/enums/enums.dart';
 import '../../../core/network/error_handler.dart';
@@ -90,18 +92,18 @@ class WalletRepositoryImpl implements WalletRepository {
   @override
   Future<List<DepositMethod>> getDepositMethods() async {
     return [
-      const DepositMethod(
+      DepositMethod(
         type: DepositMethodType.giftCard,
-        title: 'Gift Card',
-        subtitle: 'Redeem your gift card',
-        processingInfo: 'No fees',
+        title: AppStrings.giftCard.tr,
+        subtitle: AppStrings.redeemYourGiftCard.tr,
+        processingInfo: AppStrings.noFees.tr,
         isInstant: true,
       ),
-      const DepositMethod(
+      DepositMethod(
         type: DepositMethodType.creditCard,
-        title: 'Credit/Debit Card',
-        subtitle: 'Visa, Master Card accepted',
-        processingInfo: '2.5% processing fee',
+        title: AppStrings.creditDebitCard.tr,
+        subtitle: AppStrings.visaMasterAccepted.tr,
+        processingInfo: '2.5% ${AppStrings.processingFeeSuffix.tr}',
         isInstant: true,
       ),
     ];

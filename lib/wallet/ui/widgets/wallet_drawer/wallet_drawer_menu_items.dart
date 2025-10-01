@@ -16,7 +16,7 @@ class WalletDrawerMenuItems extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: ListView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 18),
         itemCount: menuItems.length,
         itemBuilder: (context, index) {
           final item = menuItems[index];

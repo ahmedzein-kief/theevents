@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:event_app/wallet/logic/wallet/wallet_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -25,23 +27,36 @@ class WalletCubit extends Cubit<WalletState> {
   }
 
   Future<void> refreshWallet() async {
-    if (state is WalletLoaded) {
-      final currentWallet = (state as WalletLoaded).wallet;
-      try {
-        final result = await _repository.walletOverview();
+    // If not loaded, perform initial load instead
+    if (state is! WalletLoaded) {
+      return loadWalletData();
+    }
 
-        result.fold(
-          (failure) => emit(WalletError(failure.message)),
-          (updatedWallet) {
-            walletModel = updatedWallet;
-            emit(WalletLoaded(updatedWallet));
-          },
-        );
-      } catch (e) {
-        walletModel = currentWallet;
-        // Keep current state on refresh error
-        emit(WalletLoaded(currentWallet));
-      }
+    final currentWallet = (state as WalletLoaded).wallet;
+
+    emit(WalletLoading());
+
+    await Future.delayed(const Duration(seconds: 1));
+
+    try {
+      final result = await _repository.walletOverview();
+
+      result.fold(
+        (failure) {
+          log('Wallet refresh failed: ${failure.message}');
+          // Restore current wallet on failure
+          walletModel = currentWallet;
+          emit(WalletLoaded(currentWallet));
+        },
+        (updatedWallet) {
+          walletModel = updatedWallet;
+          emit(WalletLoaded(updatedWallet));
+        },
+      );
+    } catch (e) {
+      log('Wallet refresh exception: $e');
+      walletModel = currentWallet;
+      emit(WalletLoaded(currentWallet));
     }
   }
 }

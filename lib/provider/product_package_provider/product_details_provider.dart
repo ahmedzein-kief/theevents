@@ -102,7 +102,7 @@ class ProductItemsProvider with ChangeNotifier {
       final token = await SecurePreferencesUtil.getToken();
       final headers = {'Authorization': '$token'};
 
-      print(url);
+      log(url);
       final response = await _apiResponseHandler.getRequest(
         url,
         context: context,

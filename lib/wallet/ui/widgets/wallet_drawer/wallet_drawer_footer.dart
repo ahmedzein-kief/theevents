@@ -1,4 +1,9 @@
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+import '../../../../core/constants/app_assets.dart';
 
 class WalletDrawerFooter extends StatelessWidget {
   const WalletDrawerFooter({super.key});
@@ -6,37 +11,25 @@ class WalletDrawerFooter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(18),
+      // alignment: Alignment.centerLeft,
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: Colors.red[100],
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Icon(
-              Icons.event,
-              color: Colors.red,
-            ),
+          SvgPicture.asset(
+            isDark ? AppAssets.eventsDark : AppAssets.events,
+            height: 50,
+            width: 50,
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 9),
           Text(
-            'events',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: theme.textTheme.titleMedium?.color,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            '© 2024 The Events. All Rights Reserved.',
-            style: TextStyle(
-              fontSize: 12,
-              color: theme.textTheme.bodySmall?.color?.withOpacity(0.7),
+            'copyrightText'.tr,
+            style: GoogleFonts.montserrat(
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
             ),
           ),
         ],

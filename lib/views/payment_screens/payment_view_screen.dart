@@ -49,104 +49,111 @@ class PaymentViewState extends State<PaymentViewScreen> {
   @override
   void initState() {
     super.initState();
+    _initializeWebView();
+  }
 
+  void _initializeWebView() {
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(const Color(0x00000000))
       ..enableZoom(true)
       ..setUserAgent(
-        'Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.120 Mobile Safari/537.36',
-      )
-      ..loadRequest(Uri.parse(widget.checkoutUrl));
+        'Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36',
+      );
+
+    // Configure WebView settings for better compatibility
+    _controller.runJavaScript('''
+    // Disable WebGL to prevent context limit errors
+    HTMLCanvasElement.prototype.getContext = (function(originalGetContext) {
+      return function(contextType, contextAttributes) {
+        if (contextType === 'webgl' || contextType === 'webgl2' || contextType === 'experimental-webgl') {
+          return null;
+        }
+        return originalGetContext.call(this, contextType, contextAttributes);
+      };
+    })(HTMLCanvasElement.prototype.getContext);
+  ''').catchError((e) => log('WebGL disable error: $e'));
 
     _controller.setNavigationDelegate(
       NavigationDelegate(
         onPageStarted: (String url) {
           log('onPageStarted url $url');
-          setState(() {
-            _isLoading = true;
-          });
-
+          if (mounted) {
+            setState(() => _isLoading = true);
+          }
           _checkPaymentResult(url);
         },
         onPageFinished: (String url) {
-          setState(() {
-            _isLoading = false;
-          });
-
+          if (mounted) {
+            setState(() => _isLoading = false);
+          }
           _checkPaymentResult(url);
 
-          // Inject CSS for mobile responsiveness
+          // Simplified CSS injection
           _controller.runJavaScript('''
-            (function() {
-              var viewport = document.querySelector("meta[name=viewport]");
-              if (!viewport) {
-                var meta = document.createElement('meta');
-                meta.name = 'viewport';
-                meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes';
-                document.getElementsByTagName('head')[0].appendChild(meta);
-              }
+          (function() {
+            try {
+              var meta = document.createElement('meta');
+              meta.name = 'viewport';
+              meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=5.0';
+              document.head.appendChild(meta);
               
               var style = document.createElement('style');
-              style.textContent = `
-                body {
-                  font-size: 16px !important;
-                  -webkit-text-size-adjust: 100% !important;
-                  -ms-text-size-adjust: 100% !important;
-                }
-                
-                * {
-                  max-width: 100% !important;
-                  box-sizing: border-box !important;
-                }
-                
-                .container, .payment-container {
-                  width: 100% !important;
-                  max-width: 100% !important;
-                  padding: 10px !important;
-                }
-                
-                input, button, select {
-                  font-size: 16px !important;
-                  min-height: 44px !important;
-                }
-                
-                @media screen and (max-width: 768px) {
-                  body {
-                    zoom: 1 !important;
-                    transform: none !important;
-                  }
-                }
-              `;
+              style.textContent = 'body { -webkit-text-size-adjust: 100%; }';
               document.head.appendChild(style);
-            })();
-          ''');
+            } catch(e) {
+              console.log('CSS injection error:', e);
+            }
+          })();
+        ''').catchError((e) => log('JS injection error: $e'));
         },
         onProgress: (int progress) {
-          // Optional: Add progress indicator
+          log('WebView loading progress: $progress%');
         },
         onWebResourceError: (WebResourceError error) {
+          // Only handle critical errors
           log('WebView error: ${error.description}');
-          // Handle network errors
-          if (!_hasNavigatedBack) {
-            _handlePaymentResult(
-              widget.paymentType == null
-                  ? PaymentResult(
-                      isSuccess: false,
-                      orderId: null,
-                      errorMessage: 'Network error: ${error.description}',
-                    )
-                  : false,
-            );
+          if (error.errorType == WebResourceErrorType.hostLookup || error.errorType == WebResourceErrorType.timeout) {
+            if (!_hasNavigatedBack && mounted) {
+              _handlePaymentResult(
+                widget.paymentType == null
+                    ? PaymentResult(
+                        isSuccess: false,
+                        orderId: null,
+                        errorMessage: 'Network error: ${error.description}',
+                      )
+                    : false,
+              );
+            }
           }
         },
         onNavigationRequest: (NavigationRequest request) {
-          log('onNavigationRequest request.url ${request.url}');
+          log('Navigation to: ${request.url}');
           _checkPaymentResult(request.url);
           return NavigationDecision.navigate;
         },
+        onHttpAuthRequest: (HttpAuthRequest request) {
+          log('HTTP Auth Request for: ${request.host}');
+          // Let WebView handle auth normally
+        },
       ),
     );
+
+    // Load URL
+    _controller.loadRequest(Uri.parse(widget.checkoutUrl)).catchError((error) {
+      log('Error loading URL: $error');
+      if (mounted && !_hasNavigatedBack) {
+        _handlePaymentResult(
+          widget.paymentType == null
+              ? PaymentResult(
+                  isSuccess: false,
+                  orderId: null,
+                  errorMessage: 'Failed to load payment page',
+                )
+              : false,
+        );
+      }
+    });
   }
 
   void _checkPaymentResult(String url) {
@@ -262,11 +269,6 @@ class PaymentViewState extends State<PaymentViewScreen> {
       return true;
     }
 
-    // Add more payment gateway specific success conditions here
-    // For example:
-    // PayPal: if (lowerUrl.contains('paypal') && lowerUrl.contains('payment_status=completed'))
-    // Stripe: if (lowerUrl.contains('stripe') && lowerUrl.contains('payment_intent_client_secret'))
-
     return false;
   }
 
@@ -276,24 +278,25 @@ class PaymentViewState extends State<PaymentViewScreen> {
       return true;
     }
 
-    // Add more gateway-specific failure conditions
     return false;
   }
 
   Future<void> _clearCartAndRefreshProviders() async {
-    final token = await SecurePreferencesUtil.getToken();
+    try {
+      final token = await SecurePreferencesUtil.getToken();
 
-    // Clear cart provider
-    final cartProvider = Provider.of<CartProvider>(context, listen: false);
-    // Optimistic clear to update app bar badge immediately
-    cartProvider.clearCartLocally();
+      if (!mounted) return;
 
-    // Then fetch from server to be sure
-    await cartProvider.fetchCartData(token ?? '', context);
+      // Clear cart provider
+      final cartProvider = Provider.of<CartProvider>(context, listen: false);
+      // Optimistic clear to update app bar badge immediately
+      cartProvider.clearCartLocally();
 
-    // // Simple clear of orders - let user refresh when they visit orders page
-    // final orderProvider = Provider.of<OrderDataProvider>(context, listen: false);
-    // orderProvider.clearOrders();
+      // Then fetch from server to be sure
+      await cartProvider.fetchCartData(token ?? '', context);
+    } catch (e) {
+      log('Error clearing cart: $e');
+    }
   }
 
   Future<void> _handlePaymentResult(result) async {
@@ -328,14 +331,14 @@ class PaymentViewState extends State<PaymentViewScreen> {
           );
         }
       } else {
-        // Payment failed or cancelled - go back to PaymentScreen
-        if (Navigator.canPop(context)) {
+        // Payment failed or cancelled - go back with result
+        if (mounted && Navigator.canPop(context)) {
           Navigator.pop(context, result);
         }
       }
     } else {
       // Gift card or subscription payment - just pop with result
-      if (Navigator.canPop(context)) {
+      if (mounted && Navigator.canPop(context)) {
         Navigator.pop(context, result);
       }
     }
@@ -357,17 +360,12 @@ class PaymentViewState extends State<PaymentViewScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Sad face icon
-
               const Icon(
                 Icons.sentiment_very_dissatisfied,
                 color: Colors.red,
                 size: 64,
               ),
-
               const SizedBox(height: 24),
-
-              // Title text
               Text(
                 AppStrings.paymentCancelWarning.tr,
                 textAlign: TextAlign.center,
@@ -378,8 +376,6 @@ class PaymentViewState extends State<PaymentViewScreen> {
                 ),
               ),
               const SizedBox(height: 32),
-
-              // Action buttons
               Row(
                 children: [
                   Expanded(
@@ -466,7 +462,7 @@ class PaymentViewState extends State<PaymentViewScreen> {
             IconButton(
               icon: const Icon(Icons.refresh),
               onPressed: () {
-                if (!_hasNavigatedBack) {
+                if (!_hasNavigatedBack && mounted) {
                   _controller.reload();
                 }
               },
@@ -476,10 +472,21 @@ class PaymentViewState extends State<PaymentViewScreen> {
         body: Stack(
           children: [
             WebViewWidget(controller: _controller),
-            if (_isLoading) const SizedBox.shrink(),
+            if (_isLoading)
+              const Center(
+                child: CircularProgressIndicator(
+                  color: Colors.black,
+                ),
+              ),
           ],
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _hasNavigatedBack = true; // Prevent any pending callbacks
+    super.dispose();
   }
 }

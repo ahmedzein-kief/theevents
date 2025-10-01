@@ -58,7 +58,7 @@ class SearchBarProvider extends ChangeNotifier {
     }).join('&');
 
     final baseUrl =
-        'https://newapistaging.theevents.ae/api/v1/search-bar?q=$query&per-page=$perPage&page=$page&sort-by=$sortBy';
+        'https://apistaging.theevents.ae/api/v1/search-bar?q=$query&per-page=$perPage&page=$page&sort-by=$sortBy';
     final url = filtersQuery.isNotEmpty ? '$baseUrl&$filtersQuery&allcategories=1' : baseUrl;
 
     try {

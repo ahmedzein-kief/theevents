@@ -11,6 +11,7 @@ import '../../../wallet/logic/notification/notification_cubit.dart';
 import '../../../wallet/logic/notification/notification_settings_cubit.dart';
 import '../../../wallet/logic/wallet/wallet_cubit.dart';
 import '../../network/dio_factory.dart';
+import '../../services/pdf_export_service.dart';
 
 final GetIt locator = GetIt.instance;
 
@@ -23,7 +24,7 @@ void setupLocator() {
 
   locator.registerLazySingleton<WalletRepository>(() => WalletRepositoryImpl(locator()));
 
-  locator.registerFactory(() => HistoryCubit(locator()));
+  locator.registerFactory(() => HistoryCubit(locator(), PdfExportService()));
   locator.registerFactory(() => DepositCubit(locator()));
   locator.registerFactory(() => WalletCubit(locator()));
   locator.registerFactory(() => FundExpiryCubit(locator()));

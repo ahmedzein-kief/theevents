@@ -24,7 +24,7 @@ class TopSliderProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    // const baseUrl = 'https://newapistaging.theevents.ae/api/v1/simple-slider'; // Replace with your API endpoint
+    // const baseUrl = 'https://apistaging.theevents.ae/api/v1/simple-slider'; // Replace with your API endpoint
     const baseUrl = ApiEndpoints.homeSlider; // Replace with your API endpoint
     final url = '$baseUrl?key=${data['attributes']['key']}'; // Add query parameters here
 
@@ -67,7 +67,7 @@ class BottomSliderProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    // const baseUrl = 'https://newapistaging.theevents.ae/api/v1/simple-slider'; // Replace with your API endpoint
+    // const baseUrl = 'https://apistaging.theevents.ae/api/v1/simple-slider'; // Replace with your API endpoint
     const baseUrl = ApiEndpoints.homeSlider; // Replace with your API endpoint
     final url = '$baseUrl?key=${data['attributes']['key']}'; // Add query parameters here
 

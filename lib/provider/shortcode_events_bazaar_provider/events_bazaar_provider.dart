@@ -22,7 +22,7 @@ class EventBazaarProvider with ChangeNotifier {
   ) async {
     _isLoading = true;
     notifyListeners();
-    // final response = await http.get(Uri.parse('https://newapistaging.theevents.ae/api/v1/countries/list'));
+    // final response = await http.get(Uri.parse('https://apistaging.theevents.ae/api/v1/countries/list'));
     const url = ApiEndpoints.eventsBazaarList;
 
     final response = await _apiResponseHandler.getRequest(

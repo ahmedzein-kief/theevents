@@ -1,6 +1,7 @@
 import 'dart:io' show Platform;
 
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
+import 'package:event_app/core/widgets/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -8,7 +9,7 @@ import '../../../../core/constants/app_strings.dart';
 import '../../../../core/utils/app_utils.dart';
 import '../../../../core/widgets/PriceRow.dart';
 import '../../../../core/widgets/padded_network_banner.dart';
-import '../../../../provider/information_icons_provider/gift_card_payments_provider.dart';
+import '../../../../provider/information_icons_provider/payment_methods_provider.dart';
 
 class PaymentMethods extends StatefulWidget {
   const PaymentMethods({
@@ -28,16 +29,22 @@ class PaymentMethods extends StatefulWidget {
 
 class _PaymentMethodsState extends State<PaymentMethods> {
   String? selectedOption;
-  bool _hasSetDefault = false; // Track if we've set the default
+  bool _hasSetDefault = false;
 
   @override
   void initState() {
     super.initState();
-    fetchDataOfRadio();
+    // Schedule the fetch to happen after the first frame is built
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      fetchDataOfRadio();
+    });
   }
 
   Future<void> fetchDataOfRadio() async {
-    final paymentProvider = Provider.of<PaymentMethodProviderGiftCard>(context, listen: false);
+    final paymentProvider = Provider.of<PaymentMethodsProvider>(
+      context,
+      listen: false,
+    );
 
     await paymentProvider.fetchPaymentMethods(
       context,
@@ -64,7 +71,10 @@ class _PaymentMethodsState extends State<PaymentMethods> {
     if (!_hasSetDefault && allOptions.isNotEmpty) {
       // Find the first "Card" option or just the first option
       final defaultOption = allOptions.firstWhere(
-        (opt) => opt['label'].toString().toLowerCase() == AppStrings.applePay,
+        (opt) => opt['label'].toString().toLowerCase() == AppStrings.card,
+
+        /// TODO(Apple Pay): Add Default Selection for Apple Pay
+        // (opt) => opt['label'].toString().toLowerCase() == AppStrings.applePay,
         orElse: () => allOptions.first,
       );
 
@@ -283,10 +293,10 @@ class _PaymentMethodsState extends State<PaymentMethods> {
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
-    return Consumer<PaymentMethodProviderGiftCard>(
+    return Consumer<PaymentMethodsProvider>(
       builder: (context, paymentProvider, child) {
         if (paymentProvider.isLoading) {
-          return const Center(child: CircularProgressIndicator());
+          return const LoadingIndicator(size: 20);
         }
 
         if (paymentProvider.hasError) {
@@ -391,8 +401,9 @@ class _PaymentMethodsState extends State<PaymentMethods> {
 
         return Column(
           children: [
+            /// TODO(Apple Pay): Add Apple Pay Option
             // Apple Pay option (if available)
-            if (shouldShowApplePay) _buildApplePayOption(selectedOption == 'apple_pay', isDarkMode),
+            // if (shouldShowApplePay) _buildApplePayOption(selectedOption == 'apple_pay', isDarkMode),
 
             // Other payment methods
             ListView.builder(

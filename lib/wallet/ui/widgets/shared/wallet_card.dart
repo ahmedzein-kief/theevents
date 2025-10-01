@@ -1,4 +1,4 @@
-import 'package:event_app/core/widgets/PriceRow.dart';
+import 'package:event_app/core/helper/extensions/aed_double_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -30,7 +30,7 @@ class WalletCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(5),
         boxShadow: [
           BoxShadow(
-            color: isDark ? Colors.black.withOpacity(0.3) : Colors.black.withOpacity(0.05),
+            color: isDark ? Colors.black.withAlpha((0.3 * 255).toInt()) : Colors.black.withAlpha((0.05 * 255).toInt()),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -40,9 +40,12 @@ class WalletCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(icon,
-              size: 24,
-              color: theme.iconTheme.color?.withOpacity(0.7) ?? (isDark ? Colors.grey[400] : Colors.grey[600])),
+          Icon(
+            icon,
+            size: 24,
+            color:
+                theme.iconTheme.color?.withAlpha((0.7 * 255).toInt()) ?? (isDark ? Colors.grey[400] : Colors.grey[600]),
+          ),
           const SizedBox(width: 15),
           Expanded(
             child: Column(
@@ -54,19 +57,27 @@ class WalletCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.openSans(
                     fontSize: 11,
-                    color: theme.textTheme.bodyMedium?.color?.withOpacity(0.8),
+                    color: theme.textTheme.bodyMedium?.color?.withAlpha((0.8 * 255).toInt()),
                   ),
                 ),
                 const SizedBox(height: 8),
-                PriceRow(
-                  price: amount.toStringAsFixed(2),
-                  currencySize: 12,
+
+                amount.toAEDAmount(
+                  currencySize: 11,
                   style: GoogleFonts.openSans(
-                    fontSize: 18,
+                    fontSize: 16,
                     color: theme.textTheme.headlineSmall?.color,
-                    fontWeight: FontWeight.w600,
                   ),
-                ),
+                )
+                // PriceRow(
+                //   price: amount.toStringAsFixed(2),
+                //   currencySize: 12,
+                //   style: GoogleFonts.openSans(
+                //     fontSize: 18,
+                //     color: theme.textTheme.headlineSmall?.color,
+                //     fontWeight: FontWeight.w600,
+                //   ),
+                // ),
               ],
             ),
           ),

@@ -36,20 +36,13 @@ class WalletCurrentRewardsCards extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 16),
-
-              // Expanded(
-              //   child: WalletCard(
-              //     title: AppStrings.rewardsEarnedTitle.tr,
-              //     amount: rewards,
-              //     currency: currency,
-              //     icon: Icons.stars_outlined,
-              //   ),
-              // ),
-              WalletInfoCard(
-                title: AppStrings.totalTransactions.tr,
-                value: walletModel.transactionsCount.toString(),
-                icon: Icons.history,
-                isDark: isDark,
+              Expanded(
+                child: WalletInfoCard(
+                  title: AppStrings.totalTransactions.tr,
+                  value: walletModel.transactionsCount.toString(),
+                  icon: Icons.history,
+                  isDark: isDark,
+                ),
               ),
             ],
           ),

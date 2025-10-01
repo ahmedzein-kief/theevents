@@ -10,7 +10,7 @@ import '../../../logic/drawer/drawer_cubit.dart';
 import '../../../logic/wallet/wallet_state.dart';
 
 class WalletBalanceCard extends StatelessWidget {
-  const WalletBalanceCard({required this.isDark, required this.state});
+  const WalletBalanceCard({super.key, required this.isDark, required this.state});
 
   final bool isDark;
   final WalletLoaded state;

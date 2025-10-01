@@ -21,7 +21,7 @@ class BestSellerProvider with ChangeNotifier {
   String? get errorMessage => _errorMessage;
 
   Future<void> fetchBannerBestSeller(BuildContext context) async {
-    // const url = 'https://newapistaging.theevents.ae/api/v1/collections/best-sellers';
+    // const url = 'https://apistaging.theevents.ae/api/v1/collections/best-sellers';
     const url = ApiEndpoints.bestSellerBanner;
 
     try {

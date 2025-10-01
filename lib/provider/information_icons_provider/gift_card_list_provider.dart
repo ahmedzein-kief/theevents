@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dio/dio.dart';
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/provider/api_response_handler.dart';
@@ -31,13 +33,12 @@ class GiftCardListProvider with ChangeNotifier {
 
   bool get hasMoreData => _hasMoreData;
 
-  Future<void> fetchGiftCardList(BuildContext context, {bool refresh = false}) async {
+  Future<void> fetchGiftCardList({bool refresh = false, hasDelay = false}) async {
     if (refresh) {
       _currentPage = 1;
       _giftCards.clear();
       _hasMoreData = true;
     }
-
     if (_loading || !_hasMoreData) return;
 
     _loading = true;
@@ -48,6 +49,10 @@ class GiftCardListProvider with ChangeNotifier {
     final fullUrl = '$url?language=en&per_page=10&page=$_currentPage';
 
     try {
+      if (hasDelay) {
+        await Future.delayed(const Duration(seconds: 1));
+      }
+
       final response = await _apiResponseHandler.getDioRequest(
         fullUrl,
         extra: {ApiConstants.requireAuthKey: true},
@@ -77,6 +82,7 @@ class GiftCardListProvider with ChangeNotifier {
         _error = 'Failed to load gift cards';
       }
     } catch (e) {
+      log('Error loading gift cards: $e');
       if (e is DioException) {
         // Handle "No record found!" as empty state, not an error
         if (e.response?.statusCode == 422 &&
@@ -98,15 +104,15 @@ class GiftCardListProvider with ChangeNotifier {
     }
   }
 
-  Future<void> loadMoreGiftCards(BuildContext context) async {
+  Future<void> loadMoreGiftCards() async {
     if (_hasMoreData && !_loading) {
       _currentPage++;
-      await fetchGiftCardList(context);
+      await fetchGiftCardList();
     }
   }
 
   void refreshGiftCards(BuildContext context) {
-    fetchGiftCardList(context, refresh: true);
+    fetchGiftCardList(refresh: true);
   }
 
   void clearData() {

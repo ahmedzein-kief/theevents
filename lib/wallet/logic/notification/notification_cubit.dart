@@ -56,6 +56,7 @@ class NotificationsCubit extends Cubit<NotificationsState> {
           emit(NotificationsLoaded(
             notifications: response.notifications,
             meta: response.meta,
+            selectedCategory: currentState is NotificationsLoaded ? currentState.selectedCategory : null,
           ));
         } else if (currentState is NotificationsLoaded && currentPage > 1) {
           // Only append for pagination (page > 1)
@@ -67,6 +68,7 @@ class NotificationsCubit extends Cubit<NotificationsState> {
             notifications: updatedNotifications,
             meta: response.meta,
             isLoadingMore: false,
+            selectedCategory: currentState.selectedCategory,
           ));
         } else {
           // Fallback: treat as fresh load
@@ -86,6 +88,28 @@ class NotificationsCubit extends Cubit<NotificationsState> {
         await loadNotifications(); // This will handle pagination
       }
     }
+  }
+
+  // New method to handle category filtering
+  void filterByCategory(NotificationCategory? category) {
+    final currentState = state;
+    if (currentState is NotificationsLoaded) {
+      emit(currentState.copyWith(selectedCategory: category));
+    }
+  }
+
+  // Helper method to get filtered notifications
+  List<NotificationModel> getFilteredNotifications() {
+    final currentState = state;
+    if (currentState is NotificationsLoaded) {
+      if (currentState.selectedCategory == null) {
+        return currentState.notifications;
+      }
+      return currentState.notifications
+          .where((notification) => notification.category == currentState.selectedCategory)
+          .toList();
+    }
+    return [];
   }
 
   Future<void> markAsRead(String notificationId) async {
@@ -305,20 +329,21 @@ class NotificationsCubit extends Cubit<NotificationsState> {
     }
   }
 
-  // Helper method to get unread notification count
+  // Helper method to get unread notification count (filtered)
   int get unreadCount {
     final currentState = state;
     if (currentState is NotificationsLoaded) {
-      return currentState.meta.unreadCount;
+      final filteredNotifications = getFilteredNotifications();
+      return filteredNotifications.where((n) => !n.isRead).length;
     }
     return 0;
   }
 
-  // Helper method to get total notification count
+  // Helper method to get total notification count (filtered)
   int get totalCount {
     final currentState = state;
     if (currentState is NotificationsLoaded) {
-      return currentState.meta.totalCount;
+      return getFilteredNotifications().length;
     }
     return 0;
   }
@@ -330,5 +355,14 @@ class NotificationsCubit extends Cubit<NotificationsState> {
       return currentState.meta.currentPage < currentState.meta.lastPage;
     }
     return false;
+  }
+
+  // Helper method to get current selected category
+  NotificationCategory? get selectedCategory {
+    final currentState = state;
+    if (currentState is NotificationsLoaded) {
+      return currentState.selectedCategory;
+    }
+    return null;
   }
 }

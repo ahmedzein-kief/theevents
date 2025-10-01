@@ -1,15 +1,15 @@
 class ApiEndpoints {
-  // static const String baseUrl = 'https://newapistaging.theevents.ae/api/v1/';
+  // static const String baseUrl = 'https://apistaging.theevents.ae/api/v1/';
 
-  static const String baseUrl = 'https://newapistaging.theevents.ae/api/v1/';
+  static const String baseUrl = 'https://apistaging.theevents.ae/api/v1/';
 
-  // static const String imageBaseURL = 'https://newapistaging.theevents.ae/storage/';
+  // static const String imageBaseURL = 'https://apistaging.theevents.ae/storage/';
 
-  static const String imageBaseURL = 'https://newapistaging.theevents.ae/storage/';
+  static const String imageBaseURL = 'https://apistaging.theevents.ae/storage/';
 
   // static const String payBaseURL = 'https://paystaging.theevents.ae/api/v1/';
 
-  static const String payBaseURL = 'https://newpaystaging.theevents.ae/api/v1/';
+  static const String payBaseURL = 'https://paystaging.theevents.ae/api/v1/';
 
   /*static const String baseUrl = 'https://events-api.clientswork.in/api/v1/';
   static const String imageBaseURL = 'https://events-api.clientswork.in/storage/';*/

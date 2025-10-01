@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:event_app/core/utils/app_utils.dart';
 
@@ -89,7 +90,7 @@ class Data {
   });
 
   Data.fromJson(json) {
-    print('wide ==> ${json['wide'] is int}');
+    log('wide ==> ${json['wide'] is int}');
     id = json['id'];
     name = json['name'];
     slug = json['slug'];

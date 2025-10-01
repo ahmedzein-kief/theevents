@@ -1,9 +1,11 @@
 import 'package:event_app/core/constants/app_assets.dart';
 import 'package:event_app/core/constants/app_strings.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
+import 'package:event_app/wallet/ui/widgets/notification/category_filter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/utils/notification_dialog_helper.dart';
 import '../../../../core/widgets/loading_indicator.dart';
 import '../../../logic/notification/notification_cubit.dart';
 import '../../../logic/notification/notification_state.dart';
@@ -62,27 +64,6 @@ class NotificationsContent extends StatelessWidget {
                     ),
                   ),
 
-                  // Settings button
-                  IconButton(
-                    style: IconButton.styleFrom(
-                      padding: EdgeInsets.zero,
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const NotificationSettingsScreen(),
-                        ),
-                      );
-                    },
-                    icon: Icon(
-                      Icons.settings_outlined,
-                      size: 20,
-                      color: theme.iconTheme.color,
-                    ),
-                  ),
-
                   // Mark all as read button (only show if there are unread notifications)
                   if (state is NotificationsLoaded && state.meta.unreadCount > 0)
                     IconButton(
@@ -106,7 +87,10 @@ class NotificationsContent extends StatelessWidget {
                         padding: EdgeInsets.zero,
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
-                      onPressed: () => _showDeleteAllConfirmation(context),
+                      onPressed: () => NotificationDialogHelper.showDeleteAllConfirmation(
+                        context,
+                        context.read<NotificationsCubit>(),
+                      ),
                       icon: Image.asset(
                         AppAssets.delete,
                         width: 20,
@@ -115,8 +99,61 @@ class NotificationsContent extends StatelessWidget {
                       ),
                       tooltip: 'Delete all notifications',
                     ),
+
+                  // Settings button
+                  IconButton(
+                    style: IconButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const NotificationSettingsScreen(),
+                        ),
+                      );
+                    },
+                    icon: Icon(
+                      Icons.settings_outlined,
+                      size: 20,
+                      color: theme.iconTheme.color,
+                    ),
+                  ),
                 ],
               );
+            },
+          ),
+
+          // Category Filter Section
+          const SizedBox(height: 16),
+          BlocBuilder<NotificationsCubit, NotificationsState>(
+            builder: (context, state) {
+              if (state is NotificationsLoaded) {
+                return Row(
+                  children: [
+                    Icon(
+                      Icons.filter_list,
+                      size: 16,
+                      color: theme.textTheme.bodyMedium?.color,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      AppStrings.filters.tr,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: theme.textTheme.bodyMedium?.color,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: CategoryFilter(state: state),
+                    ),
+                  ],
+                );
+              }
+              return const SizedBox.shrink();
             },
           ),
 
@@ -141,14 +178,17 @@ class NotificationsContent extends StatelessWidget {
                     ),
                   );
                 } else if (state is NotificationsLoaded) {
-                  if (state.notifications.isEmpty) {
+                  // Use filtered notifications
+                  final filteredNotifications = context.read<NotificationsCubit>().getFilteredNotifications();
+
+                  if (filteredNotifications.isEmpty) {
                     return const NotificationsEmptyState();
                   }
 
                   return RefreshIndicator(
                     onRefresh: () => context.read<NotificationsCubit>().refreshNotifications(),
                     child: NotificationsList(
-                      notifications: state.notifications,
+                      notifications: filteredNotifications,
                       meta: state.meta,
                       onLoadMore: () => context.read<NotificationsCubit>().loadNotifications(),
                       onMarkAsRead: (id) => context.read<NotificationsCubit>().markAsRead(id),
@@ -161,39 +201,6 @@ class NotificationsContent extends StatelessWidget {
                 }
               },
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showDeleteAllConfirmation(BuildContext context) {
-    // Capture the cubit reference before showing the dialog
-    final notificationsCubit = context.read<NotificationsCubit>();
-
-    showDialog(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Delete All Notifications'),
-        content: const Text('Are you sure you want to delete all notifications? This action cannot be undone.'),
-        actions: [
-          TextButton(
-            style: TextButton.styleFrom(
-              foregroundColor: Theme.of(context).textTheme.bodyLarge?.color,
-            ),
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              // Use the captured cubit reference instead of trying to read from dialogContext
-              notificationsCubit.deleteAllNotification();
-              Navigator.of(dialogContext).pop();
-            },
-            style: TextButton.styleFrom(
-              foregroundColor: Colors.red,
-            ),
-            child: const Text('Delete All'),
           ),
         ],
       ),

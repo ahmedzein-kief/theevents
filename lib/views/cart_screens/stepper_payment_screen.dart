@@ -10,9 +10,14 @@ import '../../core/styles/custom_text_styles.dart';
 import '../base_screens/base_app_bar.dart';
 
 class StepperScreen extends StatefulWidget {
-  const StepperScreen({super.key, this.tracked_start_checkout, required this.isNewAddress, required this.amount});
+  const StepperScreen({
+    super.key,
+    this.trackedStartCheckout,
+    required this.isNewAddress,
+    required this.amount,
+  });
 
-  final String? tracked_start_checkout;
+  final String? trackedStartCheckout;
   final bool isNewAddress;
   final String amount;
 
@@ -207,7 +212,7 @@ class _StepperScreenState extends State<StepperScreen> {
     switch (activeStep) {
       case 0:
         return StepperAddressScreen(
-          tracked_start_checkout: widget.tracked_start_checkout ?? '',
+          trackedStartCheckout: widget.trackedStartCheckout ?? '',
           finalAmount: widget.amount,
           onAddressSelected: () {
             setState(() {
@@ -217,7 +222,7 @@ class _StepperScreenState extends State<StepperScreen> {
         );
       case 1:
         return ConsolidatedPaymentScreen(
-          tracked_start_checkout: widget.tracked_start_checkout,
+          trackedStartCheckout: widget.trackedStartCheckout,
           isNewAddress: widget.isNewAddress,
           onNext: () {
             // Payment completed, navigate back or to success screen
@@ -226,7 +231,7 @@ class _StepperScreenState extends State<StepperScreen> {
         );
       default:
         return StepperAddressScreen(
-          tracked_start_checkout: widget.tracked_start_checkout ?? '',
+          trackedStartCheckout: widget.trackedStartCheckout ?? '',
           finalAmount: widget.amount,
           onAddressSelected: () {
             setState(() {

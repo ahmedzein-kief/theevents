@@ -25,8 +25,8 @@ class VendorByTypesProvider with ChangeNotifier {
   }) async {
     final typeId = int.tryParse(data['attributes']['type_id'].toString()) ?? 0;
     final limit = data['attributes']['limit'].toString();
-    // final baseUrl = Uri.parse('https://newapistaging.theevents.ae/api/v1/stores?$typeId');
-    final baseUrl = 'https://newapistaging.theevents.ae/api/v1/customers-by-type/$typeId';
+    // final baseUrl = Uri.parse('https://apistaging.theevents.ae/api/v1/stores?$typeId');
+    final baseUrl = 'https://apistaging.theevents.ae/api/v1/customers-by-type/$typeId';
     final params = {
       'limit': limit,
       'type_id': typeId.toString(),

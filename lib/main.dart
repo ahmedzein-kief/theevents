@@ -21,9 +21,9 @@ import 'package:event_app/provider/home_shortcode_provider/vendor_by_types_provi
 import 'package:event_app/provider/information_icons_provider/best_seller_provider.dart';
 import 'package:event_app/provider/information_icons_provider/fifty_discount_provider.dart';
 import 'package:event_app/provider/information_icons_provider/gift_card_list_provider.dart';
-import 'package:event_app/provider/information_icons_provider/gift_card_payments_provider.dart';
 import 'package:event_app/provider/information_icons_provider/gift_card_provider.dart';
 import 'package:event_app/provider/information_icons_provider/new_products_provider.dart';
+import 'package:event_app/provider/information_icons_provider/payment_methods_provider.dart';
 import 'package:event_app/provider/locale_provider.dart';
 import 'package:event_app/provider/login_profile_provider/change_password.dart';
 import 'package:event_app/provider/login_profile_provider/profile_update.dart';
@@ -148,7 +148,7 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider(create: (_) => StoreProvider()),
           ChangeNotifierProvider(create: (_) => AddressProvider()),
           ChangeNotifierProvider(
-            create: (_) => PaymentMethodProviderGiftCard(),
+            create: (_) => PaymentMethodsProvider(),
           ),
           ChangeNotifierProvider(create: (_) => EventsBrandProvider()),
           ChangeNotifierProvider(create: (_) => EventsBrandProductProvider()),

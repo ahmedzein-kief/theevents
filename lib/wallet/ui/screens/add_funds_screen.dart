@@ -124,14 +124,12 @@ class _AddFundsScreenState extends State<AddFundsScreen> {
       if (!context.mounted) return;
 
       if (result == true) {
-        // Payment successful
-        AppUtils.showToast(
-          'Payment completed successfully!',
-          isSuccess: true,
-        );
-
         context.read<WalletCubit>().refreshWallet();
+
         context.read<DrawerCubit>().setSelectedScreen(0);
+
+        // Payment successful
+        AppUtils.showToast('Payment completed successfully!', isSuccess: true);
       } else if (result == false) {
         // Payment failed or canceled - reset the cubit state
         AppUtils.showToast('Payment was canceled or failed');

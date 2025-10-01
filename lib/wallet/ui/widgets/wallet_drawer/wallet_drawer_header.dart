@@ -12,7 +12,7 @@ class WalletDrawerHeader extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(18),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

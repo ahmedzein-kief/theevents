@@ -1,5 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../../models/dashboard/user_by_type_model/home_celebraties_models.dart';
@@ -127,16 +125,16 @@ class CustomUserByTypeBox extends StatelessWidget {
 
 //  SUPERTYPE  APIS BOTTOM BANNER
 
-//    https://newapistaging.theevents.ae/api/v1/vendor-data/62
+//    https://apistaging.theevents.ae/api/v1/vendor-data/62
 
-//     https://newapistaging.theevents.ae/api/v1/vendor-data/64
+//     https://apistaging.theevents.ae/api/v1/vendor-data/64
 
 //   THIS IS FOR PACKAGES
 
 // THIS IS PRODUCT AND PACKAGES LIST COMES IN THE API UPPER URL
 
-// https://newapistaging.theevents.ae/api/v1/packages?per-page=12&page=1&sort-by=default_sorting&store_id=39
+// https://apistaging.theevents.ae/api/v1/packages?per-page=12&page=1&sort-by=default_sorting&store_id=39
 
 //  THIS IS FOR PRODUCTS
 
-// https://newapistaging.theevents.ae/api/v1/products?per-page=12&page=1&sort-by=default_sorting&store_id=39
+// https://apistaging.theevents.ae/api/v1/products?per-page=12&page=1&sort-by=default_sorting&store_id=39

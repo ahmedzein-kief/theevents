@@ -156,4 +156,4 @@ class ProductProvider with ChangeNotifier {
   }
 }
 
-//    https://newapistaging.theevents.ae/api/v1/vendor-data/102
+//    https://apistaging.theevents.ae/api/v1/vendor-data/102

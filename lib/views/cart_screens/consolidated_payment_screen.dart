@@ -1,33 +1,26 @@
-import 'dart:developer';
-import 'dart:io' show Platform;
-
 import 'package:event_app/core/constants/app_strings.dart';
-import 'package:event_app/core/constants/vendor_app_strings.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
-import 'package:event_app/core/services/shared_preferences_helper.dart';
-import 'package:event_app/core/utils/custom_toast.dart';
 import 'package:event_app/core/widgets/PriceRow.dart';
-import 'package:event_app/core/widgets/custom_items_views/custom_add_to_cart_button.dart';
 import 'package:event_app/models/checkout_models/checkout_data_models.dart';
 import 'package:event_app/provider/checkout_provider/checkout_provider.dart';
+import 'package:event_app/views/cart_screens/widgets/payment_buttons.dart';
 import 'package:event_app/views/home_screens_shortcode/shortcode_information_icons/gift_card/payments_methods.dart';
-import 'package:event_app/views/payment_screens/payment_view_screen.dart';
 import 'package:event_app/views/profile_page_screens/terms_and_condtion_screen.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pay/pay.dart';
 import 'package:provider/provider.dart';
+
+import '../../core/services/shared_preferences_helper.dart';
 
 class ConsolidatedPaymentScreen extends StatefulWidget {
   const ConsolidatedPaymentScreen({
     super.key,
     required this.onNext,
-    this.tracked_start_checkout,
+    this.trackedStartCheckout,
     required this.isNewAddress,
   });
 
-  final String? tracked_start_checkout;
+  final String? trackedStartCheckout;
   final VoidCallback onNext;
   final bool isNewAddress;
 
@@ -36,6 +29,7 @@ class ConsolidatedPaymentScreen extends StatefulWidget {
 }
 
 class _ConsolidatedPaymentScreenState extends State<ConsolidatedPaymentScreen> {
+  final GlobalKey _paymentButtonsKey = GlobalKey();
   Map<String, String> paymentMethod = {};
   Map<String, String> initialShippingMethod = {
     'method_id': '3',
@@ -49,20 +43,6 @@ class _ConsolidatedPaymentScreenState extends State<ConsolidatedPaymentScreen> {
     'message': '',
   };
 
-  // Apple Pay configuration
-  static const String defaultApplePayConfigString = '''
-{
-    "provider": "apple_pay",
-    "data": {
-      "merchantIdentifier": "merchant.com.logicalyinfotech.events",
-      "displayName": "TheEvents",
-      "merchantCapabilities": ["3DS", "debit", "credit"],
-      "supportedNetworks": ["amex", "visa", "discover", "masterCard"],
-      "countryCode": "AE",
-      "currencyCode": "AED"
-    }
-  }''';
-
   @override
   void initState() {
     super.initState();
@@ -74,123 +54,37 @@ class _ConsolidatedPaymentScreenState extends State<ConsolidatedPaymentScreen> {
     Map<String, String> shippingMethod,
   ) async {
     final token = await SecurePreferencesUtil.getToken();
+
+    if (!mounted) return false; // ✅ check before using context
+
     final provider = Provider.of<CheckoutProvider>(context, listen: false);
     return provider.fetchCheckoutData(
       context,
-      widget.tracked_start_checkout ?? '',
+      widget.trackedStartCheckout ?? '',
       token ?? '',
       sessionCheckoutData,
       shippingMethod,
     );
   }
 
-  Future<String?> checkoutPayment(
-    CheckoutResponse? checkoutData,
-    Map<String, String> paymentMethod,
-    bool isNewAddress,
-  ) async {
-    if (checkoutData == null) return null;
-
-    final token = await SecurePreferencesUtil.getToken();
-    final provider = Provider.of<CheckoutProvider>(context, listen: false);
-
-    setState(() {
-      provider.isLoading = true;
-    });
-    return provider.checkoutPaymentLink(
-      context,
-      widget.tracked_start_checkout ?? '',
-      token ?? '',
-      checkoutData,
-      paymentMethod,
-      isNewAddress,
-    );
-  }
-
   Future<bool> applyRemoveCouponCode(String couponCode, bool isApply) async {
     final token = await SecurePreferencesUtil.getToken();
+
+    if (!mounted) return false; // ✅ safeguard
+
     final provider = Provider.of<CheckoutProvider>(context, listen: false);
 
     setState(() {
       provider.isLoading = true;
     });
+
     return provider.applyRemoveCouponCode(
       context,
-      widget.tracked_start_checkout ?? '',
+      widget.trackedStartCheckout ?? '',
       token ?? '',
       couponCode,
       isApply,
     );
-  }
-
-  // Apple Pay handlers
-  Future<void> onApplePayResult(
-    paymentResult,
-    CheckoutResponse? checkoutData,
-    Map<String, String> paymentMethod,
-    bool isNewAddress,
-  ) async {
-    log('paymentResult: $paymentResult');
-    final provider = Provider.of<CheckoutProvider>(context, listen: false);
-    try {
-      setState(() {
-        provider.isLoading = true;
-      });
-
-      final bool success = await _processApplePayment(paymentResult, checkoutData, paymentMethod, isNewAddress);
-
-      if (success) {
-        widget.onNext();
-        CustomSnackbar.showSuccess(
-          context,
-          'Payment completed successfully',
-        );
-      } else {
-        CustomSnackbar.showError(
-          context,
-          'Apple Pay payment failed. Please try again.',
-        );
-      }
-    } catch (e) {
-      CustomSnackbar.showError(
-        context,
-        'Apple Pay payment error: ${e.toString()}',
-      );
-    } finally {
-      setState(() {
-        provider.isLoading = false;
-      });
-    }
-  }
-
-  Future<bool> _processApplePayment(
-    paymentResult,
-    CheckoutResponse? checkoutData,
-    Map<String, String> paymentMethod,
-    bool isNewAddress,
-  ) async {
-    try {
-      if (checkoutData == null) return false;
-
-      final token = await SecurePreferencesUtil.getToken();
-      final provider = Provider.of<CheckoutProvider>(context, listen: false);
-
-      setState(() {
-        provider.isLoading = true;
-      });
-      provider.checkoutPaymentLink(
-        context,
-        widget.tracked_start_checkout ?? '',
-        token ?? '',
-        checkoutData,
-        paymentMethod,
-        isNewAddress,
-      );
-      return true;
-    } catch (e) {
-      log('Apple Pay processing error: $e');
-      return false;
-    }
   }
 
   @override
@@ -208,6 +102,7 @@ class _ConsolidatedPaymentScreenState extends State<ConsolidatedPaymentScreen> {
       child: Consumer<CheckoutProvider>(
         builder: (BuildContext context, CheckoutProvider provider, Widget? child) {
           sessionCheckoutData = provider.checkoutData?.data?.sessionCheckoutData;
+
           if (provider.isLoading) {
             return const Center(
               child: SizedBox(
@@ -584,6 +479,8 @@ class _ConsolidatedPaymentScreenState extends State<ConsolidatedPaymentScreen> {
     );
   }
 
+  // Only showing the changed section - the rest remains the same
+
   Widget _buildTotalAndPaymentButtons(
       CheckoutProvider provider, double screenWidth, double screenHeight, bool isDarkMode) {
     final orderAmount = provider.checkoutData?.data?.formattedPrices.orderAmount ?? '0.00';
@@ -600,7 +497,7 @@ class _ConsolidatedPaymentScreenState extends State<ConsolidatedPaymentScreen> {
       ),
       child: Column(
         children: [
-          // Grand Total
+          // Grand Total Row
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -626,97 +523,17 @@ class _ConsolidatedPaymentScreenState extends State<ConsolidatedPaymentScreen> {
 
           const SizedBox(height: 16),
 
-          // Payment Buttons
-          _buildPaymentButtons(provider, isDarkMode),
+          // Payment Buttons - No key needed anymore
+          PaymentButtons(
+            provider: provider,
+            paymentMethod: paymentMethod,
+            isDarkMode: isDarkMode,
+            isNewAddress: widget.isNewAddress,
+            trackedStartCheckout: widget.trackedStartCheckout,
+            onNext: widget.onNext,
+          ),
         ],
       ),
     );
-  }
-
-  Widget _buildPaymentButtons(CheckoutProvider provider, bool isDarkMode) {
-    final bool isApplePaySelected = paymentMethod['payment_method'] == 'apple_pay';
-    final bool isWalletSelected = paymentMethod['payment_method'] == 'wallet';
-
-    return Row(
-      children: [
-        // Apple Pay Button (if available and selected)
-        if (Platform.isIOS && isApplePaySelected)
-          Expanded(
-            child: SizedBox(
-              child: ApplePayButton(
-                height: 45,
-                paymentConfiguration: PaymentConfiguration.fromJsonString(defaultApplePayConfigString),
-                paymentItems: _buildPaymentItems(provider),
-                style: ApplePayButtonStyle.whiteOutline,
-                type: ApplePayButtonType.buy,
-                onPaymentResult: (paymentResult) =>
-                    onApplePayResult(paymentResult, provider.checkoutData, paymentMethod, widget.isNewAddress),
-                loadingIndicator: const Center(
-                  child: CircularProgressIndicator(),
-                ),
-              ),
-            ),
-          ),
-
-        if (!isApplePaySelected)
-          // Pay Now Button (for all methods)
-          Expanded(
-            child: AppCustomButton(
-              onPressed: () async {
-                if (isWalletSelected) {
-                  Provider.of<CheckoutProvider>(context, listen: false).payWithWallet(
-                      context, widget.tracked_start_checkout ?? '', provider.checkoutData, widget.isNewAddress);
-                } else {
-                  final checkoutURL = await checkoutPayment(
-                    provider.checkoutData,
-                    paymentMethod,
-                    widget.isNewAddress,
-                  );
-
-                  if (checkoutURL != null) {
-                    await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PaymentViewScreen(
-                          checkoutUrl: checkoutURL,
-                        ),
-                      ),
-                    );
-
-                    setState(() {
-                      provider.isLoading = false;
-                    });
-                  } else {
-                    setState(() {
-                      provider.isLoading = false;
-                    });
-                    CustomSnackbar.showError(
-                      context,
-                      VendorAppStrings.paymentLinkError.tr,
-                    );
-                  }
-                }
-              },
-              icon: CupertinoIcons.forward,
-              title: AppStrings.payNowTitle.tr,
-              isLoading: provider.isLoading,
-            ),
-          ),
-      ],
-    );
-  }
-
-  List<PaymentItem> _buildPaymentItems(CheckoutProvider provider) {
-    final orderAmount = provider.checkoutData?.data?.formattedPrices.orderAmount ?? '0.00';
-    final cleanAmount = orderAmount.replaceAll(RegExp(r'[^0-9.]'), '');
-    final grandTotal = double.parse(cleanAmount);
-
-    return [
-      PaymentItem(
-        label: 'Total',
-        amount: grandTotal.toStringAsFixed(1),
-        status: PaymentItemStatus.final_price,
-      ),
-    ];
   }
 }

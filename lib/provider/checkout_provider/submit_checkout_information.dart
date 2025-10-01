@@ -42,7 +42,7 @@ class SubMitCheckoutInformationProvider extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
     setStatus(ApiStatus.loading);
-    final url = 'https://newapistaging.theevents.ae/api/v1/checkout/$trackedStartCheckout/information';
+    final url = 'https://apistaging.theevents.ae/api/v1/checkout/$trackedStartCheckout/information';
     final headers = {
       'Authorization': token,
     };

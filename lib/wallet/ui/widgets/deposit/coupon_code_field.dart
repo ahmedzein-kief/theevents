@@ -35,7 +35,7 @@ class CouponCodeField extends StatelessWidget {
           controller: controller,
           style: TextStyle(color: theme.textTheme.bodySmall?.color?.withOpacity(0.6)),
           decoration: InputDecoration(
-            hintText: 'Enter your coupon code',
+            hintText: 'enterYourCouponCode'.tr,
             hintStyle: GoogleFonts.openSans(
               fontSize: 12,
               color: theme.textTheme.bodySmall?.color?.withOpacity(0.6),

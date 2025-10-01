@@ -4,11 +4,11 @@ import '../../../data/model/notification_preferences.dart';
 import 'notification_type_section.dart';
 
 class NotificationSettingsContent extends StatelessWidget {
-  final NotificationPreferences preferences;
+  final NotificationPreferences notificationPreferences;
 
   const NotificationSettingsContent({
     super.key,
-    required this.preferences,
+    required this.notificationPreferences,
   });
 
   @override
@@ -18,7 +18,7 @@ class NotificationSettingsContent extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 20),
-          NotificationTypeSection(preferences: preferences),
+          NotificationTypeSection(notificationPreferences: notificationPreferences),
         ],
       ),
     );

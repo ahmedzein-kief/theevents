@@ -18,7 +18,7 @@ class NewProductsProvider extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
 
   Future<void> fetchProducts(BuildContext context) async {
-    // const newProductUrl = "https://newapistaging.theevents.ae/api/v1/pages/products";
+    // const newProductUrl = "https://apistaging.theevents.ae/api/v1/pages/products";
     const newProductUrl = ApiEndpoints.newProductsBanner;
 
     try {

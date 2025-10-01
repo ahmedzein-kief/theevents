@@ -1,5 +1,4 @@
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
@@ -8,8 +7,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../views/auth_screens/auth_page_view.dart';
 import '../../services/shared_preferences_helper.dart';
 import '../../styles/custom_text_styles.dart';
-import 'custom_toast.dart';
 import '../padded_network_banner.dart';
+import 'custom_toast.dart';
 
 class CustomPackagesView extends StatefulWidget {
   const CustomPackagesView({

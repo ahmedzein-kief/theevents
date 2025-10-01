@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/styles/custom_text_styles.dart';
 import 'package:event_app/models/dashboard/information_icons_models/gift_card_models/checkout_payment_model.dart';
@@ -39,20 +41,20 @@ class _GiftCardFormState extends State<GiftCardForm> {
     } else {}
   }
 
-  final TextEditingController _customTextController = TextEditingController();
+  final TextEditingController _priceController = TextEditingController();
   bool _navigatedToPaymentScreen = false;
 
   @override
   void initState() {
     super.initState();
     // Listen for changes in the TextField
-    _customTextController.addListener(_handleCustomTextInput);
+    _priceController.addListener(_handleCustomTextInput);
   }
 
   @override
   void dispose() {
-    _customTextController.removeListener(() {});
-    _customTextController.dispose();
+    _priceController.removeListener(() {});
+    _priceController.dispose();
     super.dispose();
   }
 
@@ -64,7 +66,7 @@ class _GiftCardFormState extends State<GiftCardForm> {
     final provider = Provider.of<CreateGiftCardProvider>(context, listen: false);
     final response = await provider.createGiftCard(
       context,
-      _customTextController.text,
+      _priceController.text,
       _receiptNameController.text,
       _cardEmailController.text,
       _notesController.text,
@@ -82,10 +84,10 @@ class _GiftCardFormState extends State<GiftCardForm> {
 
       // Update the text controller without disrupting user input
       selectedPrice = prices[index].toString();
-      if (_customTextController.text != selectedPrice) {
-        _customTextController.text = selectedPrice; // Set the selected value in the controller
+      if (_priceController.text != selectedPrice) {
+        _priceController.text = selectedPrice; // Set the selected value in the controller
         // Move cursor to the end of the text field
-        _customTextController.selection = TextSelection.fromPosition(
+        _priceController.selection = TextSelection.fromPosition(
           TextPosition(offset: selectedPrice.length),
         );
       }
@@ -93,7 +95,7 @@ class _GiftCardFormState extends State<GiftCardForm> {
   }
 
   void _handleCustomTextInput() {
-    final String inputText = _customTextController.text;
+    final String inputText = _priceController.text;
 
     // Check if the input matches any of the predefined values
     bool isMatchFound = false;
@@ -199,7 +201,7 @@ class _GiftCardFormState extends State<GiftCardForm> {
                           child: TextFormField(
                             autovalidateMode: AutovalidateMode.onUserInteraction,
                             textAlign: TextAlign.center,
-                            controller: _customTextController,
+                            controller: _priceController,
                             validator: (value) {
                               if (value == null || value.trim().isEmpty) {
                                 return AppStrings.selectOrAddAmount.tr;
@@ -353,13 +355,19 @@ class _GiftCardFormState extends State<GiftCardForm> {
                               }
                               return InkWell(
                                 onTap: () async {
+                                  if (paymentMethod.isEmpty) {
+                                    AppUtils.showToast(
+                                      VendorAppStrings.selectPaymentMethod.tr,
+                                    );
+                                    return;
+                                  }
                                   if (_formKey.currentState?.validate() ?? false) {
                                     final response = await createGiftCard();
                                     final data = response?.data;
 
                                     // Check if the checkoutUrl is available and we haven't navigated yet
                                     if (data?.checkoutUrl.isNotEmpty == true) {
-                                      _navigatedToPaymentScreen = true; // Set the flag to true
+                                      _navigatedToPaymentScreen = true;
 
                                       // Check if widget is still mounted before using context
                                       if (!context.mounted) return;
@@ -369,38 +377,26 @@ class _GiftCardFormState extends State<GiftCardForm> {
                                         MaterialPageRoute(
                                           builder: (context) => PaymentViewScreen(
                                             checkoutUrl: data!.checkoutUrl,
-                                            paymentType: 'gift_card', // Add payment type for gift cards
+                                            paymentType: 'gift_card',
                                           ),
                                         ),
                                       );
 
                                       // Handle the payment result - check mounted before using context
+                                      if (!context.mounted) return; // Check ONCE at the top
+
                                       if (result == true) {
-                                        // Payment successful
-                                        if (context.mounted) {
-                                          AppUtils.showToast(
-                                            AppStrings.paymentSuccessful.tr,
-                                            isSuccess: true,
-                                          );
-
-                                          final provider = Provider.of<GiftCardListProvider>(context, listen: false);
-                                          provider.fetchGiftCardList(context);
-
-                                          Navigator.pop(context, true);
-                                        }
+                                        await _handleSuccessfulPayment();
                                       } else if (result == false) {
                                         // Payment failed
-                                        if (context.mounted) {
-                                          AppUtils.showToast(
-                                            AppStrings.paymentFailed.tr,
-                                          );
-                                        }
+                                        AppUtils.showToast(
+                                          AppStrings.paymentFailed.tr,
+                                        );
                                       }
                                       // If result is null, user cancelled - no action needed
                                     } else {
+                                      log('data?.checkoutUrl ${data?.checkoutUrl}');
                                       // Handle case where checkout URL is not available
-                                      // Note: AppUtils.showToast might not need context, but if it does,
-                                      // you should also check context.mounted here
                                       AppUtils.showToast(
                                         VendorAppStrings.paymentLinkError.tr,
                                       );
@@ -435,4 +431,13 @@ class _GiftCardFormState extends State<GiftCardForm> {
           ],
         ),
       );
+
+  Future<void> _handleSuccessfulPayment() async {
+    AppUtils.showToast(AppStrings.paymentSuccessful.tr, isSuccess: true);
+
+    final provider = Provider.of<GiftCardListProvider>(context, listen: false);
+    provider.fetchGiftCardList(refresh: true, hasDelay: true);
+
+    Navigator.pop(context, true);
+  }
 }

@@ -1,6 +1,5 @@
 class ApiConstants {
-  static const String placeholderImage =
-      'https://newapistaging.theevents.ae/vendor/core/core/base/images/placeholder.png';
+  static const String placeholderImage = 'https://apistaging.theevents.ae/vendor/core/core/base/images/placeholder.png';
 
   /// REMOTE API ERROR STRINGS
   static const String success = 'success';

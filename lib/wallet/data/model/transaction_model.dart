@@ -2,7 +2,7 @@ enum TransactionType { deposit, payment, reward, refund }
 
 enum TransactionStatus { pending, completed, failed, cancelled }
 
-enum PaymentMethod { creditCard, giftCard, bankTransfer, other }
+enum PaymentMethod { creditCard, giftCard, bankTransfer, purchase, other }
 
 class TransactionsModel {
   final List<TransactionModel> transactions;
@@ -127,7 +127,7 @@ class TransactionModel {
       currentBalance: _parseDouble(json['running_balance']),
       amount: _parseDouble(json['amount']),
       description: json['description'] as String,
-      date: DateTime.parse(json['created_at']),
+      date: DateTime.parse(json['created_at']).toLocal(),
       status: _parseTransactionStatus(json['status']),
       type: _parseTransactionType(json['payment_type']),
       method: _parsePaymentMethod(json['payment_method']),
@@ -177,6 +177,8 @@ class TransactionModel {
       case 'gift_card_redeem':
         return PaymentMethod.giftCard;
       case 'purchase':
+        return PaymentMethod.purchase;
+      case 'deposit':
         return PaymentMethod.creditCard;
       case 'bank_transfer':
         return PaymentMethod.bankTransfer;

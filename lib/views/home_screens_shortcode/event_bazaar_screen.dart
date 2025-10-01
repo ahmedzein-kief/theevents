@@ -66,7 +66,7 @@ class _EventBazaarViewState extends State<EventBazaarScreen> {
                     title: widget.data['attributes']['title'],
                     imageUrls: provider.events
                         .map(
-                          (event) => 'https://newapistaging.theevents.ae/storage/flags/${event.iso!.toLowerCase()}.png',
+                          (event) => 'https://apistaging.theevents.ae/storage/flags/${event.iso!.toLowerCase()}.png',
                         )
                         .toList(),
                     titles: provider.events.map((event) => '${event.title} Bazaar').toList(),
@@ -98,8 +98,7 @@ class _EventBazaarViewState extends State<EventBazaarScreen> {
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(15),
                           child: PaddedNetworkBanner(
-                            imageUrl:
-                                'https://newapistaging.theevents.ae/storage/flags/${event.iso!.toLowerCase()}.png',
+                            imageUrl: 'https://apistaging.theevents.ae/storage/flags/${event.iso!.toLowerCase()}.png',
                             fit: BoxFit.cover,
                             width: double.infinity,
                             height: 80,

@@ -11,6 +11,7 @@ import '../../core/constants/app_strings.dart';
 import '../../core/network/api_endpoints/api_contsants.dart';
 import '../../core/widgets/bottom_navigation_bar.dart';
 import '../../models/checkout_models/checkout_data_models.dart';
+import '../../views/payment_screens/payment_view_screen.dart';
 
 class CheckoutProvider with ChangeNotifier {
   final ApiResponseHandler _apiResponseHandler = ApiResponseHandler();
@@ -20,6 +21,19 @@ class CheckoutProvider with ChangeNotifier {
   CheckoutResponse? get checkoutData => _checkoutData;
 
   bool isLoading = false;
+
+  // NEW: Track if we're processing payment to prevent UI rebuilds
+  bool _isProcessingPayment = false;
+
+  bool get isProcessingPayment => _isProcessingPayment;
+
+  void setLoading(bool value) {
+    isLoading = value;
+    // Only notify if we're not in the middle of payment processing
+    if (!_isProcessingPayment) {
+      notifyListeners();
+    }
+  }
 
   Future<bool> fetchCheckoutData(
     BuildContext context,
@@ -42,9 +56,8 @@ class CheckoutProvider with ChangeNotifier {
 
     if (marketPlaceList.isNotEmpty) {
       for (final value in marketPlaceList) {
-        // Add to postDataMap
-        postDataMap['shipping_method[$value]'] = 'default'; // Ensure non-null value
-        postDataMap['shipping_option[$value]'] = shippingMethod['method_id'] ?? ''; // Ensure non-null value
+        postDataMap['shipping_method[$value]'] = 'default';
+        postDataMap['shipping_option[$value]'] = shippingMethod['method_id'] ?? '';
       }
     }
 
@@ -58,14 +71,12 @@ class CheckoutProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         final jsonData = response.data;
-
         _checkoutData = CheckoutResponse.fromJson(jsonData);
-
         notifyListeners();
         return true;
-      } else {}
+      }
     } catch (e) {
-      print(e.toString());
+      log('fetchCheckoutData error: $e');
     }
     return false;
   }
@@ -96,16 +107,75 @@ class CheckoutProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         final jsonData = response.data;
-
         notifyListeners();
         if (jsonData['error'] == false) {
           return true;
         } else {
           return false;
         }
-      } else {}
-    } catch (e) {}
+      }
+    } catch (e) {
+      log('Error applying coupon code: $e');
+    }
     return false;
+  }
+
+  // NEW: Process gateway payment with navigation handling
+  Future<void> processGatewayPayment({
+    required BuildContext context,
+    required String checkoutToken,
+    required String token,
+    required Map<String, String> paymentMethod,
+    required bool isNewAddress,
+  }) async {
+    if (_checkoutData == null) return;
+
+    // Mark that we're processing payment - this prevents rebuilds
+    _isProcessingPayment = true;
+    setLoading(true);
+
+    try {
+      // Get checkout URL
+      final checkoutURL = await checkoutPaymentLink(
+        context,
+        checkoutToken,
+        token,
+        _checkoutData!,
+        paymentMethod,
+        isNewAddress,
+      );
+
+      log('Checkout URL received: $checkoutURL');
+
+      if (checkoutURL == null || checkoutURL.isEmpty) {
+        log('Checkout URL is null or empty');
+        if (context.mounted) {
+          AppUtils.showToast('Payment link generation failed');
+        }
+        return;
+      }
+
+      // Navigate to payment screen - context is still valid here
+      if (!context.mounted) {
+        log('Context unmounted, cannot navigate');
+        return;
+      }
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => PaymentViewScreen(checkoutUrl: checkoutURL),
+        ),
+      );
+    } catch (e) {
+      log('Gateway payment error: $e');
+      if (context.mounted) {
+        AppUtils.showToast('Payment failed: ${e.toString()}');
+      }
+    } finally {
+      _isProcessingPayment = false;
+      setLoading(false);
+    }
   }
 
   Future<String?> checkoutPaymentLink(
@@ -119,55 +189,49 @@ class CheckoutProvider with ChangeNotifier {
     final data = checkoutData.data;
     if (data == null) return null;
 
-    // Create FormData
-    final formData = FormData.fromMap({
-      'tracked_start_checkout': checkoutToken,
-      'amount': data.orderAmount.toString(),
-      'is_mobile': '1',
-      'payment_method': paymentMethod['payment_method'] ?? '',
-    });
-
-    // Add payment method sub-options if available
-    if (paymentMethod['sub_option_key'] != null && paymentMethod['sub_option_value'] != null) {
-      formData.fields.add(MapEntry(
-        paymentMethod['sub_option_key']!,
-        paymentMethod['sub_option_value']!,
-      ));
-    }
-
-    // Add address fields
-    final session = data.sessionCheckoutData;
-    formData.fields.addAll([
-      MapEntry('address[name]', session.name),
-      MapEntry('address[email]', session.email),
-      MapEntry('address[phone]', session.phone),
-      MapEntry('address[country]', session.country),
-      MapEntry('address[city]', session.city),
-      MapEntry('address[address]', session.address),
-      MapEntry('address[address_id]', isNewAddress ? 'new' : data.sessionCheckoutData.addressId.toString()),
-    ]);
-
-    // Add shipping info per vendor
-    final vendorData = data.sessionCheckoutData.marketplace;
-    vendorData.forEach((key, value) {
-      final id = key;
-      final method = data.defaultShippingMethod;
-      final option = data.defaultShippingOption;
-      formData.fields.addAll([
-        MapEntry('shipping_method[$id]', method),
-        MapEntry('shipping_option[$id]', option),
-      ]);
-    });
-
-    final url = '${ApiEndpoints.checkout}$checkoutToken/process';
-    final headers = {
-      'Authorization': token,
-      // 'Content-Type' header is automatically set to 'multipart/form-data' by Dio
-      // when using FormData, so we don't need to include it here
-    };
-
+    // Don't set loading here - let the caller handle it
     try {
-      // Use the multipart request method
+      final formData = FormData.fromMap({
+        'tracked_start_checkout': checkoutToken,
+        'amount': data.orderAmount.toString(),
+        'is_mobile': '1',
+        'payment_method': paymentMethod['payment_method'] ?? '',
+      });
+
+      if (paymentMethod['sub_option_key'] != null && paymentMethod['sub_option_value'] != null) {
+        formData.fields.add(MapEntry(
+          paymentMethod['sub_option_key']!,
+          paymentMethod['sub_option_value']!,
+        ));
+      }
+
+      final session = data.sessionCheckoutData;
+      formData.fields.addAll([
+        MapEntry('address[name]', session.name),
+        MapEntry('address[email]', session.email),
+        MapEntry('address[phone]', session.phone),
+        MapEntry('address[country]', session.country),
+        MapEntry('address[city]', session.city),
+        MapEntry('address[address]', session.address),
+        MapEntry('address[address_id]', isNewAddress ? 'new' : data.sessionCheckoutData.addressId.toString()),
+      ]);
+
+      final vendorData = data.sessionCheckoutData.marketplace;
+      vendorData.forEach((key, value) {
+        final id = key;
+        final method = data.defaultShippingMethod;
+        final option = data.defaultShippingOption;
+        formData.fields.addAll([
+          MapEntry('shipping_method[$id]', method),
+          MapEntry('shipping_option[$id]', option),
+        ]);
+      });
+
+      final url = '${ApiEndpoints.checkout}$checkoutToken/process';
+      final headers = {
+        'Authorization': token,
+      };
+
       final response = await _apiResponseHandler.postDioMultipartRequest(
         url,
         headers: headers,
@@ -177,7 +241,6 @@ class CheckoutProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         final jsonData = response.data;
         final paymentData = CheckoutPaymentModel.fromJson(jsonData);
-        notifyListeners();
         return paymentData.data.checkoutUrl;
       } else {
         final jsonResponse = response.data;
@@ -187,17 +250,14 @@ class CheckoutProvider with ChangeNotifier {
     } catch (e) {
       log('checkoutPaymentLink error: $e');
 
-      // Handle DioException specifically to get better error messages
       if (e is DioException) {
         final errorMessage = e.response?.data?['message'] ?? e.message;
         AppUtils.showToast('${AppStrings.paymentFailed} $errorMessage');
       } else {
         AppUtils.showToast('${AppStrings.paymentFailed} ${e.toString()}');
       }
+      return null;
     }
-
-    notifyListeners();
-    return null;
   }
 
   Future<void> payWithWallet(
@@ -209,7 +269,9 @@ class CheckoutProvider with ChangeNotifier {
     if (checkoutData == null || checkoutData.data == null) return;
     final data = checkoutData.data!;
 
-    // Create FormData
+    // Mark as processing to prevent rebuilds
+    _isProcessingPayment = true;
+
     final formData = FormData.fromMap({
       'tracked_start_checkout': checkoutToken,
       'amount': data.orderAmount.toString(),
@@ -217,7 +279,6 @@ class CheckoutProvider with ChangeNotifier {
       'payment_method': 'wallet',
     });
 
-    // Add address fields
     final session = data.sessionCheckoutData;
     formData.fields.addAll([
       MapEntry('address[name]', session.name),
@@ -229,7 +290,6 @@ class CheckoutProvider with ChangeNotifier {
       MapEntry('address[address_id]', isNewAddress ? 'new' : data.sessionCheckoutData.addressId.toString()),
     ]);
 
-    // Add shipping info per vendor
     final vendorData = data.sessionCheckoutData.marketplace;
     vendorData.forEach((key, value) {
       final id = key;
@@ -242,11 +302,10 @@ class CheckoutProvider with ChangeNotifier {
     });
 
     final url = '${ApiEndpoints.checkout}$checkoutToken/process';
-    try {
-      isLoading = true;
-      notifyListeners();
 
-      // Use the multipart request method
+    try {
+      setLoading(true);
+
       final response = await _apiResponseHandler.postDioMultipartRequest(
         url,
         extra: {ApiConstants.requireAuthKey: true},
@@ -255,29 +314,25 @@ class CheckoutProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         final url = response.data['data']['url'];
-
         final urlMobile = '$url?is_mobilesam=1';
 
         final urlResponse = await _apiResponseHandler.getDioRequest(urlMobile);
 
         if (urlResponse.statusCode == 200) {
           final jsonData = urlResponse.data;
+          final orderId = jsonData['order_id'];
 
-          AppUtils.showToast(AppStrings.paymentSuccessful, isSuccess: true);
-
-          final orderId = jsonData['data']['order_id'];
-
-          // Navigate directly to BaseHomeScreen with orderId
           if (context.mounted && orderId != null) {
+            // Use pushAndRemoveUntil to clear the entire navigation stack
             Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(
                 builder: (context) => BaseHomeScreen(
                   shouldNavigateToOrders: true,
-                  orderId: orderId,
+                  orderId: orderId.toString(),
                 ),
               ),
-              (route) => false,
+              (route) => false, // Remove all previous routes
             );
           }
         } else {
@@ -293,7 +348,6 @@ class CheckoutProvider with ChangeNotifier {
     } catch (e) {
       log('payWithWallet error: $e');
 
-      // Handle DioException specifically to get better error messages
       if (e is DioException) {
         final errorMessage = e.response?.data?['message'] ?? e.message;
         AppUtils.showToast('${AppStrings.paymentFailed}: $errorMessage');
@@ -301,8 +355,8 @@ class CheckoutProvider with ChangeNotifier {
         AppUtils.showToast('${AppStrings.paymentFailed}: ${e.toString()}');
       }
     } finally {
-      isLoading = false;
-      notifyListeners();
+      _isProcessingPayment = false;
+      setLoading(false);
     }
   }
 }

@@ -14,12 +14,12 @@ import '../../provider/payment_address/customer_address.dart';
 class StepperAddressScreen extends StatefulWidget {
   const StepperAddressScreen({
     super.key,
-    required this.tracked_start_checkout,
+    required this.trackedStartCheckout,
     required this.finalAmount,
     required this.onAddressSelected,
   });
 
-  final String tracked_start_checkout;
+  final String trackedStartCheckout;
   final String finalAmount;
   final VoidCallback onAddressSelected;
 
@@ -73,7 +73,7 @@ class _StepperAddressScreenState extends State<StepperAddressScreen> {
       listen: false,
     ).submitCheckoutInformation(
       context: context,
-      trackedStartCheckout: widget.tracked_start_checkout,
+      trackedStartCheckout: widget.trackedStartCheckout,
       addressId: selectedAddress!.id.toString(),
       name: selectedAddress!.name ?? '',
       email: selectedAddress!.email ?? '',

@@ -1,7 +1,9 @@
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/widgets/PriceRow.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../core/constants/app_strings.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../../data/model/transaction_model.dart';
 
@@ -195,7 +197,7 @@ class TransactionItem extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            'Balance: ',
+            AppStrings.balanceLabel.tr,
             style: GoogleFonts.openSans(
               fontSize: 12,
               color: Colors.white,
@@ -246,6 +248,8 @@ class TransactionItem extends StatelessWidget {
     switch (transaction.method) {
       case PaymentMethod.creditCard:
         return Icons.credit_card;
+      case PaymentMethod.purchase:
+        return Icons.shopping_cart;
       case PaymentMethod.giftCard:
         return Icons.card_giftcard;
       case PaymentMethod.bankTransfer:
@@ -259,13 +263,15 @@ class TransactionItem extends StatelessWidget {
   String _getPaymentMethodText() {
     switch (transaction.method) {
       case PaymentMethod.creditCard:
-        return 'Credit Card';
+        return 'creditCard'.tr;
+      case PaymentMethod.purchase:
+        return 'purchased'.tr;
       case PaymentMethod.giftCard:
-        return 'Gift Card';
+        return 'giftCard'.tr;
       case PaymentMethod.bankTransfer:
-        return 'Bank Transfer';
+        return 'bankTransfer'.tr;
       case PaymentMethod.other:
-        return 'Other';
+        return 'Other'.tr;
       case null:
         return 'Unknown';
     }
@@ -287,13 +293,13 @@ class TransactionItem extends StatelessWidget {
   String _getStatusText() {
     switch (transaction.status) {
       case TransactionStatus.pending:
-        return 'Pending';
+        return AppStrings.pending.tr;
       case TransactionStatus.completed:
-        return 'Completed';
+        return AppStrings.completed.tr;
       case TransactionStatus.failed:
-        return 'Failed';
+        return AppStrings.paymentFailed.tr;
       case TransactionStatus.cancelled:
-        return 'Cancelled';
+        return 'payment_cancelled'.tr;
     }
   }
 }

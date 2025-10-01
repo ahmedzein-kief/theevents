@@ -30,23 +30,11 @@ class NotificationItem extends StatelessWidget {
       onDelete: onDelete,
       child: InkWell(
         onTap: () => _handleTap(context),
-        onLongPress: () => NotificationActions.showActionMenu(
-          context,
-          notification,
-          onMarkAsRead: onMarkAsRead,
-          onMarkAsUnread: onMarkAsUnread,
-          onDelete: onDelete,
-        ),
+        onLongPress: () => _showMenu(context),
         borderRadius: BorderRadius.circular(12),
         child: NotificationCard(
           notification: notification,
-          onActionTap: () => NotificationActions.showActionMenu(
-            context,
-            notification,
-            onMarkAsRead: onMarkAsRead,
-            onMarkAsUnread: onMarkAsUnread,
-            onDelete: onDelete,
-          ),
+          onActionTap: () => _showMenu(context),
         ),
       ),
     );
@@ -63,5 +51,15 @@ class NotificationItem extends StatelessWidget {
         onTap: onTap,
       );
     }
+  }
+
+  void _showMenu(BuildContext context) {
+    NotificationActions.showActionMenu(
+      context,
+      notification,
+      onMarkAsRead: onMarkAsRead,
+      onMarkAsUnread: onMarkAsUnread,
+      onDelete: onDelete,
+    );
   }
 }

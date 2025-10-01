@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../../core/constants/app_strings.dart';
 import '../../../core/widgets/loading_indicator.dart';
+import '../../../provider/auth_provider/get_user_provider.dart';
 import '../../logic/history/history_cubit.dart';
 import '../../logic/history/history_state.dart';
 import '../../logic/wallet/wallet_cubit.dart';
@@ -27,15 +28,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
   void initState() {
     context.read<HistoryCubit>().loadTransactions();
     super.initState();
-  }
-
-  void _exportTransactions(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Export functionality will be implemented'),
-        backgroundColor: Colors.blue,
-      ),
-    );
   }
 
   @override
@@ -84,7 +76,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                 ),
                               ),
                               OutlinedButton.icon(
-                                onPressed: () => _exportTransactions(context),
+                                onPressed: () => context
+                                    .read<HistoryCubit>()
+                                    .exportTransactions(userName: context.read<UserProvider>().user?.name),
                                 icon: Icon(Icons.download_outlined, size: 18, color: theme.iconTheme.color),
                                 label: Text(
                                   AppStrings.export.tr,
@@ -140,11 +134,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                           historyState.errorMessage!,
                                           textAlign: TextAlign.center,
                                           style: const TextStyle(color: Colors.red),
-                                        ),
-                                        const SizedBox(height: 16),
-                                        ElevatedButton(
-                                          onPressed: () => historyCubit.loadTransactions(),
-                                          child: const Text('Retry'),
                                         ),
                                       ],
                                     ),

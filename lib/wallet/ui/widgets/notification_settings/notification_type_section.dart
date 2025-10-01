@@ -7,11 +7,11 @@ import '../../../data/model/notification_preferences.dart';
 import 'notification_type_tile.dart';
 
 class NotificationTypeSection extends StatelessWidget {
-  final NotificationPreferences preferences;
+  final NotificationPreferences notificationPreferences;
 
   const NotificationTypeSection({
     super.key,
-    required this.preferences,
+    required this.notificationPreferences,
   });
 
   @override
@@ -30,7 +30,7 @@ class NotificationTypeSection extends StatelessWidget {
           (config) => NotificationTypeTile(
             key: Key(config.type),
             config: config,
-            preferences: preferences,
+            notificationPreferences: notificationPreferences,
           ),
         ),
       ],

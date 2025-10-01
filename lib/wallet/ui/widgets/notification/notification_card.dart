@@ -1,3 +1,5 @@
+import 'package:event_app/core/helper/extensions/aed_text_extension.dart';
+import 'package:event_app/core/widgets/PriceRow.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/utils/notification_formatter.dart';
@@ -68,13 +70,14 @@ class NotificationCard extends StatelessWidget {
   }
 
   Widget _buildMessage(BuildContext context, NotificationThemeHelper themeHelper) {
-    return Text(
-      notification.message,
+    final msg = notification.message;
+
+    return msg.toAEDPriceRow(
       style: TextStyle(
         fontSize: 14,
         color: themeHelper.messageColor,
-        height: 1.4,
       ),
+      currencyColor: themeHelper.messageColor,
     );
   }
 
@@ -107,8 +110,10 @@ class NotificationCard extends StatelessWidget {
   }
 
   Widget _buildAmountText() {
-    return Text(
-      '${notification.data!.amount} ${notification.data!.currency ?? ''}',
+    return PriceRow(
+      price: notification.data!.amount,
+      currencySize: 11,
+      currencyColor: NotificationFormatter.getAmountColor(notification),
       style: TextStyle(
         fontSize: 12,
         fontWeight: FontWeight.w600,
@@ -118,17 +123,24 @@ class NotificationCard extends StatelessWidget {
   }
 
   Widget _buildActionButton(BuildContext context) {
-    return InkWell(
-      onTap: onActionTap,
-      borderRadius: BorderRadius.circular(16),
-      child: Padding(
-        padding: const EdgeInsets.all(4),
-        child: Icon(
-          Icons.more_vert,
-          size: 16,
-          color: Theme.of(context).textTheme.bodySmall?.color?.withAlpha((0.6 * 255).toInt()),
-        ),
-      ),
+    return Builder(
+      builder: (context) {
+        return GestureDetector(
+          onTap: onActionTap,
+          child: Container(
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              color: Colors.transparent,
+            ),
+            child: Icon(
+              Icons.more_vert,
+              size: 16,
+              color: Theme.of(context).textTheme.bodySmall?.color?.withAlpha((0.6 * 255).toInt()),
+            ),
+          ),
+        );
+      },
     );
   }
 }

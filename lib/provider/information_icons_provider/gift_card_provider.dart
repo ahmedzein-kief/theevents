@@ -75,6 +75,7 @@ class CreateGiftCardProvider with ChangeNotifier {
     final token = await SecurePreferencesUtil.getToken();
 
     if (token == null || token.isEmpty) {
+      if (!context.mounted) return null;
       navigateToLogin(context, 'Please log in to create a gift card');
       return null;
     }
@@ -84,9 +85,6 @@ class CreateGiftCardProvider with ChangeNotifier {
     };
 
     const url = ApiEndpoints.createGiftCard;
-
-    /*'payment_method': paymentMethod['payment_method'] ?? "",
-      paymentMethod['sub_option_key'] ?? "": paymentMethod['sub_option_value'] ?? "",*/
 
     final updateURL =
         '$url?payment_method=${paymentMethod['payment_method']}&${paymentMethod['sub_option_key']}=${paymentMethod['sub_option_value']}&value=$selectedPrice&recipient_email=$email&recipient_name=$name&additional_notes=$notes';

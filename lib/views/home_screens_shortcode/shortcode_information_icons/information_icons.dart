@@ -69,7 +69,7 @@ class _ShortcodeInformationIconsScreenState extends State<ShortcodeInformationIc
         items.add({
           'title': title,
           'link': link,
-          'icon': 'https://newapistaging.theevents.ae/storage/$icon',
+          'icon': 'https://apistaging.theevents.ae/storage/$icon',
         });
       }
     });

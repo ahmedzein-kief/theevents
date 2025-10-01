@@ -6,6 +6,9 @@ class DeliveryChannelConfig {
     required this.key,
     required this.label,
   });
+
+  factory DeliveryChannelConfig.fromChannelKey(key) =>
+      DeliveryChannelsConfig.channels.where((channel) => channel.key == key).first;
 }
 
 class DeliveryChannelsConfig {

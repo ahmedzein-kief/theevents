@@ -1,12 +1,17 @@
+import 'dart:developer';
+
 import 'package:equatable/equatable.dart';
 
 enum NotificationType { redeem, giftCardRedeem, purchase, deposit, recharge, refundCredit, adminAdjustment }
+
+enum NotificationCategory { transaction, expiryReminder, promotional, security, system, achievements }
 
 class NotificationModel extends Equatable {
   final String id;
   final String? title;
   final String message;
   final NotificationType type;
+  final NotificationCategory category;
   final DateTime createdAt;
   final bool isRead;
   final String? actionUrl;
@@ -23,6 +28,7 @@ class NotificationModel extends Equatable {
     this.title,
     required this.message,
     required this.type,
+    this.category = NotificationCategory.transaction,
     required this.createdAt,
     this.isRead = false,
     this.actionUrl,
@@ -36,24 +42,49 @@ class NotificationModel extends Equatable {
   });
 
   factory NotificationModel.fromJson(Map<String, dynamic> json) {
-    final data = json['data'] != null ? NotificationData.fromJson(json['data']) : null;
+    try {
+      // Parse data object if it exists
+      final data =
+          json['data'] != null && json['data'] is Map<String, dynamic> ? NotificationData.fromJson(json['data']) : null;
 
-    return NotificationModel(
-      id: json['id']?.toString() ?? '',
-      title: json['title'],
-      message: json['message'] ?? '',
-      type: _parseNotificationType(json['color'] ?? data?.type ?? json['type']),
-      createdAt: _parseDateTime(json['created_at']),
-      isRead: json['is_read'] ?? false,
-      actionUrl: json['action_url'],
-      icon: json['icon'],
-      color: json['color'],
-      data: data,
-      readAt: json['read_at'] != null ? _parseDateTime(json['read_at']) : null,
-      createdAtFormatted: json['created_at_formatted'],
-      expiresAt: json['expires_at'] != null ? _parseDateTime(json['expires_at']) : null,
-      notificationType: json['type'],
-    );
+      // Extract type information - try different sources
+      final String? typeValue = json['color'] ?? data?.type ?? json['type'];
+
+      // Extract category - default to transaction if not found
+      final String? categoryValue = json['category'] ?? data?.category ?? 'transaction';
+
+      return NotificationModel(
+        id: json['id']?.toString() ?? '',
+        title: json['title'],
+        // Can be null as seen in the API response
+        message: json['message']?.toString() ?? '',
+        type: _parseNotificationType(typeValue),
+        category: _parseNotificationCategory(categoryValue),
+        createdAt: _parseDateTime(json['created_at']),
+        isRead: json['is_read'] == true,
+        // Handle boolean conversion safely
+        actionUrl: json['action_url']?.toString(),
+        icon: json['icon']?.toString(),
+        color: json['color']?.toString(),
+        data: data,
+        readAt: json['read_at'] != null ? _parseDateTime(json['read_at']) : null,
+        createdAtFormatted: json['created_at_formatted']?.toString(),
+        expiresAt: json['expires_at'] != null ? _parseDateTime(json['expires_at']) : null,
+        notificationType: json['type']?.toString(),
+      );
+    } catch (e) {
+      // Log the error and return a default notification
+      print('Error parsing NotificationModel: $e');
+      return NotificationModel(
+        id: json['id']?.toString() ?? DateTime.now().millisecondsSinceEpoch.toString(),
+        title: 'Error parsing notification',
+        message: json['message']?.toString() ?? 'Unknown notification',
+        type: NotificationType.deposit,
+        category: NotificationCategory.transaction,
+        createdAt: DateTime.now(),
+        isRead: false,
+      );
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -109,7 +140,7 @@ class NotificationModel extends Equatable {
 
   bool get isUnread => !isRead;
 
-  static NotificationType _parseNotificationType(dynamic typeValue) {
+  static NotificationType _parseNotificationType(typeValue) {
     if (typeValue == null) return NotificationType.deposit;
 
     final typeString = typeValue.toString().toLowerCase();
@@ -137,7 +168,28 @@ class NotificationModel extends Equatable {
     }
   }
 
-  static DateTime _parseDateTime(dynamic dateValue) {
+  static NotificationCategory _parseNotificationCategory(categoryValue) {
+    if (categoryValue == null) return NotificationCategory.transaction;
+    final categoryString = categoryValue.toString().toLowerCase();
+    switch (categoryString) {
+      case 'transaction':
+        return NotificationCategory.transaction;
+      case 'expiry_reminder':
+        return NotificationCategory.expiryReminder;
+      case 'promotional':
+        return NotificationCategory.promotional;
+      case 'security':
+        return NotificationCategory.security;
+      case 'system':
+        return NotificationCategory.system;
+      case 'achievements':
+        return NotificationCategory.achievements;
+      default:
+        return NotificationCategory.transaction;
+    }
+  }
+
+  static DateTime _parseDateTime(dateValue) {
     if (dateValue == null) return DateTime.now();
 
     if (dateValue is DateTime) {
@@ -233,6 +285,7 @@ class NotificationModel extends Equatable {
 class NotificationData extends Equatable {
   final int? transactionId;
   final String? type;
+  final String? category;
   final String? direction;
   final String? amount;
   final String? currency;
@@ -246,6 +299,7 @@ class NotificationData extends Equatable {
   const NotificationData({
     this.transactionId,
     this.type,
+    this.category,
     this.direction,
     this.amount,
     this.currency,
@@ -258,25 +312,51 @@ class NotificationData extends Equatable {
   });
 
   factory NotificationData.fromJson(Map<String, dynamic> json) {
-    return NotificationData(
-      transactionId: json['transaction_id'],
-      type: json['type'],
-      direction: json['direction'],
-      amount: json['amount'],
-      currency: json['currency'],
-      runningBalance: json['running_balance'],
-      message: json['message'],
-      actionUrl: json['action_url'],
-      icon: json['icon'],
-      color: json['color'],
-      timestamp: json['timestamp'] != null ? DateTime.parse(json['timestamp']) : null,
-    );
+    try {
+      return NotificationData(
+        transactionId: json['transaction_id'] is int
+            ? json['transaction_id']
+            : int.tryParse(json['transaction_id']?.toString() ?? ''),
+        type: json['type']?.toString(),
+        category: json['category']?.toString(),
+        direction: json['direction']?.toString(),
+        amount: json['amount']?.toString(),
+        currency: json['currency']?.toString(),
+        runningBalance: json['running_balance']?.toString(),
+        message: json['message']?.toString(),
+        actionUrl: json['action_url']?.toString(),
+        icon: json['icon']?.toString(),
+        color: json['color']?.toString(),
+        timestamp: json['timestamp'] != null ? _parseDateTime(json['timestamp']) : null,
+      );
+    } catch (e) {
+      log('Error parsing NotificationData: $e');
+      return const NotificationData();
+    }
+  }
+
+  static DateTime? _parseDateTime(dateValue) {
+    if (dateValue == null) return null;
+
+    if (dateValue is DateTime) return dateValue;
+
+    if (dateValue is String) {
+      try {
+        return DateTime.parse(dateValue);
+      } catch (e) {
+        log('Error parsing DateTime from string: $dateValue');
+        return null;
+      }
+    }
+
+    return null;
   }
 
   Map<String, dynamic> toJson() {
     return {
       'transaction_id': transactionId,
       'type': type,
+      'category': category,
       'direction': direction,
       'amount': amount,
       'currency': currency,
@@ -293,6 +373,7 @@ class NotificationData extends Equatable {
   List<Object?> get props => [
         transactionId,
         type,
+        category,
         direction,
         amount,
         currency,
@@ -317,18 +398,70 @@ class NotificationResponse {
   });
 
   factory NotificationResponse.fromJson(Map<String, dynamic> json) {
+    // Handle the case where data can be either a List or Map
+    final dynamic dataObj = json['data'];
+
+    List<NotificationModel> notifications = [];
+    NotificationMeta meta;
+
+    if (dataObj is List) {
+      // When data is an empty list or list of notifications
+      notifications = dataObj.map((item) => NotificationModel.fromJson(item as Map<String, dynamic>)).toList();
+
+      // Get meta from root level
+      final metaObj = json['meta'] as Map<String, dynamic>? ?? {};
+      meta = NotificationMeta(
+        currentPage: metaObj['current_page'] ?? 1,
+        perPage: metaObj['per_page'] ?? 15,
+        total: metaObj['total'] ?? 0,
+        lastPage: metaObj['last_page'] ?? 1,
+        unreadCount: metaObj['unread_count'] ?? notifications.where((n) => !n.isRead).length,
+        totalCount: metaObj['total_count'] ?? 0,
+      );
+    } else if (dataObj is Map<String, dynamic>) {
+      // When data is a map with nested data array
+      final notificationsData = dataObj['data'] as List? ?? [];
+      notifications =
+          notificationsData.map((item) => NotificationModel.fromJson(item as Map<String, dynamic>)).toList();
+
+      meta = NotificationMeta(
+        currentPage: dataObj['current_page'] ?? 1,
+        perPage: dataObj['per_page'] ?? 15,
+        total: dataObj['total'] ?? 0,
+        lastPage: dataObj['last_page'] ?? 1,
+        unreadCount: notifications.where((n) => !n.isRead).length,
+        totalCount: dataObj['total'] ?? 0,
+      );
+    } else {
+      // Fallback for unexpected structure
+      final metaObj = json['meta'] as Map<String, dynamic>? ?? {};
+      meta = NotificationMeta(
+        currentPage: metaObj['current_page'] ?? 1,
+        perPage: metaObj['per_page'] ?? 15,
+        total: metaObj['total'] ?? 0,
+        lastPage: metaObj['last_page'] ?? 1,
+        unreadCount: metaObj['unread_count'] ?? 0,
+        totalCount: metaObj['total_count'] ?? 0,
+      );
+    }
+
     return NotificationResponse(
       success: json['success'] ?? false,
-      notifications: (json['data'] as List? ?? []).map((item) => NotificationModel.fromJson(item)).toList(),
-      meta: NotificationMeta.fromJson(json['meta'] ?? {}),
+      notifications: notifications,
+      meta: meta,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'success': success,
-      'data': notifications.map((n) => n.toJson()).toList(),
-      'meta': meta.toJson(),
+      'status': success, // Match API response structure
+      'data': {
+        'data': notifications.map((n) => n.toJson()).toList(),
+        'current_page': meta.currentPage,
+        'per_page': meta.perPage,
+        'total': meta.total,
+        'last_page': meta.lastPage,
+      },
     };
   }
 }

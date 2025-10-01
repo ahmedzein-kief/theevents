@@ -374,7 +374,7 @@ class _CartItemsScreensState extends State<CartItemsScreen> {
                                       CupertinoPageRoute(
                                         builder: (builder) {
                                           return StepperScreen(
-                                            tracked_start_checkout: checkoutToken,
+                                            trackedStartCheckout: checkoutToken,
                                             amount: provider.cartResponse?.data.finalTotal.toString() ?? '',
                                             isNewAddress: false,
                                           );

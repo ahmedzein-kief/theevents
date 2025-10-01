@@ -94,7 +94,7 @@ class CustomSnackbar {
     try {
       // Check if the context is mounted (available in newer Flutter versions)
       if (context is Element) {
-        final element = context as Element;
+        final element = context;
         // Check if element is still active in the tree
         if (!element.mounted) return false;
       }

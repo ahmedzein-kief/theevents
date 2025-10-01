@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../styles/app_colors.dart';
+
 class NotificationSettingsTheme {
   final BuildContext context;
   final ThemeData theme;
@@ -37,13 +39,13 @@ class NotificationSettingsTheme {
   BoxDecoration getChipDecoration(bool isSelected) {
     return BoxDecoration(
       color: isSelected
-          ? const Color(0xFFF3A195)
+          ? AppColors.peachyPink.withAlpha((0.7 * 255).toInt())
           : isDark
               ? const Color(0xFF767474)
               : theme.colorScheme.primary,
       borderRadius: BorderRadius.circular(20),
       border: Border.all(
-        color: isSelected ? const Color(0xFFF3A095) : theme.colorScheme.onSurface.withAlpha((0.1 * 255).toInt()),
+        color: isSelected ? AppColors.peachyPink : theme.colorScheme.onSurface.withAlpha((0.1 * 255).toInt()),
       ),
     );
   }

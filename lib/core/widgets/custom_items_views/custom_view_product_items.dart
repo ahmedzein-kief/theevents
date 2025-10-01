@@ -61,8 +61,7 @@ class _ResponsiveProductCardState extends State<ResponsiveProductCard> {
                   children: [
                     LayoutBuilder(
                       builder: (context, constraints) => Image.network(
-                        widget.imageUrl ??
-                            'https://newapistaging.theevents.ae/storage/products/tobacco-rose-600x600.png',
+                        widget.imageUrl ?? 'https://apistaging.theevents.ae/storage/products/tobacco-rose-600x600.png',
                         fit: BoxFit.cover,
                         height: constraints.maxHeight,
                         width: constraints.maxWidth,

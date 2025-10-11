@@ -1,3 +1,5 @@
+import 'package:event_app/core/constants/app_strings.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/provider/api_response_handler.dart';
 import 'package:flutter/cupertino.dart';
@@ -30,7 +32,7 @@ class CustomerAddress extends ChangeNotifier {
     );
 
     if (response.statusCode == 200) {
-      AppUtils.showToast('Address Updated successfully!', isSuccess: true);
+      AppUtils.showToast(AppStrings.addressUpdateSuccess.tr, isSuccess: true);
 
       /// --------------------------- RE-FETCH THE DATA OF THE CUSTOMER ------------------------------
       if (context.mounted) {
@@ -41,7 +43,7 @@ class CustomerAddress extends ChangeNotifier {
       }
       return true;
     } else {
-      AppUtils.showToast('Please Enter Valid Data');
+      AppUtils.showToast(AppStrings.invalidAddressData.tr);
       return false;
     }
   }

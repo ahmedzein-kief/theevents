@@ -65,7 +65,7 @@ class ApiInterceptor implements Interceptor {
       return handler.reject(
         DioException(
           requestOptions: error.requestOptions,
-          error: AuthException('Authentication failed. Please login again.'), // Use AuthException
+          error: AuthException(AppStrings.authenticationFailed.tr), // Use AuthException
           type: DioExceptionType.badResponse,
           response: error.response,
         ),

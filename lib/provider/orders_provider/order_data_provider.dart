@@ -2,6 +2,8 @@ import 'dart:developer';
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
+import 'package:event_app/core/constants/app_strings.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/network/api_endpoints/api_contsants.dart';
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/models/orders/order_detail_model.dart';
@@ -59,7 +61,7 @@ class OrderDataProvider with ChangeNotifier {
       } else {
         _isLoading = false;
         notifyListeners();
-        AppUtils.showToast('No Orders Found');
+        AppUtils.showToast(AppStrings.noOrdersFound.tr);
       }
     } catch (e) {
       log('Error in getOrders: ${e.toString()}');
@@ -101,7 +103,7 @@ class OrderDataProvider with ChangeNotifier {
       } else {
         _isLoading = false;
         notifyListeners();
-        AppUtils.showToast('No Orders Detail Found');
+        AppUtils.showToast(AppStrings.noOrderDetailsFound.tr);
       }
     } catch (e) {
       log('Error in getOrderDetails: ${e.toString()}');

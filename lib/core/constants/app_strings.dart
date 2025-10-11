@@ -577,4 +577,25 @@ class AppStrings {
   static const String payoutInfo = 'Payout Info';
   static const String camera = 'Camera';
   static const String gallery = 'Gallery';
+  static const String authenticationFailed = 'Authentication failed';
+  static const String authenticationRequired = 'Authentication required';
+  static const String requestCancelled = 'Request cancelled';
+  static const String failedToAddItemToCart = 'Failed to add item to cart';
+  static const String somethingWentWrong = 'Something went wrong.';
+  static const String anErrorOccurred = 'An error occurred. Please try again.';
+  static const String failedToLoadCartData = 'Failed to load cart data.';
+  static const String failedToLoadCheckoutData = 'Failed to load checkout data.';
+  static const String anErrorOccurredDuringCheckout = 'An error occurred during checkout.';
+  static const String anErrorOccurredWhileUpdatingCart = 'An error occurred while updating cart.';
+  static const String noOrdersFound = 'noOrdersFound';
+  static const String failedToLoadAddresses = 'failedToLoadAddresses';
+  static const String addressDeleteSuccess = 'addressDeleteSuccess';
+  static const String failedToDeleteAddress = 'failedToDeleteAddress';
+  static const String errorDeletingAddress = 'errorDeletingAddress';
+  static const String addressUpdateSuccess = 'addressUpdateSuccess';
+  static const String invalidAddressData = 'invalidAddressData';
+  static const String failedToLoadData = 'failedToLoadData';
+  static const String pleaseLoginWishlist = 'pleaseLoginWishlist';
+  static const String wishlistUpdateFailed = 'wishlistUpdateFailed';
+  static const String unknownError = 'unknownError';
 }

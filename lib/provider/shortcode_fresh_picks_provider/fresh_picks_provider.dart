@@ -1,10 +1,12 @@
 import 'package:dio/dio.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/models/product_packages_models/product_filters_model.dart';
 import 'package:event_app/provider/api_response_handler.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 
+import '../../core/constants/app_strings.dart';
 import '../../core/helper/di/locator.dart';
 import '../../core/services/shared_preferences_helper.dart';
 import '../../core/utils/app_utils.dart';
@@ -88,7 +90,7 @@ class FreshPicksProvider extends ChangeNotifier {
         notifyListeners();
       } else {
         _isLoading = false;
-        throw Exception('Failed to load data');
+        throw Exception(AppStrings.failedToLoadData.tr);
       }
     } catch (e) {
       _isLoading = false;
@@ -110,7 +112,7 @@ class FreshPicksProvider extends ChangeNotifier {
         _isLoading = false;
         notifyListeners();
       } else {
-        throw Exception('Failed to load data');
+        throw Exception(AppStrings.failedToLoadData.tr);
       }
     } catch (e) {
       tagsModel = null;
@@ -162,7 +164,7 @@ class FreshPicksProvider extends ChangeNotifier {
     if (!loggedIn) {
       if (context.mounted) {
         // Check if context is still valid
-        navigateToLogin(context, 'Please log in to manage your wishlist');
+        navigateToLogin(context, AppStrings.pleaseLoginWishlist.tr);
       }
       return;
     }
@@ -189,10 +191,10 @@ class FreshPicksProvider extends ChangeNotifier {
           AppUtils.showToast(wishlistResponse.message!);
         }
       } else {
-        AppUtils.showToast('Failed to update wishlist.');
+        AppUtils.showToast(AppStrings.wishlistUpdateFailed.tr);
       }
     } catch (e) {
-      AppUtils.showToast('An error occurred. Please try again.');
+      AppUtils.showToast(AppStrings.unknownError.tr);
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -208,7 +210,7 @@ class FreshPicksProvider extends ChangeNotifier {
     if (!loggedIn) {
       if (context.mounted) {
         // Check if context is still valid
-        navigateToLogin(context, 'Please log in to manage your wishlist');
+        navigateToLogin(context, AppStrings.pleaseLoginWishlist.tr);
       }
       return null;
     }
@@ -236,10 +238,10 @@ class FreshPicksProvider extends ChangeNotifier {
           AppUtils.showToast(wishlistResponse.message!);
         }
       } else {
-        AppUtils.showToast('Failed to update wishlist.');
+        AppUtils.showToast(AppStrings.wishlistUpdateFailed.tr);
       }
     } catch (e) {
-      AppUtils.showToast('An error occurred. Please try again.');
+      AppUtils.showToast(AppStrings.unknownError.tr);
     } finally {
       _isLoading = false;
       notifyListeners();

@@ -2,10 +2,12 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/provider/api_response_handler.dart';
 import 'package:flutter/material.dart';
 
+import '../../core/constants/app_strings.dart';
 import '../../core/helper/functions/functions.dart';
 import '../../core/network/api_endpoints/api_contsants.dart';
 import '../../core/utils/app_utils.dart';
@@ -213,7 +215,7 @@ class CartProvider with ChangeNotifier {
       }
 
       log('Error in fetchCartData: ${e.toString()}');
-      AppUtils.showToast('Failed to load cart data.');
+      AppUtils.showToast(AppStrings.failedToLoadCartData.tr);
     } finally {
       _cartLoading = false;
       notifyListeners();
@@ -244,7 +246,7 @@ class CartProvider with ChangeNotifier {
       } else if (response.statusCode == 401) {
         return null;
       } else {
-        AppUtils.showToast('Failed to load checkout data.');
+        AppUtils.showToast(AppStrings.failedToLoadCheckoutData.tr);
       }
     } catch (e) {
       if (e is AuthException) {
@@ -256,7 +258,7 @@ class CartProvider with ChangeNotifier {
       }
 
       log('fetchCheckoutData error ${e.toString()}');
-      AppUtils.showToast('An error occurred during checkout.');
+      AppUtils.showToast(AppStrings.anErrorOccurredDuringCheckout.tr);
     } finally {
       _checkoutLoading = false;
       notifyListeners();
@@ -287,22 +289,22 @@ class CartProvider with ChangeNotifier {
           message: updateCart.message,
         );
       } else if (response.statusCode == 401) {
-        return CartOperationResult(success: false, message: 'Authentication failed');
+        return CartOperationResult(success: false, message: AppStrings.authenticationFailed.tr);
       } else {
         final errorResponse = UpdateCartResponse.fromJson(response.data);
         return CartOperationResult(success: false, message: errorResponse.message);
       }
     } catch (e) {
       if (e is AuthException) {
-        return CartOperationResult(success: false, message: 'Authentication required');
+        return CartOperationResult(success: false, message: AppStrings.authenticationRequired.tr);
       }
 
       if (e is DioException && e.type == DioExceptionType.cancel) {
-        return CartOperationResult(success: false, message: 'Request cancelled');
+        return CartOperationResult(success: false, message: AppStrings.requestCancelled.tr);
       }
 
       log('updateCart error ${e.toString()}');
-      return CartOperationResult(success: false, message: 'An error occurred while updating cart.');
+      return CartOperationResult(success: false, message: AppStrings.anErrorOccurredWhileUpdatingCart.tr);
     } finally {
       notifyListeners();
     }

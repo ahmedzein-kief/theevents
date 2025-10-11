@@ -1,9 +1,11 @@
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/core/services/shared_preferences_helper.dart';
 import 'package:event_app/provider/api_response_handler.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../../core/constants/app_strings.dart';
 import '../../core/network/api_endpoints/api_contsants.dart';
 import '../../core/network/api_status/api_status.dart';
 import '../../core/utils/app_utils.dart';
@@ -254,18 +256,18 @@ class CustomerAddressProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         final data = response.data;
         if (data['error'] == false) {
-          AppUtils.showToast('Address Delete successfully!', isSuccess: true);
+          AppUtils.showToast(AppStrings.addressDeleteSuccess.tr, isSuccess: true);
 
           addresses.removeWhere((address) => address.id == addressId);
         } else {
-          errorMessageDelete = data['message'] ?? 'Failed to delete address';
-          AppUtils.showToast('Failed to delete address!');
+          errorMessageDelete = data['message'] ?? AppStrings.failedToDeleteAddress.tr;
+          AppUtils.showToast(AppStrings.failedToDeleteAddress.tr);
         }
       } else {
-        errorMessageDelete = 'Failed to delete address';
+        errorMessageDelete = AppStrings.failedToDeleteAddress.tr;
       }
     } catch (error) {
-      errorMessageDelete = 'An error occurred: $error';
+      errorMessageDelete = AppStrings.anErrorOccurred.tr;
     } finally {
       _isLoadingDelete = false;
       notifyListeners();

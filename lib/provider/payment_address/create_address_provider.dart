@@ -102,14 +102,20 @@ class AddressProvider with ChangeNotifier {
     setStatus(ApiStatus.loading);
     _isLoading = true;
     notifyListeners();
-    final token = await SecurePreferencesUtil.getToken();
-    const urlCreateAddress = ApiEndpoints.createCustomerAddress;
-    const url = urlCreateAddress;
 
+    final token = await SecurePreferencesUtil.getToken();
     if (token == null || token.isEmpty) {
-      navigateToLogin(context, 'Please log in to create an address');
+      if (context.mounted) {
+        // Check if context is still valid
+        navigateToLogin(context, 'Please log in to create an address');
+      }
+      _isLoading = false;
+      notifyListeners();
       return null;
     }
+
+    const urlCreateAddress = ApiEndpoints.createCustomerAddress;
+    const url = urlCreateAddress;
     final headers = {
       // 'Content-Type': 'application/json',
       'Authorization': token,
@@ -131,6 +137,7 @@ class AddressProvider with ChangeNotifier {
         notifyListeners();
         return (createData.data as Map<String, dynamic>)['id'];
       } else {
+        setStatus(ApiStatus.error);
         _isLoading = false;
         notifyListeners();
         return null;
@@ -151,17 +158,16 @@ class CreateAddressResponse {
     required this.message,
   });
 
-  // Factory constructor to create a CartUpdateResponse from JSON
   factory CreateAddressResponse.fromJson(Map<String, dynamic> json) => CreateAddressResponse(
         error: json['error'] as bool,
-        data: json['data'], // Handle null or any type of data here
+        data: json['data'],
         message: json['message'] as String,
       );
+
   final bool error;
   final dynamic data;
   final String message;
 
-  // Method to convert CartUpdateResponse to JSON (optional)
   Map<String, dynamic> toJson() => {
         'error': error,
         'data': data,

@@ -17,7 +17,7 @@ class WalletDrawerHeader extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            'Menu'.tr,
+            'menu'.tr,
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,

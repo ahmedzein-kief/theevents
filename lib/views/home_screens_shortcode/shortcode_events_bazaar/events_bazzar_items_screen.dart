@@ -28,18 +28,12 @@ class EventsBazaarDetailScreen extends StatefulWidget {
 }
 
 class _EventsBazaarDetailScreenState extends State<EventsBazaarDetailScreen> {
-  late final bool _isLoggedIn = false;
-
   bool _isLoading = true;
-  bool _hasError = false;
-  late List<String> _fetchImageUrls;
-  late List<String> _fetchedTitles;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      fetchData();
       fetchBannerData();
     });
   }
@@ -53,21 +47,7 @@ class _EventsBazaarDetailScreenState extends State<EventsBazaarDetailScreen> {
       });
     } catch (e) {
       setState(() {
-        _hasError = true;
         _isLoading = false;
-      });
-    }
-  }
-
-  Future<void> fetchData() async {
-    try {
-      setState(() {
-        _fetchImageUrls = widget.imageUrls;
-        _fetchedTitles = widget.titles;
-      });
-    } catch (e) {
-      setState(() {
-        _hasError = true;
       });
     }
   }

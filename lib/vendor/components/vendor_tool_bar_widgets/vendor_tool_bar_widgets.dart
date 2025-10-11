@@ -1,3 +1,6 @@
+import 'package:event_app/core/constants/app_strings.dart';
+import 'package:event_app/core/constants/vendor_app_strings.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:flutter/material.dart';
 
 import '../../../core/styles/app_colors.dart';
@@ -9,17 +12,17 @@ class VendorToolbarWidgets {
   /// search bar
   /// A customizable search widget used in the vendor toolbar.
   ///
-  /// The widget allows for dynamic functionality via the [onTap] parameter.
+  /// The widget allows for dynamic functionality via the [`onTap`] parameter.
   static CustomTextFormField vendorSearchWidget({
-    required onSearchTap,
+    required VoidCallback onSearchTap, // Updated to use VoidCallback for clarity
     required TextEditingController textEditingController,
-    required Function(String?) onChanged,
+    required ValueChanged<String?> onChanged, // Explicitly typed for clarity
   }) =>
       CustomTextFormField(
-        labelText: 'Search..',
+        labelText: VendorAppStrings.search.tr,
         showTitle: false,
         required: false,
-        hintText: 'Search..',
+        hintText: VendorAppStrings.search.tr,
         hintStyle: const TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w400,
@@ -39,15 +42,13 @@ class VendorToolbarWidgets {
         filled: true,
         fillColor: AppColors.lavenderHaze,
         controller: textEditingController,
-        onChanged: (value) {
-          onChanged(value);
-        },
+        onChanged: onChanged,
       );
 
   /// Reload Button
-  static dynamic vendorReloadButton({
-    required Function() onTap,
-    required isLoading,
+  static Widget vendorReloadButton({
+    required VoidCallback onTap, // Updated to use VoidCallback
+    required bool isLoading,
   }) =>
       wrapUnderElevation(
         child: CustomAppButton(
@@ -70,13 +71,14 @@ class VendorToolbarWidgets {
       );
 
   /// vendor tool bar dropdown widget
-  static dynamic vendorDropdownWidget({
+  static Widget vendorDropdownWidget<T>({
     required String hintText,
-    required List<DropdownMenuItem> menuItemsList,
-    required String? Function(dynamic)? onChanged,
+    required List<DropdownMenuItem<T>> menuItemsList, // Updated to use generic type T
+    required ValueChanged<T?>? onChanged, // Updated to use T? instead of dynamic
   }) =>
       wrapUnderElevation(
-        child: CustomDropdown(
+        child: CustomDropdown<T>(
+          // Explicitly specify generic type T
           menuItemsList: menuItemsList,
           borderRadius: 0,
           hintText: hintText,
@@ -92,13 +94,13 @@ class VendorToolbarWidgets {
       );
 
   /// Create Button
-  static dynamic vendorCreateButton({
-    required Function() onTap,
+  static Widget vendorCreateButton({
+    required VoidCallback onTap, // Updated to use VoidCallback
     required bool isLoading,
   }) =>
       wrapUnderElevation(
         child: CustomAppButton(
-          buttonText: 'Create',
+          buttonText: AppStrings.create.tr,
           buttonColor: AppColors.lightCoral,
           prefixIcon: Icons.add,
           suffixIcon: Icons.keyboard_arrow_down_rounded,
@@ -116,7 +118,7 @@ class VendorToolbarWidgets {
       );
 
   /// Provide Elevation to widgets
-  static Material wrapUnderElevation({required child}) => Material(
+  static Widget wrapUnderElevation({required Widget child}) => Material(
         elevation: 0.1,
         child: child,
       );

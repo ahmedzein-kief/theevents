@@ -1,9 +1,9 @@
 import 'package:event_app/provider/vendor/vendor_repository.dart';
-import 'package:event_app/vendor/components/services/alert_services.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../../../core/services/shared_preferences_helper.dart';
-import '../../../data/vendor/data/response/ApiResponse.dart';
+import '../../../core/utils/app_utils.dart';
+import '../../../data/vendor/data/response/api_response.dart';
 import '../../../models/vendor_models/vendor_coupons_models/vendor_delete_coupon_model.dart';
 
 class VendorDeleteCouponViewModel with ChangeNotifier {
@@ -33,8 +33,10 @@ class VendorDeleteCouponViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> vendorDeleteCoupon(
-      {couponId, required BuildContext context,}) async {
+  Future<bool> vendorDeleteCoupon({
+    couponId,
+    required BuildContext context,
+  }) async {
     try {
       setLoading(true);
       setApiResponse = ApiResponse.loading();
@@ -45,16 +47,16 @@ class VendorDeleteCouponViewModel with ChangeNotifier {
       };
 
       final VendorDeleteCouponModel response = await _myRepo.vendorDeleteCoupon(
-          headers: headers, couponId: couponId,);
+        headers: headers,
+        couponId: couponId,
+      );
       setApiResponse = ApiResponse.completed(response);
-      AlertServices.showSuccessSnackBar(
-          message: response.message.toString(), context: context,);
+      AppUtils.showToast(response.message.toString(), isSuccess: true);
       setLoading(false);
       return true;
     } catch (error) {
       setApiResponse = ApiResponse.error(error.toString());
-      AlertServices.showErrorSnackBar(
-          message: error.toString(), context: context,);
+      AppUtils.showToast(error.toString());
       setLoading(false);
       return false;
     }

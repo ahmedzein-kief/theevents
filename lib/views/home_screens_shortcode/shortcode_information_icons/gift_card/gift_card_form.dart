@@ -34,15 +34,12 @@ class _GiftCardFormState extends State<GiftCardForm> {
   final TextEditingController _notesController = TextEditingController();
   List<int> prices = [100, 200, 500, 1000];
 
-  final bool _isNavigateToPaymentScreen = false;
-
   void controllerValidation() {
     if (_formKey.currentState?.validate() ?? false) {
     } else {}
   }
 
   final TextEditingController _priceController = TextEditingController();
-  bool _navigatedToPaymentScreen = false;
 
   @override
   void initState() {
@@ -367,8 +364,6 @@ class _GiftCardFormState extends State<GiftCardForm> {
 
                                     // Check if the checkoutUrl is available and we haven't navigated yet
                                     if (data?.checkoutUrl.isNotEmpty == true) {
-                                      _navigatedToPaymentScreen = true;
-
                                       // Check if widget is still mounted before using context
                                       if (!context.mounted) return;
 

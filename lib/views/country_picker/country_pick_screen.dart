@@ -15,7 +15,7 @@ class CountryPickerDialog extends StatelessWidget {
   });
 
   final List<CountryList> countryList;
-  final currentSelection;
+  final String? currentSelection;
   final Function(CountryList) onCountrySelected;
 
   @override

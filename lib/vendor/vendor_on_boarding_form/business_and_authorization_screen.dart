@@ -32,7 +32,7 @@ class _BusinessAndAuthorizationScreenState extends State<BusinessAndAuthorizatio
 
   Future<void> getAllMetaData() async {
     final provider = Provider.of<VendorSignUpProvider>(context, listen: false);
-    final response = await provider.getAllMetaData(context);
+    final response = await provider.getAllMetaData();
 
     if (response != null) {
       SecurePreferencesUtil.saveServerStep(
@@ -109,7 +109,7 @@ class _BusinessAndAuthorizationScreenState extends State<BusinessAndAuthorizatio
                             children: [
                               Expanded(
                                 child: RadioListTile<int>(
-                                  activeColor: Colors.black,
+                                  activeColor: Theme.of(context).colorScheme.onPrimary,
                                   title: Text(
                                     VendorAppStrings.areYouBusinessOwner.tr,
                                     style: vendorBusinessInfo(),
@@ -129,7 +129,7 @@ class _BusinessAndAuthorizationScreenState extends State<BusinessAndAuthorizatio
                                     VendorAppStrings.areYouAuthorizedSignatory.tr,
                                     style: vendorBusinessInfo(),
                                   ),
-                                  activeColor: Colors.black,
+                                  activeColor: Theme.of(context).colorScheme.onPrimary,
                                   value: 1,
                                   groupValue: _radioValue,
                                   onChanged: (int? value) {

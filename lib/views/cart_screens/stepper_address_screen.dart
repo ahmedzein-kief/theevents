@@ -1,13 +1,13 @@
 import 'package:event_app/core/constants/app_strings.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
-import 'package:event_app/core/services/shared_preferences_helper.dart';
 import 'package:event_app/core/widgets/custom_items_views/custom_add_to_cart_button.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
-import '../../core/widgets/PriceRow.dart';
+import '../../core/utils/app_utils.dart';
 import '../../core/widgets/address_form_bottom_sheet.dart';
+import '../../core/widgets/price_row.dart';
 import '../../provider/checkout_provider/submit_checkout_information.dart';
 import '../../provider/payment_address/customer_address.dart';
 
@@ -34,15 +34,16 @@ class _StepperAddressScreenState extends State<StepperAddressScreen> {
   @override
   void initState() {
     super.initState();
-    fetchDataOfCustomer();
+    // Defer the API call until after the first frame is built
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      fetchDataOfCustomer();
+    });
   }
 
   Future<void> fetchDataOfCustomer() async {
     try {
-      final token = await SecurePreferencesUtil.getToken();
       final provider = Provider.of<CustomerAddressProvider>(context, listen: false);
       final result = await provider.fetchCustomerAddresses(
-        token ?? '',
         context,
         perPage: 12,
         page: _currentPage,
@@ -65,14 +66,10 @@ class _StepperAddressScreenState extends State<StepperAddressScreen> {
     }
   }
 
+  // Save the selected address and proceed
   Future<void> _handleAddressSelection() async {
-    // Save the selected address and proceed
-    final token = await SecurePreferencesUtil.getToken();
-    final result = await Provider.of<SubMitCheckoutInformationProvider>(
-      context,
-      listen: false,
-    ).submitCheckoutInformation(
-      context: context,
+    final result =
+        await Provider.of<SubMitCheckoutInformationProvider>(context, listen: false).submitCheckoutInformation(
       trackedStartCheckout: widget.trackedStartCheckout,
       addressId: selectedAddress!.id.toString(),
       name: selectedAddress!.name ?? '',
@@ -88,7 +85,6 @@ class _StepperAddressScreenState extends State<StepperAddressScreen> {
       vendorId: 0,
       shippingMethod: '',
       shippingOption: '',
-      token: token ?? '',
     );
 
     if (result != null) {
@@ -348,22 +344,27 @@ class _StepperAddressScreenState extends State<StepperAddressScreen> {
                       ),
                     ),
                     PriceRow(
-                        price: widget.finalAmount,
-                        currencySize: 12,
-                        style: GoogleFonts.inter(
-                          textStyle: GoogleFonts.inter(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: isDarkMode ? Colors.white : Colors.black,
-                          ),
-                        ))
+                      price: widget.finalAmount,
+                      currencySize: 12,
+                      style: GoogleFonts.inter(
+                        textStyle: GoogleFonts.inter(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: isDarkMode ? Colors.white : Colors.black,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 16),
                 // Continue Button
                 AppCustomButton(
                   title: AppStrings.continueToPayment.tr,
-                  onPressed: selectedAddress != null ? _handleAddressSelection : () {},
+                  onPressed: selectedAddress != null
+                      ? _handleAddressSelection
+                      : () {
+                          AppUtils.showToast(AppStrings.pleaseAddNewAddress.tr);
+                        },
                 ),
               ],
             ),
@@ -412,7 +413,7 @@ class _StepperAddressScreenState extends State<StepperAddressScreen> {
                                 final address = provider.addresses[index];
                                 return ListTile(
                                   title: Text(
-                                    address.fullAddress ?? 'Unknown Address',
+                                    address.fullAddress ?? AppStrings.unknownAddress.tr,
                                     style: GoogleFonts.inter(
                                       fontSize: 14,
                                       color: isDarkMode ? Colors.white : Colors.black,
@@ -447,43 +448,48 @@ class _StepperAddressScreenState extends State<StepperAddressScreen> {
     );
   }
 
-  // Updated _editAddress method to use the reusable AddressFormBottomSheet
-  void _editAddress(CustomerRecords address) {
+  Future<void> _editAddress(CustomerRecords address) async {
     AddressFormBottomSheet.show(
       context,
       existingAddress: address,
-      onAddressSaved: () {
+      onAddressSaved: () async {
         // Refresh the address list and update the selected address
-        fetchDataOfCustomer().then((_) {
-          // Find the updated address and set it as selected
-          final provider = Provider.of<CustomerAddressProvider>(context, listen: false);
-          final updatedAddress = provider.addresses.firstWhere(
-            (addr) => addr.id == address.id,
-            orElse: () => address,
-          );
-          setState(() {
-            selectedAddress = updatedAddress;
-          });
+        await fetchDataOfCustomer();
+
+        // Check if widget is still mounted before using context
+        if (!mounted) return;
+
+        // Find the updated address and set it as selected
+        final provider = Provider.of<CustomerAddressProvider>(context, listen: false);
+        final updatedAddress = provider.addresses.firstWhere(
+          (addr) => addr.id == address.id,
+          orElse: () => address,
+        );
+        setState(() {
+          selectedAddress = updatedAddress;
         });
       },
     );
   }
 
-  // Updated _addNewAddress method to use the reusable AddressFormBottomSheet
-  void _addNewAddress() {
+// Updated _addNewAddress method to use the reusable AddressFormBottomSheet
+  Future<void> _addNewAddress() async {
     AddressFormBottomSheet.show(
       context,
-      onAddressSaved: () {
+      onAddressSaved: () async {
         // Refresh the address list and optionally set the new address as selected
-        fetchDataOfCustomer().then((_) {
-          final provider = Provider.of<CustomerAddressProvider>(context, listen: false);
-          if (provider.addresses.isNotEmpty && selectedAddress == null) {
-            // If no address was selected before, select the newly added one
-            setState(() {
-              selectedAddress = provider.addresses.last;
-            });
-          }
-        });
+        await fetchDataOfCustomer();
+
+        // Check if widget is still mounted before using context
+        if (!mounted) return;
+
+        final provider = Provider.of<CustomerAddressProvider>(context, listen: false);
+        if (provider.addresses.isNotEmpty && selectedAddress == null) {
+          // If no address was selected before, select the newly added one
+          setState(() {
+            selectedAddress = provider.addresses.last;
+          });
+        }
       },
     );
   }

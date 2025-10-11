@@ -13,6 +13,7 @@ class CustomDateTimePickerField extends StatelessWidget {
     required this.onTimeTap,
     required this.readOnly,
   });
+
   final TextEditingController date;
   final TextEditingController time;
   final VoidCallback onDateTap;
@@ -31,7 +32,7 @@ class CustomDateTimePickerField extends StatelessWidget {
                 height: 48,
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 decoration: BoxDecoration(
-                  color: readOnly ? Colors.grey.shade300 : Colors.transparent,
+                  color: readOnly ? Theme.of(context).disabledColor : Colors.transparent,
                   border: Border.all(color: AppColors.softBlueGrey),
                   borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(4),
@@ -44,11 +45,17 @@ class CustomDateTimePickerField extends StatelessWidget {
                       flex: 2,
                       child: Text(
                         date.text,
-                        style: CouponViewUtils.couponLabelTextStyle(),
+                        style: CouponViewUtils.couponLabelTextStyle()
+                            .copyWith(color: Theme.of(context).colorScheme.onPrimary),
                       ),
                     ),
                     SvgPicture.asset(
-                        'assets/vendor_assets/settings/choose_date.svg',),
+                      'assets/vendor_assets/settings/choose_date.svg',
+                      colorFilter: ColorFilter.mode(
+                        Theme.of(context).colorScheme.onPrimary,
+                        BlendMode.srcIn,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -62,7 +69,7 @@ class CustomDateTimePickerField extends StatelessWidget {
                 height: 48,
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 decoration: BoxDecoration(
-                  color: readOnly ? Colors.grey.shade300 : Colors.transparent,
+                  color: readOnly ? Theme.of(context).disabledColor : Colors.transparent,
                   border: const Border(
                     top: BorderSide(color: AppColors.softBlueGrey),
                     right: BorderSide(color: AppColors.softBlueGrey),
@@ -78,7 +85,8 @@ class CustomDateTimePickerField extends StatelessWidget {
                   children: [
                     Text(
                       time.text,
-                      style: CouponViewUtils.couponLabelTextStyle(),
+                      style: CouponViewUtils.couponLabelTextStyle()
+                          .copyWith(color: Theme.of(context).colorScheme.onPrimary),
                     ),
                   ],
                 ),

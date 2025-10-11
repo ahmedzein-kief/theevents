@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/models/orders/order_history_model.dart';
@@ -27,29 +25,31 @@ class _OrderPageScreenState extends State<OrderPageScreen> with SingleTickerProv
 
     _tabController = TabController(length: 2, vsync: this);
 
-    _tabController.addListener(() {
-      if (_tabController.indexIsChanging || _tabController.index != _tabController.previousIndex) {
-        fetchOrders(context, isPending: _tabController.index == 0);
-      }
-    });
+    // Listen to tab changes - only fires once when animation completes
+    _tabController.addListener(_onTabChanged);
 
+    // Fetch initial data
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      log('Fetching orders OrderPageScreen initState');
-      fetchOrders(context, isPending: true); // Fetch pending orders initially
+      _fetchOrders(isPending: true);
     });
   }
 
-  Future<void> fetchOrders(
-    BuildContext? context, {
-    required bool isPending,
-  }) async {
+  void _onTabChanged() {
+    // Only fetch when the tab animation is complete (not during transition)
+    if (!_tabController.indexIsChanging) {
+      _fetchOrders(isPending: _tabController.index == 0);
+    }
+  }
+
+  Future<void> _fetchOrders({required bool isPending}) async {
     if (!mounted) return;
-    final provider = Provider.of<OrderDataProvider>(context!, listen: false);
+
+    final provider = Provider.of<OrderDataProvider>(context, listen: false);
 
     // Clear existing orders to force refresh
     provider.clearOrders();
 
-    await provider.getOrders(context, isPending);
+    await provider.getOrders(isPending);
   }
 
   @override
@@ -72,24 +72,15 @@ class _OrderPageScreenState extends State<OrderPageScreen> with SingleTickerProv
               indicatorColor: AppColors.lightCoral,
               isScrollable: false,
               tabs: [
-                Tab(
-                  text: AppStrings.pending.tr,
-                ),
-                Tab(
-                  text: AppStrings.completed.tr,
-                ),
+                Tab(text: AppStrings.pending.tr),
+                Tab(text: AppStrings.completed.tr),
               ],
-              onTap: (index) {
-                fetchOrders(context, isPending: index == 0);
-              },
             ),
           ),
         ),
         body: RefreshIndicator(
           color: Colors.black,
-          onRefresh: () async {
-            await fetchOrders(context, isPending: _tabController.index == 0);
-          },
+          onRefresh: () => _fetchOrders(isPending: _tabController.index == 0),
           child: TabBarView(
             controller: _tabController,
             children: [
@@ -102,83 +93,91 @@ class _OrderPageScreenState extends State<OrderPageScreen> with SingleTickerProv
     );
   }
 
-  Widget _buildOrderList(BuildContext context, {required bool isCompleted}) => Consumer<OrderDataProvider>(
-        builder: (context, provider, child) {
-          final records = isCompleted
-              ? provider.completedOrderHistoryModel?.data.records
-              : provider.orderHistoryModel?.data.records;
+  Widget _buildOrderList(BuildContext context, {required bool isCompleted}) {
+    return Consumer<OrderDataProvider>(
+      builder: (context, provider, child) {
+        final records =
+            isCompleted ? provider.completedOrderHistoryModel?.data.records : provider.orderHistoryModel?.data.records;
 
-          final List<OrderProduct>? allProducts = records
-              ?.expand(
-                (record) => record.products.map(
-                  (product) => OrderProduct(
-                    productSlugPrefix: product.productSlugPrefix,
-                    productSlug: product.productSlug,
-                    imageUrl: product.imageUrl,
-                    productName: product.productName,
-                    imageThumb: product.imageThumb,
-                    imageSmall: product.imageSmall,
-                    productType: product.productType,
-                    productOptions: product.productOptions,
-                    review: product.review,
-                    qty: product.qty,
-                    indexNum: product.indexNum,
-                    attributes: product.attributes,
-                    sku: product.sku,
-                    amountFormat: product.amountFormat,
-                    totalFormat: product.totalFormat,
-                    orderRecord: record,
-                  ),
+        final List<OrderProduct>? allProducts = records
+            ?.expand(
+              (record) => record.products.map(
+                (product) => OrderProduct(
+                  productSlugPrefix: product.productSlugPrefix,
+                  productSlug: product.productSlug,
+                  imageUrl: product.imageUrl,
+                  productName: product.productName,
+                  imageThumb: product.imageThumb,
+                  imageSmall: product.imageSmall,
+                  productType: product.productType,
+                  productOptions: product.productOptions,
+                  review: product.review,
+                  qty: product.qty,
+                  indexNum: product.indexNum,
+                  attributes: product.attributes,
+                  sku: product.sku,
+                  amountFormat: product.amountFormat,
+                  totalFormat: product.totalFormat,
+                  orderRecord: record,
                 ),
-              )
-              .toList();
+              ),
+            )
+            .toList();
 
-          if (provider.isLoading) {
-            return const Center(
-              child: CircularProgressIndicator(color: Colors.black),
-            );
-          }
-
-          return SafeArea(
-            child: allProducts == null || allProducts.isEmpty
-                ? SingleChildScrollView(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    child: SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.6,
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.shopping_bag_outlined,
-                              size: 64,
-                              color: Colors.grey[400],
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              AppStrings.noOrders.tr,
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.grey[600],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  )
-                : SingleChildScrollView(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    child: Column(
-                      children: allProducts.map((order) => OrderHistoryView(order: order)).toList(),
-                    ),
-                  ),
+        if (provider.isLoading) {
+          return const Center(
+            child: CircularProgressIndicator(color: Colors.black),
           );
-        },
-      );
+        }
+
+        return SafeArea(
+          child: allProducts == null || allProducts.isEmpty ? _buildEmptyState(context) : _buildOrdersList(allProducts),
+        );
+      },
+    );
+  }
+
+  Widget _buildEmptyState(BuildContext context) {
+    return SingleChildScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      child: SizedBox(
+        height: MediaQuery.of(context).size.height * 0.6,
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.shopping_bag_outlined,
+                size: 64,
+                color: Colors.grey[400],
+              ),
+              const SizedBox(height: 16),
+              Text(
+                AppStrings.noOrders.tr,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey[600],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOrdersList(List<OrderProduct> allProducts) {
+    return SingleChildScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      child: Column(
+        children: allProducts.map((order) => OrderHistoryView(order: order)).toList(),
+      ),
+    );
+  }
 
   @override
   void dispose() {
+    _tabController.removeListener(_onTabChanged);
     _tabController.dispose();
     super.dispose();
   }

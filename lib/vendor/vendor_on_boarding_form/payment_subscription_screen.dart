@@ -64,116 +64,123 @@ class _PaymentScreenState extends State<PaymentSubscriptionScreen> {
     final double screenWidth = MediaQuery.sizeOf(context).width;
     final double screenHeight = MediaQuery.sizeOf(context).height;
     final mainProvider = Provider.of<VendorSignUpProvider>(context, listen: true);
+    // Payment Screen
     return Scaffold(
       body: SafeArea(
         child: Stack(
           children: [
             Consumer<VendorSignUpProvider>(
-              builder: (context, provider, child) => SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 60),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(
-                          left: screenWidth * 0.04,
-                          right: screenWidth * 0.04,
-                          top: screenHeight * 0.03,
-                          bottom: screenHeight * 0.015,
-                        ),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.2), // Shadow color
-                                spreadRadius: 2, // How much the shadow spreads
-                                blurRadius: 5, // How blurry the shadow is
-                                offset: const Offset(0, 2), // Shadow offset (X, Y)
-                              ),
-                            ],
+              builder: (context, provider, child) {
+                final isDark = Theme.of(context).brightness == Brightness.dark;
+
+                return SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 60),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(
+                            left: screenWidth * 0.04,
+                            right: screenWidth * 0.04,
+                            top: screenHeight * 0.03,
+                            bottom: screenHeight * 0.015,
                           ),
-                          child: Material(
-                            shadowColor: Colors.black,
-                            color: Colors.white,
-                            elevation: 15,
-                            child: Padding(
-                              padding: const EdgeInsets.only(
-                                top: 20,
-                                left: 10,
-                                right: 10,
-                                bottom: 30,
-                              ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    VendorAppStrings.payment.tr,
-                                    style: loginHeading(),
-                                  ),
-                                  const Divider(
-                                    color: Colors.grey, // Line color
-                                    thickness: 1, // Line thickness
-                                    indent: 20, // Start padding
-                                    endIndent: 20, // End padding
-                                  ),
-                                  Padding(
-                                    padding: EdgeInsets.only(
-                                      top: screenHeight * 0.03,
-                                    ),
-                                    child: Text(
-                                      subscriptionResponse?.data.heading ?? '',
+                          child: Container(
+                            decoration: BoxDecoration(
+                              boxShadow: [
+                                BoxShadow(
+                                  color: isDark
+                                      ? Colors.black.withAlpha((0.5 * 255).toInt())
+                                      : Colors.black.withAlpha((0.2 * 255).toInt()),
+                                  spreadRadius: 2,
+                                  blurRadius: 5,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Material(
+                              shadowColor: Colors.black,
+                              color: isDark ? Colors.grey.shade900 : Colors.white,
+                              elevation: 15,
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                  top: 20,
+                                  left: 10,
+                                  right: 10,
+                                  bottom: 30,
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      VendorAppStrings.payment.tr,
                                       style: loginHeading(),
                                     ),
-                                  ),
-                                  Padding(
-                                    padding: EdgeInsets.symmetric(
-                                      vertical: screenHeight * 0.03,
+                                    Divider(
+                                      color: isDark ? Colors.grey.shade600 : Colors.grey,
+                                      thickness: 1,
+                                      indent: 20,
+                                      endIndent: 20,
                                     ),
-                                    child: Text(
-                                      subscriptionResponse?.data.subHeading ?? '',
-                                      style: vendorDescriptionAgreement(),
-                                      softWrap: true,
-                                      textAlign: TextAlign.center,
+                                    Padding(
+                                      padding: EdgeInsets.only(
+                                        top: screenHeight * 0.03,
+                                      ),
+                                      child: Text(
+                                        subscriptionResponse?.data.heading ?? '',
+                                        style: loginHeading(),
+                                      ),
                                     ),
-                                  ),
-                                  Text(
-                                    '${VendorAppStrings.nowAed.tr} ${subscriptionResponse?.data.formatedPriceWithVat}',
-                                    style: loginHeading(),
-                                  ),
-                                  const SizedBox(
-                                    height: 20,
-                                  ),
-                                  PaymentMethods(
-                                    amount: subscriptionResponse?.data.formatedPriceWithVat ?? '',
-                                    paymentType: 'subscription',
-                                    onSelectionChanged: (selectedMethod) {
-                                      paymentMethod = selectedMethod;
-                                    },
-                                  ),
-                                  Padding(
-                                    padding: EdgeInsets.symmetric(
-                                      vertical: screenHeight * 0.03,
+                                    Padding(
+                                      padding: EdgeInsets.symmetric(
+                                        vertical: screenHeight * 0.03,
+                                      ),
+                                      child: Text(
+                                        subscriptionResponse?.data.subHeading ?? '',
+                                        style: vendorDescriptionAgreement(),
+                                        softWrap: true,
+                                        textAlign: TextAlign.center,
+                                      ),
                                     ),
-                                    child: Text(
-                                      VendorAppStrings.youWillBeRedirectedToTelrTabby.tr,
-                                      softWrap: true,
-                                      textAlign: TextAlign.center,
-                                      style: agreementAccept(),
+                                    Text(
+                                      '${VendorAppStrings.nowAed.tr} ${subscriptionResponse?.data.formatedPriceWithVat}',
+                                      style: loginHeading(),
                                     ),
-                                  ),
-                                ],
+                                    const SizedBox(
+                                      height: 20,
+                                    ),
+                                    PaymentMethods(
+                                      amount: subscriptionResponse?.data.formatedPriceWithVat ?? '',
+                                      paymentType: 'subscription',
+                                      onSelectionChanged: (selectedMethod) {
+                                        paymentMethod = selectedMethod;
+                                      },
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.symmetric(
+                                        vertical: screenHeight * 0.03,
+                                      ),
+                                      child: Text(
+                                        VendorAppStrings.youWillBeRedirectedToTelrTabby.tr,
+                                        softWrap: true,
+                                        textAlign: TextAlign.center,
+                                        style: agreementAccept(),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ),
+                );
+              },
             ),
             Align(
               alignment: Alignment.bottomCenter,
@@ -181,30 +188,30 @@ class _PaymentScreenState extends State<PaymentSubscriptionScreen> {
                 isLoading: mainProvider.isLoading,
                 title: VendorAppStrings.payNow.tr,
                 onPressed: () async {
+                  // Capture navigator before any async operations
+                  final navigator = Navigator.of(context);
+
                   log('subscriptionResponse?.data.formatedPriceWithVat ${subscriptionResponse?.data.formatedPriceWithVat}');
                   pModel.cardAmount = double.tryParse(subscriptionResponse?.data.formatedPriceWithVat ?? '');
                   pModel.paymentMethod = paymentMethod;
 
                   final checkoutPaymentLink = await updatePayment(pModel);
                   if (checkoutPaymentLink != null) {
-                    final bool? paymentResult = await Navigator.push(
-                      context,
+                    final bool? paymentResult = await navigator.push(
                       MaterialPageRoute(
                         builder: (context) => PaymentViewScreen(
                           checkoutUrl: checkoutPaymentLink.data.checkoutUrl,
-                          paymentType: 'subscription', // Pass subscription type
+                          paymentType: 'subscription',
                         ),
                       ),
                     );
 
-                    log('paymentResult => $paymentResult');
-
                     if (paymentResult == true) {
-                      showCongratsDialog(context, screenWidth, screenHeight);
+                      if (!mounted) return;
+                      showCongratsDialog(screenWidth, screenHeight);
                     } else if (paymentResult == false) {
                       AppUtils.showToast(VendorAppStrings.paymentFailure.tr);
                     } else {
-                      // Handle null case (user cancelled)
                       AppUtils.showToast(VendorAppStrings.paymentCancelled.tr);
                     }
                   } else {
@@ -215,7 +222,7 @@ class _PaymentScreenState extends State<PaymentSubscriptionScreen> {
             ),
             if (mainProvider.isLoading)
               Container(
-                color: Colors.black.withAlpha((0.5 * 255).toInt()), // Semi-transparent background
+                color: Colors.black.withAlpha((0.5 * 255).toInt()),
                 child: const Center(
                   child: CircularProgressIndicator(
                     valueColor: AlwaysStoppedAnimation<Color>(AppColors.peachyPink),
@@ -228,29 +235,28 @@ class _PaymentScreenState extends State<PaymentSubscriptionScreen> {
     );
   }
 
-  void showCongratsDialog(
-    BuildContext context,
-    double screenWidth,
-    double screenHeight,
-  ) {
+  void showCongratsDialog(double screenWidth, double screenHeight) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     showDialog(
       context: context,
       barrierDismissible: false,
-      // Prevent closing the dialog by tapping outside
-
-      builder: (BuildContext context) => PopScope(
+      builder: (BuildContext dialogContext) => PopScope(
         canPop: false,
         child: Dialog(
-          backgroundColor: Theme.of(context).colorScheme.primary,
+          backgroundColor: Theme.of(dialogContext).colorScheme.primary,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(0), // No rounded corners
+            borderRadius: BorderRadius.circular(0),
           ),
           child: SingleChildScrollView(
             child: GestureDetector(
               onTap: () {
-                Navigator.pop(context);
-                Navigator.pushReplacement(
-                  context,
+                // Capture both navigators
+                final dialogNavigator = Navigator.of(dialogContext);
+                final rootNavigator = Navigator.of(context, rootNavigator: true);
+
+                dialogNavigator.pop();
+                rootNavigator.pushReplacement(
                   MaterialPageRoute(
                     builder: (context) => const BaseHomeScreen(),
                   ),
@@ -266,18 +272,17 @@ class _PaymentScreenState extends State<PaymentSubscriptionScreen> {
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(0),
-                        // No rounded corners
-                        color: Colors.greenAccent.withOpacity(0.35),
-                        // Customize the container color
+                        color: isDark
+                            ? Colors.greenAccent.withAlpha((0.25 * 255).toInt())
+                            : Colors.greenAccent.withAlpha((0.35 * 255).toInt()),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
-                            // Shadow color
+                            color: isDark
+                                ? Colors.black.withAlpha((0.5 * 255).toInt())
+                                : Colors.black.withAlpha((0.2 * 255).toInt()),
                             spreadRadius: 2,
-                            // How much the shadow spreads
                             blurRadius: 5,
-                            // How blurry the shadow is
-                            offset: const Offset(0, 2), // Shadow offset (X, Y)
+                            offset: const Offset(0, 2),
                           ),
                         ],
                       ),
@@ -285,9 +290,10 @@ class _PaymentScreenState extends State<PaymentSubscriptionScreen> {
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.card_giftcard,
                             size: 50,
+                            color: isDark ? Colors.white : Colors.black87,
                           ),
                           Text(
                             VendorAppStrings.congratulations.tr,

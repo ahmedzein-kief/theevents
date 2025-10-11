@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/helper/mixins/media_query_mixin.dart';
@@ -6,7 +7,7 @@ import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/core/styles/app_sizes.dart';
 import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/data/vendor/data/response/apis_status.dart';
-import 'package:event_app/models/vendor_models/products/VendorGetProductsModel.dart';
+import 'package:event_app/models/vendor_models/products/vendor_get_products_model.dart';
 import 'package:event_app/vendor/components/common_widgets/vendor_action_cell.dart';
 import 'package:event_app/vendor/components/common_widgets/vendor_data_list_builder.dart';
 import 'package:event_app/vendor/components/data_tables/custom_data_tables.dart';
@@ -48,8 +49,6 @@ class _VendorProductsViewState extends State<VendorProductsView> with MediaQuery
   // scroll controller
   final ScrollController _scrollController = ScrollController();
 
-  Timer? _debounce;
-
   Future _onRefresh() async {
     try {
       final provider = Provider.of<VendorGetProductsViewModel>(context, listen: false);
@@ -59,7 +58,9 @@ class _VendorProductsViewState extends State<VendorProductsView> with MediaQuery
       setState(() {}); // ✅ Force UI update immediately after clearing
       await provider.vendorGetProducts(search: _searchController.text);
       setState(() {});
-    } catch (e) {}
+    } catch (e) {
+      log(e.toString());
+    }
   }
 
   Future<void> _loadMoreData() async {
@@ -106,42 +107,47 @@ class _VendorProductsViewState extends State<VendorProductsView> with MediaQuery
         ),
       );
 
-  Widget _buildUi(BuildContext context) => Padding(
-        padding: EdgeInsets.symmetric(horizontal: kSmallPadding),
-        child: Column(
-          children: [
-            kFormFieldSpace,
+  Widget _buildUi(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
-            /// Toolbar
-            _toolBar(),
-            kSmallSpace,
-            Expanded(
-              child: Consumer<VendorGetProductsViewModel>(
-                builder: (context, provider, _) {
-                  /// current api status
-                  final ApiStatus? apiStatus = provider.apiResponse.status;
-                  if (apiStatus == ApiStatus.LOADING && provider.list.isEmpty) {
-                    return AppUtils.pageLoadingIndicator(context: context);
-                  }
-                  if (apiStatus == ApiStatus.ERROR) {
-                    return AppUtils.somethingWentWrong();
-                  }
-                  return Column(
-                    children: [
-                      VendorDataListBuilder(
-                        scrollController: _scrollController,
-                        listLength: provider.list.length,
-                        loadingMoreData: provider.apiResponse.status == ApiStatus.LOADING,
-                        contentBuilder: (context) => _buildRecordsList(provider: provider),
-                      ),
-                    ],
-                  );
-                },
-              ),
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: kSmallPadding),
+      child: Column(
+        children: [
+          kFormFieldSpace,
+
+          /// Toolbar
+          _toolBar(isDark),
+          kSmallSpace,
+          Expanded(
+            child: Consumer<VendorGetProductsViewModel>(
+              builder: (context, provider, _) {
+                /// current api status
+                final ApiStatus? apiStatus = provider.apiResponse.status;
+                if (apiStatus == ApiStatus.LOADING && provider.list.isEmpty) {
+                  return AppUtils.pageLoadingIndicator(context: context);
+                }
+                if (apiStatus == ApiStatus.ERROR) {
+                  return AppUtils.somethingWentWrong();
+                }
+                return Column(
+                  children: [
+                    VendorDataListBuilder(
+                      scrollController: _scrollController,
+                      listLength: provider.list.length,
+                      loadingMoreData: provider.apiResponse.status == ApiStatus.LOADING,
+                      contentBuilder: (context) => _buildRecordsList(provider: provider),
+                    ),
+                  ],
+                );
+              },
             ),
-          ],
-        ),
-      );
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _buildRecordsList({required VendorGetProductsViewModel provider}) => ListView.builder(
         shrinkWrap: true,
@@ -159,13 +165,13 @@ class _VendorProductsViewState extends State<VendorProductsView> with MediaQuery
                   crossAxisAlignment: CrossAxisAlignment.end,
                   mainAxisSize: MainAxisSize.min, // Prevents Column from taking full height
                   children: [
-                    if ((product.price ?? 0) > (product.salePrice ?? 0)) ...{
+                    if ((product.price) > (product.salePrice)) ...{
                       Text(
-                        product.salePriceFormat?.toString() ?? '--',
+                        product.salePriceFormat.toString(),
                         style: dataRowTextStyle().copyWith(color: Colors.black),
                       ),
                       Text(
-                        product.priceFormat?.toString() ?? '--',
+                        product.priceFormat.toString(),
                         style: dataRowTextStyle().copyWith(color: Colors.red).copyWith(
                               decoration: TextDecoration.lineThrough,
                               decorationColor: Colors.red,
@@ -174,7 +180,7 @@ class _VendorProductsViewState extends State<VendorProductsView> with MediaQuery
                       kMinorSpace,
                     } else ...{
                       Text(
-                        product.priceFormat?.toString() ?? '--',
+                        product.priceFormat.toString(),
                         style: dataRowTextStyle().copyWith(color: Colors.black),
                       ),
                       kMinorSpace,
@@ -199,7 +205,7 @@ class _VendorProductsViewState extends State<VendorProductsView> with MediaQuery
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) => VendorCreatePhysicalProductView(
-                          productID: product.id.toString(),
+                          initialProductId: product.id.toString(),
                           productType: VendorProductType.none,
                         ),
                       ),
@@ -212,7 +218,7 @@ class _VendorProductsViewState extends State<VendorProductsView> with MediaQuery
                 // Updated onRejectionHistoryTap to show the dialog
                 onRejectionHistoryTap: (productId) => _showRejectionHistoryDialog(
                   productId: productId,
-                  productName: product.name ?? 'Unknown Product',
+                  productName: product.name,
                   provider: provider,
                 ),
               ),
@@ -243,7 +249,7 @@ class _VendorProductsViewState extends State<VendorProductsView> with MediaQuery
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Error loading rejection history: ${provider.error}'),
+              content: Text('${VendorAppStrings.error.tr}${provider.error}'),
               backgroundColor: Colors.red,
             ),
           );
@@ -269,7 +275,7 @@ class _VendorProductsViewState extends State<VendorProductsView> with MediaQuery
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error: ${e.toString()}'),
+            content: Text('${VendorAppStrings.error.tr}${e.toString()}'),
             backgroundColor: Colors.red,
           ),
         );
@@ -278,7 +284,7 @@ class _VendorProductsViewState extends State<VendorProductsView> with MediaQuery
   }
 
   /// Tool Bar
-  Widget _toolBar() => Column(
+  Widget _toolBar(bool isDark) => Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Row(
@@ -310,7 +316,7 @@ class _VendorProductsViewState extends State<VendorProductsView> with MediaQuery
                     builder: (context) => Container(
                       width: double.infinity,
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: isDark ? Theme.of(context).cardColor : Colors.white,
                         borderRadius: BorderRadius.only(
                           topRight: Radius.circular(kSmallCardRadius),
                           topLeft: Radius.circular(kSmallCardRadius),
@@ -323,9 +329,9 @@ class _VendorProductsViewState extends State<VendorProductsView> with MediaQuery
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Text(
-                            'Select Product Type',
-                            style: TextStyle(
+                          Text(
+                            VendorAppStrings.selectAnOption.tr,
+                            style: const TextStyle(
                               fontSize: 17.0,
                               color: AppColors.lightCoral,
                               decoration: TextDecoration.none,
@@ -339,24 +345,23 @@ class _VendorProductsViewState extends State<VendorProductsView> with MediaQuery
                                   Navigator.pop(context);
                                   Navigator.of(context).push(
                                     MaterialPageRoute(
-                                      builder: (context) => VendorCreatePhysicalProductView(
-                                        productType: VendorProductType.physical,
-                                      ),
+                                      builder: (context) => const VendorCreatePhysicalProductView(
+                                          productType: VendorProductType.physical),
                                     ),
                                   );
                                 },
-                                child: const Row(
+                                child: Row(
                                   children: [
-                                    Icon(
+                                    const Icon(
                                       CupertinoIcons.cube_box,
                                       color: AppColors.lightCoral,
                                     ),
-                                    SizedBox(width: 10),
+                                    const SizedBox(width: 10),
                                     Text(
-                                      'Physical product',
+                                      VendorAppStrings.product.tr,
                                       style: TextStyle(
                                         fontSize: 14.0,
-                                        color: AppColors.darkGrey,
+                                        color: Theme.of(context).colorScheme.onPrimary,
                                         decoration: TextDecoration.none,
                                       ),
                                     ),
@@ -375,24 +380,24 @@ class _VendorProductsViewState extends State<VendorProductsView> with MediaQuery
                                   Navigator.pop(context);
                                   Navigator.of(context).push(
                                     MaterialPageRoute(
-                                      builder: (context) => VendorCreatePhysicalProductView(
+                                      builder: (context) => const VendorCreatePhysicalProductView(
                                         productType: VendorProductType.digital,
                                       ),
                                     ),
                                   );
                                 },
-                                child: const Row(
+                                child: Row(
                                   children: [
-                                    Icon(
+                                    const Icon(
                                       CupertinoIcons.floppy_disk,
                                       color: AppColors.lightCoral,
                                     ),
-                                    SizedBox(width: 10),
+                                    const SizedBox(width: 10),
                                     Text(
-                                      'Digital product',
+                                      VendorAppStrings.digitalAttachments.tr,
                                       style: TextStyle(
                                         fontSize: 14.0,
-                                        color: AppColors.darkGrey,
+                                        color: Theme.of(context).colorScheme.onPrimary,
                                         decoration: TextDecoration.none,
                                       ),
                                     ),
@@ -443,29 +448,29 @@ class _VendorProductsViewState extends State<VendorProductsView> with MediaQuery
                         ),
                       ),
                     ),
-                    buildRow(VendorAppStrings.id.tr, rowData.id?.toString()),
+                    buildRow(VendorAppStrings.id.tr, rowData.id.toString()),
                     buildRow(
                       VendorAppStrings.name.tr,
-                      rowData.name?.toString(),
+                      rowData.name.toString(),
                     ),
                     Wrap(
                       spacing: 8.0, // Horizontal space between children
                       runSpacing: 4.0, // Vertical space between lines
                       children: [
-                        if ((rowData.price ?? 0) > (rowData.salePrice ?? 0)) ...{
+                        if ((rowData.price) > (rowData.salePrice)) ...{
                           buildRow(
                             VendorAppStrings.price.tr,
-                            rowData.salePriceFormat?.toString(),
+                            rowData.salePriceFormat.toString(),
                             valueWidget: Expanded(
                               child: Wrap(
                                 children: [
                                   Text(
-                                    rowData.salePriceFormat?.toString() ?? '',
+                                    rowData.salePriceFormat.toString(),
                                     style: detailsDescriptionStyle,
                                   ),
                                   kMinorSpace,
                                   Text(
-                                    rowData.priceFormat?.toString() ?? '',
+                                    rowData.priceFormat.toString(),
                                     style: detailsDescriptionStyle.copyWith(color: Colors.red).copyWith(
                                           decoration: TextDecoration.lineThrough,
                                           decorationColor: Colors.red,
@@ -478,7 +483,7 @@ class _VendorProductsViewState extends State<VendorProductsView> with MediaQuery
                         } else ...{
                           buildRow(
                             VendorAppStrings.price.tr,
-                            rowData.priceFormat?.toString(),
+                            rowData.priceFormat.toString(),
                           ),
                         },
                       ],
@@ -487,20 +492,20 @@ class _VendorProductsViewState extends State<VendorProductsView> with MediaQuery
                       VendorAppStrings.quantity.tr,
                       rowData.quantity?.toString(),
                     ),
-                    buildRow(VendorAppStrings.sku.tr, rowData.sku?.toString()),
+                    buildRow(VendorAppStrings.sku.tr, rowData.sku.toString()),
                     buildRow(
                       VendorAppStrings.order.tr,
-                      rowData.order?.toString(),
+                      rowData.order.toString(),
                     ),
                     buildRow(
                       VendorAppStrings.createdAt.tr,
-                      rowData.createdAt?.toString(),
+                      rowData.createdAt.toString(),
                     ),
                     buildStatusRow(
                       label: 'Status',
-                      buttonText: rowData.status?.label?.toString() ?? '',
+                      buttonText: rowData.status?.label.toString() ?? '',
                       color: AppColors.getProductPackageStatusColor(
-                        rowData.status?.value?.toString().toLowerCase().trim(),
+                        rowData.status?.value.toString().toLowerCase().trim(),
                       ),
                     ),
                   ],

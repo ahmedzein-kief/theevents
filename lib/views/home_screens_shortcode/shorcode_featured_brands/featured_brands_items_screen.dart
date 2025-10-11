@@ -6,9 +6,9 @@ import 'package:provider/provider.dart';
 
 import '../../../core/constants/app_strings.dart';
 import '../../../core/network/api_endpoints/api_contsants.dart';
-import '../../../core/services/shared_preferences_helper.dart';
 import '../../../core/styles/app_colors.dart';
 import '../../../core/styles/custom_text_styles.dart';
+import '../../../core/utils/app_utils.dart';
 import '../../../core/widgets/custom_app_views/search_bar.dart';
 import '../../../core/widgets/custom_items_views/product_card.dart';
 import '../../../core/widgets/padded_network_banner.dart';
@@ -51,25 +51,25 @@ class _FeaturedBrandsItemsScreenState extends State<FeaturedBrandsItemsScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      fetchTopBanner();
-      fetchBrandProductItemsData();
-      fetchWishListItems();
+      _fetchTopBanner();
+      _fetchBrandProductItemsData();
+      _fetchWishListItems();
       _scrollController.addListener(_onScroll);
     });
   }
 
   ///  ++++++++++++++++++++++++++   TOP BANNER BRANDS  +++++++++++++++++++++++++++++
-  Future<void> fetchTopBanner() async {
-    final provider = Provider.of<FeaturedBrandsProvider>(context, listen: false);
+  Future<void> _fetchTopBanner() async {
+    if (!mounted) return;
+    final provider = context.read<FeaturedBrandsProvider>();
     provider.fetchBrandData(widget.slug, context);
   }
 
   ///  ------------  FOR TAKING THE  ICON HEART AS THEIR STATE RED ON WISHLIST ADD BASIS ------------
-
-  Future<void> fetchWishListItems() async {
-    final token = await SecurePreferencesUtil.getToken();
-    final provider = Provider.of<WishlistProvider>(context, listen: false);
-    provider.fetchWishlist(token ?? '', context);
+  Future<void> _fetchWishListItems() async {
+    if (!mounted) return;
+    final provider = context.read<WishlistProvider>();
+    provider.fetchWishlist();
   }
 
   /// ------------   PRODUCTS SCROLLING FUNCTION   ------------
@@ -83,38 +83,33 @@ class _FeaturedBrandsItemsScreenState extends State<FeaturedBrandsItemsScreen> {
           _isFetchingMoreProducts = true;
         });
       }
-      fetchBrandProductItemsData();
+      _fetchBrandProductItemsData();
     }
   }
 
   /// ------------   PRODUCTS DATA FUNCTION    ------------
-
-  Future<void> fetchBrandProductItemsData() async {
+  Future<void> _fetchBrandProductItemsData() async {
     try {
-      await Provider.of<FeaturedBrandsProvider>(context, listen: false).fetchBrandsProducts(
-        context: context,
-        slug: widget.slug,
-        perPage: 12,
-        page: _currentPageProducts,
-        sortBy: _selectedSortBy,
-        filters: selectedFilters,
-      );
-      if (mounted) {
-        setState(() {
-          _isFetchingMoreProducts = false;
-        });
-      }
+      await context.read<FeaturedBrandsProvider>().fetchBrandsProducts(
+            context: context,
+            slug: widget.slug,
+            perPage: 12,
+            page: _currentPageProducts,
+            sortBy: _selectedSortBy,
+            filters: selectedFilters,
+          );
+
+      setState(() {
+        _isFetchingMoreProducts = false;
+      });
     } catch (error) {
-      if (mounted) {
-        setState(() {
-          _isFetchingMoreProducts = false;
-        });
-      }
+      setState(() {
+        _isFetchingMoreProducts = false;
+      });
     }
   }
 
   /// ------------   PRODUCTS SORTING  FUNCTION   ------------
-
   void _onSortChanged(String newValue) {
     if (mounted) {
       setState(() {
@@ -122,19 +117,27 @@ class _FeaturedBrandsItemsScreenState extends State<FeaturedBrandsItemsScreen> {
         _currentPageProducts = 1;
 
         /// Reset to the first page
-        Provider.of<FeaturedBrandsProvider>(context, listen: false).records.clear(); //
+        context.read<FeaturedBrandsProvider>().records.clear();
       });
     }
-    fetchBrandProductItemsData();
+    _fetchBrandProductItemsData();
+  }
+
+  /// Handle add to cart with proper error handling
+  Future<void> _handleAddToCart(int productId) async {
+    final result = await context.read<CartProvider>().addToCart(productId, 1);
+
+    if (result.success) {
+      AppUtils.showToast(result.message, isSuccess: true);
+    } else {
+      AppUtils.showToast(result.message);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.sizeOf(context).height;
     final double screenWidth = MediaQuery.sizeOf(context).width;
-    final wishlistProvider = Provider.of<WishlistProvider>(context, listen: true);
-    final freshListProvider = Provider.of<FreshPicksProvider>(context, listen: true);
-    final cartProvider = Provider.of<CartProvider>(context, listen: true);
 
     return BaseAppBar(
       textBack: AppStrings.back.tr,
@@ -178,189 +181,17 @@ class _FeaturedBrandsItemsScreenState extends State<FeaturedBrandsItemsScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                ///   -----   TOP BANNER IMAGE =================================================================
-                                Stack(
-                                  children: [
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(5),
-                                      child: PaddedNetworkBanner(
-                                        imageUrl: brandData?.coverImage ??
-                                            brandData?.coverImageForMobile ??
-                                            ApiConstants.placeholderImage,
-                                        fit: BoxFit.cover,
-                                        width: double.infinity,
-                                        padding: EdgeInsets.zero,
-                                      ),
-                                    ),
-                                    // Brand logo and name with better visibility
-                                    Positioned(
-                                      top: 16,
-                                      left: 16,
-                                      child: Column(
-                                        children: [
-                                          // Brand logo
-                                          Container(
-                                            width: 55,
-                                            height: 55,
-                                            decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              borderRadius: BorderRadius.circular(6),
-                                              border: Border.all(
-                                                color: Colors.grey.shade300,
-                                                width: 1,
-                                              ),
-                                            ),
-                                            child: ClipRRect(
-                                              borderRadius: BorderRadius.circular(6),
-                                              child: brandData?.image != null && brandData!.image.isNotEmpty
-                                                  ? PaddedNetworkBanner(
-                                                      imageUrl: brandData.image,
-                                                      fit: BoxFit.cover,
-                                                      width: 55,
-                                                      height: 55,
-                                                      padding: EdgeInsets.zero,
-                                                    )
-                                                  : Container(
-                                                      decoration: BoxDecoration(
-                                                        color: Colors.grey[100],
-                                                        borderRadius: BorderRadius.circular(6),
-                                                      ),
-                                                      child: const Center(
-                                                        child: Icon(
-                                                          Icons.business,
-                                                          color: Colors.grey,
-                                                          size: 20,
-                                                        ),
-                                                      ),
-                                                    ),
-                                            ),
-                                          ),
-                                          const SizedBox(height: 4),
-                                          // Brand name
-                                          Container(
-                                            constraints: const BoxConstraints(
-                                              maxWidth: 120,
-                                              minWidth: 60,
-                                            ),
-                                            child: Text(
-                                              brandData?.name ?? 'Brand Name',
-                                              textAlign: TextAlign.center,
-                                              style: const TextStyle(
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.white,
-                                              ),
-                                              maxLines: 2,
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                                ///   -----   TOP BANNER IMAGE
+                                _buildTopBanner(brandData),
 
-                                ///======  TAB BAR  =========================================
+                                ///======  TAB BAR
+                                _buildTabBar(screenWidth, screenHeight),
 
-                                Padding(
-                                  padding: EdgeInsets.only(
-                                    left: screenWidth * 0.02,
-                                    right: screenWidth * 0.02,
-                                    top: screenHeight * 0.02,
-                                  ),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        children: <Widget>[
-                                          GestureDetector(
-                                            onTap: () {
-                                              setState(() {
-                                                _currentTab = 'Products';
-                                              });
-                                            },
-                                            child: Container(
-                                              // padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
-                                              decoration: BoxDecoration(
-                                                border: Border.all(
-                                                  color: _currentTab == 'Products' ? Colors.grey : Colors.transparent,
-                                                ),
-                                                borderRadius: const BorderRadius.only(
-                                                  topRight: Radius.circular(10),
-                                                  topLeft: Radius.circular(10),
-                                                ),
-                                                // color: _currentTab == 'Products' ? Colors.grey[50] : Colors.transparent,
-                                              ),
-                                              child: Column(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  Padding(
-                                                    padding: const EdgeInsets.all(4),
-                                                    child: Text(
-                                                      AppStrings.products.tr,
-                                                      style: topTabBarStyle(context),
-                                                    ),
-                                                  ),
-                                                  if (_currentTab == 'Products') Container(),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                          GestureDetector(
-                                            onTap: () {
-                                              setState(() {
-                                                _currentTab = 'Packages';
-                                              });
-                                            },
-                                            child: Container(
-                                              // padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                                              decoration: BoxDecoration(
-                                                border: Border.all(
-                                                  color: _currentTab == 'Packages' ? Colors.grey : Colors.transparent,
-                                                ),
-                                                borderRadius: const BorderRadius.only(
-                                                  topRight: Radius.circular(10),
-                                                  topLeft: Radius.circular(10),
-                                                ),
-                                              ),
-                                              child: Column(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  Padding(
-                                                    padding: const EdgeInsets.all(4),
-                                                    child: Text(
-                                                      AppStrings.packages.tr,
-                                                      style: topTabBarStyle(context),
-                                                    ),
-                                                  ),
-                                                  if (_currentTab == 'Packages') const SizedBox.shrink(),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      Column(
-                                        children: [
-                                          Container(
-                                            color: Colors.grey,
-                                            height: 1,
-                                            width: double.infinity,
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-
-                                ///======  TAB PAGES VIEW =================================
+                                ///======  TAB PAGES VIEW
                                 if (_currentTab == 'Products')
-                                  _ProductsView(slug: widget.slug)
+                                  _productsView(slug: widget.slug)
                                 else
-                                  _PackagesView(slug: widget.slug),
+                                  _packagesView(slug: widget.slug),
                               ],
                             ),
                           ),
@@ -370,15 +201,7 @@ class _FeaturedBrandsItemsScreenState extends State<FeaturedBrandsItemsScreen> {
                   );
                 },
               ),
-              if (wishlistProvider.isLoading || freshListProvider.isLoading || cartProvider.isLoading)
-                Container(
-                  color: Colors.black.withAlpha((0.5 * 255).toInt()), // Semi-transparent background
-                  child: const Center(
-                    child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.peachyPink),
-                    ),
-                  ),
-                ),
+              _buildLoadingOverlay(),
             ],
           ),
         ),
@@ -386,13 +209,165 @@ class _FeaturedBrandsItemsScreenState extends State<FeaturedBrandsItemsScreen> {
     );
   }
 
+  Widget _buildTopBanner(brandData) {
+    return Stack(
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(5),
+          child: PaddedNetworkBanner(
+            imageUrl: brandData?.coverImage ?? brandData?.coverImageForMobile ?? ApiConstants.placeholderImage,
+            fit: BoxFit.cover,
+            width: double.infinity,
+            padding: EdgeInsets.zero,
+          ),
+        ),
+        Positioned(
+          top: 16,
+          left: 16,
+          child: Column(
+            children: [
+              Container(
+                width: 55,
+                height: 55,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(
+                    color: Colors.grey.shade300,
+                    width: 1,
+                  ),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(6),
+                  child: brandData?.image != null && brandData!.image.isNotEmpty
+                      ? PaddedNetworkBanner(
+                          imageUrl: brandData.image,
+                          fit: BoxFit.cover,
+                          width: 55,
+                          height: 55,
+                          padding: EdgeInsets.zero,
+                        )
+                      : Container(
+                          decoration: BoxDecoration(
+                            color: Colors.grey[100],
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: const Center(
+                            child: Icon(
+                              Icons.business,
+                              color: Colors.grey,
+                              size: 20,
+                            ),
+                          ),
+                        ),
+                ),
+              ),
+              const SizedBox(height: 4),
+              Container(
+                constraints: const BoxConstraints(
+                  maxWidth: 120,
+                  minWidth: 60,
+                ),
+                child: Text(
+                  brandData?.name ?? 'Brand Name',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTabBar(double screenWidth, double screenHeight) {
+    return Padding(
+      padding: EdgeInsets.only(
+        left: screenWidth * 0.02,
+        right: screenWidth * 0.02,
+        top: screenHeight * 0.02,
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              _buildTabButton('Products', AppStrings.products.tr),
+              _buildTabButton('Packages', AppStrings.packages.tr),
+            ],
+          ),
+          Container(
+            color: Colors.grey,
+            height: 1,
+            width: double.infinity,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTabButton(String tabName, String label) {
+    final isSelected = _currentTab == tabName;
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _currentTab = tabName;
+        });
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: isSelected ? Colors.grey : Colors.transparent,
+          ),
+          borderRadius: const BorderRadius.only(
+            topRight: Radius.circular(10),
+            topLeft: Radius.circular(10),
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(4),
+          child: Text(
+            label,
+            style: topTabBarStyle(context),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLoadingOverlay() {
+    return Consumer3<WishlistProvider, FreshPicksProvider, CartProvider>(
+      builder: (context, wishlistProvider, freshPicksProvider, cartProvider, child) {
+        if (wishlistProvider.isLoading || freshPicksProvider.isLoading || cartProvider.isLoading) {
+          return Container(
+            color: Colors.black.withAlpha((0.5 * 255).toInt()),
+            child: const Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(AppColors.peachyPink),
+              ),
+            ),
+          );
+        }
+        return const SizedBox.shrink();
+      },
+    );
+  }
+
   ///  ------------------------ BRANDS PRODUCTS VIEW --------------------------------
-  Widget _ProductsView({required String slug}) {
+  Widget _productsView({required String slug}) {
     final double screenHeight = MediaQuery.sizeOf(context).height;
     final double screenWidth = MediaQuery.sizeOf(context).width;
-    final freshPicksProvider = Provider.of<FreshPicksProvider>(context, listen: true);
-    final wishlistProvider = Provider.of<WishlistProvider>(context, listen: false);
-    final cartProvider = Provider.of<CartProvider>(context, listen: false);
+
     return Column(
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.start,
@@ -407,176 +382,126 @@ class _FeaturedBrandsItemsScreenState extends State<FeaturedBrandsItemsScreen> {
                   strokeWidth: 0.5,
                 ),
               );
-            } else {
-              return Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: screenWidth * 0.0,
-                  vertical: screenHeight * 0.01,
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    SortAndFilterWidget(
-                      selectedSortBy: _selectedSortBy,
-                      onSortChanged: (newSortBy) {
-                        _onSortChanged(newSortBy);
-                      },
-                      onFilterPressed: () {
-                        showModalBottomSheet(
-                          context: context,
-                          isScrollControlled: true,
-                          builder: (context) => FilterBottomSheet(
-                            filters: provider.productFilters,
-                            selectedIds: selectedFilters,
-                          ),
-                        ).then((result) {
-                          setState(() {
-                            _currentPageProducts = 1;
-                            selectedFilters = result;
-                          });
-                          fetchBrandProductItemsData();
-                        });
-                      },
-                    ),
-                    if (provider.records.isEmpty)
-                      const ItemsEmptyView()
-                    else
-                      GridView.builder(
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          childAspectRatio: 0.6,
-                          mainAxisSpacing: 10,
-                          crossAxisSpacing: 10,
-                        ),
-                        itemCount: provider.records.length + (_isFetchingMoreProducts ? 1 : 0),
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemBuilder: (context, index) {
-                          if (_isFetchingMoreProducts && index == provider.records.length) {
-                            return const Align(
-                              alignment: Alignment.center,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Center(
-                                    child: SizedBox(
-                                      height: 25,
-                                      width: 25,
-                                      child: CircularProgressIndicator(
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }
-
-                          final product = provider.records[index];
-
-                          /// Calculate the percentage off
-                          /// Check if both frontSalePrice and price are non-null and non-zero to avoid division by zero
-                          final dynamic frontSalePrice = product.prices?.frontSalePrice;
-                          final dynamic price = product.prices?.price;
-                          String offPercentage = '';
-
-                          if (frontSalePrice != null && price != null && price > 0) {
-                            // Calculate the discount percentage
-                            final dynamic discount = 100 - ((frontSalePrice / price) * 100);
-                            // offPercentage = discount.toStringAsFixed(0);
-                            if (discount > 0) {
-                              offPercentage = discount.toStringAsFixed(0);
-                            }
-                          }
-
-                          return GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ProductDetailScreen(
-                                    key: ValueKey(product.slug.toString()),
-                                    slug: product.slug.toString(),
-                                  ),
-                                ),
-                              );
-                            },
-                            child: ProductCard(
-                              isOutOfStock: product.outOfStock ?? false,
-                              off: offPercentage.isNotEmpty ? '$offPercentage%off' : '',
-                              // Display the discount percentage
-                              priceWithTaxes: (product.prices?.frontSalePrice ?? 0) < (product.prices?.price ?? 0)
-                                  ? product.prices!.priceWithTaxes
-                                  : null,
-                              itemsId: 0,
-                              imageUrl: product.image,
-                              frontSalePriceWithTaxes: product.review?.rating?.toString() ?? '0',
-                              name: product.name,
-                              storeName: product.store?.name.toString(),
-                              price: product.prices?.price.toString(),
-                              optionalIcon: Icons.shopping_cart_checkout_rounded,
-                              reviewsCount: product.review?.reviewsCount?.toInt(),
-                              onOptionalIconTap: () async {
-                                final token = await SecurePreferencesUtil.getToken();
-                                if (token != null) {
-                                  await cartProvider.addToCart(
-                                    product.id,
-                                    context,
-                                    1,
-                                  );
-                                }
-                              },
-                              isHeartObscure: wishlistProvider.wishlist?.data?.products.any(
-                                    (wishlistProduct) => wishlistProduct.id == product.id,
-                                  ) ??
-                                  false,
-                              onHeartTap: () async {
-                                final token = await SecurePreferencesUtil.getToken();
-                                final bool isInWishlist = wishlistProvider.wishlist?.data?.products.any(
-                                      (wishlistProduct) => wishlistProduct.id == product.id,
-                                    ) ??
-                                    false;
-                                if (isInWishlist) {
-                                  await wishlistProvider.deleteWishlistItem(
-                                    product.id ?? 0,
-                                    context,
-                                    token ?? '',
-                                  );
-                                } else {
-                                  await freshPicksProvider.handleHeartTap(
-                                    context,
-                                    product.id ?? 0,
-                                  );
-                                }
-                                await wishlistProvider.fetchWishlist(
-                                  token ?? '',
-                                  context,
-                                );
-                              },
-                            ),
-                          );
-                        },
-                      ),
-                  ],
-                ),
-              );
             }
+
+            return Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: screenWidth * 0.0,
+                vertical: screenHeight * 0.01,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  SortAndFilterWidget(
+                    selectedSortBy: _selectedSortBy,
+                    onSortChanged: _onSortChanged,
+                    onFilterPressed: () {
+                      showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        builder: (context) => FilterBottomSheet(
+                          filters: provider.productFilters,
+                          selectedIds: selectedFilters,
+                        ),
+                      ).then((result) {
+                        setState(() {
+                          _currentPageProducts = 1;
+                          selectedFilters = result;
+                        });
+                        _fetchBrandProductItemsData();
+                      });
+                    },
+                  ),
+                  if (provider.records.isEmpty) const ItemsEmptyView() else _buildProductGrid(provider),
+                ],
+              ),
+            );
           },
         ),
       ],
     );
   }
 
-  ///  -------------------------  BRANDS PACKAGES VIEW --------------------------------
+  Widget _buildProductGrid(FeaturedBrandsProvider provider) {
+    return GridView.builder(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        childAspectRatio: 0.6,
+        mainAxisSpacing: 10,
+        crossAxisSpacing: 10,
+      ),
+      itemCount: provider.records.length + (_isFetchingMoreProducts ? 1 : 0),
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemBuilder: (context, index) {
+        if (_isFetchingMoreProducts && index == provider.records.length) {
+          return const Center(
+            child: SizedBox(
+              height: 25,
+              width: 25,
+              child: CircularProgressIndicator(color: Colors.black),
+            ),
+          );
+        }
 
-  Widget _PackagesView({required String slug}) {
+        final product = provider.records[index];
+        final offPercentage = _calculateDiscount(
+          product.prices?.frontSalePrice,
+          product.prices?.price,
+        );
+
+        return Consumer2<WishlistProvider, FreshPicksProvider>(
+          builder: (context, wishlistProvider, freshPicksProvider, child) {
+            return GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ProductDetailScreen(
+                      key: ValueKey(product.slug.toString()),
+                      slug: product.slug.toString(),
+                    ),
+                  ),
+                );
+              },
+              child: ProductCard(
+                isOutOfStock: product.outOfStock ?? false,
+                off: offPercentage.isNotEmpty ? '$offPercentage%off' : '',
+                priceWithTaxes: (product.prices?.frontSalePrice ?? 0) < (product.prices?.price ?? 0)
+                    ? product.prices!.priceWithTaxes
+                    : null,
+                itemsId: 0,
+                imageUrl: product.image,
+                frontSalePriceWithTaxes: product.review?.rating?.toString() ?? '0',
+                name: product.name,
+                storeName: product.store?.name.toString(),
+                price: product.prices?.price.toString(),
+                optionalIcon: Icons.shopping_cart_checkout_rounded,
+                reviewsCount: product.review?.reviewsCount?.toInt(),
+                onOptionalIconTap: () => _handleAddToCart(product.id),
+                isHeartObscure: wishlistProvider.wishlist?.data?.products.any(
+                      (wishlistProduct) => wishlistProduct.id == product.id,
+                    ) ??
+                    false,
+                onHeartTap: () => _handleWishlistToggle(
+                  product.id ?? 0,
+                  wishlistProvider,
+                  freshPicksProvider,
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  ///  -------------------------  BRANDS PACKAGES VIEW --------------------------------
+  Widget _packagesView({required String slug}) {
     final double screenHeight = MediaQuery.sizeOf(context).height;
     final double screenWidth = MediaQuery.sizeOf(context).width;
-    final freshPicksProvider = Provider.of<FreshPicksProvider>(context, listen: true);
-    final wishlistProvider = Provider.of<WishlistProvider>(context, listen: false);
-    final cartProvider = Provider.of<CartProvider>(context, listen: false);
+
     return Column(
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.start,
@@ -609,219 +534,19 @@ class _FeaturedBrandsItemsScreenState extends State<FeaturedBrandsItemsScreen> {
                     ),
                   ),
                 );
-              } else {
-                return Padding(
-                  padding: const EdgeInsets.only(top: 5),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      DropdownButtonHideUnderline(
-                        child: DropdownButton<String>(
-                          value: _selectedSortBy,
-                          icon: const Icon(Icons.keyboard_arrow_down_rounded),
-                          onChanged: (String? newValue) {
-                            if (newValue != null) {
-                              _onSortChanged(newValue);
-                            }
-                          },
-                          items: [
-                            DropdownMenuItem(
-                              value: 'default_sorting',
-                              child: Text(
-                                AppStrings.sortByDefault.tr,
-                                style: sortingStyle(context),
-                              ),
-                            ),
-                            DropdownMenuItem(
-                              value: 'date_asc',
-                              child: Text(
-                                AppStrings.sortByOldest.tr,
-                                style: sortingStyle(context),
-                              ),
-                            ),
-                            DropdownMenuItem(
-                              value: 'date_desc',
-                              child: Text(
-                                AppStrings.sortByNewest.tr,
-                                style: sortingStyle(context),
-                              ),
-                            ),
-                            DropdownMenuItem(
-                              value: 'name_asc',
-                              child: Text(
-                                AppStrings.sortByNameAz.tr,
-                                style: sortingStyle(context),
-                              ),
-                            ),
-                            DropdownMenuItem(
-                              value: 'name_desc',
-                              child: Text(
-                                AppStrings.sortByNameZa.tr,
-                                style: sortingStyle(context),
-                              ),
-                            ),
-                            DropdownMenuItem(
-                              value: 'price_asc',
-                              child: Text(
-                                AppStrings.sortByPriceLowToHigh.tr,
-                                style: sortingStyle(context),
-                              ),
-                            ),
-                            DropdownMenuItem(
-                              value: 'price_desc',
-                              child: Text(
-                                AppStrings.sortByPriceHighToLow.tr,
-                                style: sortingStyle(context),
-                              ),
-                            ),
-                            DropdownMenuItem(
-                              value: 'rating_asc',
-                              child: Text(
-                                AppStrings.sortByRatingLowToHigh.tr,
-                                style: sortingStyle(context),
-                              ),
-                            ),
-                            DropdownMenuItem(
-                              value: 'rating_desc',
-                              child: Text(
-                                AppStrings.sortByRatingHighToLow.tr,
-                                style: sortingStyle(context),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Column(
-                        children: [
-                          Column(
-                            children: [
-                              GridView.builder(
-                                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
-                                  childAspectRatio: 0.6,
-                                  mainAxisSpacing: 10,
-                                  crossAxisSpacing: 10,
-                                ),
-                                itemCount: provider.recordsPackages.length + (_isFetchingMorePackages ? 1 : 0),
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                itemBuilder: (context, index) {
-                                  if (_isFetchingMorePackages && index == provider.recordsPackages.length) {
-                                    return const Align(
-                                      alignment: Alignment.center,
-                                      child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        children: [
-                                          Center(
-                                            child: CircularProgressIndicator(
-                                              color: Colors.black,
-                                              strokeWidth: 0.5,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                  }
-
-                                  final product = provider.recordsPackages[index];
-
-                                  /// Calculate the percentage off
-                                  /// Check if both frontSalePrice and price are non-null and non-zero to avoid division by zero
-                                  final dynamic frontSalePrice = product.prices?.frontSalePrice;
-                                  final dynamic price = product.prices?.price;
-                                  String offPercentage = '';
-
-                                  if (frontSalePrice != null && price != null && price > 0) {
-                                    // Calculate the discount percentage
-                                    final dynamic discount = 100 - ((frontSalePrice / price) * 100);
-                                    // offPercentage = discount.toStringAsFixed(0);
-                                    if (discount > 0) {
-                                      offPercentage = discount.toStringAsFixed(0);
-                                    }
-                                  }
-
-                                  return GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => ProductDetailScreen(
-                                            key: ValueKey(
-                                              product.slug.toString(),
-                                            ),
-                                            slug: product.slug.toString(),
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                    child: ProductCard(
-                                      isOutOfStock: product.outOfStock ?? false,
-                                      itemsId: 0,
-                                      imageUrl: product.image,
-                                      frontSalePriceWithTaxes: product.prices?.frontSalePriceWithTaxes,
-                                      name: product.name,
-                                      storeName: product.store?.name.toString(),
-                                      price: product.prices?.frontSalePriceWithTaxes,
-                                      reviewsCount: product.review!.reviewsCount!.toInt(),
-                                      off: offPercentage.isNotEmpty ? '$offPercentage%off' : '',
-                                      // Display the discount percentage
-                                      priceWithTaxes:
-                                          (product.prices?.frontSalePrice ?? 0) < (product.prices?.price ?? 0)
-                                              ? product.prices!.priceWithTaxes
-                                              : null,
-                                      optionalIcon: Icons.shopping_cart_checkout_rounded,
-                                      onOptionalIconTap: () async {
-                                        final token = await SecurePreferencesUtil.getToken();
-                                        if (token != null) {
-                                          await cartProvider.addToCart(
-                                            product.id,
-                                            context,
-                                            1,
-                                          );
-                                        }
-                                      },
-
-                                      isHeartObscure: wishlistProvider.wishlist?.data?.products.any(
-                                            (wishlistProduct) => wishlistProduct.id == product.id,
-                                          ) ??
-                                          false,
-                                      onHeartTap: () async {
-                                        final token = await SecurePreferencesUtil.getToken();
-                                        final bool isInWishlist = wishlistProvider.wishlist?.data?.products.any(
-                                              (wishlistProduct) => wishlistProduct.id == product.id,
-                                            ) ??
-                                            false;
-                                        if (isInWishlist) {
-                                          await wishlistProvider.deleteWishlistItem(
-                                            product.id ?? 0,
-                                            context,
-                                            token ?? '',
-                                          );
-                                        } else {
-                                          await freshPicksProvider.handleHeartTap(
-                                            context,
-                                            product.id ?? 0,
-                                          );
-                                        }
-                                        await wishlistProvider.fetchWishlist(
-                                          token ?? '',
-                                          context,
-                                        );
-                                      },
-                                    ),
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                );
               }
+
+              return Padding(
+                padding: const EdgeInsets.only(top: 5),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    _buildSortDropdown(),
+                    _buildPackagesGrid(provider),
+                  ],
+                ),
+              );
             },
           ),
         ),
@@ -829,9 +554,165 @@ class _FeaturedBrandsItemsScreenState extends State<FeaturedBrandsItemsScreen> {
     );
   }
 
+  Widget _buildSortDropdown() {
+    return DropdownButtonHideUnderline(
+      child: DropdownButton<String>(
+        value: _selectedSortBy,
+        icon: const Icon(Icons.keyboard_arrow_down_rounded),
+        onChanged: (String? newValue) {
+          if (newValue != null) {
+            _onSortChanged(newValue);
+          }
+        },
+        items: [
+          DropdownMenuItem(
+            value: 'default_sorting',
+            child: Text(AppStrings.sortByDefault.tr, style: sortingStyle(context)),
+          ),
+          DropdownMenuItem(
+            value: 'date_asc',
+            child: Text(AppStrings.sortByOldest.tr, style: sortingStyle(context)),
+          ),
+          DropdownMenuItem(
+            value: 'date_desc',
+            child: Text(AppStrings.sortByNewest.tr, style: sortingStyle(context)),
+          ),
+          DropdownMenuItem(
+            value: 'name_asc',
+            child: Text(AppStrings.sortByNameAz.tr, style: sortingStyle(context)),
+          ),
+          DropdownMenuItem(
+            value: 'name_desc',
+            child: Text(AppStrings.sortByNameZa.tr, style: sortingStyle(context)),
+          ),
+          DropdownMenuItem(
+            value: 'price_asc',
+            child: Text(AppStrings.sortByPriceLowToHigh.tr, style: sortingStyle(context)),
+          ),
+          DropdownMenuItem(
+            value: 'price_desc',
+            child: Text(AppStrings.sortByPriceHighToLow.tr, style: sortingStyle(context)),
+          ),
+          DropdownMenuItem(
+            value: 'rating_asc',
+            child: Text(AppStrings.sortByRatingLowToHigh.tr, style: sortingStyle(context)),
+          ),
+          DropdownMenuItem(
+            value: 'rating_desc',
+            child: Text(AppStrings.sortByRatingHighToLow.tr, style: sortingStyle(context)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPackagesGrid(FeaturedBrandsProvider provider) {
+    return GridView.builder(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        childAspectRatio: 0.6,
+        mainAxisSpacing: 10,
+        crossAxisSpacing: 10,
+      ),
+      itemCount: provider.recordsPackages.length + (_isFetchingMorePackages ? 1 : 0),
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemBuilder: (context, index) {
+        if (_isFetchingMorePackages && index == provider.recordsPackages.length) {
+          return const Center(
+            child: CircularProgressIndicator(
+              color: Colors.black,
+              strokeWidth: 0.5,
+            ),
+          );
+        }
+
+        final product = provider.recordsPackages[index];
+        final offPercentage = _calculateDiscount(
+          product.prices?.frontSalePrice,
+          product.prices?.price,
+        );
+
+        return Consumer2<WishlistProvider, FreshPicksProvider>(
+          builder: (context, wishlistProvider, freshPicksProvider, child) {
+            return GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ProductDetailScreen(
+                      key: ValueKey(product.slug.toString()),
+                      slug: product.slug.toString(),
+                    ),
+                  ),
+                );
+              },
+              child: ProductCard(
+                isOutOfStock: product.outOfStock ?? false,
+                itemsId: 0,
+                imageUrl: product.image,
+                frontSalePriceWithTaxes: product.prices?.frontSalePriceWithTaxes,
+                name: product.name,
+                storeName: product.store?.name.toString(),
+                price: product.prices?.frontSalePriceWithTaxes,
+                reviewsCount: product.review?.reviewsCount?.toInt() ?? 0,
+                off: offPercentage.isNotEmpty ? '$offPercentage%off' : '',
+                priceWithTaxes: (product.prices?.frontSalePrice ?? 0) < (product.prices?.price ?? 0)
+                    ? product.prices!.priceWithTaxes
+                    : null,
+                optionalIcon: Icons.shopping_cart_checkout_rounded,
+                onOptionalIconTap: () => _handleAddToCart(product.id),
+                isHeartObscure: wishlistProvider.wishlist?.data?.products.any(
+                      (wishlistProduct) => wishlistProduct.id == product.id,
+                    ) ??
+                    false,
+                onHeartTap: () => _handleWishlistToggle(
+                  product.id ?? 0,
+                  wishlistProvider,
+                  freshPicksProvider,
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  /// Calculate discount percentage
+  String _calculateDiscount(frontSalePrice, price) {
+    if (frontSalePrice != null && price != null && price > 0) {
+      final dynamic discount = 100 - ((frontSalePrice / price) * 100);
+      if (discount > 0) {
+        return discount.toStringAsFixed(0);
+      }
+    }
+    return '';
+  }
+
+  /// Handle wishlist toggle
+  Future<void> _handleWishlistToggle(
+    int productId,
+    WishlistProvider wishlistProvider,
+    FreshPicksProvider freshPicksProvider,
+  ) async {
+    final bool isInWishlist = wishlistProvider.wishlist?.data?.products.any(
+          (wishlistProduct) => wishlistProduct.id == productId,
+        ) ??
+        false;
+
+    if (isInWishlist) {
+      await wishlistProvider.deleteWishlistItem(productId, context);
+    } else {
+      await freshPicksProvider.handleHeartTap(context, productId);
+    }
+
+    await wishlistProvider.fetchWishlist();
+  }
+
   @override
   void dispose() {
-    _scrollController.removeListener(_onScroll); // Remove the listener in dispose
+    _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     super.dispose();
   }

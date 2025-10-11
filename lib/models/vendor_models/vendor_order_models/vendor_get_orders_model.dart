@@ -163,7 +163,7 @@ class OrderRecords {
     _paymentMethod = paymentMethod;
     _customerName = customerName;
     _createdAt = createdAt;
-    _isDeleting = false;
+    isDeleting = false;
   }
 
   OrderRecords.fromJson(json) {
@@ -184,7 +184,7 @@ class OrderRecords {
         : null;
     _customerName = json['customer_name'];
     _createdAt = json['created_at'];
-    _isDeleting = false;
+    isDeleting = false;
   }
 
   dynamic _id;
@@ -200,7 +200,7 @@ class OrderRecords {
   PaymentMethod? _paymentMethod;
   dynamic _customerName;
   String? _createdAt;
-  bool _isDeleting = false;
+  bool isDeleting = false;
 
   OrderRecords copyWith({
     id,
@@ -259,11 +259,6 @@ class OrderRecords {
 
   String? get createdAt => _createdAt;
 
-  bool get isDeleting => _isDeleting;
-
-  set isDeleting(bool value) {
-    _isDeleting = value;
-  }
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};

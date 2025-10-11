@@ -12,7 +12,8 @@ class MediaServices {
   final List<String> _allowedImageExtensions = ['jpg', 'jpeg', 'png'];
 
   List<String> get allowedImageExtension => _allowedImageExtensions;
-  final List<String> _allowedDocumentExtensions = ['pdf', 'doc', 'docx'];
+
+  // final List<String> _allowedDocumentExtensions = ['pdf', 'doc', 'docx'];
   final List<String> _allowedAllExtensions = [
     'jpg',
     'jpeg',
@@ -26,11 +27,9 @@ class MediaServices {
   ];
 
   Future<File?> getSingleImageFromGallery() async {
-    final XFile? file =
-        await _imagePicker.pickImage(source: ImageSource.gallery);
+    final XFile? file = await _imagePicker.pickImage(source: ImageSource.gallery);
 
-    if (file != null &&
-        _isAllowedExtension(file.path, _allowedImageExtensions)) {
+    if (file != null && _isAllowedExtension(file.path, _allowedImageExtensions)) {
       return File(file.path);
     } else {
       // Handle unsupported file type
@@ -39,11 +38,9 @@ class MediaServices {
   }
 
   Future<File?> getSingleImageFromCamera() async {
-    final XFile? file =
-        await _imagePicker.pickImage(source: ImageSource.camera);
+    final XFile? file = await _imagePicker.pickImage(source: ImageSource.camera);
 
-    if (file != null &&
-        _isAllowedExtension(file.path, _allowedImageExtensions)) {
+    if (file != null && _isAllowedExtension(file.path, _allowedImageExtensions)) {
       return File(file.path);
     } else {
       // Handle unsupported file type
@@ -51,8 +48,9 @@ class MediaServices {
     }
   }
 
-  Future<File?> getSingleFileFromPicker(
-      {List<String>? allowedExtensions,}) async {
+  Future<File?> getSingleFileFromPicker({
+    List<String>? allowedExtensions,
+  }) async {
     try {
       final FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
@@ -63,7 +61,9 @@ class MediaServices {
       if (result != null && result.files.isNotEmpty) {
         final String filePath = result.files.single.path!;
         if (_isAllowedExtension(
-            filePath, allowedExtensions ?? _allowedAllExtensions,)) {
+          filePath,
+          allowedExtensions ?? _allowedAllExtensions,
+        )) {
           return File(filePath);
         } else {
           // Handle unsupported file type
@@ -79,8 +79,9 @@ class MediaServices {
     }
   }
 
-  Future<List<File>?> getMultipleFilesFromPicker(
-      {List<String>? allowedExtensions,}) async {
+  Future<List<File>?> getMultipleFilesFromPicker({
+    List<String>? allowedExtensions,
+  }) async {
     try {
       final FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
@@ -93,7 +94,9 @@ class MediaServices {
         for (final file in result.files) {
           final String filePath = file.path!;
           if (_isAllowedExtension(
-              filePath, allowedExtensions ?? _allowedAllExtensions,)) {
+            filePath,
+            allowedExtensions ?? _allowedAllExtensions,
+          )) {
             files.add(File(filePath));
           } else {
             // Handle unsupported file type

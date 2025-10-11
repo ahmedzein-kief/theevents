@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:event_app/core/constants/app_strings.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/helper/functions/functions.dart';
@@ -25,7 +27,7 @@ class FilterBottomSheet extends StatefulWidget {
   final bool isCategory;
 
   @override
-  _FilterBottomSheetState createState() => _FilterBottomSheetState();
+  State<FilterBottomSheet> createState() => _FilterBottomSheetState();
 }
 
 class _FilterBottomSheetState extends State<FilterBottomSheet> {
@@ -311,7 +313,9 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
       if (colorString.startsWith('#')) {
         return Color(int.parse('0xFF${colorString.replaceAll('#', '')}'));
       }
-    } catch (e) {}
+    } catch (e) {
+      log('Error parsing color string: $e');
+    }
     return Colors.transparent; // Default to transparent color if parsing fails
   }
 }

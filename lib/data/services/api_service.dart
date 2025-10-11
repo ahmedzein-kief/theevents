@@ -75,18 +75,18 @@
 //       if (response.statusCode == 200) {
 //         final result = await _handleResponse(response);
 //         if (!result['status']) {
-//           CustomSnackbar.showError(context, result['message']);
+//          AppUtils.showToast( result['message']);
 //         }
 //         return result;
 //       } else {
-//         CustomSnackbar.showError(context, 'Error fetching data: ${response.statusCode}');
+//        AppUtils.showToast( 'Error fetching data: ${response.statusCode}');
 //       }
 //     } on DioException catch (e) {
 //       final exceptionResult = _handleException(e);
-//       CustomSnackbar.showError(context, exceptionResult['message']);
+//      AppUtils.showToast( exceptionResult['message']);
 //     } catch (e) {
 //       final exceptionResult = _handleException(e);
-//       CustomSnackbar.showError(context, exceptionResult['message']);
+//      AppUtils.showToast( exceptionResult['message']);
 //     }
 //     return null;
 //   }

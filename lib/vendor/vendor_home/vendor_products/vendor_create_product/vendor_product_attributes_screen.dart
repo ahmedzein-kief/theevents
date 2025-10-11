@@ -1,28 +1,34 @@
+import 'dart:developer';
+
+import 'package:event_app/core/constants/app_strings.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
+import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/models/vendor_models/products/create_product/attribute_sets_data_response.dart';
 import 'package:event_app/vendor/components/dropdowns/custom_dropdown.dart';
-import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/vendor/components/vendor_text_style.dart';
 import 'package:event_app/vendor/view_models/vendor_products/vendor_create_product_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class VendorProductAttributeScreen extends StatefulWidget {
-  VendorProductAttributeScreen({
+import '../../../../core/constants/vendor_app_strings.dart';
+
+class VendorProductAttributesScreen extends StatefulWidget {
+  const VendorProductAttributesScreen({
     super.key,
-    this.initialAttributes,
+    this.initialAttributes = const [],
     this.listAttributesSets,
     this.productId,
   });
 
-  String? productId;
-  List<Map<String, dynamic>>? initialAttributes = [];
-  List<AttributeSetsData>? listAttributesSets;
+  final String? productId;
+  final List<Map<String, dynamic>>? initialAttributes;
+  final List<AttributeSetsData>? listAttributesSets;
 
   @override
-  _VendorProductAttributeScreenState createState() => _VendorProductAttributeScreenState();
+  State<VendorProductAttributesScreen> createState() => _VendorProductAttributeScreenState();
 }
 
-class _VendorProductAttributeScreenState extends State<VendorProductAttributeScreen> {
+class _VendorProductAttributeScreenState extends State<VendorProductAttributesScreen> {
   List<Map<String, dynamic>> attributes = [];
 
   List<String> attributeMainNames = [];
@@ -40,6 +46,8 @@ class _VendorProductAttributeScreenState extends State<VendorProductAttributeScr
   Future addAttributesToProduct() async {
     try {
       setProcessing(true);
+
+      if (!mounted) return;
       final provider = Provider.of<VendorCreateProductViewModel>(context, listen: false);
 
       final result = await provider.addAttributeToExistingProduct(
@@ -49,6 +57,7 @@ class _VendorProductAttributeScreenState extends State<VendorProductAttributeScr
       );
 
       if (result != null) {
+        if (!mounted) return;
         Navigator.pop(context, null);
       }
 
@@ -56,7 +65,7 @@ class _VendorProductAttributeScreenState extends State<VendorProductAttributeScr
       setState(() {});
     } catch (e) {
       setProcessing(false);
-      print('Error in fetching products: $e');
+      log('${VendorAppStrings.errorFetchingProducts.tr}: $e');
     }
   }
 
@@ -106,8 +115,6 @@ class _VendorProductAttributeScreenState extends State<VendorProductAttributeScr
   }
 
   void _returnBack() {
-    print(attributes);
-
     if (widget.productId != null) {
       attributes = [];
     }
@@ -167,7 +174,7 @@ class _VendorProductAttributeScreenState extends State<VendorProductAttributeScr
         },
         child: Scaffold(
           appBar: AppBar(
-            title: Text('Attributes', style: vendorName(context)),
+            title: Text(VendorAppStrings.attributes.tr, style: vendorName(context)),
             leading: IconButton(
               icon: const Icon(Icons.arrow_back),
               onPressed: _returnBack,
@@ -182,7 +189,7 @@ class _VendorProductAttributeScreenState extends State<VendorProductAttributeScr
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8),
                         child: Text(
-                          'Update',
+                          AppStrings.update.tr,
                           style: vendorButtonText(context),
                         ),
                       ),
@@ -230,7 +237,7 @@ class _VendorProductAttributeScreenState extends State<VendorProductAttributeScr
                           remainingNames.remove(selectedAttribute);
                           final dropDownList = [selectedAttribute] + remainingNames;
 
-                          print('dropDownList ${dropDownList.length}');
+                          log('dropDownList ${dropDownList.length}');
 
                           return Card(
                             elevation: 3,
@@ -243,16 +250,15 @@ class _VendorProductAttributeScreenState extends State<VendorProductAttributeScr
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        CustomDropdown(
+                                        CustomDropdown<String>(
+                                          // ← Add type parameter
                                           value: selectedAttribute,
-                                          hintText: 'Select Attribute Name',
-                                          textStyle: const TextStyle(
-                                            color: Colors.grey,
-                                            fontSize: 15,
-                                          ),
+                                          hintText: VendorAppStrings.selectAttributeName.tr,
+                                          textStyle: const TextStyle(color: Colors.grey, fontSize: 15),
                                           menuItemsList: dropDownList
                                               .map(
-                                                (element) => DropdownMenuItem(
+                                                (element) => DropdownMenuItem<String>(
+                                                  // ← Add type parameter
                                                   value: element,
                                                   child: Text(element),
                                                 ),
@@ -260,31 +266,27 @@ class _VendorProductAttributeScreenState extends State<VendorProductAttributeScr
                                               .toList(),
                                           onChanged: (value) {
                                             setState(() {
-                                              attributes[index]['name'] = value;
-                                              attributes[index]['id'] = getChildAttributeFirstValueId(
-                                                value,
-                                              );
-                                              attributes[index]['value'] = getChildAttributeFirstValue(
-                                                value,
-                                              );
-                                              attributes[index]['value_id'] = getChildAttributeFirstValueId(
-                                                value,
-                                              );
+                                              attributes[index]['name'] = value ?? ''; // ← Handle nullable
+                                              attributes[index]['id'] =
+                                                  getChildAttributeFirstValueId(value ?? ''); // ← Handle nullable
+                                              attributes[index]['value'] =
+                                                  getChildAttributeFirstValue(value ?? ''); // ← Handle nullable
+                                              attributes[index]['value_id'] =
+                                                  getChildAttributeFirstValueId(value ?? '');
                                               updateNameList();
                                             });
                                           },
                                         ),
                                         const SizedBox(height: 8),
-                                        CustomDropdown(
-                                          hintText: 'Select Attribute Value',
+                                        CustomDropdown<String>(
+                                          // ← Add type parameter
+                                          hintText: VendorAppStrings.selectAttributeValue.tr,
                                           value: attributes[index]['value'] ?? '',
-                                          textStyle: const TextStyle(
-                                            color: Colors.grey,
-                                            fontSize: 15,
-                                          ),
+                                          textStyle: const TextStyle(color: Colors.grey, fontSize: 15),
                                           menuItemsList: availableValues
                                               .map(
-                                                (val) => DropdownMenuItem(
+                                                (val) => DropdownMenuItem<String>(
+                                                  // ← Add type parameter
                                                   value: val,
                                                   child: Text(val),
                                                 ),
@@ -292,7 +294,7 @@ class _VendorProductAttributeScreenState extends State<VendorProductAttributeScr
                                               .toList(),
                                           onChanged: (value) {
                                             setState(() {
-                                              attributes[index]['value'] = value;
+                                              attributes[index]['value'] = value ?? ''; // ← Handle nullable
                                             });
                                           },
                                         ),
@@ -316,7 +318,7 @@ class _VendorProductAttributeScreenState extends State<VendorProductAttributeScr
                     ElevatedButton(
                       onPressed: addAttribute,
                       child: Text(
-                        'Add More Attribute',
+                        VendorAppStrings.addMoreAttribute.tr,
                         style: vendorButtonText(context),
                       ),
                     ),

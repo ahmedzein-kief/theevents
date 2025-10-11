@@ -50,6 +50,7 @@ class ProductPostDataModel {
     this.productFilesInput,
     this.generateLicenseCode = '0',
   });
+
   String? name;
   String? slug;
   String? slugId;
@@ -100,6 +101,7 @@ class ProductFileExternalPostData {
     this.url = '',
     this.fileType = '',
   });
+
   String url;
   String fileType;
 }
@@ -112,6 +114,7 @@ class ProductOptionValuePostData {
     this.order = '',
     this.optionValue = '',
   });
+
   String id;
   String affectPrice;
   String affectType;
@@ -139,10 +142,7 @@ extension ProductPostDataModelExtension on ProductPostDataModel {
       'sale_price': salePrice ?? '',
       'start_date': startDate ?? '',
       'end_date': endDate ?? '',
-      'sale_type':
-          (startDate?.isNotEmpty == true && endDate?.isNotEmpty == true)
-              ? '1'
-              : '0',
+      'sale_type': (startDate?.isNotEmpty == true && endDate?.isNotEmpty == true) ? '1' : '0',
       'cost_per_item': costPerItem ?? '',
       'barcode': barcode ?? '',
       'with_storehouse_management': withStorehouseManagement ?? '',
@@ -157,19 +157,14 @@ extension ProductPostDataModelExtension on ProductPostDataModel {
       'height': height ?? '',
       // },
 
-      'related_products': relatedProducts ?? '',
-      if (productType == ProductTypeConstants.PACKAGE)
-        'package_products': packageProducts ?? '',
-      'brand_id': (brandId?.trim().isNotEmpty == true &&
-              brandId?.toString() != 'null' &&
-              brandId != null)
-          ? brandId
-          : '0',
+      'related_products': relatedProducts,
+      if (productType == ProductTypeConstants.PACKAGE) 'package_products': packageProducts,
+      'brand_id':
+          (brandId?.trim().isNotEmpty == true && brandId?.toString() != 'null' && brandId != null) ? brandId : '0',
       'is_added_attributes': addedAttributes?.isNotEmpty == true ? '1' : '0',
       'has_product_options': options.isNotEmpty ? '1' : '0',
       'categories[]': categories.isNotEmpty ? categories : [],
-      'product_collections[]':
-          productCollections.isNotEmpty ? productCollections : [],
+      'product_collections[]': productCollections.isNotEmpty ? productCollections : [],
       'product_labels[]': productLabels.isNotEmpty ? productLabels : [],
       'taxes[]': taxes.isNotEmpty ? taxes : [],
       'tag': tag.isNotEmpty ? tag : [],
@@ -184,8 +179,7 @@ extension ProductPostDataModelExtension on ProductPostDataModel {
       if (productType == ProductTypeConstants.DIGITAL) ...{
         'product_files[]': productFiles ?? [],
         'generate_license_code': generateLicenseCode,
-        'product_files_external':
-            productFilesExternal?.map((e) => e.toJson()).toList() ?? [],
+        'product_files_external': productFilesExternal?.map((e) => e.toJson()).toList() ?? [],
       },
     };
 
@@ -199,8 +193,7 @@ extension ProductPostDataModelExtension on ProductPostDataModel {
 
     final formData = FormData.fromMap({
       ...fields,
-      if (productType == ProductTypeConstants.DIGITAL)
-        'product_files_input[]': files,
+      if (productType == ProductTypeConstants.DIGITAL) 'product_files_input[]': files,
     });
 
     return formData;
@@ -215,10 +208,7 @@ extension ProductPostDataModelExtension on ProductPostDataModel {
       'sale_price': salePrice ?? '',
       'start_date': startDate ?? '',
       'end_date': endDate ?? '',
-      'sale_type':
-          (startDate?.isNotEmpty == true && endDate?.isNotEmpty == true)
-              ? '1'
-              : '0',
+      'sale_type': (startDate?.isNotEmpty == true && endDate?.isNotEmpty == true) ? '1' : '0',
       'cost_per_item': costPerItem ?? '',
       'barcode': barcode ?? '',
       'with_storehouse_management': withStorehouseManagement ?? '',
@@ -238,8 +228,7 @@ extension ProductPostDataModelExtension on ProductPostDataModel {
       if (productType == ProductTypeConstants.DIGITAL) ...{
         'product_files[]': productFiles ?? [],
         'generate_license_code': generateLicenseCode,
-        'product_files_external':
-            productFilesExternal?.map((e) => e.toJson()).toList() ?? [],
+        'product_files_external': productFilesExternal?.map((e) => e.toJson()).toList() ?? [],
       },
     };
 
@@ -252,8 +241,7 @@ extension ProductPostDataModelExtension on ProductPostDataModel {
 
     final formData = FormData.fromMap({
       ...fields,
-      if (productType == ProductTypeConstants.DIGITAL)
-        'product_files_input[]': files,
+      if (productType == ProductTypeConstants.DIGITAL) 'product_files_input[]': files,
     });
 
     return formData;

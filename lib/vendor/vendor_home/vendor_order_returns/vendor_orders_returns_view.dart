@@ -1,7 +1,10 @@
+import 'dart:developer';
+
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/helper/mixins/media_query_mixin.dart';
 import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/core/styles/app_sizes.dart';
+import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/data/vendor/data/response/apis_status.dart';
 import 'package:event_app/models/vendor_models/vendor_order_models/vendor_get_orders_model.dart';
 import 'package:event_app/vendor/components/common_widgets/vendor_action_cell.dart';
@@ -9,7 +12,6 @@ import 'package:event_app/vendor/components/common_widgets/vendor_data_list_buil
 import 'package:event_app/vendor/components/data_tables/custom_data_tables.dart';
 import 'package:event_app/vendor/components/dialogs/delete_item_alert_dialog.dart';
 import 'package:event_app/vendor/components/list_tiles/records_list_tile.dart';
-import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/vendor/view_models/vendor_order_returns/vendor_order_returns_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -50,7 +52,9 @@ class _VendorOrdersReturnsViewState extends State<VendorOrdersReturnsView> with 
       setState(() {});
       await provider.vendorOrderReturns(search: _searchController.text);
       setState(() {});
-    } catch (e) {}
+    } catch (e) {
+      log(e.toString());
+    }
   }
 
   Future<void> _loadMoreData() async {
@@ -243,11 +247,11 @@ class _VendorOrdersReturnsViewState extends State<VendorOrdersReturnsView> with 
                       rowData.shippingAmountFormat.toString(),
                     ),
                     buildRow(
-                      'Payment Method',
+                      VendorAppStrings.paymentMethod.tr,
                       (rowData.paymentMethod?.value == null) ? '--' : rowData.paymentMethod?.label?.toString(),
                     ),
                     buildStatusRow(
-                      label: 'Payment Status',
+                      label: VendorAppStrings.paymentStatus.tr,
                       buttonText: (rowData.paymentStatus?.value == null) ? '--' : rowData.paymentStatus!.label!,
                       color: getStatusButtonColor(rowData.paymentStatus?.value),
                       textColor: (rowData.paymentStatus?.value == null) ? AppColors.stoneGray : Colors.white,
@@ -257,10 +261,10 @@ class _VendorOrdersReturnsViewState extends State<VendorOrdersReturnsView> with 
                     ),
                     buildRow(
                       VendorAppStrings.createdAt.tr,
-                      rowData.createdAt.toString() ?? '',
+                      rowData.createdAt.toString(),
                     ),
                     buildStatusRow(
-                      label: 'Status',
+                      label: VendorAppStrings.status.tr,
                       buttonText: rowData.status?.label?.toString() ?? '',
                       color: getStatusButtonColor(rowData.status?.value),
 
@@ -281,15 +285,20 @@ class _VendorOrdersReturnsViewState extends State<VendorOrdersReturnsView> with 
       context: context,
       onDelete: () async {
         _setDeletionProcessing(rowData: rowData, processing: true);
+
+        // Get the provider before async operations
+        final VendorOrderReturnsViewModel provider = Provider.of<VendorOrderReturnsViewModel>(
+          context,
+          listen: false,
+        );
+
         Navigator.of(context).pop();
         await Future.delayed(const Duration(seconds: 5));
-        final VendorOrderReturnsViewModel provider = Provider.of<VendorOrderReturnsViewModel>(context, listen: false);
 
-        /// Fetch the viewmodel for deleting the record
-        if (true) {
-          provider.removeElementFromList(id: rowData.id);
-          setState(() {});
-        }
+        // Directly remove the element and update UI
+        provider.removeElementFromList(id: rowData.id);
+        setState(() {});
+
         _setDeletionProcessing(rowData: rowData, processing: false);
       },
     );

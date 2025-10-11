@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 
 import '../../../core/constants/app_strings.dart';
 import '../../../core/helper/extensions/app_localizations_extension.dart';
-import '../../../core/services/shared_preferences_helper.dart';
 import '../../../core/styles/app_colors.dart';
 import '../../../core/widgets/address_form_bottom_sheet.dart';
 import '../../../core/widgets/address_list_widget.dart';
@@ -50,12 +49,8 @@ class _ProfileAddressScreenState extends State<ProfileAddressScreen> {
         _isFetchingMore = true;
       });
 
-      final token = await SecurePreferencesUtil.getToken();
-      if (token == null) return;
-
       final provider = Provider.of<CustomerAddressProvider>(context, listen: false);
       await provider.fetchCustomerAddresses(
-        token,
         context,
         perPage: 12,
         page: _currentPage,

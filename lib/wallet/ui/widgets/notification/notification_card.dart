@@ -1,5 +1,5 @@
 import 'package:event_app/core/helper/extensions/aed_text_extension.dart';
-import 'package:event_app/core/widgets/PriceRow.dart';
+import 'package:event_app/core/widgets/price_row.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/utils/notification_formatter.dart';

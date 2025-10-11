@@ -1,19 +1,17 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/widgets/items_empty_view.dart';
 import 'package:event_app/views/base_screens/base_app_bar.dart';
 import 'package:event_app/views/home_screens_shortcode/shortcode_information_icons/best_seller_screens/sellers_packages.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/constants/app_strings.dart';
-import '../../../../core/services/shared_preferences_helper.dart';
 import '../../../../core/styles/app_colors.dart';
 import '../../../../core/styles/custom_text_styles.dart';
-import '../../../../core/widgets/padded_network_banner.dart';
+import '../../../../core/utils/app_utils.dart';
 import '../../../../core/widgets/custom_app_views/search_bar.dart';
 import '../../../../core/widgets/custom_items_views/product_card.dart';
+import '../../../../core/widgets/padded_network_banner.dart';
 import '../../../../provider/cart_item_provider/cart_item_provider.dart';
 import '../../../../provider/information_icons_provider/best_seller_provider.dart';
 import '../../../../provider/shortcode_fresh_picks_provider/fresh_picks_provider.dart';
@@ -114,9 +112,19 @@ class _BestSellerScreenState extends State<BestSellerScreen> {
   ///  FOR HEART ICON STATE =================================================================
 
   Future<void> fetchWishListItems() async {
-    final token = await SecurePreferencesUtil.getToken();
     final provider = Provider.of<WishlistProvider>(context, listen: false);
-    provider.fetchWishlist(token!, context);
+    provider.fetchWishlist();
+  }
+
+  /// Handle add to cart with proper error handling
+  Future<void> _handleAddToCart(int productId) async {
+    final result = await context.read<CartProvider>().addToCart(productId, 1);
+
+    if (result.success) {
+      AppUtils.showToast(result.message, isSuccess: true);
+    } else {
+      AppUtils.showToast(result.message);
+    }
   }
 
   @override
@@ -327,12 +335,9 @@ class _BestSellerScreenState extends State<BestSellerScreen> {
   }
 
   Widget _bestSellerProducts() {
-    final screenHeight = MediaQuery.sizeOf(context).height;
-    final screenWidth = MediaQuery.sizeOf(context).width;
     final freshPicksProvider = Provider.of<FreshPicksProvider>(context);
 
     final wishlistProvider = Provider.of<WishlistProvider>(context);
-    final cartProvider = Provider.of<CartProvider>(context);
 
     return Center(
       child: Consumer<BestSellerProvider>(
@@ -449,22 +454,13 @@ class _BestSellerScreenState extends State<BestSellerScreen> {
                           price: product.prices!.price.toString(),
                           reviewsCount: product.review!.reviewsCount!.toInt(),
                           optionalIcon: Icons.shopping_cart,
-                          onOptionalIconTap: () async {
-                            final token = await SecurePreferencesUtil.getToken();
-                            if (token != null) {
-                              await cartProvider.addToCart(
-                                product.id,
-                                context,
-                                1,
-                              );
-                            }
-                          },
+
+                          onOptionalIconTap: () => _handleAddToCart(product.id),
                           isHeartObscure: wishlistProvider.wishlist?.data?.products.any(
                                 (wishListProduct) => wishListProduct.id == product.id,
                               ) ??
                               false,
                           onHeartTap: () async {
-                            final token = await SecurePreferencesUtil.getToken();
                             final bool isInWishlist = wishlistProvider.wishlist?.data?.products.any(
                                   (wishListProduct) => wishListProduct.id == product.id,
                                 ) ??
@@ -473,7 +469,6 @@ class _BestSellerScreenState extends State<BestSellerScreen> {
                               await wishlistProvider.deleteWishlistItem(
                                 product.id ?? 0,
                                 context,
-                                token ?? '',
                               );
                             } else {
                               await freshPicksProvider.handleHeartTap(
@@ -481,10 +476,7 @@ class _BestSellerScreenState extends State<BestSellerScreen> {
                                 product.id ?? 0,
                               );
                             }
-                            await wishlistProvider.fetchWishlist(
-                              token ?? '',
-                              context,
-                            );
+                            await wishlistProvider.fetchWishlist();
                           },
                         ),
                       );

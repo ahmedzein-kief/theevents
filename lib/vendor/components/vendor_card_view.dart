@@ -101,7 +101,7 @@ class VendorCard extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  color: Colors.grey.withOpacity(0.2),
+                  color: Colors.grey.withAlpha((0.2 * 255).toInt()),
                   height: 1,
                   width: screenWidth,
                 ),

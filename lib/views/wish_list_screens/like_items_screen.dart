@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
-import 'package:event_app/core/services/shared_preferences_helper.dart';
 import 'package:event_app/models/wishlist_models/wishlist_items_models.dart';
 import 'package:event_app/provider/cart_item_provider/cart_item_provider.dart';
 import 'package:event_app/views/base_screens/base_app_bar.dart';
@@ -13,9 +12,9 @@ import '../../core/constants/app_strings.dart';
 import '../../core/services/image_picker.dart';
 import '../../core/styles/app_colors.dart';
 import '../../core/styles/custom_text_styles.dart';
-import '../../core/widgets/PriceRow.dart';
+import '../../core/utils/app_utils.dart';
 import '../../core/widgets/padded_network_banner.dart';
-import '../../provider/store_provider/brand_store_provider.dart';
+import '../../core/widgets/price_row.dart';
 import '../../provider/wishlist_items_provider/wishlist_provider.dart';
 import '../product_detail_screens/product_detail_screen.dart';
 
@@ -51,17 +50,13 @@ class _WishListScreenState extends State<WishListScreen> {
   }
 
   Future<void> fetchItems(BuildContext context) async {
-    final token = await SecurePreferencesUtil.getToken();
-    if (!mounted) return;
     final provider = Provider.of<WishlistProvider>(context, listen: false);
-    await provider.fetchWishlist(token ?? '', context);
+    await provider.fetchWishlist();
   }
 
   Future<void> handleDelete(int itemId) async {
-    final token = await SecurePreferencesUtil.getToken();
-    if (token == null) return;
     final provider = Provider.of<WishlistProvider>(context, listen: false);
-    await provider.deleteWishlistItem(itemId, context, token);
+    await provider.deleteWishlistItem(itemId, context);
   }
 
   // Helper method to get appropriate colors based on theme
@@ -85,12 +80,21 @@ class _WishListScreenState extends State<WishListScreen> {
     return isDarkMode ? Colors.grey[800]! : AppColors.lightCoral;
   }
 
+  /// Handle add to cart with proper error handling
+  Future<void> _handleAddToCart(int productId) async {
+    final result = await context.read<CartProvider>().addToCart(productId, 1);
+
+    if (result.success) {
+      AppUtils.showToast(result.message, isSuccess: true);
+    } else {
+      AppUtils.showToast(result.message);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
-    final cartProvider = Provider.of<CartProvider>(context, listen: false);
-    final storeProvider = Provider.of<StoreProvider>(context, listen: false);
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
 
@@ -220,8 +224,8 @@ class _WishListScreenState extends State<WishListScreen> {
                                             blurRadius: 0.5,
                                             spreadRadius: 0.5,
                                             color: isDarkMode
-                                                ? Colors.grey[700]!.withOpacity(0.3)
-                                                : Colors.white.withOpacity(0.3),
+                                                ? Colors.grey[700]!.withAlpha((0.3 * 255).toInt())
+                                                : Colors.white.withAlpha((0.3 * 255).toInt()),
                                           ),
                                         ],
                                       ),
@@ -323,16 +327,7 @@ class _WishListScreenState extends State<WishListScreen> {
                                                         crossAxisAlignment: CrossAxisAlignment.start,
                                                         children: [
                                                           GestureDetector(
-                                                            onTap: () async {
-                                                              final token = await SecurePreferencesUtil.getToken();
-                                                              if (token != null) {
-                                                                await cartProvider.addToCart(
-                                                                  product.id,
-                                                                  context,
-                                                                  1,
-                                                                );
-                                                              }
-                                                            },
+                                                            onTap: () => _handleAddToCart(product.id),
                                                             child: Container(
                                                               decoration: BoxDecoration(
                                                                 color: _getAddToCartButtonColor(
@@ -385,9 +380,8 @@ class _WishListScreenState extends State<WishListScreen> {
                                                               size: 22,
                                                               color: isDarkMode
                                                                   ? Colors.red[300]
-                                                                  : Colors.deepOrangeAccent.withOpacity(
-                                                                      0.5,
-                                                                    ),
+                                                                  : Colors.deepOrangeAccent
+                                                                      .withAlpha((0.5 * 255).toInt()),
                                                             ),
                                                           ),
                                                         ],

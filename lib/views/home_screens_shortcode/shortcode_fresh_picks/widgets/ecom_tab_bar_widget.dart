@@ -6,12 +6,12 @@ import '../../../../core/styles/custom_text_styles.dart';
 
 class EComTabBarWidget extends StatelessWidget {
   const EComTabBarWidget({
-    Key? key,
+    super.key,
     required this.currentTab,
     required this.onTabChanged,
     required this.screenWidth,
     required this.screenHeight,
-  }) : super(key: key);
+  });
 
   final String currentTab;
   final Function(String) onTabChanged;

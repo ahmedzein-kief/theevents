@@ -22,9 +22,9 @@ class VendorActionCell extends StatelessWidget {
   final VoidCallback? onEdit;
   final VoidCallback onDelete;
   final VoidCallback? onView;
-  final showEdit;
-  final showDelete;
-  final showView;
+  final bool showEdit;
+  final bool showDelete;
+  final bool showView;
   final Widget? showViewWidget;
   final MainAxisSize mainAxisSize;
 

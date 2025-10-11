@@ -24,7 +24,7 @@ class OrderDetailsScreen extends StatefulWidget {
   final String orderID;
 
   @override
-  _OrderDetailsScreenState createState() => _OrderDetailsScreenState();
+  State<OrderDetailsScreen> createState() => _OrderDetailsScreenState();
 }
 
 class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
@@ -37,39 +37,33 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _fetchOrderDetailsWithRetry(context, widget.orderID);
+      _fetchOrderDetailsWithRetry(widget.orderID);
     });
   }
 
-  Future<void> _fetchOrderDetailsWithRetry(BuildContext? context, String orderID) async {
-    if (!mounted || context == null) return;
+  Future<void> _fetchOrderDetailsWithRetry(String orderID) async {
+    if (!mounted) return;
 
     final provider = Provider.of<OrderDataProvider>(context, listen: false);
 
     try {
-      await provider.getOrderDetails(context, orderID);
+      await provider.getOrderDetails(orderID);
       _hasInitiallyLoaded = true;
       _retryCount = 0;
 
-      // If data is still null after successful API call, it might be a new order
-      // Wait a bit and retry for new orders that might not be immediately available
       if (provider.orderDetailModel?.data == null && _retryCount < maxRetries) {
         _retryCount++;
         await Future.delayed(retryDelay);
         if (mounted) {
-          _fetchOrderDetailsWithRetry(context, orderID);
+          _fetchOrderDetailsWithRetry(orderID);
         }
       }
     } catch (e) {
       _hasInitiallyLoaded = true;
-      // Handle error case
     }
   }
 
-  Future<void> uploadProof(
-    String filePath,
-    String fileName,
-  ) async {
+  Future<void> uploadProof(String filePath, String fileName) async {
     final provider = Provider.of<OrderDataProvider>(context, listen: false);
     provider.uploadProof(context, filePath, fileName, widget.orderID);
   }
@@ -77,7 +71,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   Future<void> fetchOrderDetails(BuildContext? context, String orderID) async {
     if (!mounted) return;
     final provider = Provider.of<OrderDataProvider>(context!, listen: false);
-    await provider.getOrderDetails(context, orderID);
+    await provider.getOrderDetails(orderID);
   }
 
   Future<void> cancelOrder(BuildContext? context, String orderID) async {
@@ -86,16 +80,15 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     await provider.cancelOrder(context, orderID);
   }
 
-  // Replace your existing downloadProof method in OrderDetailsScreen:
-  Future<void> downloadProof(BuildContext? context) async {
-    if (!mounted || context == null) return;
+  Future<void> downloadProof() async {
+    if (!mounted) return;
 
     try {
       final provider = Provider.of<OrderDataProvider>(context, listen: false);
       final binaryData = await provider.downloadProof(context, widget.orderID);
 
       if (binaryData == null) {
-        if (mounted && context.mounted) {
+        if (mounted) {
           AppUtils.showToast(AppStrings.error.tr);
         }
         return;
@@ -103,10 +96,11 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
 
       final filename = 'Order_Proof_${widget.orderID}';
 
-      // Use the correct method that accepts Uint8List
+      if (!mounted) return;
+
       final result = await PDFDownloader().saveFileInDownloadsUint(context, binaryData, filename);
 
-      if (mounted && context.mounted && result != null) {
+      if (mounted && result != null) {
         log('result $result');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -117,373 +111,337 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
         );
       }
     } catch (e) {
-      print('Error downloading proof: $e');
-      if (mounted && context.mounted) {
+      log('Error downloading proof: $e');
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('${AppStrings.error.tr}: ${e.toString()}'),
             backgroundColor: Colors.red,
-            duration: Duration(seconds: 4),
+            duration: const Duration(seconds: 4),
           ),
         );
       }
     }
   }
 
-// Replace your existing getInvoice method in OrderDetailsScreen:
-  Future<void> getInvoice(
-    BuildContext? context,
-    String orderID,
-    String invoice,
-  ) async {
-    if (!mounted || context == null) return;
+  Future<void> getInvoice(String orderID, String invoice) async {
+    if (!mounted) return;
 
     try {
       final provider = Provider.of<OrderDataProvider>(context, listen: false);
       final binaryData = await provider.getInvoice(context, orderID);
 
       if (binaryData == null) {
-        if (mounted && context.mounted) {
+        if (mounted) {
           AppUtils.showToast(AppStrings.error.tr);
         }
         return;
       }
 
       final filename = invoice.endsWith('.pdf') ? invoice.substring(0, invoice.length - 4) : invoice;
+
+      if (!mounted) return;
+
       await PDFDownloader().saveFileInDownloadsUint(context, binaryData, filename);
     } catch (e) {
-      if (mounted && context.mounted) {
+      if (mounted) {
         AppUtils.showToast('${AppStrings.error.tr}: ${e.toString()}');
       }
     }
   }
 
   @override
-  Widget build(BuildContext context) => BaseAppBar(
-        textBack: AppStrings.back.tr,
-        title: AppStrings.orderDetails.tr,
-        customBackIcon: const Icon(
-          Icons.arrow_back_ios_sharp,
-          size: 16,
-        ),
-        body: Scaffold(
-          backgroundColor: Colors.grey[100],
-          body: SafeArea(
-            child: Consumer<OrderDataProvider>(
-              builder: (context, provider, child) {
-                final data = provider.orderDetailModel?.data;
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
-                // Show loading indicator when loading OR when we haven't initially loaded yet
-                if (provider.isLoading || !_hasInitiallyLoaded) {
-                  return const Center(
-                    child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        AppColors.peachyPink,
+    return BaseAppBar(
+      textBack: AppStrings.back.tr,
+      title: AppStrings.orderDetails.tr,
+      customBackIcon: const Icon(Icons.arrow_back_ios_sharp, size: 16),
+      body: Scaffold(
+        backgroundColor: isDark ? Colors.grey.shade900 : const Color(0xFFF8F9FA),
+        body: SafeArea(
+          child: Consumer<OrderDataProvider>(
+            builder: (context, provider, child) {
+              final data = provider.orderDetailModel?.data;
+
+              if (provider.isLoading || !_hasInitiallyLoaded) {
+                return const Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.peachyPink),
+                  ),
+                );
+              }
+
+              if (data == null && _hasInitiallyLoaded) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.error_outline,
+                        size: 64,
+                        color: isDark ? Colors.grey.shade400 : Colors.grey,
                       ),
-                    ),
-                  );
-                }
-
-                // Only show error state if we have initially loaded and still no data
-                if (data == null && _hasInitiallyLoaded) {
-                  // Show error state or empty state
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.error_outline,
-                          size: 64,
-                          color: Colors.grey,
+                      const SizedBox(height: 16),
+                      Text(
+                        _retryCount >= maxRetries ? AppStrings.noOrderDetailsFound.tr : AppStrings.loading.tr,
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: isDark ? Colors.grey.shade300 : Colors.grey,
                         ),
-                        const SizedBox(height: 16),
-                        Text(
-                          _retryCount >= maxRetries ? AppStrings.noOrderDetailsFound.tr : AppStrings.loading.tr,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            color: Colors.grey,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        if (_retryCount >= maxRetries)
-                          ElevatedButton(
-                            onPressed: () {
-                              _retryCount = 0;
-                              _hasInitiallyLoaded = false;
-                              _fetchOrderDetailsWithRetry(context, widget.orderID);
-                            },
-                            child: Text(AppStrings.retry.tr),
-                          ),
-                      ],
-                    ),
-                  );
-                }
-
-                return Stack(
-                  children: [
-                    // Main Content
-                    SingleChildScrollView(
-                      padding: const EdgeInsets.only(bottom: 80),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildInteractiveSection(
-                            title: AppStrings.orderInfo.tr,
-                            content: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                _infoRow(
-                                  '${AppStrings.orderNumber.tr}:',
-                                  data!.code,
-                                ),
-                                _infoRow(
-                                  '${AppStrings.time.tr}:',
-                                  data.createdAt,
-                                ),
-                                _infoRow(
-                                  '${AppStrings.orderStatus.tr}:',
-                                  data.status,
-                                  valueStyle: const TextStyle(color: Colors.orange),
-                                ),
-                              ],
-                            ),
-                          ),
-                          _buildInteractiveSection(
-                            title: AppStrings.products.tr,
-                            content: Column(
-                              children: data.products.map((product) => _buildProductRow(product)).toList(),
-                            ),
-                          ),
-                          _buildInteractiveSection(
-                            title: AppStrings.charges.tr,
-                            content: Column(
-                              children: [
-                                _infoRow(
-                                  '${AppStrings.tax.tr}:',
-                                  data.taxAmount,
-                                ),
-                                _infoRow(
-                                  '${AppStrings.discount.tr}:',
-                                  data.discountAmount,
-                                ),
-                                _infoRow(
-                                  '${AppStrings.shippingFee.tr}:',
-                                  data.shippingAmount,
-                                ),
-                                Divider(thickness: 1, color: Colors.grey[300]),
-                                _infoRow(
-                                  '${AppStrings.totalAmount.tr}:',
-                                  data.totalAmount,
-                                  valueStyle: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          _buildInteractiveSection(
-                            title: AppStrings.shippingInfo.tr,
-                            content: Column(
-                              children: [
-                                _infoRow(
-                                  AppStrings.shippingStatus.tr,
-                                  convertHtmlToString(data.shipping.status),
-                                  valueStyle: const TextStyle(
-                                    color: Colors.orange,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                _infoRow(
-                                  AppStrings.dateShipped.tr,
-                                  convertHtmlToString(
-                                    data.shipping.dateShipped,
-                                  ),
-                                  valueStyle: const TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          if (data.status.toLowerCase() != 'canceled' && data.status.toLowerCase() != 'completed') ...{
-                            _buildInteractiveSection(
-                              title: AppStrings.uploadPaymentProof.tr,
-                              content: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  if (data.hasUploadedProof)
-                                    RichText(
-                                      text: TextSpan(
-                                        style: TextStyle(
-                                          color: Colors.grey[700],
-                                          fontSize: 16,
-                                        ),
-                                        children: [
-                                          TextSpan(
-                                            text: AppStrings.uploadedProofNote.tr,
-                                          ),
-                                          TextSpan(
-                                            text: AppStrings.viewReceipt.tr,
-                                          ),
-                                          TextSpan(
-                                            text: '${data.proofFile}\n\n',
-                                            style: const TextStyle(
-                                              color: AppColors.lightCoral,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                            recognizer: TapGestureRecognizer()
-                                              ..onTap = () async {
-                                                await downloadProof(context);
-                                              },
-                                          ),
-                                          TextSpan(
-                                            text: AppStrings.reuploadNote.tr,
-                                          ),
-                                        ],
-                                      ),
-                                    )
-                                  else
-                                    Text(
-                                      AppStrings.noProofUploaded.tr,
-                                      style: TextStyle(
-                                        color: Colors.grey[700],
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                  const SizedBox(height: 8),
-                                  ElevatedButton.icon(
-                                    onPressed: () async {
-                                      final File? file = await MediaServices().getSingleFileFromPicker();
-                                      if (file != null) {
-                                        uploadProof(
-                                          file.path,
-                                          path.basename(file.path),
-                                        );
-                                      }
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.blue,
-                                      foregroundColor: Colors.white,
-                                    ),
-                                    icon: const Icon(Icons.upload),
-                                    label: Text(AppStrings.uploadButton.tr),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          } else ...{
-                            if (data.hasUploadedProof)
-                              _buildInteractiveSection(
-                                title: '',
-                                content: RichText(
-                                  text: TextSpan(
-                                    style: TextStyle(
-                                      color: Colors.grey[700],
-                                      fontSize: 16,
-                                    ),
-                                    children: [
-                                      TextSpan(
-                                        text: AppStrings.uploadedProofNote.tr,
-                                      ),
-                                      TextSpan(
-                                        text: AppStrings.viewReceipt.tr,
-                                      ),
-                                      TextSpan(
-                                        text: '${data.proofFile}\n\n',
-                                        style: const TextStyle(
-                                          color: AppColors.lightCoral,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                        recognizer: TapGestureRecognizer()
-                                          ..onTap = () async {
-                                            await downloadProof(context);
-                                          },
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
+                      ),
+                      const SizedBox(height: 16),
+                      if (_retryCount >= maxRetries)
+                        ElevatedButton(
+                          onPressed: () {
+                            _retryCount = 0;
+                            _hasInitiallyLoaded = false;
+                            _fetchOrderDetailsWithRetry(widget.orderID);
                           },
-                        ],
-                      ),
-                    ),
+                          child: Text(AppStrings.retry.tr),
+                        ),
+                    ],
+                  ),
+                );
+              }
 
-                    // Bottom Buttons
-                    if (data.isInvoiceAvailable || data.canBeCanceled)
-                      Positioned(
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                        child: Container(
-                          color: Colors.white,
-                          padding: const EdgeInsets.all(16),
-                          child: Row(
+              return Stack(
+                children: [
+                  SingleChildScrollView(
+                    padding: const EdgeInsets.only(bottom: 80),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildInteractiveSection(
+                          isDark: isDark,
+                          title: AppStrings.orderInfo.tr,
+                          content: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              if (data.isInvoiceAvailable)
-                                Expanded(
-                                  child: OutlinedButton(
-                                    style: OutlinedButton.styleFrom(
-                                      foregroundColor: Colors.blue,
-                                      side: const BorderSide(color: Colors.blue),
-                                    ),
-                                    onPressed: () {
-                                      final invoice = 'Invoice_${data.code}';
-                                      getInvoice(
-                                        context,
-                                        widget.orderID,
-                                        invoice,
-                                      );
-                                    },
-                                    child: Text(AppStrings.invoice.tr),
-                                  ),
-                                ),
-                              const SizedBox(width: 16),
-                              if (data.canBeCanceled)
-                                Expanded(
-                                  child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      foregroundColor: Colors.white,
-                                      backgroundColor: Colors.red,
-                                    ),
-                                    onPressed: () {
-                                      _showCancelConfirmationDialog(context);
-                                    },
-                                    child: Text(AppStrings.cancel.tr),
-                                  ),
-                                ),
+                              _infoRow(isDark, '${AppStrings.orderNumber.tr}:', data!.code),
+                              _infoRow(isDark, '${AppStrings.time.tr}:', data.createdAt),
+                              _infoRow(
+                                isDark,
+                                '${AppStrings.orderStatus.tr}:',
+                                data.status,
+                                valueStyle: const TextStyle(color: Colors.orange),
+                              ),
                             ],
                           ),
                         ),
-                      ),
-
-                    // Loading overlay for subsequent operations (when data exists)
-                    if (provider.isLoading && _hasInitiallyLoaded && data != null)
-                      Container(
-                        color: Colors.black.withAlpha((0.5 * 255).toInt()), // Semi-transparent background
-                        child: const Center(
-                          child: CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              AppColors.peachyPink,
-                            ),
+                        _buildInteractiveSection(
+                          isDark: isDark,
+                          title: AppStrings.products.tr,
+                          content: Column(
+                            children: data.products.map((product) => _buildProductRow(isDark, product)).toList(),
                           ),
                         ),
+                        _buildInteractiveSection(
+                          isDark: isDark,
+                          title: AppStrings.charges.tr,
+                          content: Column(
+                            children: [
+                              _infoRow(isDark, '${AppStrings.tax.tr}:', data.taxAmount),
+                              _infoRow(isDark, '${AppStrings.discount.tr}:', data.discountAmount),
+                              _infoRow(isDark, '${AppStrings.shippingFee.tr}:', data.shippingAmount),
+                              Divider(
+                                thickness: 1,
+                                color: isDark ? Colors.grey.shade700 : Colors.grey[300],
+                              ),
+                              _infoRow(
+                                isDark,
+                                '${AppStrings.totalAmount.tr}:',
+                                data.totalAmount,
+                                valueStyle: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                  color: isDark ? Colors.white : Colors.black,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        _buildInteractiveSection(
+                          isDark: isDark,
+                          title: AppStrings.shippingInfo.tr,
+                          content: Column(
+                            children: [
+                              _infoRow(
+                                isDark,
+                                AppStrings.shippingStatus.tr,
+                                convertHtmlToString(data.shipping.status),
+                                valueStyle: const TextStyle(color: Colors.orange, fontSize: 16),
+                              ),
+                              _infoRow(
+                                isDark,
+                                AppStrings.dateShipped.tr,
+                                convertHtmlToString(data.shipping.dateShipped),
+                                valueStyle: TextStyle(
+                                  color: isDark ? Colors.white : Colors.black,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (data.status.toLowerCase() != 'canceled' && data.status.toLowerCase() != 'completed') ...{
+                          _buildInteractiveSection(
+                            isDark: isDark,
+                            title: AppStrings.uploadPaymentProof.tr,
+                            content: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (data.hasUploadedProof)
+                                  RichText(
+                                    text: TextSpan(
+                                      style: TextStyle(
+                                        color: isDark ? Colors.grey.shade300 : Colors.grey[700],
+                                        fontSize: 16,
+                                      ),
+                                      children: [
+                                        TextSpan(text: AppStrings.uploadedProofNote.tr),
+                                        TextSpan(text: AppStrings.viewReceipt.tr),
+                                        TextSpan(
+                                          text: '${data.proofFile}\n\n',
+                                          style: const TextStyle(
+                                            color: AppColors.lightCoral,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                          recognizer: TapGestureRecognizer()
+                                            ..onTap = () async {
+                                              await downloadProof();
+                                            },
+                                        ),
+                                        TextSpan(text: AppStrings.reuploadNote.tr),
+                                      ],
+                                    ),
+                                  )
+                                else
+                                  Text(
+                                    AppStrings.noProofUploaded.tr,
+                                    style: TextStyle(
+                                      color: isDark ? Colors.grey.shade300 : Colors.grey[700],
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                const SizedBox(height: 8),
+                                ElevatedButton.icon(
+                                  onPressed: () async {
+                                    final File? file = await MediaServices().getSingleFileFromPicker();
+                                    if (file != null) {
+                                      uploadProof(file.path, path.basename(file.path));
+                                    }
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.blue,
+                                    foregroundColor: Colors.white,
+                                  ),
+                                  icon: const Icon(Icons.upload),
+                                  label: Text(AppStrings.uploadButton.tr),
+                                ),
+                              ],
+                            ),
+                          ),
+                        } else ...{
+                          if (data.hasUploadedProof)
+                            _buildInteractiveSection(
+                              isDark: isDark,
+                              title: '',
+                              content: RichText(
+                                text: TextSpan(
+                                  style: TextStyle(
+                                    color: isDark ? Colors.grey.shade300 : Colors.grey[700],
+                                    fontSize: 16,
+                                  ),
+                                  children: [
+                                    TextSpan(text: AppStrings.uploadedProofNote.tr),
+                                    TextSpan(text: AppStrings.viewReceipt.tr),
+                                    TextSpan(
+                                      text: '${data.proofFile}\n\n',
+                                      style: const TextStyle(
+                                        color: AppColors.lightCoral,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      recognizer: TapGestureRecognizer()
+                                        ..onTap = () async {
+                                          await downloadProof();
+                                        },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                        },
+                      ],
+                    ),
+                  ),
+                  if (data.isInvoiceAvailable || data.canBeCanceled)
+                    Positioned(
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      child: Container(
+                        color: isDark ? Colors.grey.shade800 : Colors.white,
+                        padding: const EdgeInsets.all(16),
+                        child: Row(
+                          children: [
+                            if (data.isInvoiceAvailable)
+                              Expanded(
+                                child: OutlinedButton(
+                                  style: OutlinedButton.styleFrom(
+                                    foregroundColor: Colors.blue,
+                                    side: const BorderSide(color: Colors.blue),
+                                  ),
+                                  onPressed: () {
+                                    final invoice = 'Invoice_${data.code}';
+                                    getInvoice(widget.orderID, invoice);
+                                  },
+                                  child: Text(AppStrings.invoice.tr),
+                                ),
+                              ),
+                            const SizedBox(width: 16),
+                            // if (data.canBeCanceled)
+                            //   Expanded(
+                            //     child: ElevatedButton(
+                            //       style: ElevatedButton.styleFrom(
+                            //         foregroundColor: Colors.white,
+                            //         backgroundColor: Colors.red,
+                            //       ),
+                            //       onPressed: () {
+                            //         _showCancelConfirmationDialog(context, isDark);
+                            //       },
+                            //       child: Text(AppStrings.cancel.tr),
+                            //     ),
+                            //   ),
+                          ],
+                        ),
                       ),
-                  ],
-                );
-              },
-            ),
+                    ),
+                  if (provider.isLoading && _hasInitiallyLoaded)
+                    Container(
+                      color: Colors.black.withAlpha((0.5 * 255).toInt()),
+                      child: const Center(
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(AppColors.peachyPink),
+                        ),
+                      ),
+                    ),
+                ],
+              );
+            },
           ),
         ),
-      );
+      ),
+    );
+  }
 
   String convertHtmlToString(String htmlData) {
     final document = parse(htmlData);
-    return document.body?.text.trim() ?? ''; // Extract plain text
+    return document.body?.text.trim() ?? '';
   }
 
-  Widget _infoRow(String label, String value, {TextStyle? valueStyle}) => Padding(
+  Widget _infoRow(bool isDark, String label, String value, {TextStyle? valueStyle}) => Padding(
         padding: const EdgeInsets.symmetric(vertical: 4.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -492,18 +450,19 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
               label,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
-                color: Colors.grey[700],
+                color: isDark ? Colors.grey.shade400 : Colors.grey[700],
               ),
             ),
             Text(
               value,
-              style: valueStyle ?? const TextStyle(color: Colors.black),
+              style: valueStyle ?? TextStyle(color: isDark ? Colors.white : Colors.black),
             ),
           ],
         ),
       );
 
   Widget _buildInteractiveSection({
+    required bool isDark,
     required String title,
     required Widget content,
     EdgeInsets margin = const EdgeInsets.symmetric(vertical: 8),
@@ -511,13 +470,13 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
       Container(
         margin: margin,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: isDark ? Colors.grey.shade800 : Colors.white,
           borderRadius: BorderRadius.circular(8),
-          boxShadow: const [
+          boxShadow: [
             BoxShadow(
-              color: Colors.black12,
+              color: isDark ? Colors.black.withAlpha((0.3 * 255).toInt()) : Colors.black12,
               blurRadius: 4,
-              offset: Offset(0, 2),
+              offset: const Offset(0, 2),
             ),
           ],
         ),
@@ -529,10 +488,10 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
               if (title.isNotEmpty) ...{
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                    color: isDark ? Colors.white : Colors.black87,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -543,7 +502,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
         ),
       );
 
-  Widget _buildProductRow(OrderDetailProduct product) => ListTile(
+  Widget _buildProductRow(bool isDark, OrderDetailProduct product) => ListTile(
         leading: ClipRRect(
           borderRadius: BorderRadius.circular(8),
           child: PaddedNetworkBanner(
@@ -557,58 +516,73 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
         ),
         title: Text(
           product.productName,
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: isDark ? Colors.white : Colors.black,
+          ),
         ),
-        subtitle: Text('${AppStrings.quantity.tr}: ${product.qty}'),
+        subtitle: Text(
+          '${AppStrings.quantity.tr}: ${product.qty}',
+          style: TextStyle(
+            color: isDark ? Colors.grey.shade400 : Colors.grey[700],
+          ),
+        ),
         trailing: Text(
           product.totalFormat,
-          style: const TextStyle(
-            color: Colors.black87,
+          style: TextStyle(
+            color: isDark ? Colors.white : Colors.black87,
             fontWeight: FontWeight.bold,
           ),
         ),
       );
 
-  void _showCancelConfirmationDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) => AlertDialog(
-        title: Text(
-          AppStrings.confirmation.tr,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold, // Make text bold
-            fontSize: 18, // Optional: Set font size
-          ),
-        ),
-        content: Text(AppStrings.confirmationMessage.tr),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop(); // Close the dialog
-            },
-            style: TextButton.styleFrom(
-              foregroundColor: AppColors.lightCoral, // Set text color for "No"
-            ),
-            child: Text(
-              AppStrings.no.tr,
-              style: const TextStyle(fontSize: 16),
-            ),
-          ),
-          TextButton(
-            onPressed: () {
-              cancelOrder(context, widget.orderID);
-              Navigator.of(context).pop(); // Close the dialog
-            },
-            style: TextButton.styleFrom(
-              foregroundColor: AppColors.lightCoral, // Set text color for "Yes"
-            ),
-            child: Text(
-              AppStrings.yes.tr,
-              style: const TextStyle(fontSize: 16),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+// void _showCancelConfirmationDialog(BuildContext context, bool isDark) {
+//   showDialog(
+//     context: context,
+//     builder: (BuildContext context) => AlertDialog(
+//       backgroundColor: isDark ? Colors.grey.shade800 : Colors.white,
+//       title: Text(
+//         AppStrings.confirmation.tr,
+//         style: TextStyle(
+//           fontWeight: FontWeight.bold,
+//           fontSize: 18,
+//           color: isDark ? Colors.white : Colors.black87,
+//         ),
+//       ),
+//       content: Text(
+//         AppStrings.confirmationMessage.tr,
+//         style: TextStyle(
+//           color: isDark ? Colors.grey.shade300 : Colors.black87,
+//         ),
+//       ),
+//       actions: [
+//         TextButton(
+//           onPressed: () {
+//             Navigator.of(context).pop();
+//           },
+//           style: TextButton.styleFrom(
+//             foregroundColor: AppColors.lightCoral,
+//           ),
+//           child: Text(
+//             AppStrings.no.tr,
+//             style: const TextStyle(fontSize: 16),
+//           ),
+//         ),
+//         TextButton(
+//           onPressed: () {
+//             cancelOrder(context, widget.orderID);
+//             Navigator.of(context).pop();
+//           },
+//           style: TextButton.styleFrom(
+//             foregroundColor: AppColors.lightCoral,
+//           ),
+//           child: Text(
+//             AppStrings.yes.tr,
+//             style: const TextStyle(fontSize: 16),
+//           ),
+//         ),
+//       ],
+//     ),
+//   );
+// }
 }

@@ -1,5 +1,5 @@
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
-import 'package:event_app/provider/shortcode_fresh_picks_provider/eCom_Tags_brands_Provider.dart';
+import 'package:event_app/provider/shortcode_fresh_picks_provider/ecom_tags_brands_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -62,8 +62,7 @@ class _EComTagsBrandsScreenState extends State<EComTagsBrandsScreen> {
 
   void _onScroll() {
     if (_isFetchingMore) return;
-    if (_scrollController.offset >=
-            _scrollController.position.maxScrollExtent &&
+    if (_scrollController.offset >= _scrollController.position.maxScrollExtent &&
         _scrollController.position.outOfRange) {
       if (mounted) {
         setState(() {
@@ -89,186 +88,190 @@ class _EComTagsBrandsScreenState extends State<EComTagsBrandsScreen> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.sizeOf(context).width;
     final screenHeight = MediaQuery.sizeOf(context).height;
-    return Container(
-      child: Consumer<EComBrandsProvider>(
-        builder: (context, provider, child) {
-          if (provider.isMoreLoadingBrands) {
-            return const Center(
-                child: CircularProgressIndicator(
-                    color: Colors.black, strokeWidth: 0.5,),);
-          }
-          return provider.records.isEmpty
-              ? Padding(
-                  padding: EdgeInsets.only(
-                      left: screenWidth * 0.02,
-                      right: screenWidth * 0.02,
-                      top: screenHeight * 0.02,),
-                  child: Container(
-                    width: double.infinity,
-                    decoration:
-                        const BoxDecoration(color: AppColors.lightCoral),
-                    height: 50,
-                    child: const Align(
-                        alignment: Alignment.center,
-                        child: Text('No records found!'),),
+    return Consumer<EComBrandsProvider>(
+      builder: (context, provider, child) {
+        if (provider.isMoreLoadingBrands) {
+          return const Center(
+            child: CircularProgressIndicator(
+              color: Colors.black,
+              strokeWidth: 0.5,
+            ),
+          );
+        }
+        return provider.records.isEmpty
+            ? Padding(
+                padding: EdgeInsets.only(
+                  left: screenWidth * 0.02,
+                  right: screenWidth * 0.02,
+                  top: screenHeight * 0.02,
+                ),
+                child: Container(
+                  width: double.infinity,
+                  decoration: const BoxDecoration(color: AppColors.lightCoral),
+                  height: 50,
+                  child: const Align(
+                    alignment: Alignment.center,
+                    child: Text('No records found!'),
                   ),
-                )
-              : SingleChildScrollView(
-                  controller: _scrollController,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      DropdownButtonHideUnderline(
-                        child: DropdownButton<String>(
-                          value: _selectedSortBy,
-                          icon: const Icon(Icons.keyboard_arrow_down_rounded),
-                          onChanged: (String? newValue) {
-                            if (newValue != null) {
-                              _onSortChanged(newValue);
-                            }
-                          },
-                          items: [
-                            DropdownMenuItem(
-                              value: 'default_sorting',
-                              child: Text(AppStrings.sortByDefault.tr,
-                                  style: sortingStyle(context),),
+                ),
+              )
+            : SingleChildScrollView(
+                controller: _scrollController,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    DropdownButtonHideUnderline(
+                      child: DropdownButton<String>(
+                        value: _selectedSortBy,
+                        icon: const Icon(Icons.keyboard_arrow_down_rounded),
+                        onChanged: (String? newValue) {
+                          if (newValue != null) {
+                            _onSortChanged(newValue);
+                          }
+                        },
+                        items: [
+                          DropdownMenuItem(
+                            value: 'default_sorting',
+                            child: Text(
+                              AppStrings.sortByDefault.tr,
+                              style: sortingStyle(context),
                             ),
-                            DropdownMenuItem(
-                              value: 'date_asc',
-                              child: Text(AppStrings.sortByOldest.tr,
-                                  style: sortingStyle(context),),
+                          ),
+                          DropdownMenuItem(
+                            value: 'date_asc',
+                            child: Text(
+                              AppStrings.sortByOldest.tr,
+                              style: sortingStyle(context),
                             ),
-                            DropdownMenuItem(
-                              value: 'date_desc',
-                              child: Text(AppStrings.sortByNewest.tr,
-                                  style: sortingStyle(context),),
+                          ),
+                          DropdownMenuItem(
+                            value: 'date_desc',
+                            child: Text(
+                              AppStrings.sortByNewest.tr,
+                              style: sortingStyle(context),
                             ),
-                            DropdownMenuItem(
-                              value: 'name_asc',
-                              child: Text(AppStrings.sortByNameAz.tr,
-                                  style: sortingStyle(context),),
+                          ),
+                          DropdownMenuItem(
+                            value: 'name_asc',
+                            child: Text(
+                              AppStrings.sortByNameAz.tr,
+                              style: sortingStyle(context),
                             ),
-                            DropdownMenuItem(
-                              value: 'name_desc',
-                              child: Text(AppStrings.sortByNameZa.tr,
-                                  style: sortingStyle(context),),
+                          ),
+                          DropdownMenuItem(
+                            value: 'name_desc',
+                            child: Text(
+                              AppStrings.sortByNameZa.tr,
+                              style: sortingStyle(context),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            left: screenWidth * 0.02,
-                            right: screenWidth * 0.02,
-                            top: screenHeight * 0.02,),
-                        child: GridView.builder(
-                          key: ValueKey(_currentPage),
-                          // Add this line
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 3,
-                                  childAspectRatio: 0.7,
-                                  mainAxisSpacing: 10,
-                                  crossAxisSpacing: 10,),
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: provider.records.length +
-                              (_isFetchingMore ? 1 : 0),
-                          itemBuilder: (context, index) {
-                            final record = provider.records[index];
-                            if (_isFetchingMore &&
-                                index == provider.records.length) {
-                              return const Align(
-                                alignment: Alignment.center,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Center(
-                                      child: CircularProgressIndicator(
-                                        color: Colors.black,
-                                        strokeWidth: 0.5,
-                                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(
+                        left: screenWidth * 0.02,
+                        right: screenWidth * 0.02,
+                        top: screenHeight * 0.02,
+                      ),
+                      child: GridView.builder(
+                        key: ValueKey(_currentPage),
+                        // Add this line
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                          childAspectRatio: 0.7,
+                          mainAxisSpacing: 10,
+                          crossAxisSpacing: 10,
+                        ),
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: provider.records.length + (_isFetchingMore ? 1 : 0),
+                        itemBuilder: (context, index) {
+                          final record = provider.records[index];
+                          if (_isFetchingMore && index == provider.records.length) {
+                            return const Align(
+                              alignment: Alignment.center,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Center(
+                                    child: CircularProgressIndicator(
+                                      color: Colors.black,
+                                      strokeWidth: 0.5,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+                          return Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).colorScheme.primary,
+                                  borderRadius: BorderRadius.circular(5),
+                                  border: Border.all(
+                                    color: Colors.green,
+                                    width: 0.1,
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withAlpha((0.2 * 255).toInt()),
+                                      spreadRadius: 1,
+                                      blurRadius: 5,
+                                      offset: const Offset(0, 3),
                                     ),
                                   ],
                                 ),
-                              );
-                            }
-                            return Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Container(
-                                  decoration: BoxDecoration(
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                    borderRadius: BorderRadius.circular(5),
-                                    border: Border.all(
-                                      color: Colors.green,
-                                      width: 0.1,
-                                    ),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(0.2),
-                                        spreadRadius: 1,
-                                        blurRadius: 5,
-                                        offset: const Offset(0, 3),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (builder) => FeaturedBrandsItemsScreen(
+                                          slug: record.slug,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Image.network(
+                                        record.image,
+                                        height: 120,
+                                        fit: BoxFit.fitWidth,
+                                        errorBuilder: (context, build, child) => const SizedBox.shrink(),
+                                      ),
+                                      Text(
+                                        maxLines: 2,
+                                        record.name,
+                                        style: twoSliderAdsTextStyle(),
                                       ),
                                     ],
                                   ),
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (builder) =>
-                                              FeaturedBrandsItemsScreen(
-                                            slug: record.slug,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Image.network(
-                                          record.image,
-                                          height: 120,
-                                          fit: BoxFit.fitWidth,
-                                          errorBuilder:
-                                              (context, build, child) =>
-                                                  const SizedBox.shrink(),
-                                        ),
-                                        Text(
-                                          maxLines: 2,
-                                          record.name,
-                                          style: twoSliderAdsTextStyle(),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
                                 ),
-                              ],
-                            );
-                          },
-                        ),
+                              ),
+                            ],
+                          );
+                        },
                       ),
-                    ],
-                  ),
-                );
-        },
-      ),
+                    ),
+                  ],
+                ),
+              );
+      },
     );
   }
 
   @override
   void dispose() {
-    _scrollController
-        .removeListener(_onScroll); // Remove the listener in dispose
+    _scrollController.removeListener(_onScroll); // Remove the listener in dispose
     _scrollController.dispose();
     super.dispose();
   }

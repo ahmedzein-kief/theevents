@@ -14,13 +14,11 @@ class ShippingMethodViewScreen extends StatefulWidget {
     required this.shippingMethod,
   });
 
-  final void Function(Map<String, String> selectedShippingMethod)
-      onSelectShippingMethod;
+  final void Function(Map<String, String> selectedShippingMethod) onSelectShippingMethod;
   final Map<String, String> shippingMethod;
 
   @override
-  _ShippingMethodViewScreenState createState() =>
-      _ShippingMethodViewScreenState();
+  State<ShippingMethodViewScreen> createState() => _ShippingMethodViewScreenState();
 }
 
 class _ShippingMethodViewScreenState extends State<ShippingMethodViewScreen> {
@@ -50,11 +48,9 @@ class _ShippingMethodViewScreenState extends State<ShippingMethodViewScreen> {
         if (shipping.isNotEmpty) {
           // This assumes your shipping data structure - adjust as needed
           if (shipping.containsKey('methods')) {
-            shippingMethods
-                .addAll(shipping['methods'] as Map<String, dynamic>? ?? {});
+            shippingMethods.addAll(shipping['methods'] as Map<String, dynamic>? ?? {});
           } else if (shipping.containsKey('options')) {
-            shippingMethods
-                .addAll(shipping['options'] as Map<String, dynamic>? ?? {});
+            shippingMethods.addAll(shipping['options'] as Map<String, dynamic>? ?? {});
           } else {
             // If the shipping map directly contains the methods
             shippingMethods.addAll(shipping);
@@ -62,11 +58,8 @@ class _ShippingMethodViewScreenState extends State<ShippingMethodViewScreen> {
         }
 
         // Set selected shipping index based on current method
-        if (selectedShippingIndex == null &&
-            widget.shippingMethod.containsKey('shipping[method_id]')) {
-          final currentMethodId =
-              widget.shippingMethod['shipping[method_id]'] ??
-                  widget.shippingMethod['method_id'];
+        if (selectedShippingIndex == null && widget.shippingMethod.containsKey('shipping[method_id]')) {
+          final currentMethodId = widget.shippingMethod['shipping[method_id]'] ?? widget.shippingMethod['method_id'];
 
           shippingMethods.keys.toList().asMap().forEach((index, methodId) {
             final methodData = shippingMethods[methodId];
@@ -102,10 +95,7 @@ class _ShippingMethodViewScreenState extends State<ShippingMethodViewScreen> {
               Container(
                 decoration: BoxDecoration(
                   border: Border.all(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onPrimary
-                        .withOpacity(0.08),
+                    color: Theme.of(context).colorScheme.onPrimary.withAlpha((0.08 * 255).toInt()),
                   ),
                   borderRadius: BorderRadius.circular(4),
                 ),
@@ -124,8 +114,7 @@ class _ShippingMethodViewScreenState extends State<ShippingMethodViewScreen> {
                         physics: const NeverScrollableScrollPhysics(),
                         itemCount: shippingMethods.length,
                         itemBuilder: (context, index) {
-                          final methodId =
-                              shippingMethods.keys.elementAt(index);
+                          final methodId = shippingMethods.keys.elementAt(index);
                           final methodData = shippingMethods[methodId];
 
                           // Extract shipping name and price based on your data structure
@@ -141,29 +130,24 @@ class _ShippingMethodViewScreenState extends State<ShippingMethodViewScreen> {
 
                               if (innerData is Map<String, dynamic>) {
                                 // Extract from inner map
-                                shippingName = innerData['name']?.toString() ??
-                                    'Unknown Method';
-                                shippingPrice =
-                                    innerData['price']?.toString() ?? '0';
-                                actualMethodId = firstKey
-                                    .toString(); // Use the inner key as method ID
+                                shippingName = innerData['name']?.toString() ?? 'Unknown Method';
+                                shippingPrice = innerData['price']?.toString() ?? '0';
+                                actualMethodId = firstKey.toString(); // Use the inner key as method ID
                               } else {
                                 // Direct structure
                                 shippingName = methodData['name']?.toString() ??
                                     methodData['label']?.toString() ??
                                     methodData['title']?.toString() ??
                                     methodId.toString();
-                                shippingPrice =
-                                    methodData['price']?.toString() ??
-                                        methodData['amount']?.toString() ??
-                                        methodData['cost']?.toString() ??
-                                        '0';
+                                shippingPrice = methodData['price']?.toString() ??
+                                    methodData['amount']?.toString() ??
+                                    methodData['cost']?.toString() ??
+                                    '0';
                               }
                             }
                           } else {
                             // If methodData is not a map, use it directly
-                            shippingName =
-                                methodData?.toString() ?? methodId.toString();
+                            shippingName = methodData?.toString() ?? methodId.toString();
                             shippingPrice = '0';
                           }
 
@@ -193,12 +177,12 @@ class _ShippingMethodViewScreenState extends State<ShippingMethodViewScreen> {
                                       onChanged: (int? value) {
                                         final shippingMethodData = {
                                           'shipping[method_id]': actualMethodId,
-                                          'shipping[method_amount]':
-                                              shippingPrice,
+                                          'shipping[method_amount]': shippingPrice,
                                           'shipping[method_name]': shippingName,
                                         };
                                         widget.onSelectShippingMethod(
-                                            shippingMethodData,);
+                                          shippingMethodData,
+                                        );
                                         setState(() {
                                           selectedShippingIndex = value;
                                         });

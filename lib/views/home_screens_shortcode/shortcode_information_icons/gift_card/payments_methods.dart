@@ -7,8 +7,8 @@ import 'package:provider/provider.dart';
 
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/utils/app_utils.dart';
-import '../../../../core/widgets/PriceRow.dart';
 import '../../../../core/widgets/padded_network_banner.dart';
+import '../../../../core/widgets/price_row.dart';
 import '../../../../provider/information_icons_provider/payment_methods_provider.dart';
 
 class PaymentMethods extends StatefulWidget {

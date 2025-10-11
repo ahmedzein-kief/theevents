@@ -3,11 +3,11 @@ import 'package:event_app/models/vendor_models/common_models/common_post_request
 import 'package:flutter/cupertino.dart';
 
 import '../../../../core/services/shared_preferences_helper.dart';
-import '../../../../data/vendor/data/response/ApiResponse.dart';
+import '../../../../core/utils/app_utils.dart';
+import '../../../../data/vendor/data/response/api_response.dart';
 import '../../../../models/vendor_models/products/create_product/create_product_data_response.dart';
 import '../../../../models/vendor_models/products/create_product/product_post_data_model.dart';
 import '../../../../provider/vendor/vendor_repository.dart';
-import '../../../components/services/alert_services.dart';
 
 class VendorCreatePackageViewModel with ChangeNotifier {
   String? _token;
@@ -28,11 +28,9 @@ class VendorCreatePackageViewModel with ChangeNotifier {
   final _myRepo = VendorRepository();
 
   /// ***------------ Vendor create package settings start ---------------***
-  ApiResponse<CreateProductDataResponse> _vendorCreatePackageApiResponse =
-      ApiResponse.none();
+  ApiResponse<CreateProductDataResponse> _vendorCreatePackageApiResponse = ApiResponse.none();
 
-  ApiResponse<CreateProductDataResponse> get vendorCreatePackageApiResponse =>
-      _vendorCreatePackageApiResponse;
+  ApiResponse<CreateProductDataResponse> get vendorCreatePackageApiResponse => _vendorCreatePackageApiResponse;
 
   set _setVendorCreatePackageApiResponse(
     ApiResponse<CreateProductDataResponse> response,
@@ -56,22 +54,17 @@ class VendorCreatePackageViewModel with ChangeNotifier {
       final FormData formDataMap = productPostDataModel.toFormData();
       final body = formDataMap;
 
-      final CreateProductDataResponse response =
-          await _myRepo.vendorCreatePackage(
+      final CreateProductDataResponse response = await _myRepo.vendorCreatePackage(
         headers: headers,
         body: body,
       );
       _setVendorCreatePackageApiResponse = ApiResponse.completed(response);
-      AlertServices.showSuccessSnackBar(
-        message: response.message.toString(),
-        context: context,
-      );
+      AppUtils.showToast(response.message.toString(), isSuccess: true);
       setLoading(false);
       return true;
     } catch (error) {
       _setVendorCreatePackageApiResponse = ApiResponse.error(error.toString());
-      AlertServices.showErrorSnackBar(
-          message: error.toString(), context: context,);
+      AppUtils.showToast(error.toString());
       setLoading(false);
       return false;
     }
@@ -82,11 +75,9 @@ class VendorCreatePackageViewModel with ChangeNotifier {
   /// ***------------ Vendor update package start ---------------***
 
   /// vendor update package:
-  ApiResponse<CommonPostRequestModel> _vendorUpdatePackageApiResponse =
-      ApiResponse.none();
+  ApiResponse<CommonPostRequestModel> _vendorUpdatePackageApiResponse = ApiResponse.none();
 
-  ApiResponse<CommonPostRequestModel> get vendorUpdatePackageApiResponse =>
-      _vendorUpdatePackageApiResponse;
+  ApiResponse<CommonPostRequestModel> get vendorUpdatePackageApiResponse => _vendorUpdatePackageApiResponse;
 
   set _setVendorUpdatePackageApiResponse(
     ApiResponse<CommonPostRequestModel> response,
@@ -116,16 +107,12 @@ class VendorCreatePackageViewModel with ChangeNotifier {
         packageID: packageID,
       );
       _setVendorUpdatePackageApiResponse = ApiResponse.completed(response);
-      AlertServices.showSuccessSnackBar(
-        message: response.message.toString(),
-        context: context,
-      );
+      AppUtils.showToast(response.message.toString(), isSuccess: true);
       setLoading(false);
       return true;
     } catch (error) {
       _setVendorUpdatePackageApiResponse = ApiResponse.error(error.toString());
-      AlertServices.showErrorSnackBar(
-          message: error.toString(), context: context,);
+      AppUtils.showToast(error.toString());
       setLoading(false);
       return false;
     }

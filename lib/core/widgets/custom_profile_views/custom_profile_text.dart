@@ -30,7 +30,7 @@ class CustomProfileText extends StatelessWidget {
                       SvgPicture.asset(imagePath,
                           width: 21,
                           height: 21,
-                          color: Theme.of(context).colorScheme.onPrimary,),
+                          colorFilter: ColorFilter.mode(Theme.of(context).colorScheme.onPrimary, BlendMode.srcIn),),
                       const SizedBox(width: 16),
                       Text(title, style: profileItems(context)),
                     ],

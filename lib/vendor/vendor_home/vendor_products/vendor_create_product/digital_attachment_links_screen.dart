@@ -13,7 +13,7 @@ class DigitalLinksScreen extends StatefulWidget {
   final List<DigitalLinksModel>? initialLinks;
 
   @override
-  _DigitalLinksScreenState createState() => _DigitalLinksScreenState();
+  State<DigitalLinksScreen> createState() => _DigitalLinksScreenState();
 }
 
 class _DigitalLinksScreenState extends State<DigitalLinksScreen> {

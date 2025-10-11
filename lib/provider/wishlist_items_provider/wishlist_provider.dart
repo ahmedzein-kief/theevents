@@ -1,8 +1,12 @@
+import 'dart:developer';
+
+import 'package:event_app/core/network/api_endpoints/api_contsants.dart';
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
+import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/provider/api_response_handler.dart';
 import 'package:flutter/cupertino.dart';
 
-import '../../core/utils/custom_toast.dart';
+import '../../core/helper/functions/functions.dart';
 import '../../models/wishlist_models/wish_list_response_models.dart';
 import '../../models/wishlist_models/wishlist_items_models.dart';
 
@@ -17,66 +21,59 @@ class WishlistProvider with ChangeNotifier {
 
   bool get isLoading => _isLoading;
 
-  Future<void> fetchWishlist(
-    String token,
-    BuildContext context,
-  ) async {
+  Future<void> fetchWishlist() async {
+    final user = await isLoggedIn();
+    if (!user) {
+      _isLoading = false;
+      return;
+    }
+
     _isLoading = true;
     notifyListeners();
-    const url = ApiEndpoints.wishlistItems;
-    final headers = {
-      'Authorization': token,
-    };
 
-    final response = await _apiResponseHandler.getRequest(
-      url,
-      headers: headers,
-      context: context,
-    );
+    try {
+      const url = ApiEndpoints.wishlistItems;
+      final response = await _apiResponseHandler.getRequest(url, extra: {ApiConstants.requireAuthKey: true});
 
-    if (response.statusCode == 200) {
-      _wishlist = WishlistModel.fromJson(response.data);
+      if (response.statusCode == 200) {
+        _wishlist = WishlistModel.fromJson(response.data);
+      }
+    } catch (e) {
+      log('Error in fetchWishlist: ${e.toString()}');
+    } finally {
+      _isLoading = false;
       notifyListeners();
-    } else {}
-
-    _isLoading = false;
-    notifyListeners();
+    }
   }
 
   ///     ------------------------------------------   DELETE WISHLIST ITEMS    ----------------------------------------------
 
-  Future<void> deleteWishlistItem(
-    int itemId,
-    BuildContext context,
-    String token,
-  ) async {
+  Future<void> deleteWishlistItem(int itemId, BuildContext context) async {
     _isLoading = true;
     notifyListeners();
 
     final url = '${ApiEndpoints.wishList}$itemId';
-    final headers = {'Authorization': token};
 
-    final response = await _apiResponseHandler.deleteRequest(url, headers: headers);
+    final response = await _apiResponseHandler.deleteRequest(url, extra: {ApiConstants.requireAuthKey: true});
 
     if (response.statusCode == 200) {
       final responseData = response.data;
       final wishlistResponse = WishlistResponseModels.fromJson(responseData);
       if (wishlistResponse.error == null || wishlistResponse.error == false) {
         // Re-fetch the wishlist after deletion
-        await fetchWishlist(token, context);
-        CustomSnackbar.showSuccess(
-          context,
+        await fetchWishlist();
+        AppUtils.showToast(
           wishlistResponse.message ?? 'Item deleted successfully.',
+          isSuccess: true,
         );
         notifyListeners();
       } else {
-        CustomSnackbar.showError(
-          context,
+        AppUtils.showToast(
           wishlistResponse.message ?? 'Failed to delete item.',
         );
       }
     } else {
-      CustomSnackbar.showError(context, 'Failed to delete wishlist item.');
+      AppUtils.showToast('Failed to delete wishlist item.');
     }
 
     _isLoading = false;

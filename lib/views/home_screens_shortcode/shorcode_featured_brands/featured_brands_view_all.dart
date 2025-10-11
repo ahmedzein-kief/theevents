@@ -341,8 +341,9 @@ class _FeaturedCategoriesScreenState extends State<FeaturedBrandsScreenViewAll> 
                                             padding: const EdgeInsets.symmetric(horizontal: 8.0),
                                             child: Text(
                                               brand.name,
-                                              style: const TextStyle(
+                                              style: TextStyle(
                                                 fontSize: 10,
+                                                color: Theme.of(context).colorScheme.primary,
                                                 fontWeight: FontWeight.bold,
                                               ),
                                               textAlign: TextAlign.center,

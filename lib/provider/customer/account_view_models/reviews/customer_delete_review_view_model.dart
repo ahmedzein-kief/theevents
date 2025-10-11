@@ -1,9 +1,9 @@
-import 'package:event_app/core/utils/custom_toast.dart';
 import 'package:event_app/provider/customer/Repository/customer_repository.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../../../../core/services/shared_preferences_helper.dart';
-import '../../../../data/vendor/data/response/ApiResponse.dart';
+import '../../../../core/utils/app_utils.dart';
+import '../../../../data/vendor/data/response/api_response.dart';
 import '../../../../models/vendor_models/common_models/common_post_request_model.dart';
 
 class CustomerDeleteReviewViewModel with ChangeNotifier {
@@ -50,15 +50,12 @@ class CustomerDeleteReviewViewModel with ChangeNotifier {
         reviewID: reviewID.toString(),
       );
       setApiResponse = ApiResponse.completed(response);
-      CustomSnackbar.showSuccess(
-        context,
-        apiResponse.data?.message?.toString() ?? '',
-      );
+      AppUtils.showToast(apiResponse.data?.message?.toString() ?? '', isSuccess: true);
       setLoading(false);
       return true;
     } catch (error) {
       setApiResponse = ApiResponse.error(error.toString());
-      CustomSnackbar.showError(context, error.toString());
+      AppUtils.showToast(error.toString());
       setLoading(false);
       return false;
     }

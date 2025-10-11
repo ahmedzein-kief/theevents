@@ -43,8 +43,8 @@ class UserProfileLoginScreen extends StatefulWidget {
 class _UserProfileLoginScreenState extends State<UserProfileLoginScreen> {
   // Private state variables
   File? _imageFile;
-  String? _selectedImageUrl;
   final ImagePickerHelper _imagePickerHelper = ImagePickerHelper();
+  bool _isConvertingToVendor = false;
 
   // Cached providers to avoid repeated lookups
   UserProvider? _userProvider;
@@ -81,7 +81,6 @@ class _UserProfileLoginScreenState extends State<UserProfileLoginScreen> {
 
     try {
       await Future.wait([
-        _loadSavedImage(),
         _fetchUserData(),
       ]);
     } catch (e) {
@@ -92,26 +91,11 @@ class _UserProfileLoginScreenState extends State<UserProfileLoginScreen> {
     }
   }
 
-  /// Load previously saved image from SharedPreferences
-  Future<void> _loadSavedImage() async {
-    try {
-      final imagePath = await _imagePickerHelper.getSavedImage();
-      if (imagePath != null && mounted) {
-        _selectedImageUrl = imagePath;
-      }
-    } catch (e) {
-      debugPrint('Error loading saved image: $e');
-    }
-  }
-
   /// Fetch user data from API
   Future<void> _fetchUserData() async {
     try {
-      final token = await SecurePreferencesUtil.getToken();
-      if (token == null || !mounted) return;
-
       final provider = _userProvider ?? Provider.of<UserProvider>(context, listen: false);
-      await provider.fetchUserData(token, context);
+      await provider.fetchUserData();
     } catch (e) {
       debugPrint('Error fetching user data: $e');
     }
@@ -152,7 +136,7 @@ class _UserProfileLoginScreenState extends State<UserProfileLoginScreen> {
         final imageUrl = uploadProvider.apiResponse.data?.data?.url;
         if (imageUrl != null) {
           await _imagePickerHelper.saveImageToPreferences(imageUrl);
-          await _loadSavedImage();
+
           _showSuccessSnackBar('Profile picture updated successfully');
         }
       }
@@ -161,6 +145,118 @@ class _UserProfileLoginScreenState extends State<UserProfileLoginScreen> {
       _showErrorSnackBar('Failed to upload profile picture');
     } finally {
       if (mounted) setState(() {});
+    }
+  }
+
+  /// Show become vendor confirmation dialog
+  void _showBecomeVendorDialog() {
+    if (!mounted) return;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext dialogContext) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              AppStrings.becomeSeller.tr, // Add this to your strings
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            IconButton(
+              icon: const Icon(Icons.close),
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
+            ),
+          ],
+        ),
+        content: Text(
+          AppStrings.becomeSellerConfirmation.tr,
+          // "Are you sure you want to become a seller? This action will convert your account to a vendor account."
+          style: const TextStyle(fontSize: 16),
+        ),
+        actionsAlignment: MainAxisAlignment.spaceBetween,
+        actions: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop(),
+                style: TextButton.styleFrom(
+                  backgroundColor: Colors.grey.shade600,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: Text(
+                  AppStrings.cancel.tr,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              TextButton(
+                onPressed: () async {
+                  Navigator.of(dialogContext).pop();
+                  await _handleBecomeVendor();
+                },
+                style: TextButton.styleFrom(
+                  backgroundColor: AppColors.peachyPink,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: Text(
+                  AppStrings.yesBecomeSeller.tr, // "Yes, Become a Seller"
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Handle becoming a vendor
+  /// Handle becoming a vendor
+  Future<void> _handleBecomeVendor() async {
+    if (!mounted) return;
+
+    setState(() => _isConvertingToVendor = true);
+
+    try {
+      final userId = _userProvider?.user?.id;
+      if (userId == null) {
+        _showErrorSnackBar('User ID not found');
+        return;
+      }
+
+      // Call the become vendor API using the provider method
+      final success = await _userProvider!.becomeVendor(userId);
+
+      if (success && mounted) {
+        _navigateTo(const VendorStepperScreen());
+      }
+    } catch (e) {
+      debugPrint('Error becoming vendor: $e');
+    } finally {
+      setState(() => _isConvertingToVendor = false);
     }
   }
 
@@ -209,7 +305,7 @@ class _UserProfileLoginScreenState extends State<UserProfileLoginScreen> {
                     child: _buildMainContent(screenSize, userProvider.user),
                   ),
                 ),
-                if (userProvider.isLoading || authProvider.isLoading) _buildLoadingOverlay(),
+                if (userProvider.isLoading || authProvider.isLoading || _isConvertingToVendor) _buildLoadingOverlay(),
               ],
             );
           },
@@ -310,32 +406,6 @@ class _UserProfileLoginScreenState extends State<UserProfileLoginScreen> {
     );
   }
 
-  /// Build image placeholder
-  Widget _buildImagePlaceholder() {
-    return Container(
-      width: 90,
-      height: 90,
-      color: Colors.grey.shade300,
-      child: const Center(
-        child: CircularProgressIndicator(strokeWidth: 2),
-      ),
-    );
-  }
-
-  /// Build image error widget
-  Widget _buildImageError() {
-    return Container(
-      width: 90,
-      height: 90,
-      color: Colors.grey.shade300,
-      child: const Icon(
-        Icons.error_outline,
-        color: Colors.red,
-        size: 30,
-      ),
-    );
-  }
-
   /// Build edit button for avatar
   Widget _buildEditButton() {
     return Positioned(
@@ -394,23 +464,20 @@ class _UserProfileLoginScreenState extends State<UserProfileLoginScreen> {
           ),
           child: Container(
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary,
+              color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(5),
             ),
             child: Padding(
               padding: EdgeInsets.only(
                 top: screenSize.height * 0.02,
                 left: screenSize.width * 0.02,
+                right: screenSize.width * 0.02,
                 bottom: screenSize.height * 0.02,
               ),
               child: Column(
                 children: [
                   ..._buildMenuItems(screenSize),
-                  _buildVendorSection(),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 10),
-                    child: ThemeToggleSwitch(),
-                  ),
+                  const ThemeToggleSwitch(),
                 ],
               ),
             ),
@@ -450,6 +517,10 @@ class _UserProfileLoginScreenState extends State<UserProfileLoginScreen> {
       _buildProfileItem(
           'assets/termsandcon.svg', AppStrings.termsAndConditions.tr, () => _navigateTo(const TermsAndCondtionScreen()),
           width: 23, height: 23, textWidth: screenSize.width * 0.06),
+
+      /// Vendor Section
+      _buildVendorMenuItem(screenSize),
+
       const LanguageDropdownItem(),
     ];
   }
@@ -467,31 +538,45 @@ class _UserProfileLoginScreenState extends State<UserProfileLoginScreen> {
     );
   }
 
-  /// Build vendor section based on vendor status
-  Widget _buildVendorSection() {
+  /// Build vendor/seller menu item based on account status
+  Widget _buildVendorMenuItem(Size screenSize) {
+    // Don't show anything if user is verified vendor (shown in separate section)
     if (_isVendor && _isVendorApprovedVerified) {
       return _buildVendorItem(
         AppStrings.vendor.tr,
         () => Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => VendorDrawerScreen()),
+          MaterialPageRoute(builder: (context) => const VendorDrawerScreen()),
         ),
       );
-    } else if (_isVendor && !_isVendorApprovedVerified && _isPaid) {
-      return _buildVendorItem(
-        AppStrings.vendor.tr,
-        () => AppUtils.showToast(AppStrings.vendorAccountUnderReview.tr, long: true),
-      );
-    } else if (_isVendor && !_isVendorApprovedVerified) {
-      return _buildVendorItem(
-        AppStrings.joinAsSeller.tr,
-        () => _navigateTo(const VendorStepperScreen()),
-      );
     }
-    return const SizedBox.shrink();
+
+    // Show "Join as Seller" for non-vendors or unverified vendors
+    return _buildProfileItem(
+      'assets/Join_seller.svg',
+      _isVendor ? AppStrings.vendor.tr : AppStrings.joinAsSeller.tr,
+      () => _handleVendorNavigation(),
+      width: 23,
+      height: 23,
+      textWidth: screenSize.width * 0.06,
+    );
   }
 
-  /// Build vendor menu item
+  /// Handle navigation based on vendor status
+  void _handleVendorNavigation() {
+    if (!_isVendor) {
+      // Not a vendor yet - show confirmation dialog
+      _showBecomeVendorDialog();
+    } else if (_isPaid && !_isVendorApprovedVerified) {
+      // Vendor but under review
+      AppUtils.showToast(AppStrings.vendorAccountUnderReview.tr, long: true);
+    } else {
+      // Vendor but needs to complete steps
+      _navigateTo(const VendorStepperScreen());
+    }
+  }
+
+  /// Build vendor menu item (helper for dashboard access)
   Widget _buildVendorItem(String title, VoidCallback onTap) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
@@ -621,28 +706,29 @@ class _UserProfileLoginScreenState extends State<UserProfileLoginScreen> {
   }
 
   /// Handle logout process
+  /// Handle logout process
   Future<void> _handleLogout(BuildContext dialogContext) async {
-    Navigator.of(dialogContext).pop(); // Close dialog
+    // Capture navigator before closing dialog
+    final dialogNavigator = Navigator.of(dialogContext);
+
+    dialogNavigator.pop();
 
     if (!mounted) return;
 
     try {
       final token = await SecurePreferencesUtil.getToken();
 
-      // Logout from server
       if (_authProvider != null && token != null) {
+        if (!mounted) return;
         await _authProvider!.logout(context, token);
       }
 
-      // Clear local data
       await SecurePreferencesUtil.logout();
 
-      // Clear provider data
       if (_userProvider != null) {
         _userProvider!.setUser(null);
       }
 
-      // Refresh the page
       await _onRefresh();
     } catch (e) {
       debugPrint('Logout error: $e');

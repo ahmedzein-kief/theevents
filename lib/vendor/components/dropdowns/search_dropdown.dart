@@ -24,7 +24,7 @@ class SearchDropdown extends StatefulWidget {
   final Function(SearchDropdownModel) onSearchChanged;
 
   @override
-  _SearchDropdownState createState() => _SearchDropdownState();
+  State<SearchDropdown> createState() => _SearchDropdownState();
 }
 
 class _SearchDropdownState extends State<SearchDropdown> {

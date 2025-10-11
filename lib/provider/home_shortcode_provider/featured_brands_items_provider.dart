@@ -25,11 +25,7 @@ class FeaturedBrandsItemsProvider with ChangeNotifier {
       isLoading = true;
       notifyListeners();
 
-      final response = await _apiResponseHandler.getRequest(
-        url,
-        queryParams: queryParameters,
-        context: context,
-      );
+      final response = await _apiResponseHandler.getRequest(url, queryParams: queryParameters);
 
       if (response.statusCode == 200) {
         homeBrandsTypes = HomeBrandsTypesModels.fromJson(response.data);

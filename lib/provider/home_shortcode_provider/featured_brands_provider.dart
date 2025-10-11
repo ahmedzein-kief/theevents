@@ -32,10 +32,7 @@ class FeaturedBrandsProvider with ChangeNotifier {
     try {
       const url = ApiEndpoints.featuredBrandsSlide;
 
-      final response = await _apiResponseHandler.getRequest(
-        url,
-        context: context,
-      );
+      final response = await _apiResponseHandler.getRequest(url);
 
       if (response.statusCode == 200) {
         _topBrands = HomeTopBrandsModels.fromJson(response.data);
@@ -72,10 +69,7 @@ class FeaturedBrandsProvider with ChangeNotifier {
       _hasError = false;
       notifyListeners();
 
-      final response = await _apiResponseHandler.getRequest(
-        url,
-        context: context,
-      );
+      final response = await _apiResponseHandler.getRequest(url);
       if (response.statusCode == 200) {
         final jsonResponse = response.data;
         _featuredBrandsBanner = BrandsResponse.fromJson(jsonResponse);
@@ -98,7 +92,6 @@ class FeaturedBrandsProvider with ChangeNotifier {
   List<Brand> _brands = [];
   String? _error;
   bool _isMoreLoading = false;
-  PaginationBrands? _pagination;
 
   bool branLoader = false;
 
@@ -125,17 +118,13 @@ class FeaturedBrandsProvider with ChangeNotifier {
     final url = '${ApiEndpoints.featureBrandsAll}?per-page=$perPage&page=$page&sort-by=$sortBy';
 
     try {
-      final response = await _apiResponseHandler.getRequest(
-        url,
-        context: context,
-      );
+      final response = await _apiResponseHandler.getRequest(url);
 
       if (response.statusCode == 200) {
         final data = ApiResponse.fromJson(response.data);
 
         if (page == 1) {
           _brands = data.data.records;
-          _pagination = data.data.pagination;
         } else {
           _brands.addAll(data.data.records);
         }
@@ -164,10 +153,7 @@ class FeaturedBrandsProvider with ChangeNotifier {
     final url = '${ApiEndpoints.featuredBrands}$slug';
 
     try {
-      final response = await _apiResponseHandler.getRequest(
-        url,
-        context: context,
-      );
+      final response = await _apiResponseHandler.getRequest(url);
 
       if (response.statusCode == 200) {
         final data = response.data;
@@ -188,10 +174,8 @@ class FeaturedBrandsProvider with ChangeNotifier {
   ///   ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++  FEATURED TOP BRANDS PRODUCTS PROVIDER +++++++++++++++++++++++++++++++++++++++++++++++++
 
   List<ProductRecords> _records = [];
-  BrandsPagination? _brandsPagination;
   TopBrandsProducts? _topBrandsProducts;
   bool _isLoadingProducts = false;
-  bool _isMoreLoadingProducts = false;
   ProductFiltersModel? _productFilters;
 
   List<ProductRecords> get records => _records;
@@ -242,10 +226,7 @@ class FeaturedBrandsProvider with ChangeNotifier {
     final url = filtersQuery.isNotEmpty ? '$baseUrl&$filtersQuery&allcategories=1' : baseUrl;
 
     try {
-      final response = await _apiResponseHandler.getRequest(
-        url,
-        context: context,
-      );
+      final response = await _apiResponseHandler.getRequest(url);
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonResponse = response.data;
@@ -253,7 +234,6 @@ class FeaturedBrandsProvider with ChangeNotifier {
 
         if (page == 1) {
           _records = apiResponse.data?.records ?? [];
-          _brandsPagination = apiResponse.data?.pagination;
           _productFilters = apiResponse.data?.filters;
         } else {
           _records.addAll(apiResponse.data?.records ?? []);
@@ -268,7 +248,6 @@ class FeaturedBrandsProvider with ChangeNotifier {
       throw Exception('Failed to load products: $error');
     } finally {
       _isLoadingProducts = false;
-      _isMoreLoadingProducts = false;
       notifyListeners();
     }
   }
@@ -280,7 +259,6 @@ class FeaturedBrandsProvider with ChangeNotifier {
   List<ProductRecords> get recordsPackages => _recordsPackages;
 
   bool _isLoadingPackages = false;
-  bool _isMoreLoadingPackages = false;
 
   bool get isLoadingPackages => _isLoadingPackages;
 
@@ -295,17 +273,13 @@ class FeaturedBrandsProvider with ChangeNotifier {
       _isMoreLoading = true;
       _isLoadingPackages = true;
     } else {
-      _isMoreLoadingPackages = true;
     }
     notifyListeners();
 
     final url = '${ApiEndpoints.featuredBrandPackages}$slug?per-page=$perPage&page=$page&sort-by=$sortBy';
 
     try {
-      final response = await _apiResponseHandler.getRequest(
-        url,
-        context: context,
-      );
+      final response = await _apiResponseHandler.getRequest(url);
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonResponse = response.data;
@@ -313,7 +287,6 @@ class FeaturedBrandsProvider with ChangeNotifier {
 
         if (page == 1) {
           _recordsPackages = apiResponse.data?.records ?? [];
-          _brandsPagination = apiResponse.data?.pagination;
         } else {
           _recordsPackages.addAll(apiResponse.data?.records ?? []);
         }
@@ -324,7 +297,6 @@ class FeaturedBrandsProvider with ChangeNotifier {
       throw Exception('Failed to load products: $error');
     } finally {
       _isLoadingPackages = false;
-      _isMoreLoadingPackages = false;
       notifyListeners();
     }
   }

@@ -1,5 +1,4 @@
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
-import 'package:event_app/core/services/shared_preferences_helper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -35,20 +34,20 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
 
   @override
   void initState() {
+    super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await fetchUserData();
     });
   }
 
   Future<void> fetchUserData() async {
-    final token = await SecurePreferencesUtil.getToken();
+    if (!mounted) return;
     final provider = Provider.of<UserProvider>(context, listen: false);
-    provider.fetchUserData(token ?? '', context);
+    provider.fetchUserData();
   }
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.sizeOf(context).width;
     final screenHeight = MediaQuery.sizeOf(context).height;
     final mainProvider = Provider.of<UserProvider>(context, listen: true);
 
@@ -133,14 +132,7 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
                                     onPressed: () async {
                                       if (_formKey.currentState?.validate() ?? false) {
                                         await forUpdateProfile(context);
-                                        final provider = Provider.of<UserProvider>(
-                                          context,
-                                          listen: false,
-                                        );
-                                        await provider.fetchUserData(
-                                          user.token ?? '',
-                                          context,
-                                        );
+                                        await fetchUserData();
                                       } else {
                                         CustomSnackbar.showError(
                                           context,
@@ -190,7 +182,7 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
 
   Future<void> forUpdateProfile(BuildContext context) async {
     final provider = Provider.of<ProfileUpdateProvider>(context, listen: false);
-    final token = await SecurePreferencesUtil.getToken();
+
     final fullName = _fullNameController.text;
     final fullEmail = _fullEmailController.text;
     final phoneNumber = _phoneNumberController.text;
@@ -201,7 +193,7 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
       phoneNumber: phoneNumber,
     );
 
-    await provider.editProfileDetails(token ?? '', request, context);
+    await provider.editProfileDetails(request, context);
   }
 
   void _showDeleteAccountWarning(BuildContext mainContext) {
@@ -234,15 +226,16 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
   }
 
   Future<void> _deleteAccount(BuildContext context) async {
-    final provider = Provider.of<ProfileUpdateProvider>(context, listen: false);
-    final token = await SecurePreferencesUtil.getToken();
+    // Capture navigator before async operations
+    final navigator = Navigator.of(context);
 
-    final isDeleted = await provider.deleteAccount(token ?? '', context);
+    final provider = Provider.of<ProfileUpdateProvider>(context, listen: false);
+
+    final isDeleted = await provider.deleteAccount(context);
 
     if (isDeleted) {
-      Navigator.pushReplacement(
-        context,
-        CupertinoPageRoute(builder: (context) => AuthScreen()),
+      navigator.pushReplacement(
+        CupertinoPageRoute(builder: (context) => const AuthScreen()),
       );
     }
   }

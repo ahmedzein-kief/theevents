@@ -1,6 +1,9 @@
+import 'dart:developer';
+
 import 'package:event_app/core/helper/mixins/media_query_mixin.dart';
 import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/core/styles/app_sizes.dart';
+import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/core/widgets/custom_auth_views/app_custom_button.dart';
 import 'package:event_app/data/vendor/data/response/apis_status.dart';
 import 'package:event_app/models/vendor_models/products/create_product/attribute_sets_data_response.dart';
@@ -15,8 +18,6 @@ import 'package:event_app/vendor/components/data_tables/custom_data_tables.dart'
 import 'package:event_app/vendor/components/dialogs/delete_item_alert_dialog.dart';
 import 'package:event_app/vendor/components/list_tiles/custom_records_list_tile.dart';
 import 'package:event_app/vendor/components/radio_buttons/custom_radio_button.dart';
-import 'package:event_app/vendor/components/services/alert_services.dart';
-import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/vendor/components/vendor_tool_bar_widgets/vendor_tool_bar_widgets.dart';
 import 'package:event_app/vendor/vendor_home/vendor_products/vendor_create_product/product_sections/vendor_edit_variations.dart';
 import 'package:event_app/vendor/view_models/vendor_products/vendor_create_product_view_model.dart';
@@ -60,6 +61,7 @@ class _VendorProductHasVariationsViewState extends State<VendorProductHasVariati
   Future _onRefresh() async {
     try {
       // setProcessing(true);
+      if (!mounted) return;
       final provider = Provider.of<VendorGetProductVariationsViewModel>(
         context,
         listen: false,
@@ -74,11 +76,13 @@ class _VendorProductHasVariationsViewState extends State<VendorProductHasVariati
       );
 
       if (provider.list.isEmpty && _searchController.text.isEmpty) {
+        if (!mounted) return;
         Navigator.pop(context, null);
         return;
       }
 
       /// ******** Get attributes set start **********
+      if (!mounted) return;
       final vendorGetAttributesSetProvider = Provider.of<VendorCreateProductViewModel>(context, listen: false);
       await vendorGetAttributesSetProvider.getAttributeSetsData();
 
@@ -88,7 +92,7 @@ class _VendorProductHasVariationsViewState extends State<VendorProductHasVariati
       setState(() {});
     } catch (e) {
       setProcessing(false);
-      print('Error in fetching products: $e');
+      log('Error in fetching products: $e');
     }
   }
 
@@ -140,7 +144,6 @@ class _VendorProductHasVariationsViewState extends State<VendorProductHasVariati
           Navigator.pop(context);
         },
         child: Scaffold(
-          backgroundColor: AppColors.bgColor,
           appBar: VendorModifySectionsAppBar(
             title: 'Product has variations',
             onGoBack: () {
@@ -435,6 +438,8 @@ class _VendorProductHasVariationsViewState extends State<VendorProductHasVariati
 
                   /// ******** Get selected attributes set end **********
 
+                  if (!mounted) return;
+
                   showDraggableModalBottomSheet(
                     context: context,
                     builder: (scrollController) {
@@ -442,142 +447,142 @@ class _VendorProductHasVariationsViewState extends State<VendorProductHasVariati
                       final attributesSet = vendorGetAttributesSetProvider.attributeSetsApiResponse.data?.data ?? [];
 
                       return StatefulBuilder(
-                        builder: (context, setModalState) => SingleChildScrollView(
-                          controller: scrollController,
-                          child: Column(
-                            children: [
-                              AppUtils.dragHandle(context: context),
-                              kFormFieldSpace,
-                              const Center(
-                                child: Text(
-                                  'Select Attributes',
-                                  style: TextStyle(fontSize: 20),
+                        builder: (context, setModalState) => Container(
+                          color: Theme.of(context).cardColor,
+                          child: SingleChildScrollView(
+                            controller: scrollController,
+                            child: Column(
+                              children: [
+                                AppUtils.dragHandle(context: context),
+                                kFormFieldSpace,
+                                const Center(
+                                  child: Text(
+                                    'Select Attributes',
+                                    style: TextStyle(fontSize: 20),
+                                  ),
                                 ),
-                              ),
-                              kFormFieldSpace,
-                              const Divider(
-                                color: Colors.grey,
-                                thickness: 0.3,
-                                height: 1,
-                              ),
-
-                              /// Attributes selection
-                              Padding(
-                                padding: EdgeInsets.all(kMediumPadding),
-                                child: Wrap(
-                                  spacing: 8.0,
-                                  // Adjust spacing between items
-                                  runSpacing: 8.0,
-                                  // Adjust spacing between rows
-                                  alignment: WrapAlignment.start,
-                                  runAlignment: WrapAlignment.start,
-                                  children: attributesSet.map((attribute) {
-                                    final bool isSelected = _selectedAttributesSet.any(
-                                      (selected) => selected.id == attribute.id,
-                                    );
-
-                                    return CustomCheckboxWithTitle(
-                                      isTitleExpanded: false,
-                                      isChecked: isSelected,
-                                      titleStyle: const TextStyle(fontSize: 10),
-                                      onChanged: (value) {
-                                        setModalState(() {
-                                          if (value == true) {
-                                            _selectedAttributesSet.add(attribute);
-                                          } else {
-                                            _selectedAttributesSet.removeWhere(
-                                              (selected) => selected.id == attribute.id,
-                                            );
-                                          }
-                                        });
-                                      },
-                                      title: attribute.title.toString(),
-                                    );
-                                  }).toList(),
+                                kFormFieldSpace,
+                                const Divider(
+                                  color: Colors.grey,
+                                  thickness: 0.3,
+                                  height: 1,
                                 ),
-                              ),
 
-                              if (_selectedAttributesSet.isEmpty)
+                                /// Attributes selection
                                 Padding(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: kPadding + kPadding,
-                                  ),
-                                  child: const Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Text(
-                                      'Please select at least one attribute.*',
-                                      style: TextStyle(color: Colors.red),
-                                    ),
+                                  padding: EdgeInsets.all(kMediumPadding),
+                                  child: Wrap(
+                                    spacing: 8.0,
+                                    runSpacing: 8.0,
+                                    alignment: WrapAlignment.start,
+                                    runAlignment: WrapAlignment.start,
+                                    children: attributesSet.map((attribute) {
+                                      final bool isSelected = _selectedAttributesSet.any(
+                                        (selected) => selected.id == attribute.id,
+                                      );
+
+                                      return CustomCheckboxWithTitle(
+                                        isTitleExpanded: false,
+                                        isChecked: isSelected,
+                                        titleStyle: const TextStyle(fontSize: 10),
+                                        onChanged: (value) {
+                                          setModalState(() {
+                                            if (value == true) {
+                                              _selectedAttributesSet.add(attribute);
+                                            } else {
+                                              _selectedAttributesSet.removeWhere(
+                                                (selected) => selected.id == attribute.id,
+                                              );
+                                            }
+                                          });
+                                        },
+                                        title: attribute.title.toString(),
+                                      );
+                                    }).toList(),
                                   ),
                                 ),
 
-                              kMediumSpace,
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  kCancelButton(
-                                    screenWidth: screenWidth,
-                                    context: context,
-                                  ),
-                                  kLargeSpace,
-
-                                  /// save button
-                                  ChangeNotifierProvider(
-                                    create: (context) => VendorEditProductAttributesViewModel(),
-                                    child: Consumer<VendorEditProductAttributesViewModel>(
-                                      builder: (
-                                        context,
-                                        editAttributesProvider,
-                                        _,
-                                      ) =>
-                                          SizedBox(
-                                        width: screenWidth * 0.25,
-                                        child: CustomAppButton(
-                                          buttonText: 'Save',
-                                          buttonColor: AppColors.lightCoral,
-                                          isLoading: editAttributesProvider.apiResponse.status == ApiStatus.LOADING,
-                                          onTap: () async {
-                                            if (_selectedAttributesSet.isEmpty) {
-                                              AlertServices.showErrorSnackBar(
-                                                message: 'Please select at least 1 attribute.',
-                                                context: context,
-                                              );
-                                              Navigator.pop(context);
-                                              return;
-                                            }
-
-                                            try {
-                                              final List<int> attributesIDsSet = [];
-
-                                              /// add all attribute ids
-                                              for (final attribute in _selectedAttributesSet) {
-                                                attributesIDsSet.add(attribute.id);
-                                              }
-                                              final result = await editAttributesProvider.vendorEditProductAttributes(
-                                                productID: widget.productID,
-                                                attributesSet: attributesIDsSet,
-                                                context: context,
-                                              );
-
-                                              if (result) {
-                                                Navigator.pop(context);
-                                                await _onRefresh();
-                                              }
-                                            } catch (e) {
-                                              print('Error: $e');
-                                            }
-
-                                            // Navigator.pop(context); // Close BottomSheet
-
-                                            setState(() {});
-                                          },
-                                        ),
+                                if (_selectedAttributesSet.isEmpty)
+                                  Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: kPadding + kPadding,
+                                    ),
+                                    child: const Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: Text(
+                                        'Please select at least one attribute.*',
+                                        style: TextStyle(color: Colors.red),
                                       ),
                                     ),
                                   ),
-                                ],
-                              ),
-                            ],
+
+                                kMediumSpace,
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    kCancelButton(
+                                      screenWidth: screenWidth,
+                                      context: context,
+                                    ),
+                                    kLargeSpace,
+
+                                    /// save button
+                                    ChangeNotifierProvider(
+                                      create: (context) => VendorEditProductAttributesViewModel(),
+                                      child: Consumer<VendorEditProductAttributesViewModel>(
+                                        builder: (
+                                          context,
+                                          editAttributesProvider,
+                                          _,
+                                        ) =>
+                                            SizedBox(
+                                          width: screenWidth * 0.25,
+                                          child: CustomAppButton(
+                                            buttonText: 'Save',
+                                            buttonColor: AppColors.lightCoral,
+                                            isLoading: editAttributesProvider.apiResponse.status == ApiStatus.LOADING,
+                                            onTap: () async {
+                                              // Capture navigator before any async operations
+                                              final navigator = Navigator.of(context);
+
+                                              if (_selectedAttributesSet.isEmpty) {
+                                                AppUtils.showToast('Please select at least 1 attribute.');
+                                                navigator.pop();
+                                                return;
+                                              }
+
+                                              try {
+                                                final List<int> attributesIDsSet = [];
+
+                                                /// add all attribute ids
+                                                for (final attribute in _selectedAttributesSet) {
+                                                  attributesIDsSet.add(attribute.id);
+                                                }
+
+                                                final result = await editAttributesProvider.vendorEditProductAttributes(
+                                                  productID: widget.productID,
+                                                  attributesSet: attributesIDsSet,
+                                                  context: context,
+                                                );
+
+                                                if (result) {
+                                                  navigator.pop();
+                                                  await _onRefresh();
+                                                }
+                                              } catch (e) {
+                                                log('Error: $e');
+                                              }
+
+                                              setState(() {});
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       );
@@ -607,15 +612,17 @@ class _VendorProductHasVariationsViewState extends State<VendorProductHasVariati
                           color: Colors.white,
                         ),
                         onDelete: () async {
+                          // Capture navigator before async operations
+                          final navigator = Navigator.of(context);
+
                           try {
-                            Navigator.pop(context);
+                            navigator.pop();
                             setProcessing(true);
                             final result = await provider.vendorGenerateAllProductVariations(
                               productID: widget.productID,
                               context: context,
                             );
 
-                            /// TODO: REPLACE PRODUCT ID WITH ORIGINAL PRODUCT ID
                             if (result) {
                               setProcessing(false);
                               await _onRefresh();
@@ -623,7 +630,7 @@ class _VendorProductHasVariationsViewState extends State<VendorProductHasVariati
                             setProcessing(false);
                           } catch (e) {
                             setProcessing(false);
-                            print('Error: $e');
+                            log('Error: $e');
                           }
                         },
                       );
@@ -631,13 +638,6 @@ class _VendorProductHasVariationsViewState extends State<VendorProductHasVariati
                   ),
                 ),
               ),
-
-              // VendorToolbarWidgets.vendorReloadButton(
-              //   onTap: () async{
-              //     await _onRefresh();
-              //   },
-              //   isLoading: false,
-              // ),
             ],
           ),
         ],
@@ -650,64 +650,67 @@ class _VendorProductHasVariationsViewState extends State<VendorProductHasVariati
     /// showing through bottom sheet
     showDraggableModalBottomSheet(
       context: context,
-      builder: (scrollController) => SingleChildScrollView(
-        controller: scrollController,
-        child: Column(
-          children: [
-            AppUtils.dragHandle(context: context),
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(kCardRadius),
-              ),
-              child: SafeArea(
-                child: Padding(
-                  padding: EdgeInsets.all(kSmallPadding),
-                  child: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          height: 200,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(kExtraSmallCardRadius),
-                            image: DecorationImage(
-                              image: NetworkImage(
-                                rowData.imagePath.toString(),
+      builder: (scrollController) => Container(
+        color: Theme.of(context).cardColor,
+        child: SingleChildScrollView(
+          controller: scrollController,
+          child: Column(
+            children: [
+              AppUtils.dragHandle(context: context),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(kCardRadius),
+                ),
+                child: SafeArea(
+                  child: Padding(
+                    padding: EdgeInsets.all(kSmallPadding),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            height: 200,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(kExtraSmallCardRadius),
+                              image: DecorationImage(
+                                image: NetworkImage(
+                                  rowData.imagePath.toString(),
+                                ),
+                                fit: BoxFit.cover,
                               ),
-                              fit: BoxFit.cover,
                             ),
                           ),
-                        ),
-                        kFormFieldSpace,
-                        buildRow('ID', rowData.id?.toString()),
-                        buildRow(
-                          'Quantity',
-                          rowData.quantity?.toString().trim() == '&#8734;'
-                              ? '\u221E'
-                              : rowData.quantity?.toString() ?? '--',
-                        ),
-                        ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: rowData.selectedAttributeSets?.keys.length ?? 0,
-                          itemBuilder: (context, index) {
-                            final entries = rowData.selectedAttributeSets?.entries.toList();
-                            return buildRow(
-                              getAttributeName(
-                                entries?[index].key.toString() ?? '',
-                              ),
-                              entries?[index].value.toString() ?? '',
-                            );
-                          },
-                        ),
-                      ],
+                          kFormFieldSpace,
+                          buildRow('ID', rowData.id?.toString()),
+                          buildRow(
+                            'Quantity',
+                            rowData.quantity?.toString().trim() == '&#8734;'
+                                ? '\u221E'
+                                : rowData.quantity?.toString() ?? '--',
+                          ),
+                          ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: rowData.selectedAttributeSets?.keys.length ?? 0,
+                            itemBuilder: (context, index) {
+                              final entries = rowData.selectedAttributeSets?.entries.toList();
+                              return buildRow(
+                                getAttributeName(
+                                  entries?[index].key.toString() ?? '',
+                                ),
+                                entries?[index].value.toString() ?? '',
+                              );
+                            },
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -806,7 +809,7 @@ class _VendorProductHasVariationsViewState extends State<VendorProductHasVariati
             setProcessing(false);
           } catch (e) {
             setProcessing(false);
-            print('Error: $e');
+            log('Error: $e');
           }
         },
       );
@@ -834,7 +837,7 @@ class _VendorProductHasVariationsViewState extends State<VendorProductHasVariati
       );
       return attribute.title.toString();
     } catch (e) {
-      print('Error: $e');
+      log('Error: $e');
       return '';
     }
   }

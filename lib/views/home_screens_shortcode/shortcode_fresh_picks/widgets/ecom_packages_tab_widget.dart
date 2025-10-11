@@ -3,21 +3,21 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/constants/app_strings.dart';
-import '../../../../core/services/shared_preferences_helper.dart';
 import '../../../../core/styles/app_colors.dart';
 import '../../../../core/styles/custom_text_styles.dart';
+import '../../../../core/utils/app_utils.dart';
 import '../../../../core/widgets/custom_items_views/product_card.dart';
 import '../../../../provider/cart_item_provider/cart_item_provider.dart';
-import '../../../../provider/shortcode_fresh_picks_provider/eCom_tags_provider.dart';
+import '../../../../provider/shortcode_fresh_picks_provider/ecom_tags_provider.dart';
 import '../../../../provider/shortcode_fresh_picks_provider/fresh_picks_provider.dart';
 import '../../../../provider/wishlist_items_provider/wishlist_provider.dart';
 import '../../../product_detail_screens/product_detail_screen.dart';
 
 class EComPackagesTabWidget extends StatefulWidget {
   const EComPackagesTabWidget({
-    Key? key,
+    super.key,
     required this.slug,
-  }) : super(key: key);
+  });
 
   final String slug;
 
@@ -90,6 +90,17 @@ class _EComPackagesTabWidgetState extends State<EComPackagesTabWidget> {
       Provider.of<EComTagProvider>(context, listen: false).packages.clear();
     });
     _fetchPackages();
+  }
+
+  /// Handle add to cart with proper error handling
+  Future<void> _handleAddToCart(int productId) async {
+    final result = await context.read<CartProvider>().addToCart(productId, 1);
+
+    if (result.success) {
+      AppUtils.showToast(result.message, isSuccess: true);
+    } else {
+      AppUtils.showToast(result.message);
+    }
   }
 
   @override
@@ -272,13 +283,7 @@ class _EComPackagesTabWidgetState extends State<EComPackagesTabWidget> {
                           ? product.prices!.priceWithTaxes
                           : null,
                       optionalIcon: Icons.shopping_cart,
-                      onOptionalIconTap: () async {
-                        final token = await SecurePreferencesUtil.getToken();
-                        final cartProvider = Provider.of<CartProvider>(context, listen: false);
-                        if (token != null) {
-                          await cartProvider.addToCart(product.id, context, 1);
-                        }
-                      },
+                      onOptionalIconTap: () => _handleAddToCart(product.id),
                       itemsId: product.id,
                       imageUrl: product.image,
                       frontSalePriceWithTaxes: product.prices?.frontSalePriceWithTaxes.toString() ?? '',
@@ -291,21 +296,16 @@ class _EComPackagesTabWidgetState extends State<EComPackagesTabWidget> {
                           ) ??
                           false,
                       onHeartTap: () async {
-                        final token = await SecurePreferencesUtil.getToken();
                         final bool isInWishlist = wishlistProvider.wishlist?.data?.products.any(
                               (wishlistProduct) => wishlistProduct.id == product.id,
                             ) ??
                             false;
                         if (isInWishlist) {
-                          await wishlistProvider.deleteWishlistItem(
-                            product.id ?? 0,
-                            context,
-                            token ?? '',
-                          );
+                          await wishlistProvider.deleteWishlistItem(product.id ?? 0, context);
                         } else {
                           await freshPicksProvider.handleHeartTap(context, product.id ?? 0);
                         }
-                        await wishlistProvider.fetchWishlist(token ?? '', context);
+                        await wishlistProvider.fetchWishlist();
                       },
                     ),
                   );

@@ -63,7 +63,7 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.25),
+                            color: Colors.black.withAlpha((0.25 * 255).toInt()),
                             offset: const Offset(0, 4),
                             blurRadius: 100,
                             spreadRadius: 0,

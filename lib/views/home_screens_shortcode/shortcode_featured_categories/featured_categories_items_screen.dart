@@ -313,8 +313,8 @@ class _HomeAllGiftItemsState extends State<FeaturedCategoriesItemsScreen> {
                                   final category = provider.categories[index];
 
                                   return GridItemsHomeSeeAll(
-                                    imageUrl: category.image ?? '',
-                                    name: category.name ?? '',
+                                    imageUrl: category.image,
+                                    name: category.name,
                                     textStyle: homeItemsStyle(context),
                                     onTap: () {
                                       Navigator.push(

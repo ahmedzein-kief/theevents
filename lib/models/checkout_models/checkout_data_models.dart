@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 Map<String, dynamic> _parseShipping(data) {
   if (data == null || data is List) {
     return {};
@@ -79,7 +81,7 @@ class CheckoutData {
       token: json['token'] ?? '',
       shipping: _parseShipping(json['shipping']),
       defaultShippingMethod: json['defaultShippingMethod'] ?? '',
-      defaultShippingOption: json['defaultShippingOption'] ?? '',
+      defaultShippingOption: json['defaultShippingOption']?.toString() ?? '',
       subTotal: (json['subTotal'] ?? 0).toDouble(),
       tax: (json['tax'] ?? 0).toDouble(),
       rawTotal: (json['rawTotal'] ?? 0).toDouble(),
@@ -142,13 +144,13 @@ class FormattedPrices {
 
   factory FormattedPrices.fromJson(Map<String, dynamic> json) {
     return FormattedPrices(
-      subTotal: json['subTotal'] ?? '',
-      tax: json['tax'] ?? '',
-      rawTotal: json['rawTotal'] ?? '',
-      orderAmount: json['orderAmount'] ?? '',
-      shippingAmount: json['shippingAmount'] ?? '',
-      promotionDiscountAmount: json['promotionDiscountAmount'] ?? '',
-      couponDiscountAmount: json['couponDiscountAmount'] ?? '',
+      subTotal: json['subTotal']?.toString() ?? '',
+      tax: json['tax']?.toString() ?? '',
+      rawTotal: json['rawTotal']?.toString() ?? '',
+      orderAmount: json['orderAmount']?.toString() ?? '',
+      shippingAmount: json['shippingAmount']?.toString() ?? '',
+      promotionDiscountAmount: json['promotionDiscountAmount']?.toString() ?? '',
+      couponDiscountAmount: json['couponDiscountAmount']?.toString() ?? '',
     );
   }
 
@@ -166,74 +168,129 @@ class FormattedPrices {
 }
 
 class SessionCheckoutData {
-  final int addressId;
-  final String name;
-  final String phone;
-  final String email;
-  final String country;
-  final String state;
-  final String city;
-  final String address;
-  final bool apiSession;
-  final Map<String, MarketplaceData> marketplace;
-  final int isAvailableShipping;
-
   SessionCheckoutData({
-    required this.addressId,
-    required this.name,
-    required this.phone,
-    required this.email,
-    required this.country,
-    required this.state,
-    required this.city,
-    required this.address,
-    required this.apiSession,
-    required this.marketplace,
-    required this.isAvailableShipping,
+    this.addressId,
+    this.name,
+    this.phone,
+    this.email,
+    this.country,
+    this.state,
+    this.city,
+    this.address,
+    this.zipCode,
+    this.apiSession,
+    this.marketplace,
+    this.createdOrder,
+    this.createdOrderId,
+    this.isSaveOrderShippingAddress,
+    this.createdOrderAddress,
+    this.createdOrderAddressId,
+    this.createdOrderProduct,
+    this.rawTotal,
+    this.couponDiscountAmount,
+    this.isAvailableShipping,
   });
 
-  factory SessionCheckoutData.fromJson(Map<String, dynamic> json) {
-    final Map<String, MarketplaceData> marketplaceMap = {};
-    if (json['marketplace'] != null) {
-      (json['marketplace'] as Map<String, dynamic>).forEach((key, value) {
-        marketplaceMap[key] = MarketplaceData.fromJson(value);
-      });
+  SessionCheckoutData.fromJson(Map<String, dynamic> json) {
+    addressId = json['address_id'];
+    name = json['name'];
+    phone = json['phone'];
+    email = json['email'];
+    country = json['country'];
+    state = json['state'];
+    city = json['city'];
+    address = json['address'];
+    zipCode = json['zip_code'];
+    apiSession = json['api_session'];
+    marketplace = json['marketplace'];
+    createdOrder = json['created_order'];
+    createdOrderId = json['created_order_id'];
+    isSaveOrderShippingAddress = json['is_save_order_shipping_address'];
+    createdOrderAddress = json['created_order_address'];
+    createdOrderAddressId = json['created_order_address_id'];
+    createdOrderProduct = json['created_order_product'];
+    rawTotal = json['raw_total'];
+    couponDiscountAmount = json['coupon_discount_amount'];
+    isAvailableShipping = json['is_available_shipping'];
+  }
+
+  int? addressId;
+  String? name;
+  String? phone;
+  String? email;
+  String? country;
+  String? state;
+  String? city;
+  String? address;
+  String? zipCode;
+  bool? apiSession;
+  dynamic marketplace;
+  String? createdOrder;
+  int? createdOrderId;
+  bool? isSaveOrderShippingAddress;
+  bool? createdOrderAddress;
+  int? createdOrderAddressId;
+  String? createdOrderProduct;
+  double? rawTotal;
+  dynamic couponDiscountAmount;
+  int? isAvailableShipping;
+
+  // NEW: Helper method to extract applied coupon code from marketplace
+  String? get appliedCouponCode {
+    if (marketplace == null) return null;
+
+    try {
+      if (marketplace is Map<String, dynamic>) {
+        final marketplaceMap = marketplace as Map<String, dynamic>;
+
+        // Iterate through all vendors in marketplace
+        for (final vendorData in marketplaceMap.values) {
+          if (vendorData is Map<String, dynamic>) {
+            final couponCode = vendorData['applied_coupon_code'] as String?;
+            if (couponCode != null && couponCode.isNotEmpty) {
+              return couponCode;
+            }
+          }
+        }
+      }
+    } catch (e) {
+      log('Error extracting coupon from marketplace: $e');
     }
 
-    return SessionCheckoutData(
-      addressId: json['address_id'] ?? 0,
-      name: json['name'] ?? '',
-      phone: json['phone'] ?? '',
-      email: json['email'] ?? '',
-      country: json['country'] ?? '',
-      state: json['state'] ?? '',
-      city: json['city'] ?? '',
-      address: json['address'] ?? '',
-      apiSession: json['api_session'] ?? false,
-      marketplace: marketplaceMap,
-      isAvailableShipping: json['is_available_shipping'] ?? 0,
-    );
+    return null;
+  }
+
+  // NEW: Helper method to check if coupon is valid
+  bool get hasValidCoupon {
+    final couponCode = appliedCouponCode;
+    final discount = couponDiscountAmount;
+
+    return couponCode != null && couponCode.isNotEmpty && discount != null && (discount is num && discount > 0);
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> marketplaceMap = {};
-    marketplace.forEach((key, value) {
-      marketplaceMap[key] = value.toJson();
-    });
-
-    return {
-      'address_id': addressId,
-      'name': name,
-      'phone': phone,
-      'email': email,
-      'country': country,
-      'state': state,
-      'city': city,
-      'address': address,
-      'api_session': apiSession,
-      'marketplace': marketplaceMap,
-      'is_available_shipping': isAvailableShipping,
-    };
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['address_id'] = addressId;
+    data['name'] = name;
+    data['phone'] = phone;
+    data['email'] = email;
+    data['country'] = country;
+    data['state'] = state;
+    data['city'] = city;
+    data['address'] = address;
+    data['zip_code'] = zipCode;
+    data['api_session'] = apiSession;
+    data['marketplace'] = marketplace;
+    data['created_order'] = createdOrder;
+    data['created_order_id'] = createdOrderId;
+    data['is_save_order_shipping_address'] = isSaveOrderShippingAddress;
+    data['created_order_address'] = createdOrderAddress;
+    data['created_order_address_id'] = createdOrderAddressId;
+    data['created_order_product'] = createdOrderProduct;
+    data['raw_total'] = rawTotal;
+    data['coupon_discount_amount'] = couponDiscountAmount;
+    data['is_available_shipping'] = isAvailableShipping;
+    return data;
   }
 }
 
@@ -298,9 +355,9 @@ class MarketplaceData {
       name: json['name'] ?? '',
       phone: json['phone'] ?? '',
       email: json['email'] ?? '',
-      country: json['country'] ?? '',
-      state: json['state'] ?? '',
-      city: json['city'] ?? '',
+      country: json['country']?.toString() ?? '',
+      state: json['state']?.toString() ?? '',
+      city: json['city']?.toString() ?? '',
       address: json['address'] ?? '',
       createdOrder: json['created_order'] ?? '',
       createdOrderId: json['created_order_id'] ?? 0,
@@ -313,11 +370,11 @@ class MarketplaceData {
       isFreeShipping: json['is_free_shipping'] ?? false,
       promotionDiscountAmount: (json['promotion_discount_amount'] ?? 0).toDouble(),
       shippingMethod: json['shipping_method'] ?? '',
-      shippingOption: json['shipping_option'] ?? '',
-      shippingAmount: json['shipping_amount'] ?? '',
+      shippingOption: json['shipping_option']?.toString() ?? '',
+      shippingAmount: json['shipping_amount']?.toString() ?? '0',
       shipping: _parseShipping(json['shipping']),
       defaultShippingMethod: json['default_shipping_method'] ?? '',
-      defaultShippingOption: json['default_shipping_option'] ?? '',
+      defaultShippingOption: json['default_shipping_option']?.toString() ?? '',
       isAvailableShipping: json['is_available_shipping'] ?? false,
     );
   }
@@ -394,9 +451,9 @@ class Address {
       name: json['name'] ?? '',
       email: json['email'] ?? '',
       phone: json['phone'] ?? '',
-      country: json['country'] ?? '',
-      state: json['state'] ?? '',
-      city: json['city'] ?? '',
+      country: json['country']?.toString() ?? '',
+      state: json['state']?.toString() ?? '',
+      city: json['city']?.toString() ?? '',
       address: json['address'] ?? '',
       customerId: json['customer_id'] ?? 0,
       isDefault: json['is_default'] ?? 0,
@@ -426,11 +483,10 @@ class Address {
       'location_state': locationState.toJson(),
       'location_city': locationCity.toJson(),
     };
-  } // Helper methods to handle both empty arrays and objects
+  }
 
   static LocationCountry _parseLocationCountry(data) {
     if (data == null || data is List) {
-      // Return empty LocationCountry if data is null or empty array
       return LocationCountry(
         id: 0,
         name: '',
@@ -448,7 +504,6 @@ class Address {
 
   static LocationState _parseLocationState(data) {
     if (data == null || data is List) {
-      // Return empty LocationState if data is null or empty array
       return LocationState(
         id: 0,
         name: '',
@@ -467,7 +522,6 @@ class Address {
 
   static LocationCity _parseLocationCity(data) {
     if (data == null || data is List) {
-      // Return empty LocationCity if data is null or empty array
       return LocationCity(
         id: 0,
         name: '',
@@ -513,7 +567,7 @@ class LocationCountry {
       id: json['id'] ?? 0,
       name: json['name'] ?? '',
       nationality: json['nationality'] ?? '',
-      order: json['order'] ?? 0,
+      order: json['id'] ?? 0,
       isDefault: json['is_default'] ?? false,
       status: Status.fromJson(json['status'] ?? {}),
       createdAt: json['created_at'] ?? '',
@@ -571,7 +625,7 @@ class LocationState {
       slug: json['slug'] ?? '',
       abbreviation: json['abbreviation'] ?? '',
       countryId: json['country_id'] ?? 0,
-      order: json['order'] ?? 0,
+      order: json['country_id'] ?? 0,
       image: json['image'],
       isDefault: json['is_default'] ?? false,
       status: Status.fromJson(json['status'] ?? {}),

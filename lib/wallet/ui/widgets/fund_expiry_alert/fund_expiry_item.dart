@@ -1,4 +1,4 @@
-import 'package:event_app/core/widgets/PriceRow.dart';
+import 'package:event_app/core/widgets/price_row.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -89,7 +89,7 @@ class FundExpiryItem extends StatelessWidget {
         width: 24,
         height: 24,
         decoration: BoxDecoration(
-          color: isDark ? Colors.grey[800] : iconColor?.withOpacity(0.1),
+          color: isDark ? Colors.grey[800] : iconColor?.withAlpha((0.1 * 255).toInt()),
           borderRadius: BorderRadius.circular(4),
         ),
         child: Icon(
@@ -103,7 +103,7 @@ class FundExpiryItem extends StatelessWidget {
         width: 24,
         height: 24,
         decoration: BoxDecoration(
-          color: iconColor?.withOpacity(0.1),
+          color: iconColor?.withAlpha((0.1 * 255).toInt()),
           borderRadius: BorderRadius.circular(4),
         ),
         child: Icon(

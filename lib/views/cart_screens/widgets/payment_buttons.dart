@@ -12,6 +12,7 @@ import 'package:pay/pay.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/utils/app_utils.dart';
+import '../../../provider/information_icons_provider/payment_methods_provider.dart';
 
 class PaymentButtons extends StatefulWidget {
   final CheckoutProvider provider;
@@ -143,39 +144,47 @@ class _PaymentButtonsState extends State<PaymentButtons> {
     final bool isWalletSelected = widget.paymentMethod['payment_method'] == 'wallet';
 
     // Use provider's isProcessingPayment flag to check if we should show loading
-    final isLoading = widget.provider.isProcessingPayment || _isProcessing;
+    final isProcessingPayment = widget.provider.isProcessingPayment || _isProcessing;
 
-    return Row(
-      children: [
-        /// TODO(Apple Pay): Add Apple Pay Button
-        // Apple Pay Button (if available and selected)
-        // if (Platform.isIOS && isApplePaySelected)
-        //   Expanded(
-        //     child: SizedBox(
-        //       child: ApplePayButton(
-        //         height: 45,
-        //         paymentConfiguration: PaymentConfiguration.fromJsonString(defaultApplePayConfigString),
-        //         paymentItems: _buildPaymentItems(widget.provider),
-        //         style: ApplePayButtonStyle.whiteOutline,
-        //         type: ApplePayButtonType.buy,
-        //         onPaymentResult: (paymentResult) =>
-        //             onApplePayResult(paymentResult, widget.provider.checkoutData, widget.paymentMethod, widget.isNewAddress),
-        //         loadingIndicator: const Center(
-        //           child: CircularProgressIndicator(),
-        //         ),
-        //       ),
-        //     ),
-        //   ),
-        if (!isApplePaySelected)
-          Expanded(
-            child: AppCustomButton(
-              onPressed: isLoading ? () {} : () => _handlePaymentPress(isWalletSelected),
-              icon: CupertinoIcons.forward,
-              title: AppStrings.payNowTitle.tr,
-              isLoading: isLoading,
-            ),
-          ),
-      ],
+    return Consumer<PaymentMethodsProvider>(
+      builder: (context, paymentMethodsProvider, child) {
+        if (paymentMethodsProvider.isLoading) {
+          return const SizedBox.shrink();
+        }
+
+        return Row(
+          children: [
+            /// TODO(Apple Pay): Add Apple Pay Button
+            // Apple Pay Button (if available and selected)
+            // if (Platform.isIOS && isApplePaySelected)
+            //   Expanded(
+            //     child: SizedBox(
+            //       child: ApplePayButton(
+            //         height: 45,
+            //         paymentConfiguration: PaymentConfiguration.fromJsonString(defaultApplePayConfigString),
+            //         paymentItems: _buildPaymentItems(widget.provider),
+            //         style: ApplePayButtonStyle.whiteOutline,
+            //         type: ApplePayButtonType.buy,
+            //         onPaymentResult: (paymentResult) =>
+            //             onApplePayResult(paymentResult, widget.provider.checkoutData, widget.paymentMethod, widget.isNewAddress),
+            //         loadingIndicator: const Center(
+            //           child: CircularProgressIndicator(),
+            //         ),
+            //       ),
+            //     ),
+            //   ),
+            if (!isApplePaySelected)
+              Expanded(
+                child: AppCustomButton(
+                  onPressed: isProcessingPayment ? () {} : () => _handlePaymentPress(isWalletSelected),
+                  icon: CupertinoIcons.forward,
+                  title: AppStrings.payNowTitle.tr,
+                  isLoading: isProcessingPayment,
+                ),
+              ),
+          ],
+        );
+      },
     );
   }
 
@@ -195,7 +204,7 @@ class _PaymentButtonsState extends State<PaymentButtons> {
       final token = await SecurePreferencesUtil.getToken();
       if (token == null) {
         if (mounted) {
-          CustomSnackbar.showError(context, 'Authentication token not found');
+          AppUtils.showToast('Authentication token not found');
         }
         return;
       }

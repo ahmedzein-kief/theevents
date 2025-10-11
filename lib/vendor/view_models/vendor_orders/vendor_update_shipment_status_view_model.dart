@@ -1,9 +1,9 @@
 import 'package:event_app/provider/vendor/vendor_repository.dart';
-import 'package:event_app/vendor/components/services/alert_services.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../../../core/services/shared_preferences_helper.dart';
-import '../../../data/vendor/data/response/ApiResponse.dart';
+import '../../../core/utils/app_utils.dart';
+import '../../../data/vendor/data/response/api_response.dart';
 import '../../../models/vendor_models/vendor_order_models/vendor_update_shipment_status_model.dart';
 
 class VendorUpdateShipmentStatusViewModel with ChangeNotifier {
@@ -23,8 +23,7 @@ class VendorUpdateShipmentStatusViewModel with ChangeNotifier {
   }
 
   final _myRepo = VendorRepository();
-  ApiResponse<VendorUpdateShipmentStatusModel> _apiResponse =
-      ApiResponse.none();
+  ApiResponse<VendorUpdateShipmentStatusModel> _apiResponse = ApiResponse.none();
 
   ApiResponse<VendorUpdateShipmentStatusModel> get apiResponse => _apiResponse;
 
@@ -33,10 +32,11 @@ class VendorUpdateShipmentStatusViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> vendorUpdateShipmentStatus(
-      {required shipmentID,
-      required String shipmentStatus,
-      required BuildContext context,}) async {
+  Future<bool> vendorUpdateShipmentStatus({
+    required shipmentID,
+    required String shipmentStatus,
+    required BuildContext context,
+  }) async {
     try {
       setLoading(true);
       setApiResponse = ApiResponse.loading();
@@ -48,19 +48,18 @@ class VendorUpdateShipmentStatusViewModel with ChangeNotifier {
 
       final dynamic body = {'status': shipmentStatus};
 
-      final VendorUpdateShipmentStatusModel response =
-          await _myRepo.vendorUpdateShipmentStatus(
-              headers: headers, shipmentID: shipmentID.toString(), body: body,);
+      final VendorUpdateShipmentStatusModel response = await _myRepo.vendorUpdateShipmentStatus(
+        headers: headers,
+        shipmentID: shipmentID.toString(),
+        body: body,
+      );
       setApiResponse = ApiResponse.completed(response);
-      AlertServices.showSuccessSnackBar(
-          message: apiResponse.data?.message?.toString() ?? '',
-          context: context,);
+      AppUtils.showToast(response.message.toString(), isSuccess: true);
       setLoading(false);
       return true;
     } catch (error) {
       setApiResponse = ApiResponse.error(error.toString());
-      AlertServices.showErrorSnackBar(
-          message: error.toString() ?? '', context: context,);
+      AppUtils.showToast(error.toString());
       setLoading(false);
       return false;
     }

@@ -12,7 +12,9 @@ class MetaDataResponse {
   });
 
   factory MetaDataResponse.fromJson(Map<dynamic, dynamic> json) => MetaDataResponse(
-        data: Map.from(json['data']).map((k, v) => MapEntry<String, String?>(k, v?.toString())),
+        data: json['data'] is List
+            ? {}
+            : Map.from(json['data']).map((k, v) => MapEntry<String, String?>(k, v?.toString())),
         error: json['error'],
         message: json['message'],
       );

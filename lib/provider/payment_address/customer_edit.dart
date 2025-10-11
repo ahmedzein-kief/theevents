@@ -4,8 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../core/services/shared_preferences_helper.dart';
-import '../../core/utils/custom_toast.dart';
+import '../../core/utils/app_utils.dart';
 import 'create_address_provider.dart';
 import 'customer_address.dart';
 
@@ -31,18 +30,18 @@ class CustomerAddress extends ChangeNotifier {
     );
 
     if (response.statusCode == 200) {
-      CustomSnackbar.showSuccess(context, 'Address Update successfully!');
+      AppUtils.showToast('Address Updated successfully!', isSuccess: true);
 
       /// --------------------------- RE-FETCH THE DATA OF THE CUSTOMER ------------------------------
-      final token = await SecurePreferencesUtil.getToken();
-      final reFetchUserData = Provider.of<CustomerAddressProvider>(context, listen: false);
-      await reFetchUserData.fetchCustomerAddresses(token ?? '', context);
-      notifyListeners();
+      if (context.mounted) {
+        // Check if context is still valid
+        final reFetchUserData = Provider.of<CustomerAddressProvider>(context, listen: false);
+        await reFetchUserData.fetchCustomerAddresses(context);
+        notifyListeners();
+      }
       return true;
     } else {
-      CustomSnackbar.showError(context, 'Please Enter Valid Data');
-
-      // Handle error
+      AppUtils.showToast('Please Enter Valid Data');
       return false;
     }
   }

@@ -5,14 +5,11 @@ import 'package:event_app/views/profile_page_screens/terms_and_condtion_screen.d
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:provider/provider.dart';
 
 import '../../core/constants/app_strings.dart';
-import '../../core/services/shared_preferences_helper.dart';
 import '../../core/styles/custom_text_styles.dart';
 import '../../core/widgets/custom_profile_views/custom_profile_text.dart';
 import '../../core/widgets/language_dropdown_item.dart';
-import '../../provider/auth_provider/user_auth_provider.dart';
 import '../../vendor/components/vendor_stepper_screen.dart';
 import '../auth_screens/auth_page_view.dart';
 import '../profile_page_screens/about_us_screen.dart';
@@ -27,31 +24,15 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   bool _isLight = false;
   String? userName;
-  bool _isLoggedIn = false;
-
-  Future<void> _checkLoginStatus() async {
-    // final preferences = await SharedPreferences.getInstance();
-    // final bool loginStatus = preferences.getBool('isLoggedInKey') ?? false;
-
-    final bool loginStatus = await SecurePreferencesUtil.isLoggedIn();
-    setState(() {
-      _isLoggedIn = loginStatus;
-    });
-  }
 
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((callback) async {
-      _checkLoginStatus(); // Call the method to check login status
-    });
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.sizeOf(context).width;
-    final double screenHeight = MediaQuery.sizeOf(context).height;
-    final authProvider = Provider.of<AuthProvider>(context);
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
@@ -77,7 +58,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Navigator.push(
                         context,
                         CupertinoPageRoute(
-                          builder: (context) => AuthScreen(),
+                          builder: (context) => const AuthScreen(),
                           fullscreenDialog: true,
                         ),
                       );
@@ -119,7 +100,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       children: <Widget>[
                         Container(
                           decoration: BoxDecoration(
-                            color: Colors.blue.withOpacity(0.06),
+                            color: Colors.blue.withAlpha((0.06 * 255).toInt()),
                             borderRadius: BorderRadius.circular(16),
                           ),
                           child: Padding(
@@ -161,7 +142,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                               children: [
                                                 SvgPicture.asset(
                                                   'assets/notification.svg',
-                                                  color: Theme.of(context).colorScheme.onPrimary,
+                                                  colorFilter: ColorFilter.mode(
+                                                    Theme.of(context).colorScheme.onPrimary,
+                                                    BlendMode.srcIn,
+                                                  ),
                                                 ),
                                                 const SizedBox(width: 20),
                                                 Text(
@@ -211,7 +195,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                 children: [
                                                   SvgPicture.asset(
                                                     'assets/Join_seller.svg',
-                                                    color: Theme.of(context).colorScheme.onPrimary,
+                                                    colorFilter: ColorFilter.mode(
+                                                      Theme.of(context).colorScheme.onPrimary,
+                                                      BlendMode.srcIn,
+                                                    ),
                                                   ),
                                                   const SizedBox(width: 16),
                                                   Text(
@@ -239,7 +226,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Container(
                           decoration: BoxDecoration(
                             // color: AppColors.infoBackGround,
-                            color: Colors.blue.withOpacity(0.06),
+                            color: Colors.blue.withAlpha((0.06 * 255).toInt()),
                             borderRadius: BorderRadius.circular(16),
                           ),
                           child: Padding(

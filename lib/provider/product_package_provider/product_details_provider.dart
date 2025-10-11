@@ -17,8 +17,8 @@ class ProductItemsProvider with ChangeNotifier {
   Images? _images;
   ItemRecord? _itemRecord;
   bool _isReviewLoading = false;
-  bool _FetchLoading = false;
-  bool _OtherLoading = false;
+  bool _fetchLoading = false;
+  bool _otherLoading = false;
   String _errorMessage = '';
 
   ProductDetailsModels? get apiResponse => _apiResponse;
@@ -29,11 +29,11 @@ class ProductItemsProvider with ChangeNotifier {
 
   Images? get images => _images;
 
-  bool get isLoading => _FetchLoading;
+  bool get isLoading => _fetchLoading;
 
   bool get isReviewLoading => _isReviewLoading;
 
-  bool get isOtherLoading => _OtherLoading;
+  bool get isOtherLoading => _otherLoading;
 
   String get errorMessage => _errorMessage;
 
@@ -50,7 +50,7 @@ class ProductItemsProvider with ChangeNotifier {
     String slug,
     BuildContext context,
   ) async {
-    _FetchLoading = true;
+    _fetchLoading = true;
     notifyListeners();
 
     try {
@@ -58,10 +58,9 @@ class ProductItemsProvider with ChangeNotifier {
       final token = await SecurePreferencesUtil.getToken();
       final headers = {'Authorization': '$token'};
 
-      print(url);
+      log(url);
       final response = await _apiResponseHandler.getRequest(
         url,
-        context: context,
         headers: headers,
       );
 
@@ -70,13 +69,13 @@ class ProductItemsProvider with ChangeNotifier {
         _itemRecord = _apiResponse?.data?.record;
         _images = Images.fromJson(response.data);
         _errorMessage = '';
-        _FetchLoading = false;
+        _fetchLoading = false;
         notifyListeners();
 
         return _apiResponse;
       } else {
         _errorMessage = 'Failed to load product data';
-        _FetchLoading = false;
+        _fetchLoading = false;
         notifyListeners();
         return null;
       }
@@ -85,7 +84,7 @@ class ProductItemsProvider with ChangeNotifier {
       _errorMessage = error.toString();
     }
 
-    _FetchLoading = false;
+    _fetchLoading = false;
     notifyListeners();
     return null;
   }
@@ -105,7 +104,6 @@ class ProductItemsProvider with ChangeNotifier {
       log(url);
       final response = await _apiResponseHandler.getRequest(
         url,
-        context: context,
         headers: headers,
       );
 
@@ -127,7 +125,7 @@ class ProductItemsProvider with ChangeNotifier {
       _errorMessage = error.toString();
     }
 
-    _FetchLoading = false;
+    _fetchLoading = false;
     notifyListeners();
     return null;
   }
@@ -137,7 +135,7 @@ class ProductItemsProvider with ChangeNotifier {
     BuildContext context,
     List<Map<String, dynamic>?> selectedAttributes,
   ) async {
-    _OtherLoading = true;
+    _otherLoading = true;
     notifyListeners();
 
     try {
@@ -153,22 +151,23 @@ class ProductItemsProvider with ChangeNotifier {
 
       final response = await _apiResponseHandler.getRequest(
         url,
-        context: context,
         headers: headers,
       );
 
       if (response.statusCode == 200) {
         final ProductVariationModel responseData = ProductVariationModel.fromJson(response.data);
 
-        _OtherLoading = false;
+        _otherLoading = false;
         notifyListeners();
         return responseData;
       } else {
         _errorMessage = 'Failed to load product data';
       }
-    } catch (error) {}
+    } catch (error) {
+      log(error.toString());
+    }
 
-    _OtherLoading = false;
+    _otherLoading = false;
     notifyListeners();
     return null;
   }

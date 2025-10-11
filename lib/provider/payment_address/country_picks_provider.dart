@@ -62,9 +62,7 @@ class CountryList {
     return CountryList(
       id: json['id'] is String && json['id'].toString().isEmpty
           ? null
-          : (json['id'] is int
-              ? json['id']
-              : int.tryParse(json['id'].toString())),
+          : (json['id'] is int ? json['id'] : int.tryParse(json['id'].toString())),
       name: json['name'],
       code: json['code'],
       iso: json['iso'],
@@ -90,10 +88,7 @@ Future<CountryModels?> fetchCountries(BuildContext context) async {
   final ApiResponseHandler apiResponseHandler = ApiResponseHandler();
   const url = ApiEndpoints.countryList;
 
-  final response = await apiResponseHandler.getRequest(
-    url,
-    context: context,
-  );
+  final response = await apiResponseHandler.getRequest(url);
 
   if (response.statusCode == 200) {
     final jsonResponse = response.data;

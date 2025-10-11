@@ -1,13 +1,13 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:event_app/core/constants/vendor_app_strings.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/styles/app_colors.dart';
+import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/models/vendor_models/products/holder_models/upload_images_model.dart';
 import 'package:event_app/vendor/components/services/media_services.dart';
-import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/vendor/components/vendor_text_style.dart';
-import 'package:event_app/vendor/vendor_home/vendor_products/vendor_create_product/full_screen_image_view.dart';
 import 'package:event_app/vendor/view_models/vendor_products/vendor_create_product_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as path;
@@ -19,7 +19,7 @@ class DigitalAttachmentsScreen extends StatefulWidget {
   final List<UploadImagesModel>? initialImages;
 
   @override
-  _DigitalAttachmentsScreenState createState() => _DigitalAttachmentsScreenState();
+  State<DigitalAttachmentsScreen> createState() => _DigitalAttachmentsScreenState();
 }
 
 class _DigitalAttachmentsScreenState extends State<DigitalAttachmentsScreen> {
@@ -61,8 +61,6 @@ class _DigitalAttachmentsScreenState extends State<DigitalAttachmentsScreen> {
         )
         .toList();
 
-    print(uploadImagesList);
-
     if (myFiles != null) {
       setState(() {
         _selectedImages.addAll(uploadImagesList);
@@ -70,13 +68,13 @@ class _DigitalAttachmentsScreenState extends State<DigitalAttachmentsScreen> {
     }
   }
 
-  void _showFullScreenImage(File imageFile) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => FullScreenImageView(imageFile: imageFile),
-      ),
-    );
-  }
+  // void _showFullScreenImage(File imageFile) {
+  //   Navigator.of(context).push(
+  //     MaterialPageRoute(
+  //       builder: (context) => FullScreenImageView(imageFile: imageFile),
+  //     ),
+  //   );
+  // }
 
   void _returnBack() {
     Navigator.pop(context, _selectedImages);
@@ -112,7 +110,7 @@ class _DigitalAttachmentsScreenState extends State<DigitalAttachmentsScreen> {
                     itemBuilder: (context, index) {
                       String fileName;
                       String fileExtension;
-                      print('has file ${_selectedImages[index].hasFile}');
+                      log('has file ${_selectedImages[index].hasFile}');
 
                       if (!_selectedImages[index].hasFile) {
                         final Uri uri = Uri.parse(_selectedImages[index].serverFullUrl);

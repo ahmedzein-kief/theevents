@@ -1,7 +1,10 @@
+import 'dart:developer';
+
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/helper/mixins/media_query_mixin.dart';
 import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/core/styles/app_sizes.dart';
+import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/data/vendor/data/response/apis_status.dart';
 import 'package:event_app/models/vendor_models/vendor_withdrawals_model/vendor_get_withdrawals_model.dart';
 import 'package:event_app/vendor/components/common_widgets/vendor_action_cell.dart';
@@ -9,7 +12,6 @@ import 'package:event_app/vendor/components/common_widgets/vendor_data_list_buil
 import 'package:event_app/vendor/components/data_tables/custom_data_tables.dart';
 import 'package:event_app/vendor/components/list_tiles/records_list_tile.dart';
 import 'package:event_app/vendor/components/status_constants/withdrawal_status_constants.dart';
-import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/vendor/vendor_home/vendor_withdrawals/vendor_create_update_withdrawal_view.dart';
 import 'package:event_app/vendor/view_models/vendor_withdrawal/vendor_withdrawal_view_model.dart';
 import 'package:flutter/cupertino.dart';
@@ -52,7 +54,9 @@ class _VendorWithdrawalsViewState extends State<VendorWithdrawalsView> with Medi
       setState(() {});
       await provider.vendorWithdrawals(search: _searchController.text);
       setState(() {});
-    } catch (e) {}
+    } catch (e) {
+      log(e.toString());
+    }
   }
 
   Future<void> _loadMoreData() async {
@@ -158,9 +162,9 @@ class _VendorWithdrawalsViewState extends State<VendorWithdrawalsView> with Medi
                 subtitleAsWidget: RichText(
                   text: TextSpan(
                     children: [
-                      const TextSpan(
-                        text: 'Fee: ',
-                        style: TextStyle(
+                      TextSpan(
+                        text: VendorAppStrings.fee.tr,
+                        style: const TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w500,
                           color: Colors.black,
@@ -177,10 +181,10 @@ class _VendorWithdrawalsViewState extends State<VendorWithdrawalsView> with Medi
                     ],
                   ),
                 ),
-                status: record.status?.label?.toString() ?? '--',
+                status: record.status?.label.toString() ?? '--',
                 statusTextStyle: TextStyle(
                   color: AppColors.getWithdrawalStatusColor(
-                    record.status?.value?.toString(),
+                    record.status?.value.toString(),
                   ),
                 ),
                 actionCell: VendorActionCell(
@@ -230,7 +234,7 @@ class _VendorWithdrawalsViewState extends State<VendorWithdrawalsView> with Medi
                   Navigator.push(
                     context,
                     CupertinoPageRoute(
-                      builder: (context) => VendorCreateUpdateWithdrawalView(),
+                      builder: (context) => const VendorCreateUpdateWithdrawalView(),
                     ),
                   );
                 },
@@ -277,8 +281,8 @@ class _VendorWithdrawalsViewState extends State<VendorWithdrawalsView> with Medi
                       rowData.createdAt?.toString(),
                     ),
                     buildStatusRow(
-                      label: 'Status',
-                      buttonText: (rowData.status?.value == null) ? '--' : rowData.status!.label!,
+                      label: VendorAppStrings.status.tr,
+                      buttonText: (rowData.status?.value == null) ? '--' : rowData.status!.label,
                       color: AppColors.getWithdrawalStatusColor(
                         rowData.status?.value,
                       ),

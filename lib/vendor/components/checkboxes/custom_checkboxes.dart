@@ -33,7 +33,7 @@ WidgetStateProperty<Color?> checkColor(BuildContext context) =>
 
 /// checkbox list tile
 class CustomCheckBoxTile extends StatelessWidget {
-  CustomCheckBoxTile({
+  const CustomCheckBoxTile({
     super.key,
     required this.isChecked,
     required this.title,
@@ -43,13 +43,13 @@ class CustomCheckBoxTile extends StatelessWidget {
     this.subTitleStyle,
   });
 
-  bool isChecked;
-  String title;
-  String? subTitle;
-  TextStyle? subTitleStyle;
+  final bool isChecked;
+  final String title;
+  final String? subTitle;
+  final TextStyle? subTitleStyle;
 
-  ListTileControlAffinity? controlAffinity;
-  void Function(bool? value) onChanged;
+  final ListTileControlAffinity? controlAffinity;
+  final void Function(bool? value) onChanged;
 
   @override
   Widget build(BuildContext context) => CheckboxListTile(
@@ -86,23 +86,23 @@ class CustomCheckBoxTile extends StatelessWidget {
 
 /// Simple Check box
 class CustomCheckBox extends StatelessWidget {
-  CustomCheckBox({
+  const CustomCheckBox({
     super.key,
     required this.value,
     required this.onChanged,
     this.controlAffinity,
   });
 
-  bool value;
-  ListTileControlAffinity? controlAffinity;
-  void Function(bool? value) onChanged;
+  final bool value;
+  final ListTileControlAffinity? controlAffinity;
+  final void Function(bool? value) onChanged;
 
   @override
   Widget build(BuildContext context) => Checkbox(
         activeColor: Theme.of(context).colorScheme.onPrimary,
         checkColor: Theme.of(context).colorScheme.primary,
         visualDensity: VisualDensity.compact,
-        fillColor: checkboxColor(context),
+        // fillColor: checkboxColor(context),
         splashRadius: 5,
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         shape: RoundedRectangleBorder(
@@ -120,7 +120,7 @@ class CustomCheckBox extends StatelessWidget {
 
 /// square check box
 class CustomGFCheckbox extends StatefulWidget {
-  CustomGFCheckbox({
+  const CustomGFCheckbox({
     super.key,
     required this.value,
     required this.onChanged,
@@ -130,15 +130,15 @@ class CustomGFCheckbox extends StatefulWidget {
     this.focusNode,
   });
 
-  FocusNode? focusNode;
+  final FocusNode? focusNode;
   final bool value;
   final ValueChanged<bool?> onChanged;
   final String text;
-  TextStyle? textStyle;
-  GFCheckboxType? type;
+  final TextStyle? textStyle;
+  final GFCheckboxType? type;
 
   @override
-  _CustomGFCheckboxState createState() => _CustomGFCheckboxState();
+  State<CustomGFCheckbox> createState() => _CustomGFCheckboxState();
 }
 
 class _CustomGFCheckboxState extends State<CustomGFCheckbox> {
@@ -181,7 +181,7 @@ class _CustomGFCheckboxState extends State<CustomGFCheckbox> {
 
 /// Using simple checkbox and title together
 class CustomCheckboxWithTitle extends StatelessWidget {
-  CustomCheckboxWithTitle({
+  const CustomCheckboxWithTitle({
     super.key,
     required this.isChecked,
     required this.onChanged,
@@ -196,9 +196,9 @@ class CustomCheckboxWithTitle extends StatelessWidget {
   final ValueChanged<bool?> onChanged;
   final String title;
   final TextStyle? titleStyle;
-  String? subTitle;
-  TextStyle? subTitleStyle;
-  bool isTitleExpanded;
+  final String? subTitle;
+  final TextStyle? subTitleStyle;
+  final bool isTitleExpanded;
 
   @override
   Widget build(BuildContext context) {
@@ -224,7 +224,7 @@ class CustomCheckboxWithTitle extends StatelessWidget {
                         const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w400,
-                          color: Colors.black,
+                          // color: Colors.black,
                         ),
                   ),
                 )
@@ -235,7 +235,7 @@ class CustomCheckboxWithTitle extends StatelessWidget {
                       const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w400,
-                        color: Colors.black,
+                        // color: Colors.black,
                       ),
                 ),
             ],
@@ -251,7 +251,7 @@ class CustomCheckboxWithTitle extends StatelessWidget {
                 Expanded(
                   child: Text(
                     subTitle ?? '',
-                    style: subTitleStyle ?? subtitleTextStyle(titleStyle).copyWith(height: 0),
+                    style: subTitleStyle ?? subtitleTextStyle(context).copyWith(height: 0),
                     textAlign: TextAlign.justify,
                   ),
                 ),
@@ -265,55 +265,55 @@ class CustomCheckboxWithTitle extends StatelessWidget {
       ),
     );
 
-    GestureDetector(
-      onTap: () {
-        onChanged(!isChecked);
-      },
-      child: Row(
-        children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              CustomCheckBox(
-                value: isChecked,
-                onChanged: onChanged,
-              ),
-              const SizedBox(),
-            ],
-          ),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                // if(subTitle != null) kMediumSpace,
-                Text(
-                  title,
-                  style: titleStyle ??
-                      const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400,
-                        color: Colors.black,
-                      ),
-                ),
-                if (subTitle != null)
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          subTitle ?? '',
-                          style: subTitleStyle ?? subtitleTextStyle(titleStyle).copyWith(height: 0),
-                          textAlign: TextAlign.justify,
-                        ),
-                      ),
-                    ],
-                  ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
+    // GestureDetector(
+    //   onTap: () {
+    //     onChanged(!isChecked);
+    //   },
+    //   child: Row(
+    //     children: [
+    //       Column(
+    //         mainAxisAlignment: MainAxisAlignment.start,
+    //         mainAxisSize: MainAxisSize.max,
+    //         children: [
+    //           CustomCheckBox(
+    //             value: isChecked,
+    //             onChanged: onChanged,
+    //           ),
+    //           const SizedBox(),
+    //         ],
+    //       ),
+    //       Expanded(
+    //         child: Column(
+    //           crossAxisAlignment: CrossAxisAlignment.start,
+    //           mainAxisAlignment: MainAxisAlignment.end,
+    //           children: [
+    //             // if(subTitle != null) kMediumSpace,
+    //             Text(
+    //               title,
+    //               style: titleStyle ??
+    //                   const TextStyle(
+    //                     fontSize: 16,
+    //                     fontWeight: FontWeight.w400,
+    //                     color: Colors.black,
+    //                   ),
+    //             ),
+    //             if (subTitle != null)
+    //               Row(
+    //                 children: [
+    //                   Expanded(
+    //                     child: Text(
+    //                       subTitle ?? '',
+    //                       style: subTitleStyle ?? subtitleTextStyle(titleStyle).copyWith(height: 0),
+    //                       textAlign: TextAlign.justify,
+    //                     ),
+    //                   ),
+    //                 ],
+    //               ),
+    //           ],
+    //         ),
+    //       ),
+    //     ],
+    //   ),
+    // );
   }
 }

@@ -1,10 +1,11 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/helper/mixins/media_query_mixin.dart';
 import 'package:event_app/core/styles/app_sizes.dart';
 import 'package:event_app/data/vendor/data/response/apis_status.dart';
-import 'package:event_app/models/vendor_models/products/VendorGetProductsModel.dart';
+import 'package:event_app/models/vendor_models/products/vendor_get_products_model.dart';
 import 'package:event_app/vendor/components/common_widgets/vendor_action_cell.dart';
 import 'package:event_app/vendor/components/common_widgets/vendor_data_list_builder.dart';
 import 'package:event_app/vendor/components/dialogs/delete_item_alert_dialog.dart';
@@ -55,7 +56,9 @@ class _VendorPackagesViewState extends State<VendorPackagesView> with MediaQuery
       setState(() {}); // ✅ Force UI update immediately after clearing
       await provider.vendorGetPackages(search: _searchController.text);
       setState(() {});
-    } catch (e) {}
+    } catch (e) {
+      log(e.toString());
+    }
   }
 
   Future<void> _loadMoreData() async {
@@ -148,7 +151,7 @@ class _VendorPackagesViewState extends State<VendorPackagesView> with MediaQuery
               RecordListTile(
                 onTap: () => _onRowTap(rowData: product, context: context),
                 imageAddress: product.image.toString(),
-                status: '${product.status?.label.toString()}' ?? '',
+                status: '${product.status?.label.toString()}',
                 statusTextStyle: TextStyle(
                   color: AppColors.getProductPackageStatusColor(
                     product.status?.value.toString(),
@@ -202,7 +205,7 @@ class _VendorPackagesViewState extends State<VendorPackagesView> with MediaQuery
                 onTap: () {
                   Navigator.of(context).push(
                     CupertinoPageRoute(
-                      builder: (context) => VendorCreatePackageView(),
+                      builder: (context) => const VendorCreatePackageView(),
                     ),
                   );
                 },
@@ -252,35 +255,35 @@ class _VendorPackagesViewState extends State<VendorPackagesView> with MediaQuery
                     kMediumSpace,
                     buildRow(
                       VendorAppStrings.id.tr,
-                      rowData.id.toString() ?? '',
+                      rowData.id.toString(),
                     ),
                     buildRow(
                       VendorAppStrings.name.tr,
-                      rowData.name.toString() ?? '',
+                      rowData.name.toString(),
                     ),
                     buildRow(
                       VendorAppStrings.price.tr,
-                      rowData.priceFormat.toString() ?? '',
+                      rowData.priceFormat.toString(),
                     ),
                     buildRow(
                       VendorAppStrings.quantity.tr,
-                      rowData.quantity.toString() ?? '',
+                      rowData.quantity.toString(),
                     ),
                     buildRow(
                       VendorAppStrings.sku.tr,
-                      rowData.sku.toString() ?? '',
+                      rowData.sku.toString(),
                     ),
                     buildRow(
                       VendorAppStrings.order.tr,
-                      rowData.order.toString() ?? '',
+                      rowData.order.toString(),
                     ),
                     buildRow(
                       VendorAppStrings.createdAt.tr,
-                      rowData.createdAt.toString() ?? '',
+                      rowData.createdAt.toString(),
                     ),
                     buildStatusRow(
-                      label: 'Status',
-                      buttonText: rowData.status?.label?.toString() ?? '',
+                      label: VendorAppStrings.status.tr,
+                      buttonText: rowData.status?.label.toString() ?? '',
                       color: AppColors.getProductPackageStatusColor(
                         rowData.status?.value.toString(),
                       ),

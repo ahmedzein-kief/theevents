@@ -3,10 +3,10 @@ import 'package:event_app/models/vendor_models/common_models/common_post_request
 import 'package:flutter/cupertino.dart';
 
 import '../../../../core/services/shared_preferences_helper.dart';
-import '../../../../data/vendor/data/response/ApiResponse.dart';
+import '../../../../core/utils/app_utils.dart';
+import '../../../../data/vendor/data/response/api_response.dart';
 import '../../../../models/vendor_models/products/create_product/product_post_data_model.dart';
 import '../../../../provider/vendor/vendor_repository.dart';
-import '../../../components/services/alert_services.dart';
 
 class VendorCreateUpdateVariationViewModel with ChangeNotifier {
   String? _token;
@@ -27,11 +27,9 @@ class VendorCreateUpdateVariationViewModel with ChangeNotifier {
   final _myRepo = VendorRepository();
 
   /// ***------------ Vendor create variation start ---------------***
-  ApiResponse<CommonPostRequestModel> _vendorCreateVariationApiResponse =
-      ApiResponse.none();
+  ApiResponse<CommonPostRequestModel> _vendorCreateVariationApiResponse = ApiResponse.none();
 
-  ApiResponse<CommonPostRequestModel> get vendorCreateVariationApiResponse =>
-      _vendorCreateVariationApiResponse;
+  ApiResponse<CommonPostRequestModel> get vendorCreateVariationApiResponse => _vendorCreateVariationApiResponse;
 
   set _setVendorCreateVariationApiResponse(
     ApiResponse<CommonPostRequestModel> response,
@@ -40,10 +38,11 @@ class VendorCreateUpdateVariationViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> vendorCreateProductVariation(
-      {required BuildContext context,
-      required String productID,
-      required ProductPostDataModel productPostDataModel,}) async {
+  Future<bool> vendorCreateProductVariation({
+    required BuildContext context,
+    required String productID,
+    required ProductPostDataModel productPostDataModel,
+  }) async {
     try {
       setLoading(true);
       _setVendorCreateVariationApiResponse = ApiResponse.loading();
@@ -55,24 +54,21 @@ class VendorCreateUpdateVariationViewModel with ChangeNotifier {
       final FormData formDataMap = productPostDataModel.toVariationFormData();
       final body = formDataMap;
 
-      final CommonPostRequestModel response =
-          await _myRepo.vendorCreateProductVariation(
+      final CommonPostRequestModel response = await _myRepo.vendorCreateProductVariation(
         headers: headers,
         body: body,
         productID: productID,
       );
       _setVendorCreateVariationApiResponse = ApiResponse.completed(response);
-      AlertServices.showSuccessSnackBar(
-        message: response.message.toString(),
-        context: context,
+      AppUtils.showToast(
+        response.message.toString(),
+        isSuccess: true,
       );
       setLoading(false);
       return true;
     } catch (error) {
-      _setVendorCreateVariationApiResponse =
-          ApiResponse.error(error.toString());
-      AlertServices.showErrorSnackBar(
-          message: error.toString(), context: context,);
+      _setVendorCreateVariationApiResponse = ApiResponse.error(error.toString());
+      AppUtils.showToast(error.toString());
       setLoading(false);
       return false;
     }
@@ -82,11 +78,9 @@ class VendorCreateUpdateVariationViewModel with ChangeNotifier {
 
   /// ***------------ Vendor update variation start ---------------***
 
-  ApiResponse<CommonPostRequestModel> _vendorUpdateVariationApiResponse =
-      ApiResponse.none();
+  ApiResponse<CommonPostRequestModel> _vendorUpdateVariationApiResponse = ApiResponse.none();
 
-  ApiResponse<CommonPostRequestModel> get vendorUpdateVariationApiResponse =>
-      _vendorUpdateVariationApiResponse;
+  ApiResponse<CommonPostRequestModel> get vendorUpdateVariationApiResponse => _vendorUpdateVariationApiResponse;
 
   set _setVendorUpdateVariationApiResponse(
     ApiResponse<CommonPostRequestModel> response,
@@ -110,24 +104,21 @@ class VendorCreateUpdateVariationViewModel with ChangeNotifier {
       final FormData formDataMap = productPostDataModel.toVariationFormData();
       final body = formDataMap;
 
-      final CommonPostRequestModel response =
-          await _myRepo.vendorUpdateProductVariation(
+      final CommonPostRequestModel response = await _myRepo.vendorUpdateProductVariation(
         headers: headers,
         body: body,
         productVariationID: variationID,
       );
       _setVendorUpdateVariationApiResponse = ApiResponse.completed(response);
-      AlertServices.showSuccessSnackBar(
-        message: response.message.toString(),
-        context: context,
+      AppUtils.showToast(
+        response.message.toString(),
+        isSuccess: true,
       );
       setLoading(false);
       return true;
     } catch (error) {
-      _setVendorUpdateVariationApiResponse =
-          ApiResponse.error(error.toString());
-      AlertServices.showErrorSnackBar(
-          message: error.toString(), context: context,);
+      _setVendorUpdateVariationApiResponse = ApiResponse.error(error.toString());
+      AppUtils.showToast(error.toString());
       setLoading(false);
       return false;
     }

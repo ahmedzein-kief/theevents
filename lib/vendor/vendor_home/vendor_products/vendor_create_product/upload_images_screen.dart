@@ -1,13 +1,13 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:event_app/core/constants/vendor_app_strings.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/styles/app_colors.dart';
+import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/models/vendor_models/products/holder_models/upload_images_model.dart';
 import 'package:event_app/vendor/components/services/media_services.dart';
-import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/vendor/components/vendor_text_style.dart';
-import 'package:event_app/vendor/vendor_home/vendor_products/vendor_create_product/full_screen_image_view.dart';
 import 'package:event_app/vendor/view_models/vendor_products/upload_images/vendor_upload_images_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as path;
@@ -19,7 +19,7 @@ class UploadImagesScreen extends StatefulWidget {
   final List<UploadImagesModel>? initialImages;
 
   @override
-  _UploadImagesScreenState createState() => _UploadImagesScreenState();
+  State<UploadImagesScreen> createState() => _UploadImagesScreenState();
 }
 
 class _UploadImagesScreenState extends State<UploadImagesScreen> {
@@ -42,7 +42,7 @@ class _UploadImagesScreenState extends State<UploadImagesScreen> {
         _selectedImages.where((file) => file.hasFile).toList(),
       );
       if (results.isNotEmpty) {
-        print('Result 1 ==> ${results.length} ');
+        log('Result 1 ==> ${results.length} ');
         for (final element in results) {
           if (element != null) {
             final matchedImage = _selectedImages.firstWhere(
@@ -60,12 +60,12 @@ class _UploadImagesScreenState extends State<UploadImagesScreen> {
           }
         }
       } else {
-        print('Result 2 ==> $results');
+        log('Result 2 ==> $results');
       }
       setProcessing(false);
     } catch (e) {
       setProcessing(false);
-      print('Error: $e');
+      log('Error: $e');
     }
   }
 
@@ -93,32 +93,11 @@ class _UploadImagesScreenState extends State<UploadImagesScreen> {
         )
         .toList();
 
-    print(uploadImagesList);
-
     if (myFiles != null) {
       setState(() {
         _selectedImages.addAll(uploadImagesList);
       });
       uploadImages();
-    }
-  }
-
-  void _showFullScreenImage(File imageFile) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => FullScreenImageView(imageFile: imageFile),
-      ),
-    );
-  }
-
-  IconData _getFileIcon(String extension) {
-    switch (extension) {
-      case 'JPG':
-      case 'JPEG':
-      case 'PNG':
-        return Icons.image;
-      default:
-        return Icons.insert_drive_file;
     }
   }
 
@@ -156,7 +135,7 @@ class _UploadImagesScreenState extends State<UploadImagesScreen> {
                     itemBuilder: (context, index) {
                       String fileName;
                       String fileExtension;
-                      print('has file ${_selectedImages[index].hasFile}');
+                      log('has file ${_selectedImages[index].hasFile}');
 
                       if (!_selectedImages[index].hasFile) {
                         final Uri uri = Uri.parse(_selectedImages[index].serverFullUrl);

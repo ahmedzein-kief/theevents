@@ -1,8 +1,11 @@
+import 'dart:developer';
+
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/helper/mixins/media_query_mixin.dart';
 import 'package:event_app/core/helper/validators/validator.dart';
 import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/core/styles/app_sizes.dart';
+import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/data/vendor/data/response/apis_status.dart';
 import 'package:event_app/vendor/Components/data_tables/custom_data_tables.dart';
 import 'package:event_app/vendor/components/app_bars/vendor_common_app_bar.dart';
@@ -12,7 +15,6 @@ import 'package:event_app/vendor/components/settings_components/simple_card.dart
 import 'package:event_app/vendor/components/status_constants/payment_channel_constants.dart';
 import 'package:event_app/vendor/components/status_constants/withdrawal_status_constants.dart';
 import 'package:event_app/vendor/components/text_fields/custom_text_form_field.dart';
-import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/vendor/vendor_home/vendor_coupons/coupon_view_utils.dart';
 import 'package:event_app/vendor/vendor_home/vendor_settings/vendor_profile_settings_view.dart';
 import 'package:event_app/vendor/view_models/dashboard/vendor_dashboard_view_model.dart';
@@ -25,16 +27,17 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/constants/app_strings.dart';
 import '../../../core/constants/vendor_app_strings.dart';
 import '../../../models/vendor_models/vendor_withdrawals_model/vendor_show_withdrawal_model.dart';
 
 class VendorCreateUpdateWithdrawalView extends StatefulWidget {
-  VendorCreateUpdateWithdrawalView({
+  const VendorCreateUpdateWithdrawalView({
     super.key,
     this.withdrawalID,
   });
 
-  String? withdrawalID;
+  final String? withdrawalID;
 
   @override
   State<VendorCreateUpdateWithdrawalView> createState() => _VendorCreateUpdateWithdrawalViewState();
@@ -74,16 +77,27 @@ class _VendorCreateUpdateWithdrawalViewState extends State<VendorCreateUpdateWit
   Future _onRefresh() async {
     try {
       setProcessing(true);
+
+      // FIX: Check mounted before using context
+      if (!mounted) return;
+
       final vendorDashboard = context.read<VendorDashboardViewModel>();
       await vendorDashboard.getDashboardData(formatStartDate, formatEndDate);
 
       if (widget.withdrawalID != null) {
         setProcessing(true);
+
+        // FIX: Check mounted before using context
+        if (!mounted) return;
+
         final showWithdrawalProvider = context.read<VendorShowWithdrawalViewModel>();
 
         await showWithdrawalProvider.vendorShowWithdrawal(
           withdrawalID: widget.withdrawalID!,
         );
+
+        // FIX: Check mounted after async operation
+        if (!mounted) return;
 
         if (showWithdrawalProvider.apiResponse.status == ApiStatus.COMPLETED) {
           final withdrawal = showWithdrawalProvider.apiResponse.data?.data;
@@ -98,7 +112,7 @@ class _VendorCreateUpdateWithdrawalViewState extends State<VendorCreateUpdateWit
       setProcessing(false);
     } catch (e) {
       setProcessing(false);
-      print('Error: $e');
+      log('Error: $e');
     }
   }
 
@@ -115,14 +129,15 @@ class _VendorCreateUpdateWithdrawalViewState extends State<VendorCreateUpdateWit
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: VendorCommonAppBar(
-          title: widget.withdrawalID == null ? 'Create Withdrawal' : 'Withdrawal #${widget.withdrawalID}',
+          title: widget.withdrawalID == null
+              ? VendorAppStrings.withdrawals.tr
+              : '${VendorAppStrings.withdrawals.tr} #${widget.withdrawalID}',
         ),
         body: AppUtils.modelProgressHud(
           context: context,
           processing: _isProcessing,
           child: _buildUi(context),
         ),
-        backgroundColor: AppColors.bgColor,
       );
 
   Widget _buildUi(BuildContext context) {
@@ -158,10 +173,10 @@ class _VendorCreateUpdateWithdrawalViewState extends State<VendorCreateUpdateWit
                               mainAxisSize: MainAxisSize.max,
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
-                                const Expanded(
+                                Expanded(
                                   child: Text(
-                                    'Status',
-                                    style: TextStyle(
+                                    VendorAppStrings.status.tr,
+                                    style: const TextStyle(
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),
@@ -188,12 +203,12 @@ class _VendorCreateUpdateWithdrawalViewState extends State<VendorCreateUpdateWit
                         children: [
                           /// amount
                           CustomTextFormField(
-                            labelText: 'Amount (Balance: $balance)',
+                            labelText: '${VendorAppStrings.amount.tr} (${AppStrings.balanceLabel.tr} $balance)',
                             labelTextStyle: CouponViewUtils.couponLabelTextStyle(),
                             required: true,
                             showTitle: true,
                             readOnly: widget.withdrawalID != null,
-                            hintText: 'Enter Amount',
+                            hintText: AppStrings.amountAed.tr,
                             controller: _amountController,
                             validator: Validator.fieldCannotBeEmpty,
                             keyboardType: TextInputType.number,
@@ -205,12 +220,12 @@ class _VendorCreateUpdateWithdrawalViewState extends State<VendorCreateUpdateWit
                             Column(
                               children: [
                                 CustomTextFormField(
-                                  labelText: 'Fee',
+                                  labelText: VendorAppStrings.fee.tr,
                                   showTitle: true,
                                   required: true,
                                   readOnly: widget.withdrawalID != null,
                                   validator: Validator.fieldCannotBeEmpty,
-                                  hintText: 'Enter Fee',
+                                  hintText: VendorAppStrings.enterFee.tr,
                                   keyboardType: TextInputType.number,
                                   controller: _feeController,
                                 ),
@@ -220,14 +235,14 @@ class _VendorCreateUpdateWithdrawalViewState extends State<VendorCreateUpdateWit
 
                           /// description
                           CustomTextFormField(
-                            labelText: 'Description',
+                            labelText: AppStrings.description.tr,
                             showTitle: true,
                             required: false,
                             readOnly: showWithdrawalProvider.apiResponse.data?.data?.status?.value !=
                                     WithdrawalStatusConstants.PENDING &&
                                 widget.withdrawalID != null,
                             maxLines: 3,
-                            hintText: 'Enter Description',
+                            hintText: VendorAppStrings.enterDescription.tr,
                             keyboardType: TextInputType.multiline,
                             controller: _descriptionController,
                           ),
@@ -244,9 +259,9 @@ class _VendorCreateUpdateWithdrawalViewState extends State<VendorCreateUpdateWit
                                     RichText(
                                       text: TextSpan(
                                         children: [
-                                          const TextSpan(
-                                            text: 'You will receive money as per ',
-                                            style: TextStyle(
+                                          TextSpan(
+                                            text: VendorAppStrings.payoutInfo.tr,
+                                            style: const TextStyle(
                                               color: Colors.black,
                                               fontSize: 13,
                                             ),
@@ -255,12 +270,12 @@ class _VendorCreateUpdateWithdrawalViewState extends State<VendorCreateUpdateWit
                                             recognizer: TapGestureRecognizer()
                                               ..onTap = () => Navigator.of(context).push(
                                                     CupertinoPageRoute(
-                                                      builder: (context) => VendorProfileSettingsView(
+                                                      builder: (context) => const VendorProfileSettingsView(
                                                         initialIndex: 2,
                                                       ),
                                                     ),
                                                   ),
-                                            text: 'Payout Info.',
+                                            text: AppStrings.payoutInfo.tr,
                                             style: const TextStyle(
                                               color: AppColors.peachyPink,
                                               fontSize: 13,
@@ -318,9 +333,9 @@ class _VendorCreateUpdateWithdrawalViewState extends State<VendorCreateUpdateWit
                   children: [
                     kSmallSpace,
                     RichText(
-                      text: const TextSpan(
-                        text: 'You will receive money through the information: ',
-                        style: TextStyle(
+                      text: TextSpan(
+                        text: AppStrings.youWillReceiveMoneyThroughTheInformation.tr,
+                        style: const TextStyle(
                           color: Colors.black,
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
@@ -394,9 +409,9 @@ class _VendorCreateUpdateWithdrawalViewState extends State<VendorCreateUpdateWit
                 horizontal: kMediumPadding,
                 vertical: kMediumPadding,
               ),
-              child: const Text(
-                'Do you want to cancel this withdrawal?',
-                style: TextStyle(
+              child: Text(
+                AppStrings.doYouWantToCancelThisWithdrawal.tr,
+                style: const TextStyle(
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -424,9 +439,9 @@ class _VendorCreateUpdateWithdrawalViewState extends State<VendorCreateUpdateWit
                 right: kSmallPadding,
                 bottom: kPadding,
               ),
-              child: const Text(
-                'After cancel amount and fee will be refunded back in your balance.',
-                style: TextStyle(fontSize: 12, color: AppColors.darkGrey),
+              child: Text(
+                AppStrings.afterCancelAmountAndFeeWillBeRefundedBackInYourBalance.tr,
+                style: const TextStyle(fontSize: 12, color: AppColors.darkGrey),
               ),
             ),
           ],
@@ -443,9 +458,9 @@ class _VendorCreateUpdateWithdrawalViewState extends State<VendorCreateUpdateWit
                 horizontal: kMediumPadding,
                 vertical: kMediumPadding,
               ),
-              child: const Text(
-                'Publish',
-                style: TextStyle(fontWeight: FontWeight.w500),
+              child: Text(
+                AppStrings.publish.tr,
+                style: const TextStyle(fontWeight: FontWeight.w500),
               ),
             ),
             const Divider(
@@ -459,7 +474,7 @@ class _VendorCreateUpdateWithdrawalViewState extends State<VendorCreateUpdateWit
                 create: (context) => VendorCreateUpdateWithdrawalViewModel(),
                 child: Consumer<VendorCreateUpdateWithdrawalViewModel>(
                   builder: (context, provider, _) => CustomIconButtonWithText(
-                    text: 'Request',
+                    text: AppStrings.request.tr,
                     color: AppColors.peachyPink,
                     icon: const Icon(
                       Icons.currency_exchange,
@@ -479,11 +494,18 @@ class _VendorCreateUpdateWithdrawalViewState extends State<VendorCreateUpdateWit
 
                           /// create withdrawal
                           if (widget.withdrawalID == null) {
+                            // FIX: Check context.mounted before async operation
+                            if (!context.mounted) return;
+
                             final result = await provider.vendorCreateUpdateWithdrawal(
                               requestType: RequestType.CREATE,
                               form: form,
                               context: context,
                             );
+
+                            // FIX: Check context.mounted after async operation
+                            if (!context.mounted) return;
+
                             if (result) {
                               _descriptionController.clear();
                               _amountController.clear();
@@ -494,16 +516,27 @@ class _VendorCreateUpdateWithdrawalViewState extends State<VendorCreateUpdateWit
 
                           /// update withdrawal
                           else {
+                            // FIX: Check context.mounted before async operation
+                            if (!context.mounted) return;
+
                             await provider.vendorCreateUpdateWithdrawal(
                               requestType: RequestType.UPDATE,
                               withdrawalID: widget.withdrawalID,
                               form: form,
                               context: context,
                             );
+
+                            // FIX: Check context.mounted after async operation
+                            if (!context.mounted) return;
+
                             context.read<VendorWithdrawalsViewModel>().clearList();
                             context.read<VendorWithdrawalsViewModel>().vendorWithdrawals();
                             await _onRefresh();
                           }
+
+                          // FIX: Check context.mounted after async operation
+                          if (!context.mounted) return;
+
                           setProcessing(false);
 
                           /// Calling the get vendor coupons api
@@ -512,7 +545,7 @@ class _VendorCreateUpdateWithdrawalViewState extends State<VendorCreateUpdateWit
                           withdrawalsProvider.vendorWithdrawals();
                         }
                       } catch (e) {
-                        print('Error: $e');
+                        log('Error: $e');
                         setProcessing(false);
                       }
                       setProcessing(false);

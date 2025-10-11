@@ -21,7 +21,6 @@ class FeatureCategoryRepository {
         url,
         headers: headers,
         authService: true,
-        context: context,
       );
       if (response['status']) {
         return PageData.fromJson(response['data']);
@@ -35,7 +34,7 @@ class FeatureCategoryRepository {
 
   /// +++++++++++++++++++++   ORDER SCREENS BANNER  ----------------------------------
 
-  Future<PageData> orderScreenBanner(BuildContext context) async {
+  Future<PageData> orderScreenBanner() async {
     try {
       final tokenLogin = await SecurePreferencesUtil.getToken();
       const url = ApiEndpoints.orderScreenBanner;
@@ -46,7 +45,6 @@ class FeatureCategoryRepository {
         url,
         headers: headers,
         authService: true,
-        context: context,
       );
       if (response['status']) {
         return PageData.fromJson(response['data']);

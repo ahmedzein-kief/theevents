@@ -171,7 +171,7 @@ class _AddressFormWidgetState extends State<AddressFormWidget> {
 
         if (selectedCountryId != null) {
           try {
-            stateModel = await fetchStates(context, selectedCountryId!);
+            stateModel = await fetchStates(selectedCountryId!);
 
             if (stateModel?.data?.isNotEmpty == true) {
               // First try to find by ID, then fallback to name
@@ -201,6 +201,9 @@ class _AddressFormWidgetState extends State<AddressFormWidget> {
 
               if (selectedState?.id != null) {
                 try {
+                  // FIX: Check mounted before using context
+                  if (!mounted) return;
+
                   cityModel = await fetchCities(
                     context,
                     selectedState!.id!,
@@ -260,7 +263,7 @@ class _AddressFormWidgetState extends State<AddressFormWidget> {
         cityModel = null;
       });
 
-      stateModel = await fetchStates(context, countryId);
+      stateModel = await fetchStates(countryId);
 
       setState(() {
         _stateLoader = false;
@@ -322,6 +325,9 @@ class _AddressFormWidgetState extends State<AddressFormWidget> {
     final token = await SecurePreferencesUtil.getToken();
     if (token == null) return;
 
+    // FIX: Check mounted before using context
+    if (!mounted) return;
+
     try {
       await Provider.of<AddressProvider>(context, listen: false).saveAddress(context, address);
       if (mounted && widget.onAddressSaved != null) {
@@ -336,6 +342,9 @@ class _AddressFormWidgetState extends State<AddressFormWidget> {
     final AddressModel address = _createAddressModel();
     final token = await SecurePreferencesUtil.getToken();
     if (token == null) return false;
+
+    // FIX: Check mounted before using context
+    if (!mounted) return false;
 
     try {
       final response =

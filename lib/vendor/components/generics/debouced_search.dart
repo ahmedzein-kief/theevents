@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 Timer? _debounce;
@@ -10,8 +11,8 @@ void debouncedSearch<T>({
   required Future<void> Function() refreshFunction, // Callback function
   Duration debounceDuration = const Duration(milliseconds: 500),
 }) {
-  final provider = providerGetter(context);
-  final apiResponse = (provider as dynamic).apiResponse;
+  // final provider = providerGetter(context);
+  // final apiResponse = (provider as dynamic).apiResponse;
 
   // Cancel any existing debounce timer
   _debounce?.cancel();

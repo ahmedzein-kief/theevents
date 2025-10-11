@@ -1,5 +1,5 @@
 import 'package:event_app/core/services/shared_preferences_helper.dart';
-import 'package:event_app/data/vendor/data/response/ApiResponse.dart';
+import 'package:event_app/data/vendor/data/response/api_response.dart';
 import 'package:event_app/models/vendor_models/dashboard/dashboard_data_response.dart';
 import 'package:event_app/provider/vendor/vendor_repository.dart';
 import 'package:flutter/cupertino.dart';

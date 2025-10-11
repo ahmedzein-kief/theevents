@@ -41,7 +41,7 @@ class ProfileItem extends StatelessWidget {
         }
       },
       child: Container(
-        color: Theme.of(context).colorScheme.primary,
+        color: Theme.of(context).cardColor,
         padding: const EdgeInsets.all(5),
         child: SizedBox(
           height: 30,
@@ -55,7 +55,10 @@ class ProfileItem extends StatelessWidget {
                 fit: BoxFit.scaleDown,
                 width: width ?? 30, // Default width is 30
                 height: height ?? 30, // Default height is 30
-                color: Theme.of(context).colorScheme.onPrimary,
+                colorFilter: ColorFilter.mode(
+                  Theme.of(context).colorScheme.onPrimary,
+                  BlendMode.srcIn,
+                ),
               ),
               SizedBox(width: textWidth ?? screenHeight * 0.02),
               Expanded(

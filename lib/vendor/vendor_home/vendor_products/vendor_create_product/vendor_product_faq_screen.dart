@@ -1,3 +1,7 @@
+import 'dart:developer';
+
+import 'package:event_app/core/constants/vendor_app_strings.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/core/styles/app_sizes.dart';
 import 'package:event_app/models/vendor_models/products/holder_models/faq_model.dart';
@@ -14,11 +18,12 @@ class VendorProductFaqScreen extends StatefulWidget {
     required this.listFaq,
     required this.parentFAQModel,
   });
+
   final List<Faqs> listFaq;
   final ParentFAQModel? parentFAQModel;
 
   @override
-  _VendorProductFaqScreenState createState() => _VendorProductFaqScreenState();
+  State<VendorProductFaqScreen> createState() => _VendorProductFaqScreenState();
 }
 
 class _VendorProductFaqScreenState extends State<VendorProductFaqScreen> {
@@ -40,13 +45,11 @@ class _VendorProductFaqScreenState extends State<VendorProductFaqScreen> {
 
   void _initializeProductCategories() {
     _faqDropdownItems = widget.listFaq.map((productCategory) {
-      print('product ID ${productCategory.id}');
+      log('product ID ${productCategory.id}');
       return DropdownItem(
         label: productCategory.value?.toString() ?? '',
         value: productCategory,
-        selected: widget.parentFAQModel?.listExistingFaqs
-                .contains(productCategory.id?.toString()) ??
-            false,
+        selected: widget.parentFAQModel?.listExistingFaqs.contains(productCategory.id?.toString()) ?? false,
       );
     }).toList();
     _faqController.setItems(_faqDropdownItems);
@@ -67,10 +70,8 @@ class _VendorProductFaqScreenState extends State<VendorProductFaqScreen> {
   }
 
   void _initializeControllers(int index) {
-    questionControllers
-        .add(TextEditingController(text: productFAQs[index].question));
-    answerControllers
-        .add(TextEditingController(text: productFAQs[index].answer));
+    questionControllers.add(TextEditingController(text: productFAQs[index].question));
+    answerControllers.add(TextEditingController(text: productFAQs[index].answer));
   }
 
   void deleteFaq(int index) {
@@ -100,7 +101,7 @@ class _VendorProductFaqScreenState extends State<VendorProductFaqScreen> {
         },
         child: Scaffold(
           appBar: AppBar(
-            title: Text('Product FAQs', style: vendorName(context)),
+            title: Text(VendorAppStrings.productFaqs.tr, style: vendorName(context)),
             leading: IconButton(
               icon: const Icon(Icons.arrow_back),
               onPressed: _returnBack,
@@ -114,36 +115,37 @@ class _VendorProductFaqScreenState extends State<VendorProductFaqScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize
-                        .min, // Ensures content wraps instead of expanding
+                    mainAxisSize: MainAxisSize.min, // Ensures content wraps instead of expanding
                     children: [
                       fieldTitle(
-                          text: 'Select from existing FAQs',
-                          textStyle:
-                              const TextStyle(color: AppColors.lightCoral),),
+                        text: VendorAppStrings.selectFromExistingFAQs.tr,
+                        textStyle: const TextStyle(color: AppColors.lightCoral),
+                      ),
                       kMinorSpace,
                       CustomMultiselectDropdown(
                         dropdownItems: _faqDropdownItems,
                         dropdownController: _faqController,
-                        hintText: 'Select an option',
+                        hintText: VendorAppStrings.selectAnOption.tr,
                         onSelectionChanged: (value) {
                           if (value is List<Faqs>) {
-                            selectedExistingFaqs = value
-                                .where((e) => e.id != null)
-                                .map((e) => e.id!.toString())
-                                .toList();
-                            print('Selected Faqs: $selectedExistingFaqs');
+                            selectedExistingFaqs =
+                                value.where((e) => e.id != null).map((e) => e.id!.toString()).toList();
+                            log('Selected Faqs: $selectedExistingFaqs');
                           } else {
-                            print('Unexpected data type: ${value.runtimeType}');
+                            log('Unexpected data type: ${value.runtimeType}');
                           }
                         },
                       ),
                       const SizedBox(height: 8),
-                      const Align(
+                      Align(
                         alignment: Alignment.center, // Center align explicitly
-                        child: Text('Or',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 16,),),
+                        child: Text(
+                          VendorAppStrings.or.tr,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -152,14 +154,21 @@ class _VendorProductFaqScreenState extends State<VendorProductFaqScreen> {
               Flexible(
                 child: ListView.builder(
                   padding: const EdgeInsets.only(
-                      left: 16, right: 16, bottom: 80, top: 16,),
+                    left: 16,
+                    right: 16,
+                    bottom: 80,
+                    top: 16,
+                  ),
                   itemCount: productFAQs.length,
                   itemBuilder: (context, sectionIndex) => Card(
                     margin: const EdgeInsets.only(bottom: 16),
                     elevation: 3,
                     child: Padding(
                       padding: const EdgeInsets.only(
-                          bottom: 16, left: 16, right: 16,),
+                        bottom: 16,
+                        left: 16,
+                        right: 16,
+                      ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -167,14 +176,13 @@ class _VendorProductFaqScreenState extends State<VendorProductFaqScreen> {
                             children: [
                               const Spacer(),
                               IconButton(
-                                icon:
-                                    const Icon(Icons.delete, color: Colors.red),
+                                icon: const Icon(Icons.delete, color: Colors.red),
                                 onPressed: () => deleteFaq(sectionIndex),
                               ),
                             ],
                           ),
                           CustomTextFormField(
-                            labelText: 'Question',
+                            labelText: VendorAppStrings.question.tr,
                             required: false,
                             hintText: '',
                             controller: questionControllers[sectionIndex],
@@ -184,7 +192,7 @@ class _VendorProductFaqScreenState extends State<VendorProductFaqScreen> {
                           ),
                           kSmallSpace,
                           CustomTextFormField(
-                            labelText: 'Answer',
+                            labelText: VendorAppStrings.answer.tr,
                             required: false,
                             hintText: '',
                             controller: answerControllers[sectionIndex],

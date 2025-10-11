@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../../utils/app_utils.dart';
 import '../../styles/app_colors.dart';
+import '../../utils/app_utils.dart';
 
 class CustomAppButton extends StatefulWidget {
-  CustomAppButton({
+  const CustomAppButton({
     super.key,
     required this.buttonText,
     required this.buttonColor,
@@ -28,16 +28,16 @@ class CustomAppButton extends StatefulWidget {
   final IconData? prefixIcon;
   final IconData? suffixIcon;
   final VoidCallback onTap;
-  double? borderRadius;
-  MainAxisSize? mainAxisSize;
-  EdgeInsetsGeometry? padding;
-  TextStyle? textStyle;
-  Color? borderColor;
-  bool isLoading;
-  double? height;
-  Color? prefixIconColor;
-  Color? suffixIconColor;
-  Color? loadingIndicatorColor;
+  final double? borderRadius;
+  final MainAxisSize? mainAxisSize;
+  final EdgeInsetsGeometry? padding;
+  final TextStyle? textStyle;
+  final Color? borderColor;
+  final bool isLoading;
+  final double? height;
+  final Color? prefixIconColor;
+  final Color? suffixIconColor;
+  final Color? loadingIndicatorColor;
 
   @override
   State<CustomAppButton> createState() => _CustomAppButtonState();

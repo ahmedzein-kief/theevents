@@ -28,10 +28,7 @@ class FeaturedCategoriesDetailProvider with ChangeNotifier {
 
     final url = '${ApiEndpoints.categoryBanner}$slug';
     try {
-      final response = await _apiResponseHandler.getRequest(
-        url,
-        context: context,
-      );
+      final response = await _apiResponseHandler.getRequest(url);
 
       if (response.statusCode == 200) {
         final data = response.data;
@@ -48,8 +45,9 @@ class FeaturedCategoriesDetailProvider with ChangeNotifier {
   ///      ++++++++++++++++++++++++++++++++++++++++++++++++   FeaturedCategoryInnerProductProvider +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
   List<Record> _recordsProducts = [];
-  Pagination? _paginations;
-  bool _isMoreLoading = false;
+
+  // Pagination? _paginations;
+  // bool _isMoreLoading = false;
   bool _isLoadingProducts = false;
   ProductFiltersModel? _productFilters;
 
@@ -73,7 +71,7 @@ class FeaturedCategoriesDetailProvider with ChangeNotifier {
       _isLoadingProducts = true;
     } else {
       _productFilters = null;
-      _isMoreLoading = true;
+      // _isMoreLoading = true;
     }
 
     notifyListeners();
@@ -103,17 +101,14 @@ class FeaturedCategoriesDetailProvider with ChangeNotifier {
     final url = filtersQuery.isNotEmpty ? '$baseUrl&$filtersQuery&allcategories=1' : baseUrl;
 
     try {
-      final response = await _apiResponseHandler.getRequest(
-        url,
-        context: context,
-      );
+      final response = await _apiResponseHandler.getRequest(url);
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonResponse = response.data;
         final FeaturedCategoryProductsModels apiResponse = FeaturedCategoryProductsModels.fromJson(jsonResponse);
         if (page == 1) {
           _recordsProducts = apiResponse.data.records;
-          _paginations = apiResponse.data.pagination;
+          // _paginations = apiResponse.data.pagination;
           _productFilters = apiResponse.data.filters;
         } else {
           _recordsProducts.addAll(apiResponse.data.records);
@@ -126,7 +121,7 @@ class FeaturedCategoriesDetailProvider with ChangeNotifier {
       throw Exception('Failed to load products: $error');
     } finally {
       _isLoadingProducts = false;
-      _isMoreLoading = false;
+      // _isMoreLoading = false;
       notifyListeners();
     }
   }
@@ -161,10 +156,7 @@ class FeaturedCategoriesDetailProvider with ChangeNotifier {
     log(url);
 
     try {
-      final response = await _apiResponseHandler.getRequest(
-        url,
-        context: context,
-      );
+      final response = await _apiResponseHandler.getRequest(url);
 
       log(response.statusCode);
 
@@ -175,7 +167,7 @@ class FeaturedCategoriesDetailProvider with ChangeNotifier {
 
         if (page == 1) {
           _recordsPackages = apiResponse.data.records;
-          _paginations = apiResponse.data.pagination;
+          // _paginations = apiResponse.data.pagination;
           notifyListeners();
         } else {
           _recordsPackages.addAll(apiResponse.data.records);

@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:event_app/core/constants/app_strings.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -48,10 +50,12 @@ class ImagePickerHelper {
                           source: ImageSource.gallery,
                           imageQuality: 50,
                         );
-                        Navigator.of(context).pop(image != null ? File(image.path) : null);
+                        if (context.mounted) {
+                          Navigator.of(context).pop(image != null ? File(image.path) : null);
+                        }
                       },
                     ),
-                    const Text('Gallery'),
+                    Text(AppStrings.gallery.tr),
                   ],
                 ),
 
@@ -74,10 +78,12 @@ class ImagePickerHelper {
                           source: ImageSource.camera,
                           imageQuality: 50,
                         );
-                        Navigator.of(context).pop(image != null ? File(image.path) : null);
+                        if (context.mounted) {
+                          Navigator.of(context).pop(image != null ? File(image.path) : null);
+                        }
                       },
                     ),
-                    const Text('Camera'),
+                    Text(AppStrings.camera.tr),
                   ],
                 ),
               ],

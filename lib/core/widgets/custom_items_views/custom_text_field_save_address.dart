@@ -36,7 +36,7 @@ class CustomFieldSaveAddress extends StatefulWidget {
   final String? labelText;
 
   @override
-  _CustomFieldSaveAddressState createState() => _CustomFieldSaveAddressState();
+  State<CustomFieldSaveAddress> createState() => _CustomFieldSaveAddressState();
 }
 
 class _CustomFieldSaveAddressState extends State<CustomFieldSaveAddress> {
@@ -65,9 +65,7 @@ class _CustomFieldSaveAddressState extends State<CustomFieldSaveAddress> {
             style: TextStyle(color: isDark ? Colors.white : Colors.black),
             autovalidateMode: AutovalidateMode.onUserInteraction,
             readOnly: !widget.isEditable,
-            textInputAction: widget.nextFocusNode != null
-                ? TextInputAction.next
-                : TextInputAction.done,
+            textInputAction: widget.nextFocusNode != null ? TextInputAction.next : TextInputAction.done,
             onFieldSubmitted: (_) {
               if (widget.nextFocusNode != null) {
                 FocusScope.of(context).requestFocus(widget.nextFocusNode!);

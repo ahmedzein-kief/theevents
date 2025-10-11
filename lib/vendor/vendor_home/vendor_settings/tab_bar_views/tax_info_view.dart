@@ -3,14 +3,12 @@ import 'package:event_app/core/helper/extensions/app_localizations_extension.dar
 import 'package:event_app/core/helper/validators/validator.dart';
 import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/core/styles/app_sizes.dart';
+import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/core/widgets/custom_auth_views/app_custom_button.dart';
 import 'package:event_app/data/vendor/data/response/apis_status.dart';
 import 'package:event_app/vendor/components/enums/enums.dart';
-import 'package:event_app/vendor/components/services/alert_services.dart';
-import 'package:event_app/vendor/components/services/media_services.dart';
 import 'package:event_app/vendor/components/settings_components/simple_card.dart';
 import 'package:event_app/vendor/components/text_fields/custom_text_form_field.dart';
-import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/vendor/view_models/vendor_settings/vendor_get_settings_view_model.dart';
 import 'package:event_app/vendor/view_models/vendor_settings/vendor_settings_view_model.dart';
 import 'package:flutter/material.dart';
@@ -39,12 +37,9 @@ class _TaxInfoViewState extends State<TaxInfoView> {
   final FocusNode taxIdFocusNode = FocusNode();
   final FocusNode addressFocusNode = FocusNode();
 
-  late MediaServices _mediaServices;
-
   @override
   void initState() {
     /// Initialize MediaServices
-    _mediaServices = MediaServices();
     WidgetsBinding.instance.addPostFrameCallback((callback) async {
       await _onRefresh();
     });
@@ -61,15 +56,6 @@ class _TaxInfoViewState extends State<TaxInfoView> {
     taxIdFocusNode.dispose();
     addressFocusNode.dispose();
     super.dispose();
-  }
-
-  /// To show modal progress hud
-  bool _isProcessing = false;
-
-  void setProcessing(bool value) {
-    setState(() {
-      _isProcessing = value;
-    });
   }
 
   Future _onRefresh() async {
@@ -175,7 +161,6 @@ class _TaxInfoViewState extends State<TaxInfoView> {
                   onTap: () async {
                     try {
                       if (_formKey.currentState?.validate() ?? false) {
-                        setProcessing(true);
                         _createForm();
 
                         /// send data to server
@@ -186,16 +171,11 @@ class _TaxInfoViewState extends State<TaxInfoView> {
                           context: context,
                         );
                         if (result) {
-                          setProcessing(false);
                           await _onRefresh();
                         }
                       }
                     } catch (e) {
-                      setProcessing(false);
-                      AlertServices.showErrorSnackBar(
-                        message: VendorAppStrings.error.tr + 'Oops! something went wrong..',
-                        context: context,
-                      );
+                      AppUtils.showToast('${VendorAppStrings.error.tr}Oops! something went wrong..');
                     }
                   },
                 ),

@@ -1,11 +1,11 @@
 import 'package:event_app/core/network/api_endpoints/vendor_api_end_point.dart';
 import 'package:event_app/provider/vendor/vendor_repository.dart';
 import 'package:event_app/vendor/components/enums/enums.dart';
-import 'package:event_app/vendor/components/services/alert_services.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../../../core/services/shared_preferences_helper.dart';
-import '../../../data/vendor/data/response/ApiResponse.dart';
+import '../../../core/utils/app_utils.dart';
+import '../../../data/vendor/data/response/api_response.dart';
 import '../../../models/vendor_models/vendor_settings_models/vendor_settings_model.dart';
 
 class VendorSettingsViewModel with ChangeNotifier {
@@ -35,10 +35,11 @@ class VendorSettingsViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> vendorSettings(
-      {required VendorSettingType vendorSettingsType,
-      required form,
-      required BuildContext context,}) async {
+  Future<bool> vendorSettings({
+    required VendorSettingType vendorSettingsType,
+    required form,
+    required BuildContext context,
+  }) async {
     try {
       setLoading(true);
       setApiResponse = ApiResponse.loading();
@@ -50,24 +51,22 @@ class VendorSettingsViewModel with ChangeNotifier {
       final body = form;
 
       final url = _getUpdateSettingsUrl(vendorSettingsType: vendorSettingsType);
-      final VendorSettingsModel response =
-          await _myRepo.vendorSettings(url: url, headers: headers, body: body);
+      final VendorSettingsModel response = await _myRepo.vendorSettings(url: url, headers: headers, body: body);
       setApiResponse = ApiResponse.completed(response);
-      AlertServices.showSuccessSnackBar(
-          message: response.message.toString(), context: context,);
+      AppUtils.showToast(response.message.toString(), isSuccess: true);
       setLoading(false);
       return true;
     } catch (error) {
       setApiResponse = ApiResponse.error(error.toString());
-      AlertServices.showErrorSnackBar(
-          message: error.toString(), context: context,);
+      AppUtils.showToast(error.toString());
       setLoading(false);
       return false;
     }
   }
 
-  String _getUpdateSettingsUrl(
-      {required VendorSettingType vendorSettingsType,}) {
+  String _getUpdateSettingsUrl({
+    required VendorSettingType vendorSettingsType,
+  }) {
     switch (vendorSettingsType) {
       case VendorSettingType.store:
         return VendorApiEndpoints.vendorStoreSettings;

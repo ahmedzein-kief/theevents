@@ -28,10 +28,7 @@ class GiftCardInnerProvider with ChangeNotifier {
     const url = ApiEndpoints.giftCardBanner;
 
     try {
-      final response = await _apiResponseHandler.getRequest(
-        url,
-        context: context,
-      );
+      final response = await _apiResponseHandler.getRequest(url);
 
       if (response.statusCode == 200) {
         _apiResponse = GiftCardPage.fromJson(response.data);

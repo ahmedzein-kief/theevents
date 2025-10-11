@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/constants/app_strings.dart'; // Add this import
-import '../../../../core/services/shared_preferences_helper.dart';
 import '../../../../core/styles/app_colors.dart';
 import '../../../../core/styles/custom_text_styles.dart';
+import '../../../../core/utils/app_utils.dart';
 import '../../../../core/widgets/custom_items_views/product_card.dart';
 import '../../../../provider/cart_item_provider/cart_item_provider.dart';
 import '../../../../provider/information_icons_provider/fifty_discount_provider.dart';
@@ -28,8 +28,7 @@ class _FeaturedBrandsProductsScreenState extends State<DiscountPackages> {
 
   void _onScroll() {
     if (_isFetchingMore) return;
-    if (_scrollController.offset >=
-            _scrollController.position.maxScrollExtent &&
+    if (_scrollController.offset >= _scrollController.position.maxScrollExtent &&
         !_scrollController.position.outOfRange) {
       _currentPage++;
       _isFetchingMore = true;
@@ -42,8 +41,7 @@ class _FeaturedBrandsProductsScreenState extends State<DiscountPackages> {
       setState(() {
         _isFetchingMore = true;
       });
-      await Provider.of<FiftyPercentDiscountProvider>(context, listen: false)
-          .fetchPackagesNew(
+      await Provider.of<FiftyPercentDiscountProvider>(context, listen: false).fetchPackagesNew(
         context,
         perPage: 12,
         page: _currentPage,
@@ -63,8 +61,7 @@ class _FeaturedBrandsProductsScreenState extends State<DiscountPackages> {
 
   @override
   void dispose() {
-    _scrollController
-        .removeListener(_onScroll); // Remove the listener in dispose
+    _scrollController.removeListener(_onScroll); // Remove the listener in dispose
     _scrollController.dispose();
     super.dispose();
   }
@@ -82,11 +79,20 @@ class _FeaturedBrandsProductsScreenState extends State<DiscountPackages> {
     setState(() {
       _selectedSortBy = newValue;
       _currentPage = 1; // Reset to the first page
-      Provider.of<FiftyPercentDiscountProvider>(context, listen: false)
-          .products
-          .clear(); // Clear existing products
+      Provider.of<FiftyPercentDiscountProvider>(context, listen: false).products.clear(); // Clear existing products
     });
     fetchNewProductsItems();
+  }
+
+  /// Handle add to cart with proper error handling
+  Future<void> _handleAddToCart(int productId) async {
+    final result = await context.read<CartProvider>().addToCart(productId, 1);
+
+    if (result.success) {
+      AppUtils.showToast(result.message, isSuccess: true);
+    } else {
+      AppUtils.showToast(result.message);
+    }
   }
 
   @override
@@ -99,21 +105,26 @@ class _FeaturedBrandsProductsScreenState extends State<DiscountPackages> {
         builder: (ctx, provider, child) {
           if (provider.isLoading) {
             return const Center(
-                child: CircularProgressIndicator(
-                    color: Colors.black, strokeWidth: 0.5,),);
+              child: CircularProgressIndicator(
+                color: Colors.black,
+                strokeWidth: 0.5,
+              ),
+            );
           } else if (provider.packages.isEmpty) {
             return Padding(
               padding: EdgeInsets.only(
-                  top: screenHeight * 0.04,
-                  left: screenWidth * 0.02,
-                  right: screenWidth * 0.02,),
+                top: screenHeight * 0.04,
+                left: screenWidth * 0.02,
+                right: screenWidth * 0.02,
+              ),
               child: Container(
                 width: double.infinity,
                 height: 50,
                 decoration: const BoxDecoration(color: AppColors.lightCoral),
                 child: Align(
-                    alignment: Alignment.center,
-                    child: Text(AppStrings.noProductsFound.tr),),
+                  alignment: Alignment.center,
+                  child: Text(AppStrings.noProductsFound.tr),
+                ),
               ),
             );
           } else {
@@ -135,41 +146,68 @@ class _FeaturedBrandsProductsScreenState extends State<DiscountPackages> {
                         },
                         items: [
                           DropdownMenuItem(
-                              value: 'default_sorting',
-                              child: Text(AppStrings.sortByDefault.tr,
-                                  style: sortingStyle(context),),),
+                            value: 'default_sorting',
+                            child: Text(
+                              AppStrings.sortByDefault.tr,
+                              style: sortingStyle(context),
+                            ),
+                          ),
                           DropdownMenuItem(
-                              value: 'date_asc',
-                              child: Text(AppStrings.sortByOldest.tr,
-                                  style: sortingStyle(context),),),
+                            value: 'date_asc',
+                            child: Text(
+                              AppStrings.sortByOldest.tr,
+                              style: sortingStyle(context),
+                            ),
+                          ),
                           DropdownMenuItem(
-                              value: 'date_desc',
-                              child: Text(AppStrings.sortByNewest.tr,
-                                  style: sortingStyle(context),),),
+                            value: 'date_desc',
+                            child: Text(
+                              AppStrings.sortByNewest.tr,
+                              style: sortingStyle(context),
+                            ),
+                          ),
                           DropdownMenuItem(
-                              value: 'name_asc',
-                              child: Text(AppStrings.sortByNameAz.tr,
-                                  style: sortingStyle(context),),),
+                            value: 'name_asc',
+                            child: Text(
+                              AppStrings.sortByNameAz.tr,
+                              style: sortingStyle(context),
+                            ),
+                          ),
                           DropdownMenuItem(
-                              value: 'name_desc',
-                              child: Text(AppStrings.sortByNameZa.tr,
-                                  style: sortingStyle(context),),),
+                            value: 'name_desc',
+                            child: Text(
+                              AppStrings.sortByNameZa.tr,
+                              style: sortingStyle(context),
+                            ),
+                          ),
                           DropdownMenuItem(
-                              value: 'price_asc',
-                              child: Text(AppStrings.sortByPriceLowToHigh.tr,
-                                  style: sortingStyle(context),),),
+                            value: 'price_asc',
+                            child: Text(
+                              AppStrings.sortByPriceLowToHigh.tr,
+                              style: sortingStyle(context),
+                            ),
+                          ),
                           DropdownMenuItem(
-                              value: 'price_desc',
-                              child: Text(AppStrings.sortByPriceHighToLow.tr,
-                                  style: sortingStyle(context),),),
+                            value: 'price_desc',
+                            child: Text(
+                              AppStrings.sortByPriceHighToLow.tr,
+                              style: sortingStyle(context),
+                            ),
+                          ),
                           DropdownMenuItem(
-                              value: 'rating_asc',
-                              child: Text(AppStrings.sortByRatingLowToHigh.tr,
-                                  style: sortingStyle(context),),),
+                            value: 'rating_asc',
+                            child: Text(
+                              AppStrings.sortByRatingLowToHigh.tr,
+                              style: sortingStyle(context),
+                            ),
+                          ),
                           DropdownMenuItem(
-                              value: 'rating_desc',
-                              child: Text(AppStrings.sortByRatingHighToLow.tr,
-                                  style: sortingStyle(context),),),
+                            value: 'rating_desc',
+                            child: Text(
+                              AppStrings.sortByRatingHighToLow.tr,
+                              style: sortingStyle(context),
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -183,25 +221,22 @@ class _FeaturedBrandsProductsScreenState extends State<DiscountPackages> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           GridView.builder(
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 2,
-                                    childAspectRatio: 0.6,
-                                    mainAxisSpacing: 10,
-                                    crossAxisSpacing: 10,),
-                            itemCount: provider.products.length +
-                                (_isFetchingMore ? 1 : 0),
+                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              childAspectRatio: 0.6,
+                              mainAxisSpacing: 10,
+                              crossAxisSpacing: 10,
+                            ),
+                            itemCount: provider.products.length + (_isFetchingMore ? 1 : 0),
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
                             itemBuilder: (context, index) {
-                              if (_isFetchingMore &&
-                                  index == provider.products.length) {
+                              if (_isFetchingMore && index == provider.products.length) {
                                 return const Align(
                                   alignment: Alignment.center,
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
                                     children: [
                                       Center(
                                         child: CircularProgressIndicator(
@@ -215,23 +250,16 @@ class _FeaturedBrandsProductsScreenState extends State<DiscountPackages> {
                               }
 
                               final product = provider.products[index];
-                              final cartProvider =
-                                  Provider.of<CartProvider>(context);
 
                               /// Calculate the percentage off
                               /// Check if both frontSalePrice and price are non-null and non-zero to avoid division by zero
-                              final double? frontSalePrice =
-                                  product.prices?.frontSalePrice?.toDouble();
-                              final double? price =
-                                  product.prices?.price?.toDouble();
+                              final double? frontSalePrice = product.prices?.frontSalePrice?.toDouble();
+                              final double? price = product.prices?.price?.toDouble();
                               String offPercentage = '';
 
-                              if (frontSalePrice != null &&
-                                  price != null &&
-                                  price > 0) {
+                              if (frontSalePrice != null && price != null && price > 0) {
                                 // Calculate the discount percentage
-                                final double discount =
-                                    100 - ((frontSalePrice / price) * 100);
+                                final double discount = 100 - ((frontSalePrice / price) * 100);
                                 // offPercentage = discount.toStringAsFixed(0);
                                 if (discount > 0) {
                                   offPercentage = discount.toStringAsFixed(0);
@@ -251,42 +279,29 @@ class _FeaturedBrandsProductsScreenState extends State<DiscountPackages> {
                                 },
                                 child: ProductCard(
                                   isOutOfStock: product.outOfStock ?? false,
-                                  off: offPercentage.isNotEmpty
-                                      ? '$offPercentage${AppStrings.percentOff.tr}'
-                                      : '',
+                                  off: offPercentage.isNotEmpty ? '$offPercentage${AppStrings.percentOff.tr}' : '',
                                   // Display the discount percentage
-                                  priceWithTaxes:
-                                      (product.prices?.frontSalePrice ?? 0) <
-                                              (product.prices?.price ?? 0)
-                                          ? product.prices!.priceWithTaxes
-                                          : null,
+                                  priceWithTaxes: (product.prices?.frontSalePrice ?? 0) < (product.prices?.price ?? 0)
+                                      ? product.prices!.priceWithTaxes
+                                      : null,
 
                                   optionalIcon: Icons.shopping_cart,
-                                  onOptionalIconTap: () async {
-                                    final token =
-                                        await SecurePreferencesUtil.getToken();
-                                    if (token != null) {
-                                      await cartProvider.addToCart(
-                                          product.id, context, 1,);
-                                    }
-                                  },
+
+                                  onOptionalIconTap: () => _handleAddToCart(product.id),
                                   itemsId: 0,
                                   imageUrl: product.image,
 
-                                  frontSalePriceWithTaxes: product
-                                          .prices?.frontSalePriceWithTaxes
-                                          .toString() ??
-                                      '',
+                                  frontSalePriceWithTaxes: product.prices?.frontSalePriceWithTaxes.toString() ?? '',
                                   name: product.name,
                                   storeName: product.store!.name.toString(),
                                   price: product.prices!.price.toString(),
-                                  reviewsCount:
-                                      product.review!.reviewsCount!.toInt(),
-                                  isHeartObscure:
-                                      _heartStates[product.id ?? 0] ?? false,
+                                  reviewsCount: product.review!.reviewsCount!.toInt(),
+                                  isHeartObscure: _heartStates[product.id ?? 0] ?? false,
                                   onHeartTap: () async {
                                     freshPicksProvider.handleHeartTap(
-                                        context, product.id ?? 0,);
+                                      context,
+                                      product.id ?? 0,
+                                    );
                                   },
                                 ),
                               );

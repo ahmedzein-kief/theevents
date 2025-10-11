@@ -25,7 +25,6 @@ import 'package:flutter/cupertino.dart';
 import '../../core/helper/di/locator.dart';
 import '../../core/helper/functions/functions.dart';
 import '../../core/services/shared_preferences_helper.dart';
-import '../../core/utils/custom_toast.dart';
 import '../../models/dashboard/vendor_permissions.dart';
 import '../../models/vendor_models/post_models/payment_post_data.dart';
 import '../../models/vendor_models/post_models/signup_post_data.dart';
@@ -61,13 +60,13 @@ class VendorSignUpProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         final jsonData = response.data;
         final dataModel = SignUpResponse.fromJson(jsonData);
-        CustomSnackbar.showSuccess(context, dataModel.message);
+        AppUtils.showToast(dataModel.message, isSuccess: true);
         _isLoading = false;
         notifyListeners();
         return dataModel;
       } else {
         final message = _errorMessage(response);
-        CustomSnackbar.showError(context, message);
+        AppUtils.showToast(message);
         _isLoading = false;
         notifyListeners();
         return null;
@@ -212,20 +211,20 @@ class VendorSignUpProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         final dataModel = BusinessSignatoryResponse.fromJson(response.data);
-        CustomSnackbar.showSuccess(context, dataModel.message);
+        AppUtils.showToast(dataModel.message, isSuccess: true);
         _isLoading = false;
         notifyListeners();
         return dataModel;
       } else {
-        CustomSnackbar.showError(context, _errorMessage(response));
+        AppUtils.showToast(_errorMessage(response));
         _isLoading = false;
         notifyListeners();
         return null;
       }
     } catch (e) {
       if (e is DioException) {
-        final errorDetails = e.response?.data;
-        CustomSnackbar.showError(context, _errorMessage(e.response));
+        // final errorDetails = e.response?.data;
+        AppUtils.showToast(_errorMessage(e.response));
       } else {}
       _isLoading = false;
       notifyListeners();
@@ -329,19 +328,19 @@ class VendorSignUpProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         final dataModel = CompanyInfoResponse.fromJson(response.data);
-        CustomSnackbar.showSuccess(context, dataModel.message);
+        AppUtils.showToast(dataModel.message, isSuccess: true);
         _isLoading = false;
         notifyListeners();
         return dataModel;
       } else {
-        CustomSnackbar.showError(context, _errorMessage(response));
+        AppUtils.showToast(_errorMessage(response));
         _isLoading = false;
         notifyListeners();
         return null;
       }
     } catch (e) {
       if (e is DioException) {
-        CustomSnackbar.showError(context, _errorMessage(e.response));
+        AppUtils.showToast(_errorMessage(e.response));
       } else {}
       _isLoading = false;
       notifyListeners();
@@ -397,19 +396,19 @@ class VendorSignUpProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         final dataModel = BankDetailsResponse.fromJson(response.data);
-        CustomSnackbar.showSuccess(context, dataModel.message);
+        AppUtils.showToast(dataModel.message, isSuccess: true);
         _isLoading = false;
         notifyListeners();
         return dataModel;
       } else {
-        CustomSnackbar.showError(context, _errorMessage(response));
+        AppUtils.showToast(_errorMessage(response));
         _isLoading = false;
         notifyListeners();
         return null;
       }
     } catch (e) {
       if (e is DioException) {
-        CustomSnackbar.showError(context, _errorMessage(e.response));
+        AppUtils.showToast(_errorMessage(e.response));
       } else {}
       _isLoading = false;
       notifyListeners();
@@ -467,20 +466,20 @@ class VendorSignUpProvider with ChangeNotifier {
       );
       if (response.statusCode == 200) {
         final dataModel = ContractAgreementResponse.fromJson(response.data);
-        CustomSnackbar.showSuccess(context, dataModel.message);
+        AppUtils.showToast(dataModel.message, isSuccess: true);
         _isLoading = false;
         notifyListeners();
         return dataModel;
       } else {
-        final jsonData = json.decode(response.data);
-        CustomSnackbar.showError(context, _errorMessage(response));
+        // final jsonData = json.decode(response.data);
+        AppUtils.showToast(_errorMessage(response));
         _isLoading = false;
         notifyListeners();
         return null;
       }
     } catch (e) {
       if (e is DioException) {
-        CustomSnackbar.showError(context, _errorMessage(e.response));
+        AppUtils.showToast(_errorMessage(e.response));
       } else {}
       _isLoading = false;
       notifyListeners();
@@ -522,7 +521,7 @@ class VendorSignUpProvider with ChangeNotifier {
         notifyListeners();
         return dataModel;
       } else {
-        final jsonData = json.decode(response.data);
+        // final jsonData = json.decode(response.data);
         AppUtils.showToast(_errorMessage(response));
         _isLoading = false;
         notifyListeners();
@@ -574,7 +573,7 @@ class VendorSignUpProvider with ChangeNotifier {
     }
   }
 
-  Future<MetaDataResponse?> getAllMetaData(BuildContext context) async {
+  Future<MetaDataResponse?> getAllMetaData() async {
     _isLoading = true;
     notifyListeners();
 
@@ -593,8 +592,7 @@ class VendorSignUpProvider with ChangeNotifier {
         notifyListeners();
         return dataModel;
       } else {
-        final jsonData = json.decode(response.data);
-        CustomSnackbar.showError(context, _errorMessage(response));
+        AppUtils.showToast(_errorMessage(response));
         _isLoading = false;
         notifyListeners();
         return null;
@@ -602,7 +600,7 @@ class VendorSignUpProvider with ChangeNotifier {
     } catch (e) {
       debugPrint('EXCEPTION :: ${e.toString()}');
       if (e is DioException) {
-        CustomSnackbar.showError(context, _errorMessage(e.response));
+        AppUtils.showToast(_errorMessage(e.response));
       } else {}
       _isLoading = false;
       notifyListeners();
@@ -637,15 +635,15 @@ class VendorSignUpProvider with ChangeNotifier {
         notifyListeners();
         return response.data;
       } else {
-        final jsonData = json.decode(response.data);
-        CustomSnackbar.showError(context, _errorMessage(response));
+        // final jsonData = json.decode(response.data);
+        AppUtils.showToast(_errorMessage(response));
         _isLoading = false;
         notifyListeners();
         return null;
       }
     } catch (e) {
       if (e is DioException) {
-        CustomSnackbar.showError(context, _errorMessage(e.response));
+        AppUtils.showToast(_errorMessage(e.response));
       } else {}
       _isLoading = false;
       notifyListeners();
@@ -673,20 +671,20 @@ class VendorSignUpProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         final dataModel = EmailResendResponse.fromJson(response.data);
-        CustomSnackbar.showSuccess(context, dataModel.message);
+        AppUtils.showToast(dataModel.message, isSuccess: true);
         _isLoading = false;
         notifyListeners();
         return dataModel;
       } else {
-        final jsonData = json.decode(response.data);
-        CustomSnackbar.showError(context, _errorMessage(response));
+        // final jsonData = json.decode(response.data);
+        AppUtils.showToast(_errorMessage(response));
         _isLoading = false;
         notifyListeners();
         return null;
       }
     } catch (e) {
       if (e is DioException) {
-        CustomSnackbar.showError(context, _errorMessage(e.response));
+        AppUtils.showToast(_errorMessage(e.response));
       } else {}
       _isLoading = false;
       notifyListeners();
@@ -703,7 +701,7 @@ class VendorSignUpProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    const url = VendorApiEndpoints.settings_subscription;
+    const url = VendorApiEndpoints.settingsSubscription;
 
     try {
       final response = await _apiResponseHandler.getDioRequest(url);
@@ -714,15 +712,15 @@ class VendorSignUpProvider with ChangeNotifier {
         notifyListeners();
         return dataModel;
       } else {
-        final jsonData = json.decode(response.data);
-        CustomSnackbar.showError(context, _errorMessage(response));
+        // final jsonData = json.decode(response.data);
+        AppUtils.showToast(_errorMessage(response));
         _isLoading = false;
         notifyListeners();
         return null;
       }
     } catch (e) {
       if (e is DioException) {
-        CustomSnackbar.showError(context, _errorMessage(e.response));
+        AppUtils.showToast(_errorMessage(e.response));
       } else {}
       _isLoading = false;
       notifyListeners();
@@ -751,14 +749,14 @@ class VendorSignUpProvider with ChangeNotifier {
         notifyListeners();
         return dataModel;
       } else {
-        CustomSnackbar.showError(context, _errorMessage(response));
+        AppUtils.showToast(_errorMessage(response));
         _isLoading = false;
         notifyListeners();
         return null;
       }
     } catch (e) {
       if (e is DioException) {
-        CustomSnackbar.showError(context, _errorMessage(e.response));
+        AppUtils.showToast(_errorMessage(e.response));
       } else {}
       _isLoading = false;
       notifyListeners();
@@ -770,13 +768,16 @@ class VendorSignUpProvider with ChangeNotifier {
   }
 
   Future<UserModel?> fetchUserData(BuildContext context) async {
-    log('fetchUserData', name: 'VENDOR');
     notifyListeners();
     const url = ApiEndpoints.getCustomer;
     final token = await SecurePreferencesUtil.getToken();
 
     if (token == null || token.isEmpty) {
-      navigateToLogin(context, 'Please log in to fetch user data');
+      if (context.mounted) {
+        // Check if context is still valid
+        navigateToLogin(context, 'Please log in to fetch user data');
+      }
+      notifyListeners();
       return null;
     }
 
@@ -785,15 +786,10 @@ class VendorSignUpProvider with ChangeNotifier {
     };
 
     try {
-      final response = await _apiResponseHandler.getRequest(
-        url,
-        headers: headers,
-        context: context,
-      );
+      final response = await _apiResponseHandler.getRequest(url, headers: headers);
 
       if (response.statusCode == 200) {
         final responseData = response.data;
-        print('user response => $responseData');
         notifyListeners();
         return UserModel.fromJson(responseData['data']);
       } else {
@@ -806,62 +802,50 @@ class VendorSignUpProvider with ChangeNotifier {
     }
   }
 
-  String _errorMessage(response) {
-    var errors;
-    var error;
-    var message;
+  String _errorMessage(Response? response) {
+    Map<String, dynamic>? errors;
+    String? error;
+    String? message;
 
-    if (response is Response) {
-      if (response.data != null) {
-        final errorData = response.data;
+    if (response != null && response.data != null) {
+      final dynamic errorData = response.data;
+      if (errorData is Map<String, dynamic>) {
         errors = errorData['errors'] ?? errorData['data'];
-        error = errorData['error'];
-        message = errorData['message'];
-      }
-    } else {
-      final jsonData = response.data;
-      if (response != null) {
-        errors = jsonData['errors'];
-        error = jsonData['error'];
-        message = jsonData['message'];
+        error = errorData['error'] as String?;
+        message = errorData['message'] as String?;
       }
     }
 
     try {
-      // Initialize a variable to store error messages
-      String allErrors = '';
+      final buffer = StringBuffer();
 
-      // Check if `errors` is present and process it
-      if (errors != null && errors is Map) {
+      // Collect field-specific errors
+      if (errors != null) {
         errors.forEach((key, value) {
           if (value is List) {
             for (final msg in value) {
-              allErrors += '$key: $msg\n'; // Append each error message
+              buffer.writeln('$key: $msg');
             }
+          } else if (value is String) {
+            buffer.writeln('$key: $value');
           }
         });
       }
 
-      // Check if `error` is present and append it
-      if (error != null && error is String) {
-        allErrors += 'Error: $error\n';
+      // Add general error
+      if (error != null && error.isNotEmpty) {
+        buffer.writeln('Error: $error');
       }
 
-      // Check if `message` is present and append it
-      // if (message != null && message is String) {
-      //   allErrors += 'Message: $message\n';
-      // }
-
-      // Return the collected error messages
-      if (allErrors.isNotEmpty) {
-        return allErrors.trim(); // Remove trailing newline
+      // Optionally add message
+      if (message != null && message.isNotEmpty) {
+        buffer.writeln('Message: $message');
       }
 
-      return 'An unknown error occurred.'; // Fallback message if no errors are found
-
-      return 'Unknown error occurred';
-    } catch (e) {
-      return 'Unknown error occurred with status code: ${response.statusCode}';
+      return buffer.isNotEmpty ? buffer.toString().trim() : 'An unknown error occurred.';
+    } catch (_) {
+      return 'Unknown error occurred with status code: ${response?.statusCode}';
     }
   }
 }
+//Ahmed@123

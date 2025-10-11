@@ -1,9 +1,9 @@
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
-import 'package:event_app/core/utils/custom_toast.dart';
 import 'package:event_app/provider/api_response_handler.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../../core/network/api_status/api_status.dart';
+import '../../core/utils/app_utils.dart';
 
 class ChangePasswordProvider with ChangeNotifier {
   final ApiResponseHandler _apiResponseHandler = ApiResponseHandler();
@@ -20,7 +20,6 @@ class ChangePasswordProvider with ChangeNotifier {
   Future<void> changePassword(
     String token,
     ChangePasswordRequest request,
-    BuildContext context,
   ) async {
     const urlChangePassword = ApiEndpoints.changePassword;
     const url = urlChangePassword;
@@ -41,10 +40,10 @@ class ChangePasswordProvider with ChangeNotifier {
       final responseData = response.data;
       if (response.statusCode == 200) {
         setStatus(ApiStatus.completed); // Set status to compl
-        CustomSnackbar.showSuccess(context, 'Password updated successfully.');
+        AppUtils.showToast('Password updated successfully.', isSuccess: true);
       } else {
         setStatus(ApiStatus.error); // Set status to error if the API call
-        CustomSnackbar.showError(context, responseData['message']);
+        AppUtils.showToast(responseData['message']);
       }
     } catch (error) {
       setStatus(ApiStatus.error); // Set statu
@@ -56,16 +55,16 @@ class ChangePasswordRequest {
   ChangePasswordRequest({
     required this.oldPassword,
     required this.password,
-    required this.password_confirmation,
+    required this.passwordConfirmation,
   });
 
   String oldPassword;
   String password;
-  String password_confirmation;
+  String passwordConfirmation;
 
   Map<String, String> toJson() => {
         'old_password': oldPassword,
         'password': password,
-        'password_confirmation': password_confirmation,
+        'password_confirmation': passwordConfirmation,
       };
 }

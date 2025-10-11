@@ -4,52 +4,43 @@ import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/vendor/components/input_borders_hub/input_border_hub.dart';
 import 'package:flutter/material.dart';
 
-class CustomDropdown extends StatefulWidget {
+class CustomDropdown<T> extends StatefulWidget {
   final Widget? prefix;
   final Widget? suffix;
-
-  // final List<String> genderList;
-  final List<DropdownMenuItem> menuItemsList;
-
-  // final List<dynamic> menuList;
-  final String? Function(dynamic)? onChanged;
+  final List<DropdownMenuItem<T>> menuItemsList;
+  final ValueChanged<T?>? onChanged;
   final FocusNode? currentFocusNode;
   final FocusNode? nextFocusNode;
+  final bool filled;
+  final Color? textColor;
+  final String? errorText;
+  final bool readOnly;
+  final T? value;
+  final double? borderRadius;
+  final String? hintText;
+  final bool isOutlinedBorder;
+  final double? borderWidth;
+  final Color? borderColor;
+  final String? Function(T?)? validator;
+  final TextStyle? textStyle;
+  final EdgeInsetsGeometry? contentPadding;
 
-  // final TextDirection textDirection;
-  bool? filled;
-  Color? textColor;
-  String? errorText;
-  bool? readOnly;
-  dynamic value;
-
-  // InputBorder? border;
-  double? borderRadius;
-  String? hintText;
-  bool isOutlinedBorder;
-  double? borderWidth;
-  Color? borderColor;
-  String? Function(dynamic)? validator;
-  TextStyle? textStyle;
-  EdgeInsetsGeometry? contentPadding;
-
-  CustomDropdown({
+  const CustomDropdown({
     super.key,
     this.prefix,
     this.suffix,
-    // required this.textDirection,
-    required this.menuItemsList, // required this.menuList,
+    required this.menuItemsList,
     required this.onChanged,
     this.currentFocusNode,
     this.value,
     this.nextFocusNode,
-    this.filled,
+    this.filled = true,
     this.textColor,
     this.hintText,
     this.errorText,
     this.isOutlinedBorder = true,
     this.borderRadius,
-    this.readOnly,
+    this.readOnly = false,
     this.borderWidth,
     this.borderColor,
     this.validator,
@@ -58,11 +49,10 @@ class CustomDropdown extends StatefulWidget {
   });
 
   @override
-  State<CustomDropdown> createState() => _CustomDropdownState();
+  State<CustomDropdown<T>> createState() => _CustomDropdownState<T>();
 }
 
-class _CustomDropdownState extends State<CustomDropdown> with MediaQueryMixin<CustomDropdown> {
-  String? selectedValue;
+class _CustomDropdownState<T> extends State<CustomDropdown<T>> with MediaQueryMixin<CustomDropdown<T>> {
   final TextEditingController textEditingController = TextEditingController();
 
   @override
@@ -73,7 +63,6 @@ class _CustomDropdownState extends State<CustomDropdown> with MediaQueryMixin<Cu
 
   @override
   Widget build(BuildContext context) {
-    // creating border for text field
     final border = widget.isOutlinedBorder
         ? InputBordersHub.getOutlinedInputBorder(
             borderColor: widget.borderColor,
@@ -86,44 +75,33 @@ class _CustomDropdownState extends State<CustomDropdown> with MediaQueryMixin<Cu
             borderRadius: widget.borderRadius,
           );
 
-    // final localization = AppLocalizations.of(context)!;
     return IgnorePointer(
-      ignoring: widget.readOnly ?? false,
-      child:
-          // DropdownButtonFormField(
-          DropdownButtonFormField2(
-        // alignment: getTextDirection(langProvider) == TextDirection.ltr ? Alignment.centerLeft : Alignment.centerRight,
+      ignoring: widget.readOnly,
+      child: DropdownButtonFormField2<T>(
         alignment: Alignment.centerLeft,
         isExpanded: true,
         enableFeedback: true,
         isDense: true,
-        // dropdownColor: AppColors.scoButtonColor,
-        // dropdownColor: Colors.white,
         items: widget.menuItemsList,
         value: widget.value,
         onChanged: (value) {
-          setState(() {
-            widget.onChanged?.call(value);
+          widget.onChanged?.call(value);
+          if (widget.nextFocusNode != null) {
             FocusScope.of(context).requestFocus(widget.nextFocusNode);
-          });
+          }
         },
         focusNode: widget.currentFocusNode,
         decoration: InputDecoration(
-          fillColor: widget.readOnly ?? false ? Colors.grey.shade200 : _getAdaptiveFillColor(context),
+          fillColor: widget.readOnly ? Colors.grey.shade200 : _getAdaptiveFillColor(context),
           errorText: widget.errorText,
           errorMaxLines: 5,
-          // isCollapsed: true,
           isDense: true,
-          // contentPadding: widget.contentPadding ?? EdgeInsets.symmetric(vertical: 12.0, horizontal: screenWidth * 0.03),
           contentPadding: widget.contentPadding ?? const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-
           prefixIcon: widget.prefix,
           prefixIconConstraints: const BoxConstraints(
             minWidth: 30,
             minHeight: 0,
           ),
-          // suffix: widget.suffix ?? Icon(Icons.keyboard_arrow_down,size: 25),
-          // alignLabelWithHint: false,
           hintText: widget.hintText,
           hintFadeDuration: const Duration(milliseconds: 500),
           hintStyle: const TextStyle(
@@ -133,19 +111,15 @@ class _CustomDropdownState extends State<CustomDropdown> with MediaQueryMixin<Cu
           ),
           border: border,
           focusedBorder: border,
-          // errorBorder: border,
           enabledBorder: border,
           focusedErrorBorder: border,
-          filled: widget.filled ?? true,
+          filled: widget.filled,
         ),
-
-        // cursorColor: AppColors.darkGrey,
         style: widget.textStyle ??
             TextStyle(
               color: widget.textColor ?? AppColors.softBlueGrey,
               overflow: TextOverflow.ellipsis,
             ),
-        // padding: EdgeInsets.zero,
         hint: Text(
           widget.hintText ?? 'Select',
           style: widget.textStyle ??
@@ -160,23 +134,15 @@ class _CustomDropdownState extends State<CustomDropdown> with MediaQueryMixin<Cu
         iconStyleData: const IconStyleData(
           icon: Icon(
             Icons.keyboard_arrow_down_sharp,
-            color: AppColors.darkGrey,
           ),
           openMenuIcon: Icon(
             Icons.keyboard_arrow_up_sharp,
             color: AppColors.darkGrey,
-            // weight: 10000,
           ),
-          // iconSize: 20
         ),
-        // menuItemStyleData: const MenuItemStyleData(
-        //   padding: EdgeInsets.symmetric(horizontal: 10),
-        // ),
         dropdownStyleData: DropdownStyleData(
           useSafeArea: true,
-          width: .7 * screenWidth,
-
-          /// This is responsible for spacing between the prefix icon and Dropdown text.
+          width: 0.7 * screenWidth,
           maxHeight: screenHeight / 1.5,
           padding: const EdgeInsets.only(left: 10),
           decoration: BoxDecoration(
@@ -184,40 +150,12 @@ class _CustomDropdownState extends State<CustomDropdown> with MediaQueryMixin<Cu
             borderRadius: BorderRadius.circular(15),
           ),
         ),
-        // keyboardType: widget.textInputType ?? TextInputType.text,
-        // dropdownSearchData: DropdownSearchData(
-        //   searchController: textEditingController,
-        //   searchInnerWidgetHeight: 50,
-        //   searchInnerWidget: Container(
-        //     // height: 50,
-        //     padding: const EdgeInsets.only(
-        //       top: 10,
-        //       bottom: 4,
-        //       right: 5,
-        //       left: 5,
-        //     ),
-        //     child: CustomTextFormField(
-        //       controller: textEditingController,
-        //       focusNode: FocusNode(),
-        //       hintText: "search",
-        //       onChanged: (String? value) {},
-        //       labelText: '',
-        //       required: false,
-        //       showTitle: false,
-        //     ),
-        //   ),
-        //   searchMatchFn: (item, searchValue) {
-        //     return item.child.toString().toLowerCase().contains(searchValue.toLowerCase());
-        //   },
-        // ),
         validator: widget.validator,
       ),
     );
   }
 
   Color _getAdaptiveFillColor(BuildContext context) {
-    return Theme.of(context).brightness == Brightness.dark
-        ? const Color(0xFF3A3A3A) // Dark → opposite alpha
-        : const Color(0xFFF5F5F5); // Light → normal alpha
+    return Theme.of(context).brightness == Brightness.dark ? const Color(0xFF3A3A3A) : const Color(0xFFF5F5F5);
   }
 }

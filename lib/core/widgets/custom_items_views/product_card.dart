@@ -9,8 +9,8 @@ import '../../network/api_endpoints/api_contsants.dart';
 import '../../services/shared_preferences_helper.dart';
 import '../../styles/app_colors.dart';
 import '../../styles/custom_text_styles.dart';
-import '../PriceRow.dart';
 import '../padded_network_banner.dart';
+import '../price_row.dart';
 import 'custom_toast.dart';
 
 class ProductCard extends StatefulWidget {
@@ -81,7 +81,7 @@ class _ProductCardState extends State<ProductCard> {
       // Navigate to the login screen if not logged in
       PersistentNavBarNavigator.pushNewScreen(
         context,
-        screen: AuthScreen(),
+        screen: const AuthScreen(),
         withNavBar: false,
         // OPTIONAL VALUE. True by default.
         pageTransitionAnimation: PageTransitionAnimation.fade,
@@ -116,7 +116,7 @@ class _ProductCardState extends State<ProductCard> {
       // Navigate to the login screen if not logged in
       PersistentNavBarNavigator.pushNewScreen(
         context,
-        screen: AuthScreen(),
+        screen: const AuthScreen(),
         withNavBar: false,
         // OPTIONAL VALUE. True by default.
         pageTransitionAnimation: PageTransitionAnimation.fade,
@@ -138,7 +138,6 @@ class _ProductCardState extends State<ProductCard> {
 
   @override
   Widget build(BuildContext context) {
-    final double screenHeight = MediaQuery.sizeOf(context).height;
     return Padding(
       padding: const EdgeInsets.only(top: 5, bottom: 5),
       child: Container(
@@ -146,7 +145,7 @@ class _ProductCardState extends State<ProductCard> {
           color: Theme.of(context).colorScheme.primary,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.2),
+              color: Colors.black.withAlpha((0.2 * 255).toInt()),
               spreadRadius: 1,
               blurRadius: 5,
               offset: const Offset(0, 3),
@@ -267,7 +266,10 @@ class _ProductCardState extends State<ProductCard> {
                             height: 18,
                             width: 18,
                             widget.isOutOfStock ? AppStrings.outOfStock.tr : AppStrings.itemAddToCart.tr,
-                            color: widget.isOutOfStock ? Colors.red : null,
+                            colorFilter: ColorFilter.mode(
+                              widget.isOutOfStock ? Colors.red : Colors.black,
+                              BlendMode.srcIn,
+                            ),
                           ),
                         ),
                       ),

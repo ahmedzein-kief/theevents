@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/constants/app_strings.dart';
-import '../../../../core/services/shared_preferences_helper.dart';
 import '../../../../core/styles/app_colors.dart';
 import '../../../../core/styles/custom_text_styles.dart';
+import '../../../../core/utils/app_utils.dart';
 import '../../../../core/widgets/custom_items_views/product_card.dart';
 import '../../../../provider/cart_item_provider/cart_item_provider.dart';
 import '../../../../provider/shortcode_featured_categories_provider/featured_categories_detail_provider.dart';
@@ -13,7 +13,7 @@ import '../../../../provider/shortcode_fresh_picks_provider/fresh_picks_provider
 import '../../../../provider/wishlist_items_provider/wishlist_provider.dart';
 import '../../../product_detail_screens/product_detail_screen.dart';
 
-class FeaturedPackagesGrid extends StatelessWidget {
+class FeaturedPackagesGrid extends StatefulWidget {
   const FeaturedPackagesGrid({
     super.key,
     required this.slug,
@@ -30,17 +30,32 @@ class FeaturedPackagesGrid extends StatelessWidget {
   final bool isFetchingMore;
 
   @override
+  State<FeaturedPackagesGrid> createState() => _FeaturedPackagesGridState();
+}
+
+class _FeaturedPackagesGridState extends State<FeaturedPackagesGrid> {
+  /// Handle add to cart with proper error handling
+  Future<void> _handleAddToCart(int productId) async {
+    final result = await context.read<CartProvider>().addToCart(productId, 1);
+
+    if (result.success) {
+      AppUtils.showToast(result.message, isSuccess: true);
+    } else {
+      AppUtils.showToast(result.message);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.sizeOf(context).width;
     final double screenHeight = MediaQuery.sizeOf(context).height;
     final freshPicksProvider = Provider.of<FreshPicksProvider>(context);
-    final cartProvider = Provider.of<CartProvider>(context, listen: false);
     final wishlistProvider = Provider.of<WishlistProvider>(context, listen: false);
 
     return Center(
       child: Consumer<FeaturedCategoriesDetailProvider>(
         builder: (context, provider, child) {
-          if (provider.isLoadingPackages && currentPage == 1) {
+          if (provider.isLoadingPackages && widget.currentPage == 1) {
             return const Center(
               child: CircularProgressIndicator(
                 color: Colors.black,
@@ -71,11 +86,11 @@ class FeaturedPackagesGrid extends StatelessWidget {
               children: [
                 DropdownButtonHideUnderline(
                   child: DropdownButton<String>(
-                    value: selectedSortBy,
+                    value: widget.selectedSortBy,
                     icon: const Icon(Icons.keyboard_arrow_down_rounded),
                     onChanged: (String? newValue) {
                       if (newValue != null) {
-                        onSortChanged(newValue);
+                        widget.onSortChanged(newValue);
                       }
                     },
                     items: [
@@ -199,22 +214,12 @@ class FeaturedPackagesGrid extends StatelessWidget {
                                   price: product.prices.price.toString(),
                                   optionalIcon: Icons.shopping_cart_checkout_rounded,
                                   reviewsCount: product.review.reviewsCount?.toInt(),
-                                  onOptionalIconTap: () async {
-                                    final token = await SecurePreferencesUtil.getToken();
-                                    if (token != null) {
-                                      await cartProvider.addToCart(
-                                        product.id,
-                                        context,
-                                        1,
-                                      );
-                                    }
-                                  },
+                                  onOptionalIconTap: () => _handleAddToCart(product.id),
                                   isHeartObscure: wishlistProvider.wishlist?.data?.products.any(
                                         (wishlistProduct) => wishlistProduct.id == product.id,
                                       ) ??
                                       false,
                                   onHeartTap: () async {
-                                    final token = await SecurePreferencesUtil.getToken();
                                     final bool isInWishlist = wishlistProvider.wishlist?.data?.products.any(
                                           (wishlistProduct) => wishlistProduct.id == product.id,
                                         ) ??
@@ -223,7 +228,6 @@ class FeaturedPackagesGrid extends StatelessWidget {
                                       await wishlistProvider.deleteWishlistItem(
                                         product.id ?? 0,
                                         context,
-                                        token ?? '',
                                       );
                                     } else {
                                       await freshPicksProvider.handleHeartTap(
@@ -231,10 +235,7 @@ class FeaturedPackagesGrid extends StatelessWidget {
                                         product.id ?? 0,
                                       );
                                     }
-                                    await wishlistProvider.fetchWishlist(
-                                      token ?? '',
-                                      context,
-                                    );
+                                    await wishlistProvider.fetchWishlist();
                                   },
                                 ),
                               );

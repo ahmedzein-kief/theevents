@@ -1,7 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:dio/dio.dart';
+import 'package:event_app/core/constants/app_strings.dart';
+import 'package:event_app/core/constants/vendor_app_strings.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/helper/mixins/media_query_mixin.dart';
 import 'package:event_app/core/helper/validators/validator.dart';
 import 'package:event_app/core/network/api_endpoints/vendor_api_end_point.dart';
@@ -51,12 +55,12 @@ import '../../view_models/vendor_packages/create_package/vendor_get_package_gene
 import '../vendor_products/vendor_create_product/vendor_create_physical_product_view.dart';
 
 class VendorCreatePackageView extends StatefulWidget {
-  VendorCreatePackageView({
+  const VendorCreatePackageView({
     super.key,
     this.packageID,
   });
 
-  String? packageID;
+  final String? packageID;
 
   @override
   State<VendorCreatePackageView> createState() => VendorCreatePackageViewState();
@@ -131,12 +135,15 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView> with M
     try {
       setProcessing(true);
 
+      if (!mounted) return;
       final createProductProvider = Provider.of<VendorCreateProductViewModel>(context, listen: false);
       await createProductProvider.vendorGetProductTags();
 
       /// it is defined in create product
+      if (!mounted) return;
       final packageSettingsProvider = context.read<VendorGetPackageGeneralSettingsViewModel>();
       await packageSettingsProvider.vendorGetPackageGeneralSettings();
+
       _handleOverViewData(overviewModel);
       _initializeProductCategories();
       _initializeBrandDropdownMenuItems();
@@ -146,7 +153,7 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView> with M
       _initializeProductTags();
 
       if (_currentPackageId != null) {
-        print('PRODUCT ID ==> ${widget.packageID}');
+        if (!mounted) return;
         final vewPackageProvider = context.read<VendorGetViewPackageViewModel>();
         await vewPackageProvider.vendorViewPackage(context, _currentPackageId!);
         populateViewData(vewPackageProvider.vendorProductViewApiResponse.data);
@@ -155,7 +162,7 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView> with M
       setProcessing(false);
     } catch (e) {
       setProcessing(false);
-      print('Error: $e');
+      log('Error: $e');
     }
   }
 
@@ -311,14 +318,15 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView> with M
 
       /// ***------------ converting content text to html and storing in content controller end --------***
 
+      if (!mounted) return false;
       final provider = Provider.of<VendorCreatePackageViewModel>(context, listen: false);
 
       void logFormData(FormData formData) {
         for (final field in formData.fields) {
-          print('Field: ${field.key} = ${field.value}');
+          log('Field: ${field.key} = ${field.value}');
         }
         for (final file in formData.files) {
-          print('File: ${file.key} = ${file.value.filename}');
+          log('File: ${file.key} = ${file.value.filename}');
         }
       }
 
@@ -343,14 +351,16 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView> with M
         );
         if (result) {
           _currentPackageId = provider.vendorCreatePackageApiResponse.data?.data.id.toString();
-          print('Current Package ID:=> $_currentPackageId');
 
           /// on success go back and refresh the products list
+          if (!mounted) return false;
           final allProductProvider = Provider.of<VendorGetPackagesViewModel>(context, listen: false);
           allProductProvider.clearList();
           allProductProvider.vendorGetPackages();
           // widget.packageID = _currentPackageId;
           // await _onRefresh();
+
+          if (!mounted) return false;
           Navigator.pop(context);
         }
       }
@@ -359,7 +369,7 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView> with M
       return true;
     } catch (e) {
       setProcessing(false);
-      print('Error: $e');
+      log('Error: $e');
       return false;
     }
   }
@@ -411,7 +421,7 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView> with M
     if (images != null) {
       final List<String> serverImages = images.where((e) => e.serverUrl.isNotEmpty).map((e) => e.serverUrl).toList();
       createProductPostData.images = serverImages;
-      print('Selected Server Images: $serverImages');
+      log('Selected Server Images: $serverImages');
     } else {
       createProductPostData.images = [];
     }
@@ -458,12 +468,12 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView> with M
             final int valueIndex = valueEntry.key; // Get index for values
             final value = valueEntry.value;
             return OptionValues(
-              affectType: value.affectType.toString() ?? '',
+              affectType: value.affectType.toString(),
               affectPrice: value.affectPrice.toString(),
-              id: value.id.toString() ?? '',
+              id: value.id.toString(),
               order: valueIndex.toString(),
               // Use value index
-              optionValue: option.getType().toLowerCase() == 'location' ? value.optionValue.toString() ?? '' : '',
+              optionValue: option.getType().toLowerCase() == 'location' ? value.optionValue.toString() : '',
             );
           }).toList(),
         );
@@ -521,16 +531,19 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView> with M
   Future<void> _openOverviewView() async {
     final overviewSelectedData = await showDraggableModalBottomSheet<VendorProductOverviewModel>(
       context: context,
-      builder: (scrollController) => SingleChildScrollView(
-        controller: scrollController,
-        child: Column(
-          children: [
-            AppUtils.dragHandle(context: context),
-            VendorProductOverviewView(
-              overviewModel: overviewModel,
-              productType: ProductTypeConstants.PACKAGE,
-            ),
-          ],
+      builder: (scrollController) => Container(
+        color: Theme.of(context).cardColor,
+        child: SingleChildScrollView(
+          controller: scrollController,
+          child: Column(
+            children: [
+              AppUtils.dragHandle(context: context),
+              VendorProductOverviewView(
+                overviewModel: overviewModel,
+                productType: ProductTypeConstants.PACKAGE,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -542,7 +555,6 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView> with M
   void _handleOverViewData(result) {
     // if (result != null) {
     overviewModel = result;
-    print('result==> ${overviewModel?.price}');
     createProductPostData.sku = overviewModel?.sku ??
         context
             .read<VendorGetPackageGeneralSettingsViewModel>()
@@ -746,7 +758,7 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView> with M
     _productTagsDropdownItems = provider.productTagsApiResponse.data?.vendorProductTags
             ?.map(
               (tag) => DropdownItem(
-                label: tag.toString() ?? '',
+                label: tag.toString(),
                 value: tag.toString(),
                 selected: tags.contains(tag),
               ),
@@ -794,7 +806,7 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView> with M
         });
       }
     } catch (e) {
-      print('Error: $e');
+      log('Error: $e');
     }
   }
 
@@ -803,9 +815,9 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView> with M
   /// Get Title text
   String getHeaderText() {
     if (widget.packageID != null) {
-      return 'Edit #${widget.packageID}';
+      return '${AppStrings.edit.tr} #${widget.packageID}';
     } else {
-      return 'Create New Package';
+      return VendorAppStrings.packageProducts.tr;
     }
   }
 
@@ -859,75 +871,74 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView> with M
                       color: Colors.grey,
                       height: 1,
                     ),
-                    Row(
-                      children: [
-                        Flexible(
-                          flex: 1,
-                          child: SizedBox(
-                            width: MediaQuery.of(context).size.width,
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8.0,
-                                vertical: 8.0,
-                              ),
-                              child: CustomAppButton(
-                                borderRadius: 4,
-                                buttonText: 'Save',
-                                buttonColor: AppColors.lightCoral,
-                                onTap: () async {
-                                  _handleOverViewData(overviewModel);
+                    SafeArea(
+                      child: Row(
+                        children: [
+                          Flexible(
+                            flex: 1,
+                            child: SizedBox(
+                              width: MediaQuery.of(context).size.width,
+                              child: Padding(
+                                padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 0.0),
+                                child: CustomAppButton(
+                                  borderRadius: 4,
+                                  buttonText: AppStrings.save.tr,
+                                  buttonColor: AppColors.lightCoral,
+                                  onTap: () async {
+                                    _handleOverViewData(overviewModel);
 
-                                  /// assign some default values if nothing is selected in overview because we need to assign 0 to quantity and prices
-                                  setState(() {});
+                                    /// assign some default values if nothing is selected in overview because we need to assign 0 to quantity and prices
+                                    setState(() {});
 
-                                  if (_formKey.currentState?.validate() ?? false) {
-                                    final result = await _createUpdatePackage();
-                                    if (result) {
-                                      /// on success go back and refresh the products list
-                                      // final allProductProvider = Provider.of<VendorGetPackagesViewModel>(context, listen: false);
-                                      // allProductProvider.clearList();
-                                      // allProductProvider.vendorGetPackages();
-                                      // Navigator.pop(context);
+                                    if (_formKey.currentState?.validate() ?? false) {
+                                      final result = await _createUpdatePackage();
+                                      if (result) {
+                                        /// on success go back and refresh the products list
+                                        // final allProductProvider = Provider.of<VendorGetPackagesViewModel>(context, listen: false);
+                                        // allProductProvider.clearList();
+                                        // allProductProvider.vendorGetPackages();
+                                        // Navigator.pop(context);
+                                      }
                                     }
-                                  }
-                                },
+                                  },
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        /*Flexible(
-                              flex: 1,
-                              child: Container(
-                                width: MediaQuery.of(context).size.width,
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-                                  child: CustomAppButton(
-                                    borderRadius: 4,
-                                    borderColor: AppColors.lightCoral,
-                                    buttonText: "Save & Exit",
-                                    buttonColor: Colors.white,
-                                    textStyle: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                    onTap: () async {
-                                      if (_formKey.currentState?.validate() ?? false) {
-                                        final result = await _createUpdatePackage();
-                                        if (result) {
-                                          /// on success go back and refresh the products list
-                                          final allProductProvider = Provider.of<VendorGetProductsViewModel>(context, listen: false);
-                                          allProductProvider.clearList();
-                                          allProductProvider.vendorGetProducts();
-                                          Navigator.pop(context);
+                          /*Flexible(
+                                flex: 1,
+                                child: Container(
+                                  width: MediaQuery.of(context).size.width,
+                                  child: Padding(
+                                    padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+                                    child: CustomAppButton(
+                                      borderRadius: 4,
+                                      borderColor: AppColors.lightCoral,
+                                      buttonText: "Save & Exit",
+                                      buttonColor: Colors.white,
+                                      textStyle: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      onTap: () async {
+                                        if (_formKey.currentState?.validate() ?? false) {
+                                          final result = await _createUpdatePackage();
+                                          if (result) {
+                                            /// on success go back and refresh the products list
+                                            final allProductProvider = Provider.of<VendorGetProductsViewModel>(context, listen: false);
+                                            allProductProvider.clearList();
+                                            allProductProvider.vendorGetProducts();
+                                            Navigator.pop(context);
+                                          }
                                         }
-                                      }
-                                    },
+                                      },
+                                    ),
                                   ),
                                 ),
-                              ),
-                            )*/
-                      ],
+                              )*/
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -1010,9 +1021,9 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView> with M
       children: [
         /// product name
         CustomTextFormField(
-          labelText: 'Name',
+          labelText: AppStrings.name.tr,
           required: true,
-          hintText: 'Enter Name',
+          hintText: AppStrings.enterName.tr,
           maxLength: 250,
           focusNode: _nameFocusNode,
           nextFocusNode: _permalinkFocusNode,
@@ -1033,7 +1044,7 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView> with M
           builder: (context, createProductSlugProvider, _) {
             final createSlugApiResponse = createProductSlugProvider.vendorCreateSlugApiResponse.status;
             return CustomTextFormField(
-              labelText: 'Permalink',
+              labelText: VendorAppStrings.permalink.tr,
               required: true,
               hintText: '',
               maxLines: 1,
@@ -1049,7 +1060,7 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView> with M
               suffix: _permalinkController.text.isNotEmpty || _nameController.text.isNotEmpty
                   ? InkResponse(
                       highlightColor: AppColors.lightCoral.withAlpha((0.5 * 255).toInt()),
-                      splashColor: AppColors.lightCoral.withOpacity(0.3),
+                      splashColor: AppColors.lightCoral.withAlpha((0.3 * 255).toInt()),
                       radius: 10,
                       onTap: createSlugApiResponse != ApiStatus.LOADING
                           ? () {
@@ -1081,7 +1092,7 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView> with M
         kFormFieldSpace,
 
         // /// description
-        fieldTitle(text: 'Description'),
+        fieldTitle(text: AppStrings.description.tr),
         CustomEditableTextField(
           placeholder: '',
           showToolBar: false,
@@ -1090,7 +1101,7 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView> with M
         ),
         kFormFieldSpace,
         // /// content
-        fieldTitle(text: 'Content'),
+        fieldTitle(text: VendorAppStrings.content.tr),
         CustomEditableTextField(
           placeholder: '',
           showToolBar: false,
@@ -1100,12 +1111,11 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView> with M
         kFormFieldSpace,
 
         /// brands
-        fieldTitle(text: 'Brand'),
+        fieldTitle(text: AppStrings.brands.tr),
         kMinorSpace,
         CustomDropdown(
           menuItemsList: _brandDropdownMenuItemsList,
-          textColor: Colors.black,
-          hintText: 'Select Brand',
+          hintText: VendorAppStrings.selectBrand.tr,
           value: _brandDropdownMenuItemsList.map((item) => item.value).firstWhere(
                 (id) => id == createProductPostData.brandId,
                 orElse: () => null,
@@ -1117,57 +1127,55 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView> with M
         kFormFieldSpace,
 
         /// categories
-        fieldTitle(text: 'Categories'),
+        fieldTitle(text: AppStrings.categories.tr),
         kMinorSpace,
         CustomMultiselectDropdown(
           dropdownItems: _categoryDropdownItems,
           dropdownController: _categoriesController,
-          hintText: 'Select Categories',
+          hintText: AppStrings.categories.tr,
           onSelectionChanged: (value) {
             if (value is List<ProductCategories>) {
               final List<int> selectedCategoryIds = value.where((e) => e.id != null).map((e) => e.id!).toList();
               createProductPostData.categories = selectedCategoryIds;
-              print('Selected Categories: $selectedCategoryIds');
             } else {
-              print('Unexpected data type: ${value.runtimeType}');
+              log('Unexpected data type: ${value.runtimeType}');
             }
           },
         ),
         kFormFieldSpace,
 
         /// product collections
-        fieldTitle(text: 'Product Collections'),
+        fieldTitle(text: VendorAppStrings.relatedProducts.tr),
         kMinorSpace,
         CustomMultiselectDropdown(
           dropdownItems: _productCollectionsDropdownItems,
           dropdownController: _productCollectionsController,
-          hintText: 'Select Product Collection',
+          hintText: VendorAppStrings.selectProductCollection.tr,
           onSelectionChanged: (value) {
             if (value is List<ProductCollections>) {
               final List<int> selectedCollectionIds = value.where((e) => e.id != null).map((e) => e.id!).toList();
               createProductPostData.productCollections = selectedCollectionIds;
-              print('Selected Product Collections: $selectedCollectionIds');
+              log('Selected Product Collections: $selectedCollectionIds');
             } else {
-              print('Unexpected data type: ${value.runtimeType}');
+              log('Unexpected data type: ${value.runtimeType}');
             }
           },
         ),
         kFormFieldSpace,
 
         /// labels
-        fieldTitle(text: 'Labels'),
+        fieldTitle(text: VendorAppStrings.enterLabel.tr),
         kMinorSpace,
         CustomMultiselectDropdown(
           dropdownItems: _productLabelDropdownItems,
           dropdownController: _productLabelController,
-          hintText: 'Select Labels',
+          hintText: VendorAppStrings.selectLabels.tr,
           onSelectionChanged: (value) {
             if (value is List<ProductLabels>) {
               final List<int> selectedLabelsIds = value.where((e) => e.id != null).map((e) => e.id!).toList();
               createProductPostData.productLabels = selectedLabelsIds;
-              print('Selected Labels: $selectedLabelsIds');
             } else {
-              print('Unexpected data type: ${value.runtimeType}');
+              log('Unexpected data type: ${value.runtimeType}');
             }
           },
         ),
@@ -1177,19 +1185,19 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView> with M
         if (settings?.isTaxEnabled ?? true)
           Column(
             children: [
-              fieldTitle(text: 'Taxes'),
+              fieldTitle(text: VendorAppStrings.selectTaxes.tr),
               kMinorSpace,
               CustomMultiselectDropdown(
                 dropdownItems: _productTaxesDropdownItems,
                 dropdownController: _productTaxesController,
-                hintText: 'Select Taxes',
+                hintText: VendorAppStrings.selectTaxes.tr,
                 onSelectionChanged: (value) {
                   if (value is List<Taxes>) {
                     final List<int> selectedTaxesIds = value.where((e) => e.id != null).map((e) => e.id!).toList();
                     createProductPostData.taxes = selectedTaxesIds;
-                    print('Selected Taxes: $selectedTaxesIds');
+                    log('Selected Taxes: $selectedTaxesIds');
                   } else {
-                    print('Unexpected data type: ${value.runtimeType}');
+                    log('Unexpected data type: ${value.runtimeType}');
                   }
                 },
               ),
@@ -1198,21 +1206,19 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView> with M
           ),
 
         /// tags
-        fieldTitle(text: 'Tags'),
+        fieldTitle(text: AppStrings.tags.tr),
         kMinorSpace,
         CustomMultiselectDropdown(
           dropdownItems: _productTagsDropdownItems,
           dropdownController: _productTagsController,
-          hintText: 'Select Tags',
+          hintText: VendorAppStrings.selectTags.tr,
           onSelectionChanged: (value) {
-            print('Selected Tags: $value');
             if (value is List<String>) {
               final List<Map<String, String>> selectedTags =
                   value.where((e) => e.isNotEmpty).map((e) => {'value': e}).toList();
               createProductPostData.tag = selectedTags;
-              print('Selected Tag: $selectedTags');
             } else {
-              print('Unexpected data type: ${value.runtimeType}');
+              log('Unexpected data type: ${value.runtimeType}');
             }
           },
         ),
@@ -1230,8 +1236,8 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView> with M
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TitleWithArrow(
-            title: 'Upload Images',
-            textStyle: createProductTextStyle(),
+            title: VendorAppStrings.uploadImages.tr,
+            textStyle: createProductTextStyle(context),
             onTap: _openImagePickerScreen,
           ),
           if (selectedImages?.isNotEmpty == true)
@@ -1256,13 +1262,13 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView> with M
       Column(
         children: [
           TitleWithArrow(
-            title: 'Overview',
-            textStyle: createProductTextStyle(),
+            title: AppStrings.overview.tr,
+            textStyle: createProductTextStyle(context),
             onTap: () async {
               try {
                 await _openOverviewView();
               } catch (e) {
-                print('Error: $e');
+                log('Error: $e');
               }
             },
           ),
@@ -1276,35 +1282,35 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView> with M
                 crossAxisAlignment: CrossAxisAlignment.start,
                 // Align the content to the left
                 children: [
-                  showDetail(label: 'Sku', value: overviewModel?.sku),
-                  showDetail(label: 'Price', value: overviewModel?.price),
+                  showDetail(label: VendorAppStrings.sku.tr, value: overviewModel?.sku),
+                  showDetail(label: VendorAppStrings.price.tr, value: overviewModel?.price),
                   showDetail(
-                    label: 'Sale Price',
+                    label: VendorAppStrings.salePrice.tr,
                     value: overviewModel?.priceSale,
                   ),
                   if (overviewModel?.chooseDiscountPeriod ?? false)
                     Column(
                       children: [
                         showDetail(
-                          label: 'From',
+                          label: VendorAppStrings.fromDate.tr,
                           value: overviewModel?.fromDate,
                         ),
-                        showDetail(label: 'To', value: overviewModel?.toDate),
+                        showDetail(label: VendorAppStrings.toDate.tr, value: overviewModel?.toDate),
                       ],
                     ),
                   showDetail(
-                    label: 'Cost per item',
+                    label: VendorAppStrings.costPerItem.tr,
                     value: overviewModel?.costPerItem,
                   ),
-                  showDetail(label: 'Barcode', value: overviewModel?.barcode),
+                  showDetail(label: VendorAppStrings.barcodeIsbnUpcGtin.tr, value: overviewModel?.barcode),
                   if (overviewModel?.withWareHouseManagement ?? false)
                     showDetail(
-                      label: 'Quantity',
+                      label: VendorAppStrings.quantity.tr,
                       value: overviewModel?.quantity,
                     ),
                   if (!(overviewModel?.withWareHouseManagement ?? true))
                     showDetail(
-                      label: 'Stock Status',
+                      label: AppStrings.orderStatus.tr,
                       value: (overviewModel?.stockStatus != null && overviewModel?.stockStatus.isNotEmpty == true)
                           ? provider.generalSettingsApiResponse.data?.data?.stockStatuses
                                   ?.firstWhere(
@@ -1328,13 +1334,13 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView> with M
       Column(
         children: [
           TitleWithArrow(
-            title: 'Shipping',
-            textStyle: createProductTextStyle(),
+            title: VendorAppStrings.shippingFee.tr,
+            textStyle: createProductTextStyle(context),
             onTap: () async {
               try {
                 await _openShippingSection();
               } catch (e) {
-                print('Error: $e');
+                log('Error: $e');
               }
             },
           ),
@@ -1347,19 +1353,19 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView> with M
               expandedContent: Column(
                 children: [
                   showDetail(
-                    label: 'Weight (g)',
+                    label: VendorAppStrings.weightG.tr,
                     value: vendorProductDimensionsModel?.weight,
                   ),
                   showDetail(
-                    label: 'Length (cm)',
+                    label: VendorAppStrings.lengthCm.tr,
                     value: vendorProductDimensionsModel?.length,
                   ),
                   showDetail(
-                    label: 'Width (cm)',
+                    label: VendorAppStrings.widthCm.tr,
                     value: vendorProductDimensionsModel?.width,
                   ),
                   showDetail(
-                    label: 'Height (cm)',
+                    label: VendorAppStrings.heightCm.tr,
                     value: vendorProductDimensionsModel?.height,
                   ),
                 ],
@@ -1376,8 +1382,8 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView> with M
       Column(
         children: [
           TitleWithArrow(
-            title: 'Package Products',
-            textStyle: createProductTextStyle(),
+            title: VendorAppStrings.packageProducts.tr,
+            textStyle: createProductTextStyle(context),
             onTap: () => _openPackageProductSearchScreen(),
           ),
           if (selectedPackageProducts.isNotEmpty == true)
@@ -1402,8 +1408,8 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView> with M
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TitleWithArrow(
-            title: 'Product Options',
-            textStyle: createProductTextStyle(),
+            title: VendorAppStrings.productOptions.tr,
+            textStyle: createProductTextStyle(context),
             onTap: () => _openProductOptionsScreen(globalOptions),
           ),
           if (selectedProductOptions?.isNotEmpty == true)
@@ -1426,8 +1432,8 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView> with M
       Column(
         children: [
           TitleWithArrow(
-            title: 'Search Engine Optimization',
-            textStyle: createProductTextStyle(),
+            title: VendorAppStrings.searchEngineOptimization.tr,
+            textStyle: createProductTextStyle(context),
             onTap: _openSeoOptimizeView,
           ),
           if ((_permalinkController.text.isNotEmpty &&

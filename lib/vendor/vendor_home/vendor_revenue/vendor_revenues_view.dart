@@ -1,13 +1,15 @@
+import 'dart:developer';
+
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/helper/mixins/media_query_mixin.dart';
 import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/core/styles/app_sizes.dart';
+import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/data/vendor/data/response/apis_status.dart';
 import 'package:event_app/models/vendor_models/revenues/revenue_data_response.dart';
 import 'package:event_app/vendor/components/common_widgets/vendor_data_list_builder.dart';
 import 'package:event_app/vendor/components/data_tables/custom_data_tables.dart';
 import 'package:event_app/vendor/components/list_tiles/records_list_tile.dart';
-import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/vendor/components/vendor_tool_bar_widgets/vendor_tool_bar_widgets.dart';
 import 'package:event_app/vendor/view_models/vendor_revenues/vendor_revenues_view_model.dart';
 import 'package:flutter/material.dart';
@@ -48,7 +50,9 @@ class _VendorRevenuesViewState extends State<VendorRevenuesView> with MediaQuery
       setState(() {});
       await provider.vendorRevenues(search: _searchController.text);
       setState(() {});
-    } catch (e) {}
+    } catch (e) {
+      log(e.toString());
+    }
   }
 
   Future<void> _loadMoreData() async {
@@ -150,10 +154,10 @@ class _VendorRevenuesViewState extends State<VendorRevenuesView> with MediaQuery
                 statusTextStyle: const TextStyle(color: AppColors.lightCoral),
                 title: record.orderCode,
                 leading: Text(
-                  record.id.toString() ?? '',
+                  record.id.toString(),
                   style: dataRowTextStyle(),
                 ),
-                subtitle: record.amountFormat.toString() ?? '--',
+                subtitle: record.amountFormat.toString(),
               ),
               kSmallSpace,
             ],
@@ -225,7 +229,7 @@ class _VendorRevenuesViewState extends State<VendorRevenuesView> with MediaQuery
                     buildRow(VendorAppStrings.type.tr, rowData.type.toString()),
                     buildRow(
                       VendorAppStrings.createdAt.tr,
-                      rowData.createdAt.toString() ?? '',
+                      rowData.createdAt.toString(),
                     ),
                   ],
                 ),

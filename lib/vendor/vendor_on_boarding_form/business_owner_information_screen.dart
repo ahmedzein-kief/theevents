@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:event_app/core/constants/vendor_app_strings.dart';
@@ -24,12 +25,10 @@ class BusinessOwnerInformationScreen extends StatefulWidget {
   final Function(BusinessOwnerInfoPostData) onBOIModelUpdate;
 
   @override
-  State<BusinessOwnerInformationScreen> createState() =>
-      _BusinessOwnerInformationScreenState();
+  State<BusinessOwnerInformationScreen> createState() => _BusinessOwnerInformationScreenState();
 }
 
-class _BusinessOwnerInformationScreenState
-    extends State<BusinessOwnerInformationScreen> {
+class _BusinessOwnerInformationScreenState extends State<BusinessOwnerInformationScreen> {
   final _nameFocusNode = FocusNode();
   final _phNumberFocusNode = FocusNode();
   final _countryFocusNode = FocusNode();
@@ -59,8 +58,7 @@ class _BusinessOwnerInformationScreenState
         setState(() {
           _nameController.text = widget.boiModel.companyDisplayName ?? '';
           _phNumberController.text = widget.boiModel.phoneNumber ?? '';
-          _countryController.text =
-              findCountryNameUsingCode(widget.boiModel.country ?? '');
+          _countryController.text = findCountryNameUsingCode(widget.boiModel.country ?? '');
           _regionController.text = widget.boiModel.region ?? '';
           _regionController.text = widget.boiModel.region ?? '';
           _emiratesIdController.text = widget.boiModel.eidNumber ?? '';
@@ -69,24 +67,22 @@ class _BusinessOwnerInformationScreenState
           _passportController.text = widget.boiModel.passportFileName ?? '';
         });
       }
-    } catch (error) {}
+    } catch (error) {
+      log(error.toString());
+    }
     return;
   }
 
   String findCountryNameUsingCode(String code) {
+    if (code.isEmpty) return '';
+
     if (code.length > 3) {
-      countryCode = countryModel?.data?.list
-              ?.firstWhere((countryData) => countryData.name == code)
-              .code ??
-          '';
+      countryCode = countryModel?.data?.list?.firstWhere((countryData) => countryData.name == code).code ?? '';
 
       return code;
     } else {
       countryCode = code;
-      return countryModel?.data?.list
-              ?.firstWhere((countryData) => countryData.code == code)
-              .name ??
-          '';
+      return countryModel?.data?.list?.firstWhere((countryData) => countryData.code == code).name ?? '';
     }
   }
 
@@ -138,7 +134,7 @@ class _BusinessOwnerInformationScreenState
             decoration: BoxDecoration(
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.2), // Shadow color
+                  color: Colors.black.withAlpha((0.2 * 255).toInt()), // Shadow color
                   spreadRadius: 2, // How much the shadow spreads
                   blurRadius: 5, // How blurry the shadow is
                   offset: const Offset(0, 2), // Shadow offset (X, Y)
@@ -147,11 +143,14 @@ class _BusinessOwnerInformationScreenState
             ),
             child: Material(
               shadowColor: Colors.black,
-              color: Colors.white,
               elevation: 15,
               child: Padding(
                 padding: const EdgeInsets.only(
-                    top: 20, left: 10, right: 10, bottom: 30,),
+                  top: 20,
+                  left: 10,
+                  right: 10,
+                  bottom: 30,
+                ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -204,12 +203,11 @@ class _BusinessOwnerInformationScreenState
                       suffixIcon: Icons.keyboard_arrow_down_outlined,
                       validator: Validator.country,
                       onIconPressed: () {
-                        if (countryModel != null &&
-                            countryModel?.data != null) {
-                          final List<CountryList> filteredList = countryModel
-                                  ?.data?.list
-                                  ?.where((value) =>
-                                      value.code?.toLowerCase() == '+971',)
+                        if (countryModel != null && countryModel?.data != null) {
+                          final List<CountryList> filteredList = countryModel?.data?.list
+                                  ?.where(
+                                    (value) => value.code?.toLowerCase() == '+971',
+                                  )
                                   .toList() ??
                               [];
                           showDialog(
@@ -220,8 +218,7 @@ class _BusinessOwnerInformationScreenState
                               onCountrySelected: (selectedCountry) {
                                 setState(() {
                                   countryCode = selectedCountry.code ?? '';
-                                  _countryController.text =
-                                      selectedCountry.name ?? '';
+                                  _countryController.text = selectedCountry.name ?? '';
                                   widget.boiModel.country = countryCode;
                                   widget.onBOIModelUpdate(widget.boiModel);
                                 });
@@ -245,7 +242,9 @@ class _BusinessOwnerInformationScreenState
                       validator: Validator.region,
                       onIconPressed: () async {
                         final region = await showRegionDropdown(
-                            context, _regionController.text,);
+                          context,
+                          _regionController.text,
+                        );
                         if (region != null) {
                           _regionController.text = region;
                           widget.boiModel.region = region;
@@ -281,7 +280,9 @@ class _BusinessOwnerInformationScreenState
                       validator: Validator.emiratesIdNumberDate,
                       onIconPressed: () async {
                         final result = await showDatePickerDialog(
-                            context, VendorAppStrings.ddMmYyyy.tr,);
+                          context,
+                          VendorAppStrings.ddMmYyyy.tr,
+                        );
                         if (result != null) {
                           final date = result.toString().split(' ')[0];
                           _emiratesExpireDateController.text = date;
@@ -302,13 +303,11 @@ class _BusinessOwnerInformationScreenState
                       isEditable: false,
                       prefixIconColor: Colors.black,
                       prefixIcon: Icons.upload_outlined,
-                      borderSideColor:
-                          const BorderSide(color: Colors.grey, width: 0.5),
+                      borderSideColor: const BorderSide(color: Colors.grey, width: 0.5),
                       prefixContainerColor: Colors.grey.shade300,
                       validator: Validator.fieldRequired,
                       onIconPressed: () async {
-                        final FilePickerResult? result =
-                            await FilePicker.platform.pickFiles(
+                        final FilePickerResult? result = await FilePicker.platform.pickFiles(
                           type: FileType.custom,
                           allowedExtensions: ['pdf'],
                         );
@@ -316,8 +315,7 @@ class _BusinessOwnerInformationScreenState
                           final File file = File(result.files.single.path!);
                           _eidPdfController.text = result.files.single.name;
                           widget.boiModel.eidFile = file;
-                          widget.boiModel.eidFileName =
-                              result.files.single.name;
+                          widget.boiModel.eidFileName = result.files.single.name;
                           widget.onBOIModelUpdate(widget.boiModel);
                         } else {
                           widget.boiModel.eidFile = null;
@@ -336,15 +334,13 @@ class _BusinessOwnerInformationScreenState
                       focusNode: _passportFocusNode,
                       isPrefixFilled: true,
                       isEditable: false,
-                      borderSideColor:
-                          const BorderSide(color: Colors.grey, width: 0.5),
+                      borderSideColor: const BorderSide(color: Colors.grey, width: 0.5),
                       prefixIcon: Icons.upload_outlined,
                       prefixContainerColor: Colors.grey.shade300,
                       prefixIconColor: Colors.black,
                       validator: Validator.fieldRequired,
                       onIconPressed: () async {
-                        final FilePickerResult? result =
-                            await FilePicker.platform.pickFiles(
+                        final FilePickerResult? result = await FilePicker.platform.pickFiles(
                           type: FileType.custom,
                           allowedExtensions: ['pdf'],
                         );
@@ -352,8 +348,7 @@ class _BusinessOwnerInformationScreenState
                           final File file = File(result.files.single.path!);
                           _passportController.text = result.files.single.name;
                           widget.boiModel.passportFile = file;
-                          widget.boiModel.passportFileName =
-                              result.files.single.name;
+                          widget.boiModel.passportFileName = result.files.single.name;
                           widget.onBOIModelUpdate(widget.boiModel);
                         } else {
                           _passportController.text = '';

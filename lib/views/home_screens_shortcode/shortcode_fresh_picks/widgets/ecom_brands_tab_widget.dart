@@ -4,15 +4,15 @@ import 'package:provider/provider.dart';
 import '../../../../core/styles/custom_text_styles.dart';
 import '../../../../core/widgets/items_empty_view.dart';
 import '../../../../core/widgets/padded_network_banner.dart';
-import '../../../../provider/shortcode_fresh_picks_provider/eCom_Tags_brands_Provider.dart';
+import '../../../../provider/shortcode_fresh_picks_provider/ecom_tags_brands_provider.dart';
 import '../../../filters/items_sorting_drop_down.dart';
 import '../../shorcode_featured_brands/featured_brands_items_screen.dart';
 
 class EComBrandsTabWidget extends StatefulWidget {
   const EComBrandsTabWidget({
-    Key? key,
+    super.key,
     required this.id,
-  }) : super(key: key);
+  });
 
   final int id;
 
@@ -163,7 +163,7 @@ class _EComBrandsTabWidgetState extends State<EComBrandsTabWidget> {
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.2),
+                                color: Colors.black.withAlpha((0.2 * 255).toInt()),
                                 spreadRadius: 1,
                                 blurRadius: 5,
                                 offset: const Offset(0, 3),

@@ -1,18 +1,18 @@
 import 'dart:convert';
+import 'dart:developer';
 
+import 'package:dio/dio.dart';
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/provider/api_response_handler.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import '../../core/helper/functions/functions.dart';
-import '../../core/services/shared_preferences_helper.dart';
-import '../../core/utils/custom_toast.dart';
+import '../../core/network/api_endpoints/api_contsants.dart';
+import '../../core/utils/app_utils.dart';
 import '../../models/cartItems_models/cart_item_models.dart';
 import '../../models/cart_items_models/cart_delete_models.dart';
 import '../../models/cart_items_models/cart_items_models.dart';
 import '../../models/cart_items_models/cart_update_models.dart';
-import '../auth_provider/get_user_provider.dart';
 
 class CartProvider with ChangeNotifier {
   final ApiResponseHandler _apiResponseHandler = ApiResponseHandler();
@@ -23,46 +23,42 @@ class CartProvider with ChangeNotifier {
 
   dynamic _checkoutResponse;
 
+  dynamic get checkoutResponse => _checkoutResponse;
+
   AddToCartResponse? _addToCartResponse;
 
   AddToCartResponse? get addToCartResponse => _addToCartResponse;
 
-  dynamic get checkoutResponse => _checkoutResponse;
+  CartModel? _cartResponse;
 
-  /// Check if user is logged in
-  Future<bool> _isLoggedIn() async {
-    final token = await SecurePreferencesUtil.getToken();
-    return token != null && token.isNotEmpty;
-  }
+  CartModel? get cartResponse => _cartResponse;
 
-  Future<void> addToCart(
+  bool _cartLoading = false;
+
+  bool get cartLoading => _cartLoading;
+
+  bool _deletingCartItem = false;
+
+  bool get deletingCartItem => _deletingCartItem;
+
+  bool _checkoutLoading = false;
+
+  bool get checkoutLoading => _checkoutLoading;
+
+  /// Add to cart - returns success status and message
+  Future<AddToCartResult> addToCart(
     int productID,
-    BuildContext context,
     int quantity, {
-    Map<String, dynamic> selectedExtraOptions = const {}, // Default to an empty map
-    List<Map<String, dynamic>?> selectedAttributes = const [], // Default to an empty list
+    Map<String, dynamic> selectedExtraOptions = const {},
+    List<Map<String, dynamic>?> selectedAttributes = const [],
   }) async {
-    // Check authentication first
-    final bool loggedIn = await _isLoggedIn();
-    if (!loggedIn) {
-      navigateToLogin(context, 'Please log in to add items to cart');
-      return;
-    }
-
     _isLoading = true;
     notifyListeners();
 
     try {
-      final token = await SecurePreferencesUtil.getToken();
       const url = ApiEndpoints.addToCart;
 
-      if (token == null || token.isEmpty) {
-        navigateToLogin(context, 'Please log in to add items to cart');
-        return;
-      }
-
       final headers = {
-        'Authorization': token,
         'Content-Type': 'application/json',
       };
 
@@ -86,6 +82,7 @@ class CartProvider with ChangeNotifier {
       final response = await _apiResponseHandler.postRequest(
         url,
         headers: headers,
+        extra: {ApiConstants.requireAuthKey: true},
         bodyString: jsonEncode(postDataMap),
       );
 
@@ -93,174 +90,173 @@ class CartProvider with ChangeNotifier {
         final jsonData = response.data;
         _addToCartResponse = AddToCartResponse.fromJson(jsonData);
 
-        /// fetch cart after add to cart
-        final cartProvider = Provider.of<CartProvider>(context, listen: false);
-        await cartProvider.fetchCartData(token ?? '', context);
+        // Automatically refresh cart data
+        await fetchCartData();
 
-        // Check if there's no error in the response
+        // Return result for UI to handle
         if (_addToCartResponse != null && !_addToCartResponse!.error) {
-          CustomSnackbar.showSuccess(
-            context,
-            _addToCartResponse?.message?.replaceAll('&amp;', '&') ?? 'Item added to cart successfully',
+          return AddToCartResult(
+            success: true,
+            message: _addToCartResponse!.message.replaceAll('&amp;', '&'),
           );
         } else {
-          CustomSnackbar.showError(
-            context,
-            _addToCartResponse?.message ?? 'Failed to add item to cart',
+          return AddToCartResult(
+            success: false,
+            message: _addToCartResponse?.message ?? 'Failed to add item to cart',
           );
         }
       } else if (response.statusCode == 401) {
-        // Token expired or invalid
-        CustomSnackbar.showError(context, 'Session expired. Please log in again.');
-        navigateToLogin(context, 'Session expired. Please log in again.');
+        return AddToCartResult(success: false, message: 'Authentication failed');
       } else {
-        CustomSnackbar.showError(
-          context,
-          response.data?['message'] ?? 'Failed to add item to cart',
+        return AddToCartResult(
+          success: false,
+          message: response.data?['message'] ?? 'Failed to add item to cart',
         );
       }
     } catch (e) {
-      CustomSnackbar.showError(context, 'An error occurred. Please try again.');
+      if (e is AuthException) {
+        return AddToCartResult(success: false, message: 'Authentication required');
+      }
+
+      if (e is DioException && e.type == DioExceptionType.cancel) {
+        return AddToCartResult(success: false, message: 'Request cancelled');
+      }
+
+      log('addToCart error ${e.toString()}');
       _addToCartResponse = null;
+      return AddToCartResult(success: false, message: 'An error occurred. Please try again.');
     } finally {
       _isLoading = false;
       notifyListeners();
     }
   }
 
-  ///   -----------------------------------------------------------  CART ITEMS DELETE FUNCTION  --------------------------------------------------------
-
-  bool _deletingCartItem = false;
-
-  bool get deletingCartItem => _deletingCartItem;
-
-  Future<void> deleteCartListItem(
-    String rowId,
-    BuildContext context,
-    String token,
-  ) async {
-    // Check authentication first
-    final bool loggedIn = await _isLoggedIn();
-    if (!loggedIn) {
-      navigateToLogin(context, 'Please log in to manage your cart');
-      return;
-    }
-
+  /// Delete cart item - returns success status and message
+  Future<CartOperationResult> deleteCartItem(String rowId) async {
     _deletingCartItem = true;
     notifyListeners();
 
     try {
       final url = '${ApiEndpoints.cartRemove}$rowId';
-      final headers = {'Authorization': token};
 
-      final response = await _apiResponseHandler.postRequest(url, headers: headers);
+      final response = await _apiResponseHandler.postRequest(
+        url,
+        extra: {ApiConstants.requireAuthKey: true},
+      );
 
       if (response.statusCode == 200) {
         final responseData = response.data;
         final cartResponse = CartDeleteResponse.fromJson(responseData);
 
-        await fetchCartData(token, context);
-        CustomSnackbar.showSuccess(context, cartResponse.message);
+        await fetchCartData();
+
+        return CartOperationResult(
+          success: true,
+          message: cartResponse.message,
+        );
       } else if (response.statusCode == 401) {
-        CustomSnackbar.showError(context, 'Session expired. Please log in again.');
-        navigateToLogin(context, 'Session expired. Please log in again.');
+        return CartOperationResult(success: false, message: 'Authentication failed');
       } else {
-        CustomSnackbar.showError(context, 'Something went wrong.');
+        return CartOperationResult(success: false, message: 'Something went wrong.');
       }
     } catch (e) {
-      CustomSnackbar.showError(context, 'An error occurred. Please try again.');
+      if (e is AuthException) {
+        return CartOperationResult(success: false, message: 'Authentication required');
+      }
+
+      if (e is DioException && e.type == DioExceptionType.cancel) {
+        return CartOperationResult(success: false, message: 'Request cancelled');
+      }
+
+      log('deleteCartListItem error ${e.toString()}');
+      return CartOperationResult(success: false, message: 'An error occurred. Please try again.');
     } finally {
       _deletingCartItem = false;
       notifyListeners();
     }
   }
 
-  ///    ________________________________________________________________   FETCH CART ITEMS IN CART SCREEN ________________________________________________________________
+  /// Fetch cart data - no BuildContext needed
+  Future<void> fetchCartData() async {
+    final user = await isLoggedIn();
+    if (!user) {
+      return;
+    }
 
-  CartModel? _cartResponse;
-  bool _cartLoading = false;
-
-  CartModel? get cartResponse => _cartResponse;
-
-  bool get cartLoading => _cartLoading;
-
-  Future<void> fetchCartData(String token, BuildContext context) async {
     _cartLoading = true;
     notifyListeners();
 
     try {
       const url = ApiEndpoints.cartItems;
-      final headers = {'Authorization': token};
 
       final response = await _apiResponseHandler.getRequest(
         url,
-        headers: headers,
-        context: context,
+        extra: {ApiConstants.requireAuthKey: true},
       );
 
       if (response.statusCode == 200) {
         _cartResponse = CartModel.fromJson(response.data);
-
-        final token = await SecurePreferencesUtil.getToken();
-        final provider = Provider.of<UserProvider>(context, listen: false);
-        provider.fetchUserData(token ?? '', context);
-      } else if (response.statusCode == 401) {
-        CustomSnackbar.showError(context, 'Session expired. Please log in again.');
-        navigateToLogin(context, 'Session expired. Please log in again.');
       }
     } catch (e) {
-      CustomSnackbar.showError(context, 'Failed to load cart data.');
+      if (e is AuthException) {
+        return;
+      }
+
+      if (e is DioException) {
+        if (e.type == DioExceptionType.cancel) {
+          return;
+        }
+
+        if (e.response?.statusCode == 401) {
+          return;
+        }
+      }
+
+      log('Error in fetchCartData: ${e.toString()}');
+      AppUtils.showToast('Failed to load cart data.');
     } finally {
       _cartLoading = false;
       notifyListeners();
     }
   }
 
-  /// Optimistically clear cart locally (e.g., after successful checkout)
+  /// Clear cart locally (e.g., after successful checkout)
   void clearCartLocally() {
     _cartResponse = null;
     notifyListeners();
   }
 
-  bool _checkoutLoading = false;
-
-  bool get checkoutLoading => _checkoutLoading;
-
-  Future<dynamic> fetchCheckoutData(
-    String token,
-    BuildContext context,
-    String checkoutToken,
-  ) async {
-    // Check authentication first
-    final bool loggedIn = await _isLoggedIn();
-    if (!loggedIn) {
-      navigateToLogin(context, 'Please log in to proceed with checkout');
-      return null;
-    }
-
+  /// Fetch checkout data
+  Future<dynamic> fetchCheckoutData(String checkoutToken) async {
     _checkoutLoading = true;
     notifyListeners();
 
     try {
       final url = '${ApiEndpoints.checkout}$checkoutToken';
-      final headers = {'Authorization': token};
 
       final response = await _apiResponseHandler.getRequest(
         url,
-        headers: headers,
-        context: context,
+        extra: {ApiConstants.requireAuthKey: true},
       );
 
       if (response.statusCode == 200) {
         return response;
       } else if (response.statusCode == 401) {
-        CustomSnackbar.showError(context, 'Session expired. Please log in again.');
-        navigateToLogin(context, 'Session expired. Please log in again.');
+        return null;
       } else {
-        CustomSnackbar.showError(context, 'Failed to load checkout data.');
+        AppUtils.showToast('Failed to load checkout data.');
       }
     } catch (e) {
-      CustomSnackbar.showError(context, 'An error occurred during checkout.');
+      if (e is AuthException) {
+        return null;
+      }
+
+      if (e is DioException && e.type == DioExceptionType.cancel) {
+        return null;
+      }
+
+      log('fetchCheckoutData error ${e.toString()}');
+      AppUtils.showToast('An error occurred during checkout.');
     } finally {
       _checkoutLoading = false;
       notifyListeners();
@@ -269,27 +265,14 @@ class CartProvider with ChangeNotifier {
     return null;
   }
 
-  ///  ----------------------------------------------------------------  UPDATE CART ITEMS ----------------------------------------------------------------
-
-  Future<void> updateCart(
-    String token,
-    BuildContext context,
-    Map<String, dynamic> items,
-  ) async {
-    // Check authentication first
-    final bool loggedIn = await _isLoggedIn();
-    if (!loggedIn) {
-      navigateToLogin(context, 'Please log in to update your cart');
-      return;
-    }
-
+  /// Update cart - returns success status and message
+  Future<CartOperationResult> updateCart(Map<String, dynamic> items) async {
     try {
       const url = ApiEndpoints.updateCart;
-      final headers = {'Authorization': token};
 
       final response = await _apiResponseHandler.postRequest(
         url,
-        headers: headers,
+        extra: {ApiConstants.requireAuthKey: true},
         body: items,
       );
 
@@ -297,20 +280,46 @@ class CartProvider with ChangeNotifier {
         final responseData = response.data;
         final updateCart = UpdateCartResponse.fromJson(responseData);
 
-        await fetchCartData(token, context); // Fetch updated cart data
-        CustomSnackbar.showSuccess(context, updateCart.message);
+        await fetchCartData();
+
+        return CartOperationResult(
+          success: true,
+          message: updateCart.message,
+        );
       } else if (response.statusCode == 401) {
-        CustomSnackbar.showError(context, 'Session expired. Please log in again.');
-        navigateToLogin(context, 'Session expired. Please log in again.');
+        return CartOperationResult(success: false, message: 'Authentication failed');
       } else {
         final errorResponse = UpdateCartResponse.fromJson(response.data);
-        CustomSnackbar.showError(context, errorResponse.message);
+        return CartOperationResult(success: false, message: errorResponse.message);
       }
     } catch (e) {
-      CustomSnackbar.showError(context, 'An error occurred while updating cart.');
-      throw Exception('Something went wrong');
-    }
+      if (e is AuthException) {
+        return CartOperationResult(success: false, message: 'Authentication required');
+      }
 
-    notifyListeners();
+      if (e is DioException && e.type == DioExceptionType.cancel) {
+        return CartOperationResult(success: false, message: 'Request cancelled');
+      }
+
+      log('updateCart error ${e.toString()}');
+      return CartOperationResult(success: false, message: 'An error occurred while updating cart.');
+    } finally {
+      notifyListeners();
+    }
   }
+}
+
+/// Result models for better error handling in UI
+class AddToCartResult {
+  final bool success;
+  final String message;
+
+  AddToCartResult({required this.success, required this.message});
+}
+
+class CartOperationResult {
+  final bool success;
+  final String message;
+
+  CartOperationResult({required this.success, required this.message});
 }

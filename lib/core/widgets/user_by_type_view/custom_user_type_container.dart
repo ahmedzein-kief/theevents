@@ -20,7 +20,6 @@ class UserByTypeSeeAll extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double screenWidth = MediaQuery.sizeOf(context).width;
     final double screenHeight = MediaQuery.sizeOf(context).height;
     return GestureDetector(
       onTap: onTap,
@@ -33,7 +32,7 @@ class UserByTypeSeeAll extends StatelessWidget {
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.2),
+              color: Colors.grey.withAlpha((0.2 * 255).toInt()),
               spreadRadius: 1,
               blurRadius: 5,
               offset: const Offset(0, 3),

@@ -37,14 +37,23 @@ class HomePageProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    try {
-      // Get current locale
-      final currentLocale = Provider.of<LocaleProvider>(context, listen: false).locale.languageCode;
+    // Get current locale once at the start
+    final currentLocale =
+        context.mounted ? Provider.of<LocaleProvider>(context, listen: false).locale.languageCode : null;
 
+    if (currentLocale == null) {
+      _isLoading = false;
+      notifyListeners();
+      return;
+    }
+
+    try {
       // Check cache first (unless forcing refresh)
       if (_cachedHomeData[currentLocale] != null && !forceRefresh) {
         final cachedData = _cachedHomeData[currentLocale]!;
         _processHomePageData(cachedData);
+        _isLoading = false;
+        notifyListeners();
         return;
       }
 
@@ -74,9 +83,8 @@ class HomePageProvider with ChangeNotifier {
     } catch (e) {
       log('Error fetching data: $e');
 
-      // Fallback to cached data if available
-      final currentLocale = Provider.of<LocaleProvider>(context, listen: false).locale.languageCode;
-      if (_cachedHomeData[currentLocale] != null) {
+      // Fallback to cached data if available and context is mounted
+      if (context.mounted && _cachedHomeData[currentLocale] != null) {
         _processHomePageData(_cachedHomeData[currentLocale]!);
       }
     } finally {

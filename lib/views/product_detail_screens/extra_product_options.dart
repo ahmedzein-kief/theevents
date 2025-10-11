@@ -24,7 +24,7 @@ class ExtraProductOptions extends StatefulWidget {
   final double screenWidth;
 
   @override
-  _ExtraProductOptionsState createState() => _ExtraProductOptionsState();
+  State<ExtraProductOptions> createState() => _ExtraProductOptionsState();
 }
 
 class _ExtraProductOptionsState extends State<ExtraProductOptions> {

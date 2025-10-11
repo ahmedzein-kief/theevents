@@ -32,7 +32,7 @@ class WalletHeader extends StatelessWidget {
         boxShadow: isDark
             ? [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.3),
+                  color: Colors.black.withAlpha((0.3 * 255).toInt()),
                   blurRadius: 4,
                   offset: const Offset(0, 2),
                 ),
@@ -65,7 +65,7 @@ class WalletHeader extends StatelessWidget {
                   userName,
                   style: GoogleFonts.openSans(
                     fontSize: 12,
-                    color: theme.textTheme.bodySmall?.color?.withOpacity(0.7),
+                    color: theme.textTheme.bodySmall?.color?.withAlpha((0.7 * 255).toInt()),
                   ),
                 ),
               ],

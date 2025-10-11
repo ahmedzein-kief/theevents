@@ -92,7 +92,7 @@ class _GiftByOccasionViewState extends State<FeaturedCategoriesScreen> {
                           );
                         },
                         child: Container(
-                          margin: EdgeInsets.symmetric(horizontal: itemMargin),
+                          margin: const EdgeInsets.symmetric(horizontal: itemMargin),
                           width: exactItemWidth,
                           child: Column(
                             mainAxisSize: MainAxisSize.min,

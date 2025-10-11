@@ -21,7 +21,6 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:signature/signature.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 
 import '../../core/services/agreement_pdf.dart';
 
@@ -67,7 +66,7 @@ class _ContractAgreementScreenState extends State<ContractAgreementScreen> {
 
   Future<void> getAllMetaData() async {
     final provider = Provider.of<VendorSignUpProvider>(context, listen: false);
-    final response = await provider.getAllMetaData(context);
+    final response = await provider.getAllMetaData();
 
     if (response != null) {
       /**
@@ -88,21 +87,21 @@ class _ContractAgreementScreenState extends State<ContractAgreementScreen> {
     }
   }
 
-  late WebViewController _webViewController;
+  // late WebViewController _webViewController;
 
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((callback) async {
       await getAllMetaData();
     });
-    _initializeWebView();
+    // _initializeWebView();
     super.initState();
   }
 
-  // Initialize WebView
-  void _initializeWebView() {
-    _webViewController = WebViewController()..setJavaScriptMode(JavaScriptMode.unrestricted);
-  }
+  // // Initialize WebView
+  // void _initializeWebView() {
+  //   _webViewController = WebViewController()..setJavaScriptMode(JavaScriptMode.unrestricted);
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -114,413 +113,380 @@ class _ContractAgreementScreenState extends State<ContractAgreementScreen> {
         child: Stack(
           children: [
             Consumer<VendorSignUpProvider>(
-              builder: (context, provider, child) => SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 60),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(
-                          left: screenWidth * 0.04,
-                          right: screenWidth * 0.04,
-                          top: screenHeight * 0.03,
-                          bottom: screenHeight * 0.015,
-                        ),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.2), // Shadow color
-                                spreadRadius: 2, // How much the shadow spreads
-                                blurRadius: 5, // How blurry the shadow is
-                                offset: const Offset(0, 2), // Shadow offset (X, Y)
-                              ),
-                            ],
+              builder: (context, provider, child) {
+                final isDark = Theme.of(context).brightness == Brightness.dark;
+
+                return SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 60),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(
+                            left: screenWidth * 0.04,
+                            right: screenWidth * 0.04,
+                            top: screenHeight * 0.03,
+                            bottom: screenHeight * 0.015,
                           ),
-                          child: Form(
-                            key: _formKey,
-                            child: Material(
-                              shadowColor: Colors.black,
-                              elevation: 15,
-                              color: Colors.white,
-                              child: Padding(
-                                padding: const EdgeInsets.only(
-                                  top: 20,
-                                  left: 10,
-                                  right: 10,
-                                  bottom: 30,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              boxShadow: [
+                                BoxShadow(
+                                  color: isDark
+                                      ? Colors.black.withAlpha((0.5 * 255).toInt())
+                                      : Colors.black.withAlpha((0.2 * 255).toInt()),
+                                  spreadRadius: 2,
+                                  blurRadius: 5,
+                                  offset: const Offset(0, 2),
                                 ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(
-                                      VendorAppStrings.contractAgreement.tr,
-                                      style: loginHeading(),
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.only(
-                                        top: screenHeight * 0.055,
-                                        bottom: 10,
+                              ],
+                            ),
+                            child: Form(
+                              key: _formKey,
+                              child: Material(
+                                color: isDark ? Colors.grey.shade900 : Colors.white,
+                                shadowColor: Colors.black,
+                                elevation: 15,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                    top: 20,
+                                    left: 10,
+                                    right: 10,
+                                    bottom: 30,
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        VendorAppStrings.contractAgreement.tr,
+                                        style: loginHeading(),
                                       ),
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          color: Theme.of(context).colorScheme.primary,
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: Colors.black.withOpacity(0.2),
-                                              spreadRadius: 1,
-                                              blurRadius: 5,
-                                              offset: const Offset(0, 3),
+                                      Padding(
+                                        padding: EdgeInsets.only(
+                                          top: screenHeight * 0.055,
+                                          bottom: 10,
+                                        ),
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            color: Theme.of(context).colorScheme.primary,
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: isDark
+                                                    ? Colors.black.withAlpha((0.5 * 255).toInt())
+                                                    : Colors.black.withAlpha((0.2 * 255).toInt()),
+                                                spreadRadius: 1,
+                                                blurRadius: 5,
+                                                offset: const Offset(0, 3),
+                                              ),
+                                            ],
+                                          ),
+                                          child: Padding(
+                                            padding: EdgeInsets.only(
+                                              top: screenHeight * 0.035,
+                                              bottom: screenHeight * 0.025,
+                                            ),
+                                            child: Column(
+                                              children: [
+                                                Text(
+                                                  AppStrings.vendorContactHeading.tr,
+                                                  style: vendorDescriptionAgreement(),
+                                                  softWrap: true,
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                                Padding(
+                                                  padding: EdgeInsets.symmetric(
+                                                    horizontal: screenWidth * 0.2,
+                                                  ),
+                                                  child: CustomVendorAuthButton(
+                                                    title: VendorAppStrings.previewAgreement.tr,
+                                                    onPressed: () async {
+                                                      await previewAgreementAndGeneratePdf(
+                                                        context,
+                                                      );
+                                                    },
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: screenWidth * 0.1,
+                                          vertical: screenHeight * 0.01,
+                                        ),
+                                        child: Text(
+                                          VendorAppStrings.pleaseSignHere.tr,
+                                          style: signHere(),
+                                          softWrap: true,
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 10,
+                                          horizontal: 10,
+                                        ),
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            color: isDark ? Colors.grey.shade800 : Colors.white,
+                                            borderRadius: BorderRadius.circular(4),
+                                            border: Border.all(
+                                              color: isDark ? Colors.grey.shade600 : Colors.grey,
+                                              width: 2,
+                                            ),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black.withAlpha(
+                                                  (0.5 * 255).toInt(),
+                                                ),
+                                                blurRadius: 8,
+                                                offset: const Offset(0, 2),
+                                              ),
+                                            ],
+                                          ),
+                                          child: isSaveClearShown
+                                              ? Signature(
+                                                  controller: _controller,
+                                                  height: screenHeight / 4,
+                                                  backgroundColor: Colors.transparent,
+                                                )
+                                              : Container(
+                                                  width: screenWidth,
+                                                  height: screenHeight / 4,
+                                                  color: isDark ? Colors.grey.shade800 : Colors.white,
+                                                  child: Image.memory(
+                                                    base64Decode(
+                                                      caModel.signImage ?? '',
+                                                    ),
+                                                    errorBuilder: (_, __, ___) => kShowVoid,
+                                                  ),
+                                                ),
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: screenWidth * 0.1,
+                                          vertical: screenHeight * 0.015,
+                                        ),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            Row(
+                                              crossAxisAlignment: CrossAxisAlignment.center,
+                                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                              children: [
+                                                if (isSaveClearShown)
+                                                  Container(
+                                                    height: screenHeight * 0.035,
+                                                    width: screenWidth * 0.15,
+                                                    color: Colors.green,
+                                                    child: Center(
+                                                      child: GestureDetector(
+                                                        child: Text(
+                                                          VendorAppStrings.save.tr,
+                                                          textAlign: TextAlign.center,
+                                                          softWrap: true,
+                                                          style: const TextStyle(
+                                                            color: Colors.white,
+                                                            fontWeight: FontWeight.bold,
+                                                          ),
+                                                        ),
+                                                        onTap: () async {
+                                                          final Uint8List? data = await _controller.toPngBytes();
+                                                          setState(() {
+                                                            if (data != null) {
+                                                              setState(() {
+                                                                final encodeImage = base64Encode(
+                                                                  data,
+                                                                );
+                                                                caModel.signImage = encodeImage;
+                                                                hasSignError = false;
+                                                                hasSignError = false;
+                                                                isSaveClearShown = false;
+                                                              });
+                                                            } else {
+                                                              setState(() {
+                                                                caModel.signImage = null;
+                                                                hasSignError = true;
+                                                              });
+                                                            }
+                                                          });
+                                                        },
+                                                      ),
+                                                    ),
+                                                  ),
+                                                if (isSaveClearShown)
+                                                  Container(
+                                                    height: screenHeight * 0.035,
+                                                    width: screenWidth * 0.15,
+                                                    color: Colors.pink,
+                                                    child: Center(
+                                                      child: GestureDetector(
+                                                        child: Text(
+                                                          VendorAppStrings.clear.tr,
+                                                          textAlign: TextAlign.center,
+                                                          style: const TextStyle(
+                                                            color: Colors.white,
+                                                            fontWeight: FontWeight.bold,
+                                                          ),
+                                                        ),
+                                                        onTap: () {
+                                                          _controller.clear();
+                                                          setState(() {
+                                                            caModel.signImage = null;
+                                                            hasSignError = true;
+                                                          });
+                                                        },
+                                                      ),
+                                                    ),
+                                                  ),
+                                                if (!isSaveClearShown)
+                                                  Container(
+                                                    height: screenHeight * 0.035,
+                                                    width: screenWidth * 0.15,
+                                                    color: Colors.blue,
+                                                    child: Center(
+                                                      child: GestureDetector(
+                                                        child: Text(
+                                                          VendorAppStrings.edit.tr,
+                                                          textAlign: TextAlign.center,
+                                                          style: const TextStyle(
+                                                            color: Colors.white,
+                                                            fontWeight: FontWeight.bold,
+                                                          ),
+                                                        ),
+                                                        onTap: () {
+                                                          setState(() {
+                                                            _controller.clear();
+                                                            isSaveClearShown = true;
+                                                            caModel.signImage = null;
+                                                            hasSignError = true;
+                                                          });
+                                                        },
+                                                      ),
+                                                    ),
+                                                  ),
+                                              ],
                                             ),
                                           ],
                                         ),
-                                        child: Padding(
-                                          padding: EdgeInsets.only(
-                                            top: screenHeight * 0.035,
-                                            bottom: screenHeight * 0.025,
-                                          ),
-                                          child: Column(
-                                            children: [
-                                              Text(
-                                                AppStrings.vendorContactHeading.tr,
-                                                style: vendorDescriptionAgreement(),
-                                                softWrap: true,
-                                                textAlign: TextAlign.center,
+                                      ),
+                                      if (hasSignError)
+                                        Align(
+                                          alignment: Alignment.centerLeft,
+                                          child: Padding(
+                                            padding: const EdgeInsets.only(left: 12.0),
+                                            child: Text(
+                                              VendorAppStrings.pleaseSignAgreement.tr,
+                                              style: const TextStyle(
+                                                color: Colors.red,
+                                                fontSize: 12,
                                               ),
-                                              // Padding(
-                                              //   padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.2),
-                                              //   child: CustomVendorAuthButton(
-                                              //     title: 'Preview Agreement',
-                                              //     onPressed: () async {
-                                              //       final previewResult = await previewAgreement();
-                                              //       if (previewResult != null) {
-                                              //         final String filePath =
-                                              //             await saveBase64ToExternalCache(base64Encode(previewResult));
-                                              //
-                                              //         if (filePath.isEmpty) {
-                                              //           return;
-                                              //         }
-                                              //
-                                              //         final File file = File(filePath);
-                                              //         if (!file.existsSync()) {
-                                              //           return;
-                                              //         }
-                                              //
-                                              //         OpenFile.open(filePath);
-                                              //       }
-                                              //     },
-                                              //   ),
-                                              // ),
-
-                                              Padding(
-                                                padding: EdgeInsets.symmetric(
-                                                  horizontal: screenWidth * 0.2,
-                                                ),
-                                                child: CustomVendorAuthButton(
-                                                  title: VendorAppStrings.previewAgreement.tr,
-                                                  onPressed: () async {
-                                                    await previewAgreementAndGeneratePdf(
-                                                      context,
-                                                    );
+                                            ),
+                                          ),
+                                        ),
+                                      VendorCustomTextFields(
+                                        labelText: VendorAppStrings.companyStamp.tr,
+                                        hintText: VendorAppStrings.noFileChosen.tr,
+                                        textStar: ' *',
+                                        controller: _stampTextEditingController,
+                                        keyboardType: TextInputType.name,
+                                        focusNode: _stampFocusNode,
+                                        isPrefixFilled: true,
+                                        isEditable: false,
+                                        prefixIcon: Icons.upload_outlined,
+                                        prefixContainerColor: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
+                                        borderSideColor: BorderSide(
+                                          color: isDark ? Colors.grey.shade600 : Colors.grey,
+                                          width: 0.5,
+                                        ),
+                                        prefixIconColor: isDark ? Colors.white70 : Colors.black,
+                                        nextFocusNode: _stampFocusNode,
+                                        validator: Validator.fieldRequired,
+                                        onIconPressed: () async {
+                                          final File? file = await CameraGalleryImagePicker.pickImage(
+                                            context: context,
+                                            source: ImagePickerSource.gallery,
+                                          );
+                                          if (file != null) {
+                                            _stampTextEditingController.text = p.basename(file.path);
+                                            caModel.companyStampFile = file;
+                                            caModel.companyStampFileName = p.basename(file.path);
+                                          } else {
+                                            _stampTextEditingController.text = '';
+                                            caModel.companyStampFile = null;
+                                            caModel.companyStampFileName = '';
+                                          }
+                                        },
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.symmetric(
+                                          vertical: screenHeight * 0.015,
+                                        ),
+                                        child: Column(
+                                          children: [
+                                            Row(
+                                              crossAxisAlignment: CrossAxisAlignment.center,
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              mainAxisSize: MainAxisSize.max,
+                                              children: [
+                                                Checkbox(
+                                                  activeColor: Theme.of(context).colorScheme.onPrimary,
+                                                  checkColor: Theme.of(context).colorScheme.primary,
+                                                  value: _isAgreementAccepted,
+                                                  onChanged: (bool? value) {
+                                                    setState(() {
+                                                      _isAgreementAccepted = value!;
+                                                      caModel.agreementAgree = value;
+                                                      hasAgreementError = caModel.agreementAgree == false;
+                                                    });
                                                   },
                                                 ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: screenWidth * 0.1,
-                                        vertical: screenHeight * 0.01,
-                                      ),
-                                      child: Text(
-                                        VendorAppStrings.pleaseSignHere.tr,
-                                        style: signHere(),
-                                        softWrap: true,
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        vertical: 10,
-                                        horizontal: 10,
-                                      ),
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          color: Colors.white, // Background color
-                                          borderRadius: BorderRadius.circular(
-                                            4,
-                                          ), // Rounded corners
-                                          border: Border.all(
-                                            color: Colors.grey,
-                                            width: 2,
-                                          ), // Border
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: Colors.black.withOpacity(
-                                                0.5,
-                                              ), // Shadow color
-                                              blurRadius: 8, // Blur radius
-                                              offset: const Offset(
-                                                0,
-                                                2,
-                                              ), // Offset (x, y)
+                                                Expanded(
+                                                  child: Text(
+                                                    AppStrings.agreementAccept.tr,
+                                                    softWrap: true,
+                                                    style: agreementAccept(),
+                                                  ),
+                                                ),
+                                              ],
                                             ),
+                                            if (hasAgreementError)
+                                              Align(
+                                                alignment: Alignment.centerLeft,
+                                                child: Padding(
+                                                  padding: const EdgeInsets.only(left: 12.0),
+                                                  child: Text(
+                                                    VendorAppStrings.youMustAgreeToProceed.tr,
+                                                    style: const TextStyle(
+                                                      color: Colors.red,
+                                                      fontSize: 12,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
                                           ],
                                         ),
-                                        child: isSaveClearShown
-                                            ? Signature(
-                                                controller: _controller,
-                                                height: screenHeight / 4,
-                                                backgroundColor:
-                                                    Colors.transparent, // Ensure it's transparent for decoration
-                                              )
-                                            : Container(
-                                                width: screenWidth,
-                                                height: screenHeight / 4,
-                                                color: Colors.white,
-                                                child: Image.memory(
-                                                  base64Decode(
-                                                    caModel.signImage ?? '',
-                                                  ),
-                                                  errorBuilder: (_, __, ___) => kShowVoid,
-                                                ),
-                                              ),
                                       ),
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: screenWidth * 0.1,
-                                        vertical: screenHeight * 0.015,
-                                      ),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          Row(
-                                            crossAxisAlignment: CrossAxisAlignment.center,
-                                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                            children: [
-                                              if (isSaveClearShown)
-                                                Container(
-                                                  height: screenHeight * 0.035,
-                                                  width: screenWidth * 0.15,
-                                                  color: Colors.green,
-                                                  child: Center(
-                                                    child: GestureDetector(
-                                                      child: Text(
-                                                        VendorAppStrings.save.tr,
-                                                        textAlign: TextAlign.center,
-                                                        softWrap: true,
-                                                        style: TextStyle(
-                                                          color: Theme.of(
-                                                            context,
-                                                          ).colorScheme.primary,
-                                                        ),
-                                                      ),
-                                                      onTap: () async {
-                                                        final Uint8List? data = await _controller.toPngBytes();
-                                                        setState(() {
-                                                          if (data != null) {
-                                                            setState(() {
-                                                              final encodeImage = base64Encode(
-                                                                data,
-                                                              );
-                                                              caModel.signImage = encodeImage;
-                                                              hasSignError = false;
-                                                              hasSignError = false;
-                                                              isSaveClearShown = false;
-                                                            });
-                                                          } else {
-                                                            setState(() {
-                                                              caModel.signImage = null;
-                                                              hasSignError = true;
-                                                            });
-                                                          }
-                                                        });
-                                                      },
-                                                    ),
-                                                  ),
-                                                ),
-                                              if (isSaveClearShown)
-                                                Container(
-                                                  height: screenHeight * 0.035,
-                                                  width: screenWidth * 0.15,
-                                                  color: Colors.pink,
-                                                  child: Center(
-                                                    child: GestureDetector(
-                                                      child: Text(
-                                                        VendorAppStrings.clear.tr,
-                                                        textAlign: TextAlign.center,
-                                                        style: TextStyle(
-                                                          color: Theme.of(
-                                                            context,
-                                                          ).colorScheme.primary,
-                                                        ),
-                                                      ),
-                                                      onTap: () {
-                                                        _controller.clear();
-                                                        setState(() {
-                                                          caModel.signImage = null;
-                                                          hasSignError = true;
-                                                        });
-                                                      },
-                                                    ),
-                                                  ),
-                                                ),
-                                              if (!isSaveClearShown)
-                                                Container(
-                                                  height: screenHeight * 0.035,
-                                                  width: screenWidth * 0.15,
-                                                  color: Colors.blue,
-                                                  child: Center(
-                                                    child: GestureDetector(
-                                                      child: Text(
-                                                        VendorAppStrings.edit.tr,
-                                                        textAlign: TextAlign.center,
-                                                        style: TextStyle(
-                                                          color: Theme.of(
-                                                            context,
-                                                          ).colorScheme.primary,
-                                                        ),
-                                                      ),
-                                                      onTap: () {
-                                                        setState(() {
-                                                          _controller.clear();
-                                                          isSaveClearShown = true;
-                                                          caModel.signImage = null;
-                                                          hasSignError = true;
-                                                        });
-                                                      },
-                                                    ),
-                                                  ),
-                                                ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    if (hasSignError)
-                                      Align(
-                                        alignment: Alignment.centerLeft,
-                                        child: Padding(
-                                          padding: const EdgeInsets.only(left: 12.0),
-                                          child: Text(
-                                            VendorAppStrings.pleaseSignAgreement.tr,
-                                            style: const TextStyle(
-                                              color: Colors.red,
-                                              fontSize: 12,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-
-                                    /*if (data != null)
-                                      Container(
-                                        color: Colors.grey[300],
-                                        child: Image.memory(data!),
-                                      ),*/
-                                    VendorCustomTextFields(
-                                      labelText: VendorAppStrings.companyStamp.tr,
-                                      hintText: VendorAppStrings.noFileChosen.tr,
-                                      textStar: ' *',
-                                      controller: _stampTextEditingController,
-                                      keyboardType: TextInputType.name,
-                                      focusNode: _stampFocusNode,
-                                      isPrefixFilled: true,
-                                      isEditable: false,
-                                      prefixIcon: Icons.upload_outlined,
-                                      prefixContainerColor: Colors.grey.shade300,
-                                      borderSideColor: const BorderSide(
-                                        color: Colors.grey,
-                                        width: 0.5,
-                                      ),
-                                      prefixIconColor: Colors.black,
-                                      nextFocusNode: _stampFocusNode,
-                                      validator: Validator.fieldRequired,
-                                      onIconPressed: () async {
-                                        final File? file = await CameraGalleryImagePicker.pickImage(
-                                          context: context,
-                                          source: ImagePickerSource.gallery,
-                                        );
-                                        if (file != null) {
-                                          _stampTextEditingController.text = p.basename(file.path);
-                                          caModel.companyStampFile = file;
-                                          caModel.companyStampFileName = p.basename(file.path);
-                                        } else {
-                                          _stampTextEditingController.text = '';
-                                          caModel.companyStampFile = null;
-                                          caModel.companyStampFileName = '';
-                                        }
-                                      },
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.symmetric(
-                                        vertical: screenHeight * 0.015,
-                                      ),
-                                      child: Column(
-                                        children: [
-                                          Row(
-                                            crossAxisAlignment: CrossAxisAlignment.center,
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            mainAxisSize: MainAxisSize.max,
-                                            children: [
-                                              Checkbox(
-                                                activeColor: Theme.of(context).colorScheme.onPrimary,
-                                                checkColor: Theme.of(context).colorScheme.primary,
-                                                value: _isAgreementAccepted,
-                                                onChanged: (bool? value) {
-                                                  setState(() {
-                                                    _isAgreementAccepted = value!;
-                                                    caModel.agreementAgree = value;
-                                                    hasAgreementError = caModel.agreementAgree == false;
-                                                  });
-                                                },
-                                              ),
-                                              Expanded(
-                                                child: Text(
-                                                  AppStrings.agreementAccept.tr,
-                                                  softWrap: true,
-                                                  style: agreementAccept(),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          // Validation message
-                                          if (hasAgreementError)
-                                            Align(
-                                              alignment: Alignment.centerLeft,
-                                              child: Padding(
-                                                padding: const EdgeInsets.only(left: 12.0),
-                                                child: Text(
-                                                  VendorAppStrings.youMustAgreeToProceed.tr,
-                                                  style: const TextStyle(
-                                                    color: Colors.red,
-                                                    fontSize: 12,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ),
+                );
+              },
             ),
             Align(
               alignment: Alignment.bottomCenter,
@@ -546,7 +512,7 @@ class _ContractAgreementScreenState extends State<ContractAgreementScreen> {
             ),
             if (mainProvider.isLoading)
               Container(
-                color: Colors.black.withAlpha((0.5 * 255).toInt()), // Semi-transparent background
+                color: Colors.black.withAlpha((0.5 * 255).toInt()),
                 child: const Center(
                   child: CircularProgressIndicator(
                     valueColor: AlwaysStoppedAnimation<Color>(AppColors.peachyPink),

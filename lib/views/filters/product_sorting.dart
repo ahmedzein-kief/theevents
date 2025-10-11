@@ -21,7 +21,7 @@ class SortAndFilterDropdown extends StatefulWidget {
   final VoidCallback onFilterPressed;
 
   @override
-  _SortAndFilterDropdownState createState() => _SortAndFilterDropdownState();
+  State<SortAndFilterDropdown> createState() => _SortAndFilterDropdownState();
 }
 
 class _SortAndFilterDropdownState extends State<SortAndFilterDropdown> {
@@ -37,8 +37,7 @@ class _SortAndFilterDropdownState extends State<SortAndFilterDropdown> {
 
   // Load and parse the JSON file for sort options
   Future<void> _loadSortOptions() async {
-    final String response =
-        await rootBundle.loadString('assets/sort_options.json');
+    final String response = await rootBundle.loadString('assets/sort_options.json');
     final List<dynamic> data = jsonDecode(response);
 
     setState(() {
@@ -109,8 +108,10 @@ class _SortAndFilterDropdownState extends State<SortAndFilterDropdown> {
                           .map(
                             (option) => DropdownMenuItem<String>(
                               value: option['value'],
-                              child: Text(option['label']!,
-                                  style: sortingStyle(context),),
+                              child: Text(
+                                option['label']!,
+                                style: sortingStyle(context),
+                              ),
                             ),
                           )
                           .toList(),

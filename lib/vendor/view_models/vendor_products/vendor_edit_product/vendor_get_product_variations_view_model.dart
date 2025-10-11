@@ -1,7 +1,8 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:event_app/core/services/shared_preferences_helper.dart';
-import 'package:event_app/data/vendor/data/response/ApiResponse.dart';
+import 'package:event_app/data/vendor/data/response/api_response.dart';
 import 'package:event_app/provider/vendor/vendor_repository.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -30,8 +31,7 @@ class VendorGetProductVariationsViewModel with ChangeNotifier {
   }
 
   final _myRepo = VendorRepository();
-  ApiResponse<VendorGetProductVariationsModel> _apiResponse =
-      ApiResponse.none();
+  ApiResponse<VendorGetProductVariationsModel> _apiResponse = ApiResponse.none();
 
   ApiResponse<VendorGetProductVariationsModel> get apiResponse => _apiResponse;
 
@@ -62,15 +62,17 @@ class VendorGetProductVariationsViewModel with ChangeNotifier {
       // If successful, increment the current page and append data
       if (_currentPage <= _lastPage) {
         setApiResponse = ApiResponse.loading();
-        final VendorGetProductVariationsModel response =
-            await _myRepo.vendorGetProductVariations(
-                headers: headers, body: body, productID: productID,);
+        final VendorGetProductVariationsModel response = await _myRepo.vendorGetProductVariations(
+          headers: headers,
+          body: body,
+          productID: productID,
+        );
         setLastPage(response);
         resetList(response);
         setApiResponse = ApiResponse.completed(response);
       }
     } catch (error) {
-      print(error.toString());
+      log(error.toString());
       setApiResponse = ApiResponse.error(error.toString());
     }
   }
@@ -82,7 +84,7 @@ class VendorGetProductVariationsViewModel with ChangeNotifier {
 
   void resetList(VendorGetProductVariationsModel response) {
     _list.addAll(response.data!.records!);
-    _lastPage = response.data!.pagination!.lastPage!;
+    _lastPage = response.data!.pagination!.lastPage;
     _currentPage++;
     notifyListeners();
   }

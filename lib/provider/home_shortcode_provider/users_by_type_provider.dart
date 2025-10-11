@@ -16,7 +16,6 @@ class UsersByTypeProvider with ChangeNotifier {
 
   Future<void> fetchCelebrities(BuildContext context, {required data}) async {
     final typeId = int.tryParse(data['attributes']['type_id'].toString()) ?? 0;
-    final limit = data['attributes']['limit'].toString();
     // final url = Uri.parse('https://apistaging.theevents.ae/api/v1/customers-by-type/$typeId');
     final url = '${ApiEndpoints.customerByType}/$typeId';
 
@@ -26,11 +25,7 @@ class UsersByTypeProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await _apiResponseHandler.getRequest(
-        url,
-        queryParams: params,
-        context: context,
-      );
+      final response = await _apiResponseHandler.getRequest(url, queryParams: params);
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = response.data;
@@ -66,10 +61,7 @@ class UsersByTypeProvider with ChangeNotifier {
     notifyListeners();
     final url = '${ApiEndpoints.homeVendorData}$id';
     try {
-      final response = await _apiResponseHandler.getRequest(
-        url,
-        context: context,
-      );
+      final response = await _apiResponseHandler.getRequest(url);
 
       if (response.statusCode == 200) {
         final json = response.data;

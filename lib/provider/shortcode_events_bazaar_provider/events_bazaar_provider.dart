@@ -25,10 +25,7 @@ class EventBazaarProvider with ChangeNotifier {
     // final response = await http.get(Uri.parse('https://apistaging.theevents.ae/api/v1/countries/list'));
     const url = ApiEndpoints.eventsBazaarList;
 
-    final response = await _apiResponseHandler.getRequest(
-      url,
-      context: context,
-    );
+    final response = await _apiResponseHandler.getRequest(url);
 
     if (response.statusCode == 200) {
       final data = response.data;
@@ -56,10 +53,7 @@ class EventBazaarProvider with ChangeNotifier {
 
     const url = ApiEndpoints.eventsBazaarBanner;
 
-    final response = await _apiResponseHandler.getRequest(
-      url,
-      context: context,
-    );
+    final response = await _apiResponseHandler.getRequest(url);
 
     if (response.statusCode == 200) {
       final data = response.data;

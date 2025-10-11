@@ -6,8 +6,7 @@ import 'package:event_app/models/product_packages_models/product_options_model.d
 class ProductDetailsModels {
   ProductDetailsModels({required this.error, this.data});
 
-  factory ProductDetailsModels.fromJson(Map<String, dynamic> json) =>
-      ProductDetailsModels(
+  factory ProductDetailsModels.fromJson(Map<String, dynamic> json) => ProductDetailsModels(
         error: json['error'] ?? false,
         data: json['data'] != null ? Data.fromJson(json['data']) : null,
       );
@@ -20,15 +19,14 @@ class Data {
 
   factory Data.fromJson(Map<String, dynamic> json) {
     final list = json['breadcrumb'] as List? ?? [];
-    final List<Breadcrumb> breadcrumbList =
-        list.map((i) => Breadcrumb.fromJson(i)).toList();
+    final List<Breadcrumb> breadcrumbList = list.map((i) => Breadcrumb.fromJson(i)).toList();
 
     return Data(
       breadcrumb: breadcrumbList,
-      record:
-          json['record'] != null ? ItemRecord.fromJson(json['record']) : null,
+      record: json['record'] != null ? ItemRecord.fromJson(json['record']) : null,
     );
   }
+
   final List<Breadcrumb> breadcrumb;
   final ItemRecord? record;
 }
@@ -87,35 +85,27 @@ class ItemRecord {
   });
 
   factory ItemRecord.fromJson(Map<String, dynamic> json) {
-    print('wishlist data ==> ${json['in_wishlist']}');
-
     final listImages = json['images'] as List? ?? [];
-    final List<Images> imagesList =
-        listImages.map((i) => Images.fromJson(i)).toList();
+    final List<Images> imagesList = listImages.map((i) => Images.fromJson(i)).toList();
 
     final listLabels = json['labels'] as List? ?? [];
-    final List<Label> labelsList =
-        listLabels.map((i) => Label.fromJson(i)).toList();
+    final List<Label> labelsList = listLabels.map((i) => Label.fromJson(i)).toList();
 
     final listCategories = json['categories'] as List? ?? [];
-    final List<Category> categoriesList =
-        listCategories.map((i) => Category.fromJson(i)).toList();
+    final List<Category> categoriesList = listCategories.map((i) => Category.fromJson(i)).toList();
 
     final listMetadata = json['metadata'] as List? ?? [];
-    final List<Metadata> metadataList =
-        listMetadata.map((i) => Metadata.fromJson(i)).toList();
+    final List<Metadata> metadataList = listMetadata.map((i) => Metadata.fromJson(i)).toList();
 
     final listAttributes = json['attributes'] as List? ?? [];
     final List<ProductAttributesModel> attributes =
         listAttributes.map((i) => ProductAttributesModel.fromJson(i)).toList();
 
     final listOptions = json['options'] as List? ?? [];
-    final List<ProductOptionsModel> options =
-        listOptions.map((i) => ProductOptionsModel.fromJson(i)).toList();
+    final List<ProductOptionsModel> options = listOptions.map((i) => ProductOptionsModel.fromJson(i)).toList();
 
     final listRelatedProducts = json['related_products'] as List? ?? [];
-    final List<RecordProduct> relatedProducts =
-        listRelatedProducts.map((i) => RecordProduct.fromJson(i)).toList();
+    final List<RecordProduct> relatedProducts = listRelatedProducts.map((i) => RecordProduct.fromJson(i)).toList();
 
     return ItemRecord(
       id: json['id'],
@@ -138,42 +128,30 @@ class ItemRecord {
       variationsCount: json['variations_count'],
       review: json['review'] != null ? Review.fromJson(json['review']) : null,
       prices: json['prices'] != null ? Prices.fromJson(json['prices']) : null,
-      store: (json['store'] != null && json['store'] is Map<String, dynamic>)
-          ? Store.fromJson(json['store'])
-          : null,
-      brand: (json['brand'] != null && json['brand'] is Map<String, dynamic>)
-          ? Brand.fromJson(json['brand'])
-          : null,
+      store: (json['store'] != null && json['store'] is Map<String, dynamic>) ? Store.fromJson(json['store']) : null,
+      brand: (json['brand'] != null && json['brand'] is Map<String, dynamic>) ? Brand.fromJson(json['brand']) : null,
       labels: labelsList,
       flashSale: json['flashSale'] ?? [],
-      variations: json['variations'] != null
-          ? Variations.fromJson(json['variations'])
-          : null,
-      defaultVariation: json['default_variation'] != null
-          ? DefaultVariation.fromJson(json['default_variation'])
-          : null,
+      variations: json['variations'] != null ? Variations.fromJson(json['variations']) : null,
+      defaultVariation: json['default_variation'] != null ? DefaultVariation.fromJson(json['default_variation']) : null,
       productCollections: json['product_collections'] ?? [],
       tags: json['tags'] ?? [],
       categories: categoriesList,
       options: options,
       crossSales: json['cross_sales'] ?? [],
       metadata: metadataList,
-      reviews:
-          (json['reviews'] != null && json['reviews'] is Map<String, dynamic>)
-              ? json['reviews']
-                  .map((i) => CustomerReviewRecord.fromJson(i))
-                  .toList()
-              : [],
+      reviews: (json['reviews'] != null && json['reviews'] is Map<String, dynamic>)
+          ? json['reviews'].map((i) => CustomerReviewRecord.fromJson(i)).toList()
+          : [],
       brandDetail:
-          (json['brand'] != null && json['brand'] is Map<String, dynamic>)
-              ? Brand.fromJson(json['brand'])
-              : null,
+          (json['brand'] != null && json['brand'] is Map<String, dynamic>) ? Brand.fromJson(json['brand']) : null,
       attributes: attributes,
       relatedProducts: relatedProducts,
       inWishList: json['in_wishlist'] ?? false,
       inCart: json['in_cart'] ?? false,
     );
   }
+
   final dynamic id;
   final String name;
   final String description;
@@ -240,9 +218,8 @@ class Review {
 
   factory Review.fromJson(Map<String, dynamic> json) {
     final listAverageCountArray = json['average_count_array'] as List? ?? [];
-    final List<AverageCountArray> averageCountArrayList = listAverageCountArray
-        .map((i) => AverageCountArray.fromJson(i))
-        .toList();
+    final List<AverageCountArray> averageCountArrayList =
+        listAverageCountArray.map((i) => AverageCountArray.fromJson(i)).toList();
 
     return Review(
       showAvgRating: json['show_avg_rating'] ?? false,
@@ -254,6 +231,7 @@ class Review {
       reviewImages: json['review_images'] ?? [],
     );
   }
+
   final bool showAvgRating;
   final dynamic rating;
   final String ratingFormatted;
@@ -264,11 +242,13 @@ class Review {
 }
 
 class AverageCountArray {
-  AverageCountArray(
-      {required this.star, required this.count, required this.percent,});
+  AverageCountArray({
+    required this.star,
+    required this.count,
+    required this.percent,
+  });
 
-  factory AverageCountArray.fromJson(Map<String, dynamic> json) =>
-      AverageCountArray(
+  factory AverageCountArray.fromJson(Map<String, dynamic> json) => AverageCountArray(
         star: json['star'] ?? 0,
         count: json['count'] ?? 0,
         percent: json['percent'] ?? 0,
@@ -372,6 +352,7 @@ class Variations {
       count: json['count'] ?? 0,
     );
   }
+
   final List<dynamic> variations;
   final int count;
 }
@@ -384,8 +365,7 @@ class DefaultVariation {
     required this.salePrice,
   });
 
-  factory DefaultVariation.fromJson(Map<String, dynamic> json) =>
-      DefaultVariation(
+  factory DefaultVariation.fromJson(Map<String, dynamic> json) => DefaultVariation(
         id: json['id'] ?? 0,
         name: json['name'] ?? '',
         price: json['price'] ?? '',

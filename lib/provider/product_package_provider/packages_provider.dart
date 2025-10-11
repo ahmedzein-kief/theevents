@@ -1,4 +1,3 @@
-
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/provider/api_response_handler.dart';
 import 'package:flutter/cupertino.dart';
@@ -30,11 +29,7 @@ class PackageProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await _apiResponseHandler.getRequest(
-        url,
-        queryParams: queryParams,
-        context: context,
-      );
+      final response = await _apiResponseHandler.getRequest(url, queryParams: queryParams);
 
       if (response.statusCode == 200) {
         final data = response.data;
@@ -95,17 +90,14 @@ class Data {
 
   Data.fromJson(Map<String, dynamic> json) {
     parent = json['parent'];
-    pagination = json['pagination'] != null
-        ? Pagination.fromJson(json['pagination'])
-        : null;
+    pagination = json['pagination'] != null ? Pagination.fromJson(json['pagination']) : null;
     if (json['records'] != null) {
       records = <RecordsPackages>[];
       json['records'].forEach((v) {
         records!.add(RecordsPackages.fromJson(v));
       });
     }
-    filters =
-        json['filters'] != null ? Filters.fromJson(json['filters']) : null;
+    filters = json['filters'] != null ? Filters.fromJson(json['filters']) : null;
   }
 
   List<dynamic>? parent;
@@ -267,11 +259,12 @@ class Review {
 }
 
 class Prices {
-  Prices(
-      {this.frontSalePrice,
-      this.price,
-      this.frontSalePriceWithTaxes,
-      this.priceWithTaxes,});
+  Prices({
+    this.frontSalePrice,
+    this.price,
+    this.frontSalePriceWithTaxes,
+    this.priceWithTaxes,
+  });
 
   Prices.fromJson(Map<String, dynamic> json) {
     frontSalePrice = json['front_sale_price'];
@@ -296,30 +289,26 @@ class Prices {
 }
 
 class Filters {
-  Filters(
-      {this.categories,
-      this.brands,
-      this.tags,
-      this.rand,
-      this.categoryRequest,
-      this.categoryId,
-      this.maxPrice,});
+  Filters({
+    this.categories,
+    this.brands,
+    this.tags,
+    this.rand,
+    this.categoryRequest,
+    this.categoryId,
+    this.maxPrice,
+  });
 
   Filters.fromJson(Map<String, dynamic> json) {
     categories = json['categories'] != null
         ? List<Categories>.from(
-            json['categories'].map((x) => Categories.fromJson(x)),)
+            json['categories'].map((x) => Categories.fromJson(x)),
+          )
         : null;
-    brands = json['brands'] != null
-        ? List<Brands>.from(json['brands'].map((x) => Brands.fromJson(x)))
-        : null;
-    tags = json['tags'] != null
-        ? List<Tags>.from(json['tags'].map((x) => Tags.fromJson(x)))
-        : null;
+    brands = json['brands'] != null ? List<Brands>.from(json['brands'].map((x) => Brands.fromJson(x))) : null;
+    tags = json['tags'] != null ? List<Tags>.from(json['tags'].map((x) => Tags.fromJson(x))) : null;
     rand = json['rand'];
-    categoryRequest = json['categoryRequest'] != null
-        ? List<dynamic>.from(json['categoryRequest'])
-        : null;
+    categoryRequest = json['categoryRequest'] != null ? List<dynamic>.from(json['categoryRequest']) : null;
     categoryId = json['category_id'];
     maxPrice = json['max_price'];
   }
@@ -345,8 +334,7 @@ class Filters {
     }
     data['rand'] = rand;
     if (categoryRequest != null) {
-      data['categoryRequest'] =
-          categoryRequest!.map((v) => v.toJson()).toList();
+      data['categoryRequest'] = categoryRequest!.map((v) => v.toJson()).toList();
     }
     data['category_id'] = categoryId;
     data['max_price'] = maxPrice;

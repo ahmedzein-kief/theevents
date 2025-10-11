@@ -1,12 +1,13 @@
-import 'package:event_app/core/styles/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class CustomVendorAuthButton extends StatelessWidget {
-  const CustomVendorAuthButton(
-      {super.key,
-      required this.title,
-      this.isLoading = false,
-      required this.onPressed,});
+  const CustomVendorAuthButton({
+    super.key,
+    required this.title,
+    this.isLoading = false,
+    required this.onPressed,
+  });
+
   final String title;
   final bool isLoading;
   final Function() onPressed;
@@ -27,7 +28,7 @@ class CustomVendorAuthButton extends StatelessWidget {
             alignment: Alignment.center,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8.0),
-              color: AppColors.darkGrey,
+              color: Theme.of(context).colorScheme.onPrimary,
             ),
             child: isLoading
                 ? SizedBox(

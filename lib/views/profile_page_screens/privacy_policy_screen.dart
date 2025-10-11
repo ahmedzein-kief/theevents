@@ -252,7 +252,10 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
                         ),
                         SvgPicture.asset(
                           AppStrings.privacyPolicyIcon.tr,
-                          color: Theme.of(context).colorScheme.onPrimary,
+                          colorFilter: ColorFilter.mode(
+                            Theme.of(context).colorScheme.onPrimary,
+                            BlendMode.srcIn,
+                          ),
                         ),
                       ],
                     ),

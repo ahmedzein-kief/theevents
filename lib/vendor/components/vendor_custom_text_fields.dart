@@ -28,6 +28,7 @@ class VendorCustomTextFields extends StatefulWidget {
     this.isEditable = true,
     this.onValueChanged,
   });
+
   final String labelText;
   final String textStar;
   final String hintText;
@@ -52,7 +53,7 @@ class VendorCustomTextFields extends StatefulWidget {
   final Function(String?)? onValueChanged;
 
   @override
-  _VendorCustomTextFieldsState createState() => _VendorCustomTextFieldsState();
+  State<VendorCustomTextFields> createState() => _VendorCustomTextFieldsState();
 }
 
 class _VendorCustomTextFieldsState extends State<VendorCustomTextFields> {
@@ -107,15 +108,17 @@ class _VendorCustomTextFieldsState extends State<VendorCustomTextFields> {
                 errorMaxLines: 2,
                 hintText: widget.hintText,
                 hintStyle: const TextStyle(color: Colors.grey),
-                prefixIcon: (widget.prefixIcon != null ||
-                        widget.prefixText != null)
+                prefixIcon: (widget.prefixIcon != null || widget.prefixText != null)
                     ? Container(
                         padding: const EdgeInsets.only(left: 10),
                         margin: const EdgeInsets.only(
-                            left: 1, top: 1, bottom: 1, right: 8,),
+                          left: 1,
+                          top: 1,
+                          bottom: 1,
+                          right: 8,
+                        ),
                         decoration: BoxDecoration(
-                          color: widget.isPrefixFilled &&
-                                  widget.prefixContainerColor != null
+                          color: widget.isPrefixFilled && widget.prefixContainerColor != null
                               ? widget.prefixContainerColor
                               : Colors.transparent,
                           borderRadius: const BorderRadius.only(
@@ -141,17 +144,16 @@ class _VendorCustomTextFieldsState extends State<VendorCustomTextFields> {
                               ),
                             if (widget.prefixIcon != null)
                               Padding(
-                                padding:
-                                    const EdgeInsets.only(right: 4, left: 5),
+                                padding: const EdgeInsets.only(right: 4, left: 5),
                                 child: IconButton(
-                                  icon: Icon(widget.prefixIcon,
-                                      color: widget.prefixIconColor ??
-                                          Colors.grey,),
+                                  icon: Icon(
+                                    widget.prefixIcon,
+                                    color: widget.prefixIconColor ?? Colors.grey,
+                                  ),
                                   onPressed: widget.onIconPressed,
                                 ),
                               ),
-                            if (widget.prefixIcon != null &&
-                                widget.prefixText != null)
+                            if (widget.prefixIcon != null && widget.prefixText != null)
                               Container(
                                 color: Colors.grey,
                                 width: 0.5,
@@ -191,13 +193,17 @@ class _VendorCustomTextFieldsState extends State<VendorCustomTextFields> {
                 ),
                 errorStyle: GoogleFonts.inter(height: 0, color: Colors.red),
                 contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16.0, vertical: 12.0,),
+                  horizontal: 16.0,
+                  vertical: 12.0,
+                ),
                 suffixIcon: widget.suffixWidget ??
                     (widget.suffixIcon != null
                         ? IconButton(
-                            icon: Icon(widget.suffixIcon,
-                                color: widget.suffixIconColor ?? Colors.grey,
-                                size: 18,),
+                            icon: Icon(
+                              widget.suffixIcon,
+                              color: widget.suffixIconColor ?? Colors.grey,
+                              size: 18,
+                            ),
                             onPressed: widget.onIconPressed,
                           )
                         : null),

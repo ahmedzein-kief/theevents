@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../core/utils/app_utils.dart';
 
 class VendorDataListBuilder extends StatelessWidget {
-  VendorDataListBuilder({
+  const VendorDataListBuilder({
     super.key,
     required this.listLength,
     required this.scrollController,
@@ -15,9 +15,9 @@ class VendorDataListBuilder extends StatelessWidget {
 
   final int listLength;
   final ScrollController scrollController;
-  Widget? onNoDataAvailable;
+  final Widget? onNoDataAvailable;
   final bool loadingMoreData;
-  Widget? onLoadingMoreData;
+  final Widget? onLoadingMoreData;
   final WidgetBuilder contentBuilder;
 
   @override

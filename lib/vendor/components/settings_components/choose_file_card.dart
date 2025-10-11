@@ -8,7 +8,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../../core/network/api_endpoints/api_contsants.dart';
 
 class ChooseFileCard extends StatefulWidget {
-  ChooseFileCard({
+  const ChooseFileCard({
     super.key,
     this.file,
     this.onChoose,
@@ -22,8 +22,8 @@ class ChooseFileCard extends StatefulWidget {
   final String? imageLink;
   final VoidCallback? onChoose;
   final VoidCallback? onClose;
-  double? width;
-  double? height;
+  final double? width;
+  final double? height;
 
   @override
   State<ChooseFileCard> createState() => _ChooseFileCardState();

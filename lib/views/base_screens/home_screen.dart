@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/constants/app_strings.dart';
 import '../../core/styles/app_colors.dart';
@@ -32,7 +31,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenViewState extends State<HomeScreen> {
   String? userName;
-  late bool _isLoggedIn = false;
   Locale? _currentLocale;
   bool _isRefreshing = false;
   Timer? _debounceTimer;
@@ -47,7 +45,6 @@ class _HomeScreenViewState extends State<HomeScreen> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await Future.wait([
-        _loadLoginState(),
         _refreshHomePage(),
       ]);
     });
@@ -70,15 +67,6 @@ class _HomeScreenViewState extends State<HomeScreen> {
     if (_currentLocale != newLocale) {
       _currentLocale = newLocale;
       _refetchAllDataForLocaleChange();
-    }
-  }
-
-  Future<void> _loadLoginState() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    if (mounted) {
-      setState(() {
-        _isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
-      });
     }
   }
 

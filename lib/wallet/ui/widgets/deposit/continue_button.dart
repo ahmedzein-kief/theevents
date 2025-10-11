@@ -30,7 +30,7 @@ class ContinueButton extends StatelessWidget {
                 context.read<DepositCubit>().processDeposit();
               },
         style: ElevatedButton.styleFrom(
-          backgroundColor: isDark ? theme.textTheme.bodySmall?.color?.withOpacity(0.6) : Colors.black,
+          backgroundColor: isDark ? theme.textTheme.bodySmall?.color?.withAlpha((0.6 * 255).toInt()) : Colors.black,
           foregroundColor: isDark ? Colors.black : Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(3),

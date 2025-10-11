@@ -28,7 +28,9 @@ class DrawerMenuItemWidget extends StatelessWidget {
       child: ListTile(
         leading: Icon(
           icon,
-          color: isSelected ? (isDark ? Colors.white : Colors.brown[700]) : theme.iconTheme.color?.withOpacity(0.7),
+          color: isSelected
+              ? (isDark ? Colors.white : Colors.brown[700])
+              : theme.iconTheme.color?.withAlpha((0.7 * 255).toInt()),
         ),
         title: Text(
           title,
@@ -41,7 +43,7 @@ class DrawerMenuItemWidget extends StatelessWidget {
         trailing: Icon(
           Icons.arrow_forward_ios,
           size: 16,
-          color: theme.iconTheme.color?.withOpacity(0.5),
+          color: theme.iconTheme.color?.withAlpha((0.5 * 255).toInt()),
         ),
         onTap: onTap,
         shape: RoundedRectangleBorder(

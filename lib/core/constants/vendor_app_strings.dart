@@ -92,6 +92,7 @@ class VendorAppStrings {
   static const String bankLetterPdf = 'Bank Letter (pdf)';
   static const String password = 'Password';
   static const String confirmPassword = 'Confirm Password';
+  static const String confirm = 'confirm';
   static const String companyName = 'Company Name';
   static const String companySlug = 'Company Slug';
   static const String companyMobileNumber = 'Company Mobile Number';
@@ -184,6 +185,7 @@ class VendorAppStrings {
   static const String enterState = 'Enter State';
   static const String enterCity = 'Enter City';
   static const String addNote = 'Add Note..';
+
   static const String selectShipmentStatus = 'Select shipment status';
   static const String enterShopUrl = 'Enter Shop URL';
   static const String enterTitle = 'Enter Title';
@@ -348,4 +350,36 @@ class VendorAppStrings {
   static const String content = 'content';
   static const String paymentCancelled = 'payment_cancelled';
   static const String paymentLinkError = 'payment_link_error';
+  static const String addMoreAttribute = 'addMoreAttribute';
+
+  static const String productOptionsDes = 'productOptionsDes';
+  static const String pleaseSelectType = 'pleaseSelectType';
+  static const String selectSectionType = 'selectSectionType';
+  static const String addGlobalOptions = 'addGlobalOptions';
+  static const String addNewRow = 'addNewRow';
+  static const String selectFromExistingFAQs = 'selectFromExistingFAQs';
+  static const String or = 'or';
+  static const String add = 'add';
+  static const String addKeyword = 'addKeyword';
+  static const String searchProducts = 'searchProducts';
+  static const String selectedProductAlreadyAdded = 'selectedProductAlreadyAdded';
+  static const String pleaseSearchAndAddProducts = 'pleaseSearchAndAddProducts';
+  static const String priceFieldDescription = 'priceFieldDescription';
+  static const String typeFieldDescription = 'typeFieldDescription';
+  static const String customerWontSeeThisPrice = 'customerWontSeeThisPrice';
+  static const String chooseDiscountPeriod = 'chooseDiscountPeriod';
+  static const String percentFromOriginalPrice = 'percentFromOriginalPrice';
+  static const String allowCustomerCheckoutWhenOutOfStock = 'allowCustomerCheckoutWhenOutOfStock';
+  static const String stockStatus = 'stockStatus';
+  static const String inStock = 'In stock';
+  static const String outOfStock = 'Out of stock';
+  static const String onBackorder = 'On backorder';
+  static const String pleaseSelectShipmentStatus = 'pleaseSelectShipmentStatus';
+  static const String failedToUpdateShipmentStatus = 'failedToUpdateShipmentStatus';
+  static const String resendEmail = 'resendEmail';
+  static const String paymentMethod = 'paymentMethod';
+  static const String paymentStatus = 'paymentStatus';
+  static const String shippingInformation = 'shippingInformation';
+  static const String updateShippingStatus = 'updateShippingStatus';
+  static const String errorFetchingProducts = 'errorFetchingProducts';
 }

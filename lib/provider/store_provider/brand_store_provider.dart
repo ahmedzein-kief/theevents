@@ -91,10 +91,7 @@ class StoreProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await _apiResponseHandler.getRequest(
-        url,
-        context: context,
-      );
+      final response = await _apiResponseHandler.getRequest(url);
 
       if (response.statusCode == 200) {
         final data = response.data;

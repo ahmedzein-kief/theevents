@@ -54,7 +54,7 @@ class AddressListWidget extends StatelessWidget {
           top: screenHeight * 0.01,
           bottom: screenHeight * 0.01,
         ),
-        color: AppColors.peachyPink.withOpacity(0.2),
+        color: AppColors.peachyPink.withAlpha((0.2 * 255).toInt()),
         child: Text(
           AppStrings.noRecord.tr,
           style: GoogleFonts.inter(
@@ -109,7 +109,7 @@ class AddressItemWidget extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         border: Border.all(
-          color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.08),
+          color: Theme.of(context).colorScheme.onPrimary.withAlpha((0.08 * 255).toInt()),
         ),
         borderRadius: BorderRadius.circular(4),
       ),

@@ -2,12 +2,12 @@ import 'dart:async';
 
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/views/base_screens/base_app_bar.dart';
+import 'package:event_app/views/home_screens_shortcode/shortcode_user_by_type/widgets/user_header_section.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/constants/app_strings.dart';
 import '../../../core/network/api_endpoints/api_end_point.dart';
-import '../../../core/services/shared_preferences_helper.dart';
 import '../../../core/styles/app_colors.dart';
 import '../../../provider/cart_item_provider/cart_item_provider.dart';
 import '../../../provider/home_shortcode_provider/users_by_type_provider.dart';
@@ -17,7 +17,6 @@ import '../../../provider/wishlist_items_provider/wishlist_provider.dart';
 import 'widgets/packages_view.dart';
 import 'widgets/products_view.dart';
 import 'widgets/tab_navigation_section.dart';
-import 'widgets/user-header_section.dart';
 
 class UserTypeInnerPageScreen extends StatefulWidget {
   const UserTypeInnerPageScreen({
@@ -67,9 +66,8 @@ class _UserTypeInnerPageScreenState extends State<UserTypeInnerPageScreen> {
   ///  ------------  FOR TAKING THE  ICON HEART AS THEIR STATE RED ON WISHLIST ADD BASIS ------------
 
   Future<void> fetchWishListItems() async {
-    final token = await SecurePreferencesUtil.getToken();
     final provider = Provider.of<WishlistProvider>(context, listen: false);
-    provider.fetchWishlist(token ?? '', context);
+    provider.fetchWishlist();
   }
 
   void _onScrollPackages() {

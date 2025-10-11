@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:event_app/models/product_packages_models/product_filters_model.dart';
 import 'package:event_app/provider/api_response_handler.dart';
 import 'package:flutter/cupertino.dart';
@@ -7,7 +9,8 @@ class SearchBarProvider extends ChangeNotifier {
 
   List<Records> _products = [];
   ProductFiltersModel? _productFilters;
-  Pagination? _pagination;
+
+  // Pagination? _pagination;
   bool _isMoreLoading = false;
   bool _isLoading = false;
 
@@ -62,23 +65,22 @@ class SearchBarProvider extends ChangeNotifier {
     final url = filtersQuery.isNotEmpty ? '$baseUrl&$filtersQuery&allcategories=1' : baseUrl;
 
     try {
-      final response = await _apiResponseHandler.getRequest(
-        url,
-        context: context,
-      );
+      final response = await _apiResponseHandler.getRequest(url);
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonResponse = response.data;
         final NewProductsModels apiResponse = NewProductsModels.fromJson(jsonResponse);
 
         if (page == 1) {
           _products = apiResponse.data?.records ?? [];
-          _pagination = apiResponse.data?.pagination;
+          // _pagination = apiResponse.data?.pagination;
           _productFilters = apiResponse.data?.filters;
         } else {
           _products.addAll(apiResponse.data?.records ?? []);
         }
       } else {}
-    } catch (error) {}
+    } catch (error) {
+      log(error.toString());
+    }
 
     _isLoading = false;
     _isMoreLoading = false;

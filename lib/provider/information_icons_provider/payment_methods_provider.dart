@@ -141,7 +141,6 @@ class PaymentMethodsProvider with ChangeNotifier {
           'payment_type': paymentType ?? '',
           'amount': amount ?? '',
         },
-        context: context,
       );
 
       if (response.statusCode == 200) {

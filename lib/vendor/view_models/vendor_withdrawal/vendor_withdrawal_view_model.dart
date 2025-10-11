@@ -1,5 +1,5 @@
 import 'package:event_app/core/services/shared_preferences_helper.dart';
-import 'package:event_app/data/vendor/data/response/ApiResponse.dart';
+import 'package:event_app/data/vendor/data/response/api_response.dart';
 import 'package:event_app/models/vendor_models/vendor_withdrawals_model/vendor_get_withdrawals_model.dart';
 import 'package:event_app/provider/vendor/vendor_repository.dart';
 import 'package:flutter/cupertino.dart';
@@ -54,8 +54,8 @@ class VendorWithdrawalsViewModel with ChangeNotifier {
       // If successful, increment the current page and append data
       if (_currentPage <= _lastPage) {
         setApiResponse = ApiResponse.loading();
-        final VendorGetWithdrawalsModel response = await _myRepo
-            .vendorWithdrawals(headers: headers, queryParams: queryParams);
+        final VendorGetWithdrawalsModel response =
+            await _myRepo.vendorWithdrawals(headers: headers, queryParams: queryParams);
         setLastPage(response);
         resetList(response);
         setApiResponse = ApiResponse.completed(response);
@@ -72,7 +72,7 @@ class VendorWithdrawalsViewModel with ChangeNotifier {
 
   void resetList(VendorGetWithdrawalsModel response) {
     _list.addAll(response.data!.records!);
-    _lastPage = response.data!.pagination!.lastPage!;
+    _lastPage = response.data!.pagination!.lastPage;
     _currentPage++;
     notifyListeners();
   }

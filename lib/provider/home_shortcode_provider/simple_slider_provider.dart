@@ -29,10 +29,7 @@ class TopSliderProvider with ChangeNotifier {
     final url = '$baseUrl?key=${data['attributes']['key']}'; // Add query parameters here
 
     try {
-      final response = await _apiResponseHandler.getRequest(
-        url,
-        context: context,
-      );
+      final response = await _apiResponseHandler.getRequest(url);
 
       if (response.statusCode == 200) {
         final data = response.data;
@@ -72,10 +69,7 @@ class BottomSliderProvider with ChangeNotifier {
     final url = '$baseUrl?key=${data['attributes']['key']}'; // Add query parameters here
 
     try {
-      final response = await _apiResponseHandler.getRequest(
-        url,
-        context: context,
-      );
+      final response = await _apiResponseHandler.getRequest(url);
 
       if (response.statusCode == 200) {
         final data = response.data;

@@ -1,31 +1,34 @@
-import 'package:event_app/core/styles/app_colors.dart';
+import 'dart:developer';
+
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/styles/app_sizes.dart';
+import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/models/vendor_models/products/create_product/vendor_search_product_data_response.dart';
 import 'package:event_app/models/vendor_models/products/holder_models/search_dropdown_model.dart';
 import 'package:event_app/vendor/components/common_widgets/vendor_action_cell.dart';
 import 'package:event_app/vendor/components/dropdowns/search_dropdown.dart';
 import 'package:event_app/vendor/components/list_tiles/records_list_tile.dart';
-import 'package:event_app/vendor/components/services/alert_services.dart';
-import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/vendor/components/vendor_text_style.dart';
 import 'package:event_app/vendor/view_models/vendor_products/vendor_create_product_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../core/constants/vendor_app_strings.dart';
+
 class RelatedProductsSearchScreen extends StatefulWidget {
-  RelatedProductsSearchScreen({
+  const RelatedProductsSearchScreen({
     super.key,
     required this.title,
     required this.dataId,
-    required this.selectedRelatedProducts,
+    this.selectedRelatedProducts = const [],
   });
 
   final String title;
-  String? dataId;
-  List<SearchProductRecord> selectedRelatedProducts = [];
+  final String? dataId;
+  final List<SearchProductRecord> selectedRelatedProducts;
 
   @override
-  _RelatedProductsSearchScreenState createState() => _RelatedProductsSearchScreenState();
+  State<RelatedProductsSearchScreen> createState() => _RelatedProductsSearchScreenState();
 }
 
 class _RelatedProductsSearchScreenState extends State<RelatedProductsSearchScreen> {
@@ -56,12 +59,12 @@ class _RelatedProductsSearchScreenState extends State<RelatedProductsSearchScree
     }
     try {
       setProcessing(true);
-      print(query);
+      log(query);
       final result = await provider.productSearch(query, dataId);
-      print(result);
+
       return result;
     } catch (e) {
-      print('Error: $e');
+      log('Error: $e');
       return null;
     } finally {
       setProcessing(false);
@@ -94,7 +97,7 @@ class _RelatedProductsSearchScreenState extends State<RelatedProductsSearchScree
               onPressed: _returnBack,
             ),
           ),
-          backgroundColor: AppColors.bgColor,
+          //
           body: AppUtils.modelProgressHud(
             context: context,
             processing: _isProcessing,
@@ -103,7 +106,7 @@ class _RelatedProductsSearchScreenState extends State<RelatedProductsSearchScree
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: SearchDropdown(
-                    hint: 'Search products',
+                    hint: VendorAppStrings.searchProducts.tr,
                     searchDropdownModel: searchDropdownModel,
                     onSelected: (selectedProduct) {
                       FocusScope.of(context).unfocus();
@@ -116,10 +119,7 @@ class _RelatedProductsSearchScreenState extends State<RelatedProductsSearchScree
                         )) {
                           listSearchProducts.add(selectedProduct);
                         } else {
-                          AlertServices.showErrorSnackBar(
-                            message: 'Selected product already added in the list',
-                            context: context,
-                          );
+                          AppUtils.showToast(VendorAppStrings.selectedProductAlreadyAdded.tr);
                         }
                       });
                     },
@@ -128,7 +128,6 @@ class _RelatedProductsSearchScreenState extends State<RelatedProductsSearchScree
                         searchModel.searchText,
                         widget.dataId ?? '',
                       );
-                      print(result);
                       if (result != null) {
                         setState(() {
                           searchDropdownModel.showDropdown = searchDropdownModel.searchText.isNotEmpty == true;
@@ -150,10 +149,10 @@ class _RelatedProductsSearchScreenState extends State<RelatedProductsSearchScree
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: kSmallPadding),
           child: listSearchProducts.isEmpty
-              ? const Center(
+              ? Center(
                   child: Text(
-                    'Please search and add products',
-                    style: TextStyle(fontSize: 16, color: Colors.grey),
+                    VendorAppStrings.pleaseSearchAndAddProducts.tr,
+                    style: const TextStyle(fontSize: 16, color: Colors.grey),
                   ),
                 )
               : SingleChildScrollView(

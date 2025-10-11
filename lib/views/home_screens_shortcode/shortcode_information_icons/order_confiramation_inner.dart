@@ -20,7 +20,6 @@ class OrderConfirmationScreen extends StatefulWidget {
 class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
   @override
   Widget build(BuildContext context) {
-    final double screenWidth = MediaQuery.of(context).size.width;
     final double screenHeight = MediaQuery.of(context).size.height;
     return Center(
       child: Column(
@@ -135,7 +134,7 @@ Widget _buildItemList(BuildContext context) {
           offset: const Offset(0, 1),
           blurRadius: 0.5,
           spreadRadius: 0.5,
-          color: Colors.white.withOpacity(0.3),
+          color: Colors.white.withAlpha((0.3 * 255).toInt()),
         ),
       ],
     ),

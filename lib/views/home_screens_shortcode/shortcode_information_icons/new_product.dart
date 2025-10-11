@@ -1,25 +1,16 @@
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:carousel_slider_plus/carousel_slider_plus.dart';
 import 'package:event_app/core/constants/app_strings.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
-import 'package:event_app/core/widgets/custom_home_views/custom_home_text_row.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:event_app/provider/information_icons_provider/new_products_provider.dart';
+import 'package:event_app/views/base_screens/base_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../core/widgets/custom_auto_slider_home.dart';
-import '../../../core/widgets/padded_network_banner.dart';
-import '../../../provider/home_shortcode_provider/featured_brands_items_provider.dart';
-import '../../../provider/home_shortcode_provider/simple_slider_provider.dart';
-import '../shortcode_fresh_picks/e_com_tags_screens.dart';
-import '../shortcode_fresh_picks/fresh_picks_detail_screen.dart';
-import 'package:event_app/provider/information_icons_provider/new_products_provider.dart';
-import 'package:event_app/views/base_screens/base_app_bar.dart';
-import '../../../core/services/shared_preferences_helper.dart';
 import '../../../core/styles/app_colors.dart';
+import '../../../core/utils/app_utils.dart';
 import '../../../core/widgets/custom_app_views/search_bar.dart';
 import '../../../core/widgets/custom_items_views/product_card.dart';
 import '../../../core/widgets/items_empty_view.dart';
+import '../../../core/widgets/padded_network_banner.dart';
 import '../../../provider/cart_item_provider/cart_item_provider.dart';
 import '../../../provider/shortcode_fresh_picks_provider/fresh_picks_provider.dart';
 import '../../../provider/wishlist_items_provider/wishlist_provider.dart';
@@ -61,9 +52,8 @@ class _NewProductPageScreenState extends State<NewProductPageScreen> {
   ///  ------------  FOR TAKING THE  ICON HEART AS THEIR STATE RED ON WISHLIST ADD BASIS ------------
 
   Future<void> fetchWishListItems() async {
-    final token = await SecurePreferencesUtil.getToken();
     final provider = Provider.of<WishlistProvider>(context, listen: false);
-    provider.fetchWishlist(token ?? '', context);
+    provider.fetchWishlist();
   }
 
   void _onScroll() {
@@ -112,6 +102,17 @@ class _NewProductPageScreenState extends State<NewProductPageScreen> {
     fetchNewProductsItems();
   }
 
+  /// Handle add to cart with proper error handling
+  Future<void> _handleAddToCart(int productId) async {
+    final result = await context.read<CartProvider>().addToCart(productId, 1);
+
+    if (result.success) {
+      AppUtils.showToast(result.message, isSuccess: true);
+    } else {
+      AppUtils.showToast(result.message);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.sizeOf(context).height;
@@ -119,7 +120,6 @@ class _NewProductPageScreenState extends State<NewProductPageScreen> {
     final freshPicksProvider = Provider.of<FreshPicksProvider>(context, listen: true);
     final wishlistProvider = Provider.of<WishlistProvider>(context, listen: true);
     final cartProvider = Provider.of<CartProvider>(context, listen: true);
-    final provider = Provider.of<NewProductsProvider>(context);
 
     return BaseAppBar(
       textBack: AppStrings.back.tr,
@@ -296,22 +296,12 @@ class _NewProductPageScreenState extends State<NewProductPageScreen> {
                                                   reviewsCount: product.review!.reviewsCount!.toInt(),
 
                                                   optionalIcon: Icons.shopping_cart,
-                                                  onOptionalIconTap: () async {
-                                                    final token = await SecurePreferencesUtil.getToken();
-                                                    if (token != null) {
-                                                      await cartProvider.addToCart(
-                                                        product.id,
-                                                        context,
-                                                        1,
-                                                      );
-                                                    }
-                                                  },
+                                                  onOptionalIconTap: () => _handleAddToCart(product.id),
                                                   isHeartObscure: wishlistProvider.wishlist?.data?.products.any(
                                                         (wishlistProduct) => wishlistProduct.id == product.id,
                                                       ) ??
                                                       false,
                                                   onHeartTap: () async {
-                                                    final token = await SecurePreferencesUtil.getToken();
                                                     final bool isInWishlist =
                                                         wishlistProvider.wishlist?.data?.products.any(
                                                               (wishlistProduct) => wishlistProduct.id == product.id,
@@ -321,7 +311,6 @@ class _NewProductPageScreenState extends State<NewProductPageScreen> {
                                                       await wishlistProvider.deleteWishlistItem(
                                                         product.id ?? 0,
                                                         context,
-                                                        token ?? '',
                                                       );
                                                     } else {
                                                       await freshPicksProvider.handleHeartTap(
@@ -329,10 +318,7 @@ class _NewProductPageScreenState extends State<NewProductPageScreen> {
                                                         product.id ?? 0,
                                                       );
                                                     }
-                                                    await wishlistProvider.fetchWishlist(
-                                                      token ?? '',
-                                                      context,
-                                                    );
+                                                    await wishlistProvider.fetchWishlist();
                                                   },
                                                 ),
                                               );

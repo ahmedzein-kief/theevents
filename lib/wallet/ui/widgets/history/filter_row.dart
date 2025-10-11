@@ -142,7 +142,7 @@ class FilterRow extends StatelessWidget {
       case MethodFilter.creditCard:
         return 'creditCard'.tr;
       case MethodFilter.giftCard:
-        return 'GiftCard'.tr;
+        return 'giftCard'.tr;
       case MethodFilter.bankTransfer:
         return 'bankTransfer'.tr;
     }

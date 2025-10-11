@@ -129,7 +129,7 @@ class _VendorLoginInfoScreenState extends State<VendorLoginInfoScreen> {
                           decoration: BoxDecoration(
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.2), // Shadow color
+                                color: Colors.black.withAlpha((0.2 * 255).toInt()), // Shadow color
                                 spreadRadius: 2, // How much the shadow spreads
                                 blurRadius: 5, // How blurry the shadow is
                                 offset: const Offset(0, 2), // Shadow offset (X, Y)
@@ -138,7 +138,6 @@ class _VendorLoginInfoScreenState extends State<VendorLoginInfoScreen> {
                           ),
                           child: Material(
                             shadowColor: Colors.black,
-                            color: Colors.white,
                             elevation: 15,
                             child: Padding(
                               padding: const EdgeInsets.only(
@@ -213,7 +212,10 @@ class _VendorLoginInfoScreenState extends State<VendorLoginInfoScreen> {
                                         icon: SvgPicture.asset(
                                           height: screenHeight * 0.02,
                                           fit: BoxFit.cover,
-                                          color: Theme.of(context).colorScheme.onPrimary,
+                                          colorFilter: ColorFilter.mode(
+                                            Theme.of(context).colorScheme.onPrimary,
+                                            BlendMode.srcIn,
+                                          ),
                                           _passwordObscureText ? AppStrings.hideEye.tr : AppStrings.showEye.tr,
                                         ),
                                         onPressed: () {
@@ -237,7 +239,10 @@ class _VendorLoginInfoScreenState extends State<VendorLoginInfoScreen> {
                                         icon: SvgPicture.asset(
                                           height: screenHeight * 0.02,
                                           fit: BoxFit.cover,
-                                          color: Theme.of(context).colorScheme.onPrimary,
+                                          colorFilter: ColorFilter.mode(
+                                            Theme.of(context).colorScheme.onPrimary,
+                                            BlendMode.srcIn,
+                                          ),
                                           _confirmPasswordObscureText ? AppStrings.hideEye.tr : AppStrings.showEye.tr,
                                         ),
                                         onPressed: () {

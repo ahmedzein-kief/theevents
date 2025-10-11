@@ -19,14 +19,13 @@ class SimpleBazaarAutoSlider extends StatefulWidget {
   final bool snapToItems;
 
   @override
-  _SimpleBazaarAutoSliderState createState() => _SimpleBazaarAutoSliderState();
+  State<SimpleBazaarAutoSlider> createState() => _SimpleBazaarAutoSliderState();
 }
 
 class _SimpleBazaarAutoSliderState extends State<SimpleBazaarAutoSlider> {
   late ScrollController _scrollController;
   Timer? _timer;
   Timer? _snapTimer;
-  int _currentIndex = 0;
   bool _isUserScrolling = false;
 
   @override

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:event_app/provider/api_response_handler.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -37,14 +35,9 @@ class VendorByTypesProvider with ChangeNotifier {
       _isError = false;
       notifyListeners();
 
-      final response = await _apiResponseHandler.getRequest(
-        url,
-        queryParams: params,
-        context: context,
-      );
+      final response = await _apiResponseHandler.getRequest(url, queryParams: params);
 
       if (response.statusCode == 200) {
-        log('response=>> ${response.data}');
         _eventOrganiser = HomeEventOrganiserModel.fromJson(response.data);
         _isLoading = false;
         notifyListeners();

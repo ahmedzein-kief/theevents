@@ -5,7 +5,7 @@ import 'package:getwidget/components/radio/gf_radio.dart';
 import 'package:getwidget/types/gf_radio_type.dart';
 
 class VendorCustomRadioListTile extends StatefulWidget {
-  VendorCustomRadioListTile({
+  const VendorCustomRadioListTile({
     super.key,
     required this.value,
     required this.groupValue,
@@ -16,6 +16,7 @@ class VendorCustomRadioListTile extends StatefulWidget {
     this.focusNode,
     this.tooltipMessage,
   });
+
   final dynamic value; // Value for the individual radio button
   final dynamic groupValue; // The current selected value for the group
   final ValueChanged<dynamic> onChanged; // Callback for when the value changes
@@ -23,11 +24,10 @@ class VendorCustomRadioListTile extends StatefulWidget {
   final TextStyle? textStyle; // Optional custom style for the text
   final EdgeInsets? padding; // Optional padding for the list tile
   final String? tooltipMessage;
-  FocusNode? focusNode;
+  final FocusNode? focusNode;
 
   @override
-  State<VendorCustomRadioListTile> createState() =>
-      _VendorCustomRadioListTileState();
+  State<VendorCustomRadioListTile> createState() => _VendorCustomRadioListTileState();
 }
 
 class _VendorCustomRadioListTileState extends State<VendorCustomRadioListTile> {
@@ -40,8 +40,7 @@ class _VendorCustomRadioListTileState extends State<VendorCustomRadioListTile> {
             widget.onChanged(widget.value);
           },
           child: Container(
-            padding:
-                widget.padding ?? const EdgeInsets.symmetric(vertical: 8.0),
+            padding: widget.padding ?? const EdgeInsets.symmetric(vertical: 8.0),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [

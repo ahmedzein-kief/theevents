@@ -5,7 +5,7 @@ import 'package:event_app/vendor/components/input_borders_hub/input_border_hub.d
 import 'package:flutter/material.dart';
 
 class GenericDropdown<T> extends StatefulWidget {
-  GenericDropdown({
+  const GenericDropdown({
     super.key,
     this.prefix,
     this.suffix,
@@ -36,19 +36,19 @@ class GenericDropdown<T> extends StatefulWidget {
   final void Function(T? value) onChanged;
   final FocusNode? currentFocusNode;
   final FocusNode? nextFocusNode;
-  bool? filled;
-  Color? textColor;
-  String? errorText;
-  bool? readOnly;
-  dynamic value;
-  double? borderRadius;
-  String? hintText;
-  bool isOutlinedBorder;
-  double? borderWidth;
-  Color? borderColor;
-  String? Function(T?)? validator;
-  TextStyle? textStyle;
-  EdgeInsetsGeometry? contentPadding;
+  final bool? filled;
+  final Color? textColor;
+  final String? errorText;
+  final bool? readOnly;
+  final dynamic value;
+  final double? borderRadius;
+  final String? hintText;
+  final bool isOutlinedBorder;
+  final double? borderWidth;
+  final Color? borderColor;
+  final String? Function(T?)? validator;
+  final TextStyle? textStyle;
+  final EdgeInsetsGeometry? contentPadding;
   final String Function(T item) displayItem;
 
   @override

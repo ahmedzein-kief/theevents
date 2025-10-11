@@ -29,7 +29,7 @@ class PDFDownloader {
       final binaryData = Uint8List.fromList(content.codeUnits);
 
       // Use FileSaver for both platforms for consistent behavior
-      final path = await FileSaver.instance.saveAs(
+      await FileSaver.instance.saveAs(
         name: filename,
         bytes: binaryData,
         ext: 'pdf',
@@ -173,6 +173,8 @@ class PDFDownloader {
       if (await Permission.storage.isGranted) {
         return true;
       }
+
+      if (!context.mounted) return false;
 
       final shouldRequest = await showDialog<bool>(
         context: context,

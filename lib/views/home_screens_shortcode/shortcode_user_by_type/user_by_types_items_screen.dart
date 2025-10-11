@@ -285,8 +285,8 @@ class _UserByTypeItemsScreenState extends State<UserByTypeItemsScreen> {
                                 }
                                 final vendor = provider.vendors[index];
                                 return UserByTypeSeeAll(
-                                  imageUrl: vendor.avatar ?? '',
-                                  name: vendor.name ?? '',
+                                  imageUrl: vendor.avatar,
+                                  name: vendor.name,
                                   textStyle: homeItemsStyle(context),
                                   onTap: () {
                                     /// User Type Details

@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
@@ -55,7 +54,7 @@ class _CustomPackagesViewState extends State<CustomPackagesView> {
       // Navigate to the login screen if not logged in
       PersistentNavBarNavigator.pushNewScreen(
         context,
-        screen: AuthScreen(),
+        screen: const AuthScreen(),
         withNavBar: false,
         // OPTIONAL VALUE. True by default.
         pageTransitionAnimation: PageTransitionAnimation.fade,
@@ -89,7 +88,7 @@ class _CustomPackagesViewState extends State<CustomPackagesView> {
       if (!mounted) return;
       PersistentNavBarNavigator.pushNewScreen(
         context,
-        screen: AuthScreen(),
+        screen: const AuthScreen(),
         withNavBar: false,
         // OPTIONAL VALUE. True by default.
         pageTransitionAnimation: PageTransitionAnimation.fade,

@@ -10,7 +10,7 @@ class PaymentPostData {
         'payment_method': paymentMethod?['payment_method'] ?? '',
         'card_amount': cardAmount.toString(),
         // "${paymentMethod?["sub_option_key"]}": paymentMethod?["sub_option_value"] ?? "",
-      }.entries.map((entry) => MapEntry(entry.key, entry.value ?? '')).toList();
+      }.entries.map((entry) => MapEntry(entry.key, entry.value)).toList();
 
   @override
   String toString() => '''

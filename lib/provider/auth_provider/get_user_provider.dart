@@ -1,15 +1,14 @@
-// user_provider.dart
 import 'dart:developer';
 
-import 'package:dio/dio.dart';
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/core/network/api_endpoints/vendor_api_end_point.dart';
 import 'package:event_app/core/services/shared_preferences_helper.dart';
-import 'package:event_app/core/utils/custom_toast.dart';
 import 'package:event_app/provider/api_response_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../core/network/api_endpoints/api_contsants.dart';
+import '../../core/utils/app_utils.dart';
 import '../../models/auth_models/get_user_models.dart';
 
 class UserProvider with ChangeNotifier {
@@ -28,25 +27,17 @@ class UserProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> fetchUserData(String token, BuildContext context) async {
+  Future<void> fetchUserData() async {
     setUser(null);
     _isLoading = true;
     notifyListeners();
-    if (token.isEmpty) {
-      _isLoading = false;
-      notifyListeners();
-      return;
-    }
+
     const url = ApiEndpoints.getCustomer;
-    final headers = {
-      'Authorization': token,
-    };
 
     try {
       final response = await _apiResponseHandler.getRequest(
         url,
-        headers: headers,
-        context: context,
+        extra: {ApiConstants.requireAuthKey: true},
       );
 
       if (response.statusCode == 200) {
@@ -66,6 +57,44 @@ class UserProvider with ChangeNotifier {
     }
   }
 
+  /// Call become vendor API
+  Future<bool> becomeVendor(int userId) async {
+    _isLoading = true;
+    notifyListeners();
+
+    final url = '${ApiEndpoints.becomeVendor}/$userId';
+
+    try {
+      final response = await _apiResponseHandler.getDioRequest(
+        url,
+        extra: {ApiConstants.requireAuthKey: true},
+      );
+
+      if (response.statusCode == 200) {
+        // Optionally update user data after successful vendor conversion
+        await fetchUserData();
+        _isLoading = false;
+        notifyListeners();
+        AppUtils.showToast(response.data['message'], isSuccess: true);
+        return true;
+      } else {
+        _isLoading = false;
+        notifyListeners();
+
+        final errorMessage = response.data['message'] ?? 'Failed to become vendor';
+        AppUtils.showToast(response.data['message']);
+        debugPrint('Become vendor error: $errorMessage');
+        return false;
+      }
+    } catch (error) {
+      _isLoading = false;
+      notifyListeners();
+      debugPrint('Become vendor exception: $error');
+      AppUtils.showToast('Become vendor exception: $error');
+      return false;
+    }
+  }
+
   Future<void> downloadAgreement(BuildContext context, int vendorId) async {
     _isLoading = true;
     notifyListeners();
@@ -80,13 +109,13 @@ class UserProvider with ChangeNotifier {
       );
       final data = response.data;
       if (response.statusCode != 200) {
-        CustomSnackbar.showError(context, data['message']);
+        AppUtils.showToast(data['message']);
         return;
       }
 
       await openPdfFromUrl(data['data']['url']);
     } catch (e) {
-      CustomSnackbar.showError(context, 'Could not open PDF ${e.toString()}');
+      AppUtils.showToast('Could not open PDF ${e.toString()}');
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -103,60 +132,64 @@ class UserProvider with ChangeNotifier {
     }
   }
 
-  String _errorMessage(response) {
-    var errors;
-    var error;
-    var message;
-
-    if (response is Response) {
-      if (response.data != null) {
-        final errorData = response.data;
-        errors = errorData['errors'] ?? errorData['data'];
-        error = errorData['error'];
-        message = errorData['message'];
-      }
-    } else {
-      final jsonData = response.data;
-      if (response != null) {
-        errors = jsonData['errors'];
-        error = jsonData['error'];
-        message = jsonData['message'];
-      }
-    }
-
-    try {
-      // Initialize a variable to store error messages
-      String allErrors = '';
-
-      // Check if `errors` is present and process it
-      if (errors != null && errors is Map) {
-        errors.forEach((key, value) {
-          if (value is List) {
-            for (final msg in value) {
-              allErrors += '$key: $msg\n'; // Append each error message
-            }
-          }
-        });
-      }
-
-      // Check if `error` is present and append it
-      if (error != null && error is String) {
-        allErrors += 'Error: $error\n';
-      }
-
-      // Check if `message` is present and append it
-      // if (message != null && message is String) {
-      //   allErrors += 'Message: $message\n';
-      // }
-
-      // Return the collected error messages
-      if (allErrors.isNotEmpty) {
-        return allErrors.trim(); // Remove trailing newline
-      }
-
-      return 'An unknown error occurred.'; // Fallback message if no errors are found
-    } catch (e) {
-      return 'Unknown error occurred with status code: ${response.statusCode}';
-    }
-  }
+// String _errorMessage(response) {
+//   var errors;
+//   var error;
+//   var message;
+//
+//   if (response is Response) {
+//     if (response.data != null) {
+//       final errorData = response.data;
+//       errors = errorData['errors'] ?? errorData['data'];
+//       error = errorData['error'];
+//       message = errorData['message'];
+//     }
+//   } else {
+//     final jsonData = response.data;
+//     if (response != null) {
+//       errors = jsonData['errors'];
+//       error = jsonData['error'];
+//       message = jsonData['message'];
+//     }
+//   }
+//
+//   try {
+//     // Initialize a variable to store error messages
+//     String allErrors = '';
+//
+//     // Check if `errors` is present and process it
+//     if (errors != null && errors is Map) {
+//       final errorBuffer = StringBuffer();
+//
+//       errors.forEach((key, value) {
+//         if (value is List) {
+//           for (final msg in value) {
+//             errorBuffer.writeln('$key: $msg'); // Append each error message
+//           }
+//         }
+//       });
+//
+//       allErrors = errorBuffer.toString();
+//     }
+//
+//     // Check if `error` is present and append it
+//     if (error != null && error is String) {
+//       allErrors += 'Error: $error\n';
+//     }
+//
+//     // Check if `message` is present and append it
+//     // if (message != null && message is String) {
+//     //   allErrors += 'Message: $message\n';
+//     // }
+//
+//     // Return the collected error messages
+//     if (allErrors.isNotEmpty) {
+//       return allErrors.trim(); // Remove trailing newline
+//     }
+//
+//     return 'An unknown error occurred.'; // Fallback message if no errors are found
+//   } catch (e) {
+//     return 'Unknown error occurred with status code: ${response.statusCode}';
+//   }
+// }
 }

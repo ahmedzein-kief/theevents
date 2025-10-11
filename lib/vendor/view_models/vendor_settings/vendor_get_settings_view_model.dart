@@ -2,7 +2,7 @@ import 'package:event_app/provider/vendor/vendor_repository.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../../../core/services/shared_preferences_helper.dart';
-import '../../../data/vendor/data/response/ApiResponse.dart';
+import '../../../data/vendor/data/response/api_response.dart';
 import '../../../models/vendor_models/vendor_settings_models/vendor_get_settings_model.dart';
 
 class VendorGetSettingsViewModel with ChangeNotifier {

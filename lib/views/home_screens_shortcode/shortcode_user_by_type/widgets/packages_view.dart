@@ -4,9 +4,9 @@ import 'package:provider/provider.dart';
 
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/network/api_endpoints/api_end_point.dart';
-import '../../../../core/services/shared_preferences_helper.dart';
 import '../../../../core/styles/app_colors.dart';
 import '../../../../core/styles/custom_text_styles.dart';
+import '../../../../core/utils/app_utils.dart';
 import '../../../../core/widgets/custom_items_views/custom_packages_view.dart';
 import '../../../../provider/cart_item_provider/cart_item_provider.dart';
 import '../../../../provider/product_package_provider/product_provider.dart';
@@ -14,7 +14,7 @@ import '../../../../provider/shortcode_fresh_picks_provider/fresh_picks_provider
 import '../../../../provider/wishlist_items_provider/wishlist_provider.dart';
 import '../../../product_detail_screens/product_detail_screen.dart';
 
-class PackagesView extends StatelessWidget {
+class PackagesView extends StatefulWidget {
   final String storeId;
   final int currentPagePackages;
   final String selectedSortBy;
@@ -31,16 +31,31 @@ class PackagesView extends StatelessWidget {
   });
 
   @override
+  State<PackagesView> createState() => _PackagesViewState();
+}
+
+class _PackagesViewState extends State<PackagesView> {
+  /// Handle add to cart with proper error handling
+  Future<void> _handleAddToCart(int productId) async {
+    final result = await context.read<CartProvider>().addToCart(productId, 1);
+
+    if (result.success) {
+      AppUtils.showToast(result.message, isSuccess: true);
+    } else {
+      AppUtils.showToast(result.message);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.sizeOf(context).height;
     final double screenWidth = MediaQuery.sizeOf(context).width;
-    final cartProvider = Provider.of<CartProvider>(context, listen: false);
 
     return Column(
       children: [
         Consumer<ProductProvider>(
           builder: (context, packageProductProvider, child) {
-            if (packageProductProvider.isLoadingPackages && currentPagePackages == 1) {
+            if (packageProductProvider.isLoadingPackages && widget.currentPagePackages == 1) {
               return const Center(
                 child: CircularProgressIndicator(
                   color: Colors.black,
@@ -78,11 +93,11 @@ class PackagesView extends StatelessWidget {
                     children: [
                       DropdownButtonHideUnderline(
                         child: DropdownButton<String>(
-                          value: selectedSortBy,
+                          value: widget.selectedSortBy,
                           icon: const Icon(Icons.keyboard_arrow_down_rounded),
                           onChanged: (String? newValue) {
                             if (newValue != null) {
-                              onSortChanged(newValue);
+                              widget.onSortChanged(newValue);
                             }
                           },
                           items: [
@@ -168,7 +183,7 @@ class PackagesView extends StatelessWidget {
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
                           itemBuilder: (context, index) {
-                            if (isFetchingMorePackages) {
+                            if (widget.isFetchingMorePackages) {
                               return const Align(
                                 alignment: Alignment.center,
                                 child: Column(
@@ -190,9 +205,9 @@ class PackagesView extends StatelessWidget {
 
                             final List<Color> colors = [
                               AppColors.packagesBackground,
-                              AppColors.packagesBackground.withOpacity(0.01),
+                              AppColors.packagesBackground.withAlpha((0.01 * 255).toInt()),
                               AppColors.packagesBackgroundS,
-                              AppColors.packagesBackgroundS.withOpacity(0.09),
+                              AppColors.packagesBackgroundS.withAlpha((0.09 * 255).toInt()),
                             ];
 
                             final freshPicksProvider = Provider.of<FreshPicksProvider>(
@@ -222,22 +237,12 @@ class PackagesView extends StatelessWidget {
                                 imageUrl: product.image,
                                 productName: product.name.toString(),
                                 price: product.prices?.price.toString() ?? '',
-                                addInCart: () async {
-                                  final token = await SecurePreferencesUtil.getToken();
-                                  if (token != null) {
-                                    await cartProvider.addToCart(
-                                      product.id,
-                                      context,
-                                      1,
-                                    );
-                                  }
-                                },
+                                addInCart: () => _handleAddToCart(product.id),
                                 isHeartObscure: wishlistProvider.wishlist?.data?.products.any(
                                       (wishlistProduct) => wishlistProduct.id == product.id,
                                     ) ??
                                     false,
                                 onHeartTap: () async {
-                                  final token = await SecurePreferencesUtil.getToken();
                                   final bool isInWishlist = wishlistProvider.wishlist?.data?.products.any(
                                         (wishlistProduct) => wishlistProduct.id == product.id,
                                       ) ??
@@ -248,7 +253,6 @@ class PackagesView extends StatelessWidget {
                                     await wishlistProvider.deleteWishlistItem(
                                       product.id,
                                       context,
-                                      token ?? '',
                                     );
                                   } else {
                                     // Add to wishlist
@@ -259,10 +263,7 @@ class PackagesView extends StatelessWidget {
                                   }
 
                                   // Refresh wishlist after action
-                                  await wishlistProvider.fetchWishlist(
-                                    token ?? '',
-                                    context,
-                                  );
+                                  await wishlistProvider.fetchWishlist();
                                 },
                               ),
                             );

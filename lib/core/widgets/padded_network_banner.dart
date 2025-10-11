@@ -9,7 +9,7 @@ class PaddedNetworkBanner extends StatelessWidget {
     this.height = 160,
     this.width,
     this.padding,
-    this.borderRadius = 0,
+    this.borderRadius = 8,
     this.fit = BoxFit.cover,
     this.gradientColors = const [Colors.grey, Colors.black],
     this.cacheKey,

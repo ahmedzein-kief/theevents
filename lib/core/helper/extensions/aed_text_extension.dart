@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../constants/app_assets.dart';
-import '../../widgets/PriceRow.dart';
+import '../../widgets/price_row.dart';
 
 extension AEDTextExtension on String {
   /// Replaces all occurrences of AED with dirham symbol

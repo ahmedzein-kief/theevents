@@ -325,7 +325,14 @@ class EditAttributeData {
   int? order;
 }
 
-enum Color { THE_333333, RGB_128128128, EMPTY }
+enum Color {
+  // ignore: constant_identifier_names
+  THE_333333,
+  // ignore: constant_identifier_names
+  RGB_128128128,
+  // ignore: constant_identifier_names
+  EMPTY,
+}
 
 final colorValues = EnumValues({
   '': Color.EMPTY,
@@ -340,7 +347,6 @@ class EnumValues<T> {
   late Map<T, String> reverseMap;
 
   Map<T, String> get reverse {
-    reverseMap = map.map((k, v) => MapEntry(v, k));
-    return reverseMap;
+    return reverseMap = map.map((k, v) => MapEntry(v, k));
   }
 }

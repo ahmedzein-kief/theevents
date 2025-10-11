@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
+import 'package:event_app/core/network/api_endpoints/api_contsants.dart';
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/models/orders/order_detail_model.dart';
 import 'package:event_app/models/orders/order_history_model.dart';
@@ -9,7 +10,7 @@ import 'package:event_app/models/vendor_models/products/create_product/common_da
 import 'package:flutter/material.dart';
 
 import '../../core/services/shared_preferences_helper.dart';
-import '../../core/utils/custom_toast.dart';
+import '../../core/utils/app_utils.dart';
 import '../api_response_handler.dart';
 
 class OrderDataProvider with ChangeNotifier {
@@ -32,12 +33,8 @@ class OrderDataProvider with ChangeNotifier {
 
   // Updated getOrders method in OrderDataProvider
   // Keep the original getOrders method in OrderDataProvider - simple and clean
-  Future<void> getOrders(
-    BuildContext context,
-    bool isPending,
-  ) async {
+  Future<void> getOrders(bool isPending) async {
     _isLoading = true;
-    final token = await SecurePreferencesUtil.getToken();
     var url = '';
     if (isPending) {
       url = '${ApiEndpoints.customerOrders}?per-page=10&page=1&only-pending=true';
@@ -45,15 +42,9 @@ class OrderDataProvider with ChangeNotifier {
       url = '${ApiEndpoints.customerOrders}?per-page=10&page=1';
     }
 
-    final headers = {'Authorization': token ?? ''};
-
     notifyListeners();
     try {
-      final response = await _apiResponseHandler.getRequest(
-        url,
-        headers: headers,
-        context: context,
-      );
+      final response = await _apiResponseHandler.getRequest(url, extra: {ApiConstants.requireAuthKey: true});
 
       if (response.statusCode == 200) {
         final jsonData = response.data;
@@ -68,7 +59,7 @@ class OrderDataProvider with ChangeNotifier {
       } else {
         _isLoading = false;
         notifyListeners();
-        CustomSnackbar.showError(context, 'No Orders Found');
+        AppUtils.showToast('No Orders Found');
       }
     } catch (e) {
       log('Error in getOrders: ${e.toString()}');
@@ -89,7 +80,7 @@ class OrderDataProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getOrderDetails(BuildContext context, String orderID) async {
+  Future<void> getOrderDetails(String orderID) async {
     _isLoading = true;
     final token = await SecurePreferencesUtil.getToken();
     final url = '${ApiEndpoints.customerOrdersView}/$orderID';
@@ -101,7 +92,6 @@ class OrderDataProvider with ChangeNotifier {
       final response = await _apiResponseHandler.getRequest(
         url,
         headers: headers,
-        context: context,
       );
       if (response.statusCode == 200) {
         final jsonData = response.data;
@@ -111,7 +101,7 @@ class OrderDataProvider with ChangeNotifier {
       } else {
         _isLoading = false;
         notifyListeners();
-        CustomSnackbar.showError(context, 'No Orders Detail Found');
+        AppUtils.showToast('No Orders Detail Found');
       }
     } catch (e) {
       log('Error in getOrderDetails: ${e.toString()}');
@@ -136,12 +126,11 @@ class OrderDataProvider with ChangeNotifier {
       final response = await _apiResponseHandler.getRequest(
         url,
         headers: headers,
-        context: context,
       );
       if (response.statusCode == 200) {
         _isLoading = false;
         notifyListeners();
-        getOrderDetails(context, orderID);
+        getOrderDetails(orderID);
       } else {
         _isLoading = false;
         notifyListeners();
@@ -195,10 +184,10 @@ class OrderDataProvider with ChangeNotifier {
         _isLoading = false;
         notifyListeners();
       }
-      getOrderDetails(context, orderId);
+      getOrderDetails(orderId);
       return CommonDataResponse.fromJson(response.data);
     } catch (e) {
-      print(e.toString());
+      log(e.toString());
       _isLoading = false;
       notifyListeners();
       return null;
@@ -222,7 +211,6 @@ class OrderDataProvider with ChangeNotifier {
         url,
         headers: headers,
         responseType: ResponseType.bytes,
-        context: context,
       );
       if (response.statusCode == 200) {
         _isLoading = false;
@@ -256,7 +244,6 @@ class OrderDataProvider with ChangeNotifier {
         url,
         headers: headers,
         responseType: ResponseType.bytes,
-        context: context,
       );
       if (response.statusCode == 200) {
         _isLoading = false;

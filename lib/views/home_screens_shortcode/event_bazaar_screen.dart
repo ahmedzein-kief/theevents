@@ -44,7 +44,6 @@ class _EventBazaarViewState extends State<EventBazaarScreen> {
     final localeProvider = Provider.of<LocaleProvider>(context);
 
     // Fixed calculation to show exactly 3 complete items
-    const double screenHorizontalPadding = 16.0; // Main screen padding
     const double itemSpacing = 8.0; // Space between items (4 on each side of item)
     const double totalSpacingBetweenItems = itemSpacing * 2; // Total spacing between 3 items
 

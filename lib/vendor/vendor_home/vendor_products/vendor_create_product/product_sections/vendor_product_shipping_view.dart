@@ -1,3 +1,5 @@
+import 'package:event_app/core/constants/vendor_app_strings.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/helper/mixins/media_query_mixin.dart';
 import 'package:event_app/core/styles/app_sizes.dart';
 import 'package:event_app/core/utils/vendor_utils.dart' show formatDecimal;
@@ -5,22 +7,21 @@ import 'package:event_app/models/vendor_models/products/create_product/vendor_pr
 import 'package:event_app/vendor/components/app_bars/vendor_modify_sections_app_bar.dart';
 import 'package:event_app/vendor/components/text_fields/custom_text_form_field.dart';
 import 'package:event_app/vendor/vendor_home/vendor_products/vendor_create_product/product_sections/vendor_product_overview_view.dart';
-import 'package:event_app/vendor/view_models/vendor_products/vendor_create_product_view_model.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class VendorProductShippingView extends StatefulWidget {
-  const VendorProductShippingView(
-      {super.key, required this.vendorProductDimensionsModel,});
+  const VendorProductShippingView({
+    super.key,
+    required this.vendorProductDimensionsModel,
+  });
+
   final VendorProductDimensionsModel? vendorProductDimensionsModel;
 
   @override
-  _VendorProductShippingViewState createState() =>
-      _VendorProductShippingViewState();
+  State<VendorProductShippingView> createState() => _VendorProductShippingViewState();
 }
 
-class _VendorProductShippingViewState extends State<VendorProductShippingView>
-    with MediaQueryMixin {
+class _VendorProductShippingViewState extends State<VendorProductShippingView> with MediaQueryMixin {
   final TextEditingController _weightController = TextEditingController();
   final TextEditingController _lengthController = TextEditingController();
   final TextEditingController _widthController = TextEditingController();
@@ -35,14 +36,10 @@ class _VendorProductShippingViewState extends State<VendorProductShippingView>
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((callback) async {
       setState(() {
-        _weightController.text =
-            widget.vendorProductDimensionsModel?.weight ?? '';
-        _lengthController.text =
-            widget.vendorProductDimensionsModel?.length ?? '';
-        _widthController.text =
-            widget.vendorProductDimensionsModel?.width ?? '';
-        _heightController.text =
-            widget.vendorProductDimensionsModel?.height ?? '';
+        _weightController.text = widget.vendorProductDimensionsModel?.weight ?? '';
+        _lengthController.text = widget.vendorProductDimensionsModel?.length ?? '';
+        _widthController.text = widget.vendorProductDimensionsModel?.width ?? '';
+        _heightController.text = widget.vendorProductDimensionsModel?.height ?? '';
       });
     });
     super.initState();
@@ -72,7 +69,7 @@ class _VendorProductShippingViewState extends State<VendorProductShippingView>
       child: Scaffold(
         backgroundColor: theme.scaffoldBackgroundColor,
         appBar: VendorModifySectionsAppBar(
-          title: 'Product Overview (Shipping)',
+          title: VendorAppStrings.productOverviewShipping.tr,
           onGoBack: _return,
         ),
         body: _buildUi(context),
@@ -81,8 +78,6 @@ class _VendorProductShippingViewState extends State<VendorProductShippingView>
   }
 
   Widget _buildUi(BuildContext context) {
-    final VendorCreateProductViewModel generalSettingsViewModel =
-        Provider.of<VendorCreateProductViewModel>(context, listen: false);
     return SingleChildScrollView(
       child: Padding(
         padding: EdgeInsets.all(kPadding),
@@ -90,12 +85,11 @@ class _VendorProductShippingViewState extends State<VendorProductShippingView>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             CustomTextFormField(
-              labelText: 'Weight (g)',
+              labelText: VendorAppStrings.weightG.tr,
               required: false,
               maxLength: 10,
-              hintText: 'Enter Weight',
-              keyboardType:
-                  const TextInputType.numberWithOptions(decimal: true),
+              hintText: VendorAppStrings.enterWeight.tr,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
               prefix: texFieldPrefix(screenWidth: screenWidth, text: 'g'),
               focusNode: _weightFocusNode,
               nextFocusNode: _lengthFocusNode,
@@ -103,12 +97,11 @@ class _VendorProductShippingViewState extends State<VendorProductShippingView>
             ),
             // kFormFieldSpace,
             CustomTextFormField(
-              labelText: 'Length (cm)',
+              labelText: VendorAppStrings.lengthCm.tr,
               required: false,
               maxLength: 10,
-              hintText: 'Enter Length',
-              keyboardType:
-                  const TextInputType.numberWithOptions(decimal: true),
+              hintText: VendorAppStrings.enterLength.tr,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
               prefix: texFieldPrefix(screenWidth: screenWidth, text: 'cm'),
               focusNode: _lengthFocusNode,
               nextFocusNode: _widthFocusNode,
@@ -116,12 +109,11 @@ class _VendorProductShippingViewState extends State<VendorProductShippingView>
             ),
             // kFormFieldSpace,
             CustomTextFormField(
-              labelText: 'Width (cm)',
+              labelText: VendorAppStrings.widthCm.tr,
               required: false,
               maxLength: 10,
-              hintText: 'Enter Width',
-              keyboardType:
-                  const TextInputType.numberWithOptions(decimal: true),
+              hintText: VendorAppStrings.enterWidth.tr,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
               prefix: texFieldPrefix(screenWidth: screenWidth, text: 'cm'),
               focusNode: _widthFocusNode,
               nextFocusNode: _heightFocusNode,
@@ -129,12 +121,11 @@ class _VendorProductShippingViewState extends State<VendorProductShippingView>
             ),
             // kFormFieldSpace,
             CustomTextFormField(
-              labelText: 'Height (cm)',
+              labelText: VendorAppStrings.heightCm.tr,
               required: false,
               maxLength: 10,
-              hintText: 'Enter Height',
-              keyboardType:
-                  const TextInputType.numberWithOptions(decimal: true),
+              hintText: VendorAppStrings.enterHeight.tr,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
               prefix: texFieldPrefix(screenWidth: screenWidth, text: 'cm'),
               focusNode: _heightFocusNode,
               nextFocusNode: null,

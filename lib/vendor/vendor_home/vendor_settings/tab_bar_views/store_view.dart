@@ -6,17 +6,16 @@ import 'package:event_app/core/helper/extensions/app_localizations_extension.dar
 import 'package:event_app/core/helper/validators/validator.dart';
 import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/core/styles/app_sizes.dart';
+import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/core/widgets/custom_auth_views/app_custom_button.dart';
 import 'package:event_app/data/vendor/data/response/apis_status.dart';
 import 'package:event_app/provider/payment_address/country_picks_provider.dart';
 import 'package:event_app/vendor/components/enums/enums.dart';
-import 'package:event_app/vendor/components/services/alert_services.dart';
 import 'package:event_app/vendor/components/services/media_services.dart';
 import 'package:event_app/vendor/components/settings_components/choose_file_card.dart';
 import 'package:event_app/vendor/components/settings_components/simple_card.dart';
 import 'package:event_app/vendor/components/text_fields/custom_editable_text_field.dart';
 import 'package:event_app/vendor/components/text_fields/custom_text_form_field.dart';
-import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/vendor/components/vendor_text_style.dart';
 import 'package:event_app/vendor/view_models/vendor_settings/vendor_get_settings_view_model.dart';
 import 'package:event_app/vendor/view_models/vendor_settings/vendor_settings_view_model.dart';
@@ -85,15 +84,6 @@ class _StoreViewState extends State<StoreView> {
   CityRecord? selectedCity;
   String countryCode = '';
 
-  /// To show modal progress hud
-  bool _isProcessing = false;
-
-  void setProcessing(bool value) {
-    setState(() {
-      _isProcessing = value;
-    });
-  }
-
   Future<void> _fetchCountryData() async {
     try {
       countryModel = await fetchCountries(context);
@@ -120,7 +110,7 @@ class _StoreViewState extends State<StoreView> {
         cityModel = null;
       });
 
-      stateModel = await fetchStates(context, countryId);
+      stateModel = await fetchStates(countryId);
 
       setState(() {
         _stateLoader = false;
@@ -658,8 +648,6 @@ class _StoreViewState extends State<StoreView> {
                   isLoading: provider.apiResponse.status == ApiStatus.LOADING,
                   onTap: () async {
                     try {
-                      setProcessing(true);
-
                       /// converting content text to html and storing in content controller
                       contentController.text = convertDeltaToHtml(
                         quilController: _contentQuilController,
@@ -671,17 +659,11 @@ class _StoreViewState extends State<StoreView> {
                           form: form,
                           context: context,
                         );
-                        setProcessing(false);
+
                         if (result) await _onRefresh();
-                      } else {
-                        setProcessing(false);
-                      }
+                      } else {}
                     } catch (e) {
-                      setProcessing(false);
-                      AlertServices.showErrorSnackBar(
-                        message: 'Oops! something went wrong..',
-                        context: context,
-                      );
+                      AppUtils.showToast('Oops! something went wrong..');
                     }
                   },
                 ),

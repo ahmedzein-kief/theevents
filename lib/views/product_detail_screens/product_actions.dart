@@ -3,18 +3,16 @@ import 'package:event_app/core/widgets/custom_items_views/custom_add_to_cart_but
 import 'package:event_app/models/wishlist_models/wish_list_response_models.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/constants/app_strings.dart';
-import '../../core/services/shared_preferences_helper.dart';
+import '../../core/helper/functions/functions.dart';
 import '../../core/styles/custom_text_styles.dart';
-import '../../core/widgets/custom_items_views/custom_toast.dart';
+import '../../core/utils/app_utils.dart';
 import '../../provider/cart_item_provider/cart_item_provider.dart';
 import '../../provider/product_package_provider/product_details_provider.dart';
 import '../../provider/shortcode_fresh_picks_provider/fresh_picks_provider.dart';
 import '../../provider/wishlist_items_provider/wishlist_provider.dart';
-import '../auth_screens/auth_page_view.dart';
 
 class ProductActions extends StatefulWidget {
   const ProductActions({
@@ -43,37 +41,19 @@ class ProductActions extends StatefulWidget {
   final List<Map<String, dynamic>?> selectedAttributes;
 
   @override
-  _ProductActionsState createState() => _ProductActionsState();
+  State<ProductActions> createState() => _ProductActionsState();
 }
 
 class _ProductActionsState extends State<ProductActions> {
-  bool _isLoading = false;
+  bool _isAddingToCart = false;
   bool _isWishlistLoading = false;
   var inWishList = false;
 
-  /// Check if user is logged in
-  Future<bool> _isLoggedIn() async {
-    final token = await SecurePreferencesUtil.getToken();
-    return token != null && token.isNotEmpty;
-  }
-
-  /// Navigate to login screen with appropriate message
-  void navigateToLogin(String messageKey) {
-    PersistentNavBarNavigator.pushNewScreen(
-      context,
-      screen: AuthScreen(),
-      withNavBar: false,
-      pageTransitionAnimation: PageTransitionAnimation.fade,
-    );
-
-    final CustomToast customToast = CustomToast(context);
-    customToast.showToast(
-      context: context,
-      textHint: messageKey.tr,
-      onDismiss: () {
-        customToast.removeToast();
-      },
-    );
+  @override
+  void initState() {
+    super.initState();
+    // Initialize wishlist state from provider
+    inWishList = widget.productItemsProvider.apiResponse?.data?.record?.inWishList ?? false;
   }
 
   /// Validate extra options before adding to cart
@@ -116,35 +96,44 @@ class _ProductActionsState extends State<ProductActions> {
     final hasErrors = extraOptionErrorData.any((errorData) => errorData['error'] == true);
 
     if (hasErrors) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'pleaseSelectRequiredOptions'.tr,
-            style: const TextStyle(color: Colors.white),
-          ),
-          backgroundColor: Colors.redAccent,
-          duration: const Duration(seconds: 3),
-          action: SnackBarAction(
-            label: 'dismiss'.tr,
-            textColor: Colors.white,
-            onPressed: () {
-              ScaffoldMessenger.of(context).hideCurrentSnackBar();
-            },
-          ),
-        ),
-      );
+      _showErrorSnackbar('pleaseSelectRequiredOptions'.tr);
       return false;
     }
 
     return true;
   }
 
+  /// Show error snackbar
+  void _showErrorSnackbar(String message) {
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          style: const TextStyle(color: Colors.white),
+        ),
+        backgroundColor: Colors.redAccent,
+        duration: const Duration(seconds: 3),
+        action: SnackBarAction(
+          label: 'dismiss'.tr,
+          textColor: Colors.white,
+          onPressed: () {
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          },
+        ),
+      ),
+    );
+  }
+
   /// Handle add to cart functionality
-  Future<void> _handleAddToCart(BuildContext context) async {
+  /// Handle add to cart functionality
+  Future<void> _handleAddToCart() async {
     // First check if user is logged in
-    final bool loggedIn = await _isLoggedIn();
+    final bool loggedIn = await isLoggedIn();
     if (!loggedIn) {
-      navigateToLogin(AppStrings.pleaseLogInToCart);
+      if (!mounted) return;
+      navigateToLogin(context, AppStrings.pleaseLogInToCart);
       return;
     }
 
@@ -155,41 +144,52 @@ class _ProductActionsState extends State<ProductActions> {
 
     // Proceed with adding to cart
     setState(() {
-      _isLoading = true;
+      _isAddingToCart = true;
     });
 
     try {
-      await context.read<CartProvider>().addToCart(
-            widget.productVariationID,
-            context,
-            1,
-            selectedExtraOptions: widget.selectedExtraOptions,
-            selectedAttributes: widget.selectedAttributes,
-          );
-    } catch (e) {
-      // Handle any errors
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Failed to add item to cart. Please try again.'.tr,
-            style: const TextStyle(color: Colors.white),
-          ),
-          backgroundColor: Colors.redAccent,
-        ),
+      if (!mounted) return;
+      final cartProvider = context.read<CartProvider>();
+
+      final result = await cartProvider.addToCart(
+        widget.productVariationID,
+        1,
+        selectedExtraOptions: widget.selectedExtraOptions,
+        selectedAttributes: widget.selectedAttributes,
       );
+
+      // Handle the result in UI
+      if (mounted) {
+        if (result.success) {
+          AppUtils.showToast(result.message, isSuccess: true);
+
+          // Optionally refresh user data if needed
+          // context.read<UserProvider>().fetchUserData();
+        } else {
+          AppUtils.showToast(result.message);
+        }
+      }
+    } catch (e) {
+      // Handle unexpected errors
+      if (mounted) {
+        _showErrorSnackbar('Failed to add item to cart. Please try again.'.tr);
+      }
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isAddingToCart = false;
+        });
+      }
     }
   }
 
   /// Handle wishlist functionality
   Future<void> _handleWishlistToggle() async {
     // First check if user is logged in
-    final bool loggedIn = await _isLoggedIn();
+    final bool loggedIn = await isLoggedIn();
     if (!loggedIn) {
-      navigateToLogin(AppStrings.pleaseLogInToWishList);
+      if (!mounted) return;
+      navigateToLogin(context, AppStrings.pleaseLogInToWishList);
       return;
     }
 
@@ -200,53 +200,43 @@ class _ProductActionsState extends State<ProductActions> {
     widget.updateLoader(true);
 
     try {
-      final wishResult = await addRemoveWishList(context, inWishList);
-      if (wishResult != null) {
-        final mainProvider = Provider.of<ProductItemsProvider>(
-          context,
-          listen: false,
-        );
+      final wishResult = await _addRemoveWishList();
+
+      if (wishResult != null && mounted) {
+        final mainProvider = context.read<ProductItemsProvider>();
         mainProvider.updateWishListData(wishResult.data?.added ?? false);
 
         // Refresh wishlist data
-        final token = await SecurePreferencesUtil.getToken();
-        await widget.wishlistProvider.fetchWishlist(token ?? '', context);
+        await widget.wishlistProvider.fetchWishlist();
 
-        setState(() {});
+        if (mounted) {
+          setState(() {});
+        }
       }
     } catch (e) {
       // Handle any errors
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Failed to update wishlist. Please try again.'.tr,
-            style: const TextStyle(color: Colors.white),
-          ),
-          backgroundColor: Colors.redAccent,
-        ),
-      );
+      if (mounted) {
+        _showErrorSnackbar('Failed to update wishlist. Please try again.'.tr);
+      }
     } finally {
-      setState(() {
-        _isWishlistLoading = false;
-      });
-      widget.updateLoader(false);
+      if (mounted) {
+        setState(() {
+          _isWishlistLoading = false;
+        });
+        widget.updateLoader(false);
+      }
     }
   }
 
-  Future<WishlistResponseModels?> addRemoveWishList(
-    BuildContext context,
-    bool isInWishlist,
-  ) async =>
-      widget.freshPicksProvider.addRemoveWishList(context, widget.mainProductID);
+  Future<WishlistResponseModels?> _addRemoveWishList() async {
+    return widget.freshPicksProvider.addRemoveWishList(context, widget.mainProductID);
+  }
 
   @override
   Widget build(BuildContext context) {
-    final cartProvider = Provider.of<CartProvider>(context, listen: true);
-
-    // Get the current theme
+    final cartProvider = context.watch<CartProvider>();
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
-
     final isOutOfStock = widget.productItemsProvider.apiResponse?.data?.record?.outOfStock ?? false;
 
     return Container(
@@ -259,86 +249,90 @@ class _ProductActionsState extends State<ProductActions> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // Add to Cart Button (only show if not out of stock)
-            if (!isOutOfStock)
+            if (!isOutOfStock) ...[
               Expanded(
                 child: AppCustomButton(
-                  isLoading: _isLoading || cartProvider.isLoading,
-                  onPressed: () => _handleAddToCart(context),
+                  isLoading: _isAddingToCart || cartProvider.isLoading,
+                  onPressed: _handleAddToCart,
                   title: AppStrings.addToCart.tr,
                 ),
               ),
-
-            if (!isOutOfStock) SizedBox(width: widget.screenWidth * 0.04),
+              SizedBox(width: widget.screenWidth * 0.04),
+            ],
 
             // Wishlist Button
             Expanded(
-              child: GestureDetector(
-                onTap: _isWishlistLoading ? null : _handleWishlistToggle,
-                child: Consumer<ProductItemsProvider>(
-                  builder: (context, provider, child) {
-                    inWishList = provider.apiResponse?.data?.record?.inWishList ?? false;
-
-                    return AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: isDarkMode
-                              ? (inWishList ? Colors.red : Colors.grey[600]!)
-                              : (inWishList ? Colors.red : Colors.grey[400]!),
-                          width: inWishList ? 2.0 : 1.0,
-                        ),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      padding: const EdgeInsets.all(10),
-                      height: 45,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          if (_isWishlistLoading)
-                            SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  isDarkMode ? Colors.grey[400]! : Colors.grey[600]!,
-                                ),
-                              ),
-                            )
-                          else
-                            AnimatedSwitcher(
-                              duration: const Duration(milliseconds: 200),
-                              child: Icon(
-                                key: ValueKey(inWishList),
-                                inWishList ? CupertinoIcons.heart_fill : CupertinoIcons.heart,
-                                color: inWishList ? Colors.red : (isDarkMode ? Colors.grey[400] : Colors.grey[600]),
-                              ),
-                            ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 5),
-                            child: Text(
-                              AppStrings.wishlist.tr,
-                              textAlign: TextAlign.center,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                              style: addToWiShListText(context).copyWith(
-                                color: isDarkMode
-                                    ? (inWishList ? Colors.red : Colors.grey[300])
-                                    : (inWishList ? Colors.red : Colors.grey[700]),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ),
+              child: _buildWishlistButton(isDarkMode),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildWishlistButton(bool isDarkMode) {
+    return GestureDetector(
+      onTap: _isWishlistLoading ? null : _handleWishlistToggle,
+      child: Consumer<ProductItemsProvider>(
+        builder: (context, provider, child) {
+          inWishList = provider.apiResponse?.data?.record?.inWishList ?? false;
+
+          return AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: isDarkMode
+                    ? (inWishList ? Colors.red : Colors.grey[600]!)
+                    : (inWishList ? Colors.red : Colors.grey[400]!),
+                width: inWishList ? 2.0 : 1.0,
+              ),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            padding: const EdgeInsets.all(10),
+            height: 45,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (_isWishlistLoading)
+                  SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        isDarkMode ? Colors.grey[400]! : Colors.grey[600]!,
+                      ),
+                    ),
+                  )
+                else
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 200),
+                    child: Icon(
+                      key: ValueKey(inWishList),
+                      inWishList ? CupertinoIcons.heart_fill : CupertinoIcons.heart,
+                      color: inWishList ? Colors.red : (isDarkMode ? Colors.grey[400] : Colors.grey[600]),
+                    ),
+                  ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 5),
+                  child: Text(
+                    AppStrings.wishlist.tr,
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    style: addToWiShListText(context).copyWith(
+                      color: isDarkMode
+                          ? (inWishList ? Colors.red : Colors.grey[300])
+                          : (inWishList ? Colors.red : Colors.grey[700]),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }

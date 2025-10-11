@@ -86,10 +86,7 @@ class LocaleProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await _apiResponseHandler.getRequest(
-        ApiEndpoints.getAllActiveLanguages,
-        context: context,
-      );
+      final response = await _apiResponseHandler.getRequest(ApiEndpoints.getAllActiveLanguages);
 
       if (response.statusCode == 200) {
         // The API returns a direct array, not a wrapped response

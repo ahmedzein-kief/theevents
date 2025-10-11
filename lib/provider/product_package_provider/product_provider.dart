@@ -10,8 +10,9 @@ class ProductProvider with ChangeNotifier {
   final ApiResponseHandler _apiResponseHandler = ApiResponseHandler();
 
   List<RecordProduct> _products = [];
-  ProductModels? _ProductsModels;
-  PaginationPagination? _productPagination;
+  ProductModels? _productsModels;
+
+  // PaginationPagination? _productPagination;
   bool _isLoadingProducts = false;
 
   bool get isLoadingProducts => _isLoadingProducts;
@@ -19,7 +20,7 @@ class ProductProvider with ChangeNotifier {
 
   bool _isMoreLoading = false;
 
-  ProductModels? get productsModels => _ProductsModels;
+  ProductModels? get productsModels => _productsModels;
 
   bool get isMoreLoading => _isMoreLoading;
 
@@ -69,20 +70,17 @@ class ProductProvider with ChangeNotifier {
     final url = filtersQuery.isNotEmpty ? '$baseUrl&$filtersQuery&allcategories=1' : baseUrl;
 
     try {
-      final response = await _apiResponseHandler.getRequest(
-        url,
-        context: context,
-      );
+      final response = await _apiResponseHandler.getRequest(url);
 
       if (response.statusCode == 200) {
-        final data = response.data;
+        // final data = response.data;
 
         final Map<String, dynamic> jsonResponse = response.data;
         final ProductModels products = ProductModels.fromJson(jsonResponse);
 
         if (page == 1) {
           _products = products.data?.records ?? [];
-          _productPagination = products.data?.pagination;
+          // _productPagination = products.data?.pagination;
           _productFilters = products.data?.filters;
         } else {
           _products.addAll(products.data?.records ?? []);
@@ -101,10 +99,12 @@ class ProductProvider with ChangeNotifier {
   ///  packges
 
   List<Records> _records = [];
-  Pagination? _brandsPagination;
+
+  // Pagination? _brandsPagination;
   TopBrandsProducts? _topBrandsProducts;
   bool _isLoadingPackages = false;
-  final bool _isMoreLoadingProducts = false;
+
+  // final bool _isMoreLoadingProducts = false;
 
   List<Records> get records => _records;
 
@@ -129,20 +129,15 @@ class ProductProvider with ChangeNotifier {
     final url = '${ApiEndpoints.userByTypePackages}?per-page=$perPage&page=$page&sort-by=$sortBy&store_id=$storeId';
 
     try {
-      final response = await _apiResponseHandler.getRequest(
-        url,
-        context: context,
-      );
+      final response = await _apiResponseHandler.getRequest(url);
 
       if (response.statusCode == 200) {
-        final data = response.data;
-
         final Map<String, dynamic> jsonResponse = response.data;
         final TopBrandsProducts apiResponse = TopBrandsProducts.fromJson(jsonResponse);
 
         if (page == 1) {
           _records = apiResponse.data?.records ?? [];
-          _brandsPagination = apiResponse.data?.pagination;
+          // _brandsPagination = apiResponse.data?.pagination;
         } else {
           _records.addAll(apiResponse.data?.records ?? []);
         }

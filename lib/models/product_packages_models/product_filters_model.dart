@@ -342,7 +342,12 @@ class Pivot {
       };
 }
 
-enum ReferenceType { BOTBLE_ECOMMERCE_MODELS_BRAND, BOTBLE_ECOMMERCE_MODELS_PRODUCT_TAG }
+enum ReferenceType {
+  // ignore: constant_identifier_names
+  BOTBLE_ECOMMERCE_MODELS_BRAND,
+  // ignore: constant_identifier_names
+  BOTBLE_ECOMMERCE_MODELS_PRODUCT_TAG,
+}
 
 final referenceTypeValues = EnumValues(
   {
@@ -398,7 +403,12 @@ class Slugable {
       };
 }
 
-enum Prefix { BRANDS, PRODUCT_TAGS }
+enum Prefix {
+  // ignore: constant_identifier_names
+  BRANDS,
+  // ignore: constant_identifier_names
+  PRODUCT_TAGS
+}
 
 final prefixValues = EnumValues({'brands': Prefix.BRANDS, 'product-tags': Prefix.PRODUCT_TAGS});
 
@@ -509,7 +519,6 @@ class EnumValues<T> {
   late Map<T, String> reverseMap;
 
   Map<T, String> get reverse {
-    reverseMap = map.map((k, v) => MapEntry(v, k));
-    return reverseMap;
+    return reverseMap = map.map((k, v) => MapEntry(v, k));
   }
 }

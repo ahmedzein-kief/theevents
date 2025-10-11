@@ -7,12 +7,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../core/services/shared_preferences_helper.dart';
 import '../../core/styles/app_colors.dart';
 import '../../core/styles/custom_text_styles.dart';
-import '../../core/widgets/PriceRow.dart';
+import '../../core/utils/app_utils.dart';
 import '../../core/widgets/custom_auth_views/app_custom_button.dart';
 import '../../core/widgets/custom_items_views/custom_product_cart_items.dart';
+import '../../core/widgets/price_row.dart';
 import '../../provider/auth_provider/get_user_provider.dart';
 import '../../provider/cart_item_provider/cart_item_provider.dart';
 import '../product_detail_screens/product_detail_screen.dart';
@@ -55,34 +55,34 @@ class _CartItemsScreensState extends State<CartItemsScreen> {
   // }
 
   Future<void> fetchCartData(BuildContext? context) async {
-    final token = await SecurePreferencesUtil.getToken();
-    if (!mounted) return;
     final provider = Provider.of<CartProvider>(context!, listen: false);
-    await provider.fetchCartData(token ?? '', context);
+    await provider.fetchCartData();
   }
 
   Future<dynamic> fetchCheckoutData(
     BuildContext? context,
     String checkoutToken,
   ) async {
-    final token = await SecurePreferencesUtil.getToken();
-    if (!mounted) return null;
     final provider = Provider.of<CartProvider>(context!, listen: false);
-    return provider.fetchCheckoutData(token ?? '', context, checkoutToken);
+    return provider.fetchCheckoutData(checkoutToken);
   }
 
   Future<void> handleDelete(String rowId) async {
-    final token = await SecurePreferencesUtil.getToken();
-    if (!mounted) return;
-    final provider = Provider.of<CartProvider>(context, listen: false);
-    await provider.deleteCartListItem(rowId, context, token ?? '');
+    final provider = context.read<CartProvider>();
+
+    // Call the new method name and handle the result
+    final result = await provider.deleteCartItem(rowId);
+
+    if (result.success) {
+      AppUtils.showToast(result.message, isSuccess: true);
+    } else {
+      AppUtils.showToast(result.message);
+    }
   }
 
   Future<void> update(String rowId, int qty, List<Product>? products) async {
     if (qty < 1) return;
 
-    final token = await SecurePreferencesUtil.getToken();
-    if (token == null) return;
     final provider = Provider.of<CartProvider>(context, listen: false);
 
     // Create the request body in the required JSON format
@@ -104,7 +104,7 @@ class _CartItemsScreensState extends State<CartItemsScreen> {
 
     final Map<String, dynamic> requestBody = {'items': items};
 
-    await provider.updateCart(token, context, requestBody);
+    await provider.updateCart(requestBody);
   }
 
   @override
@@ -175,7 +175,7 @@ class _CartItemsScreensState extends State<CartItemsScreen> {
                             shrinkWrap: true,
                             itemBuilder: (context, index) {
                               final productCart = provider.cartResponse?.data.products[index];
-                              final cartItem = provider.cartResponse?.data.content[index];
+                              // final cartItem = provider.cartResponse?.data.content[index];
 
                               /// Calculate the percentage off
 
@@ -360,7 +360,9 @@ class _CartItemsScreensState extends State<CartItemsScreen> {
                               suffixIcon: CupertinoIcons.forward,
                               isLoading: provider.checkoutLoading,
                               onTap: () async {
-                                final checkoutToken = provider.cartResponse?.data.tracked_start_checkout;
+                                final navigator = Navigator.of(context);
+
+                                final checkoutToken = provider.cartResponse?.data.trackedStartCheckout;
 
                                 if (checkoutToken != null) {
                                   final response = await fetchCheckoutData(
@@ -369,8 +371,7 @@ class _CartItemsScreensState extends State<CartItemsScreen> {
                                   );
 
                                   if (response?.statusCode == 200) {
-                                    Navigator.push(
-                                      context,
+                                    navigator.push(
                                       CupertinoPageRoute(
                                         builder: (builder) {
                                           return StepperScreen(

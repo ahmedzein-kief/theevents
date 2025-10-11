@@ -225,7 +225,7 @@ TextStyle shippingMethod(context) => GoogleFonts.inter(
     );
 
 TextStyle payments(context) => TextStyle(
-      color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.8),
+      color: Theme.of(context).colorScheme.onPrimary.withAlpha((0.8 * 255).toInt()),
       fontFamily: 'FontSf',
       overflow: TextOverflow.ellipsis,
       fontWeight: FontWeight.w700,

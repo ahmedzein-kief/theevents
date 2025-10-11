@@ -7,7 +7,7 @@ import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 
 import '../../core/helper/di/locator.dart';
 import '../../core/services/shared_preferences_helper.dart';
-import '../../core/utils/custom_toast.dart';
+import '../../core/utils/app_utils.dart';
 import '../../core/widgets/custom_items_views/custom_toast.dart';
 import '../../models/dashboard/fresh_picks_models/fresh_picks_model.dart';
 import '../../models/dashboard/fresh_picks_models/freshpicks_ecom_tags_model.dart';
@@ -19,7 +19,6 @@ class FreshPicksProvider extends ChangeNotifier {
   FreshPicksProvider({Dio? dio}) : dio = dio ?? locator.get<Dio>();
   final Dio dio;
 
-  //    ================================================= Fresh Picks Home Page  Provider =================================================================
   final ApiResponseHandler _apiResponseHandler = ApiResponseHandler();
 
   List<Records>? records;
@@ -30,7 +29,7 @@ class FreshPicksProvider extends ChangeNotifier {
 
   List<Record> _records = [];
   bool _isLoading = false;
-  PaginationEComTag? _paginationEComTag;
+
   bool _isMoreLoading = false;
 
   List<Record> get recordsData => _records;
@@ -45,9 +44,11 @@ class FreshPicksProvider extends ChangeNotifier {
 
   /// Navigate to login screen with appropriate message
   void navigateToLogin(BuildContext context, String messageKey) {
+    if (!context.mounted) return; // Check if context is still valid
+
     PersistentNavBarNavigator.pushNewScreen(
       context,
-      screen: AuthScreen(),
+      screen: const AuthScreen(),
       withNavBar: false,
       pageTransitionAnimation: PageTransitionAnimation.fade,
     );
@@ -76,10 +77,7 @@ class FreshPicksProvider extends ChangeNotifier {
       final String queryParams = '?per-page=$perPage&page=$page&random=$random';
       final String url = baseUrl + queryParams;
 
-      final response = await _apiResponseHandler.getRequest(
-        url,
-        context: context,
-      );
+      final response = await _apiResponseHandler.getRequest(url);
 
       if (response.statusCode == 200) {
         final jsonData = response.data;
@@ -97,8 +95,6 @@ class FreshPicksProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
-
-//    =================================================================  Fresh Picks View All Page Banner  Provider =================================================================
 
   Future<void> fetchTags() async {
     _isLoading = true;
@@ -123,8 +119,6 @@ class FreshPicksProvider extends ChangeNotifier {
     }
   }
 
-//    =================================================================  E-com Tags Items List of Fresh Picks  =+================================================================
-
   Future<void> fetchEcomTags({
     String sortBy = 'default_sorting',
     int page = 1,
@@ -147,11 +141,9 @@ class FreshPicksProvider extends ChangeNotifier {
 
         if (page == 1) {
           _records = ecomTagsResponse.data.records;
-          _paginationEComTag = ecomTagsResponse.data.pagination;
         } else {
           _records.addAll(ecomTagsResponse.data.records);
         }
-        _records = ecomTagsResponse.data.records;
         _isLoading = false;
       } else {
         _isLoading = false;
@@ -164,13 +156,14 @@ class FreshPicksProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  ///      ----------------------------------------------------------------   ADD THE ITEMS TO THE WISHLIST SCREEN  ----------------------------------------------------------------
-  ///  with login check
   Future<void> handleHeartTap(BuildContext context, int itemId) async {
     // Check authentication first
     final bool loggedIn = await _isLoggedIn();
     if (!loggedIn) {
-      navigateToLogin(context, 'Please log in to manage your wishlist');
+      if (context.mounted) {
+        // Check if context is still valid
+        navigateToLogin(context, 'Please log in to manage your wishlist');
+      }
       return;
     }
 
@@ -191,15 +184,15 @@ class FreshPicksProvider extends ChangeNotifier {
         final wishlistResponse = WishlistResponseModels.fromJson(responseData);
 
         if (!wishlistResponse.error!) {
-          CustomSnackbar.showSuccess(context, wishlistResponse.message!);
+          AppUtils.showToast(wishlistResponse.message!, isSuccess: true);
         } else {
-          CustomSnackbar.showError(context, wishlistResponse.message!);
+          AppUtils.showToast(wishlistResponse.message!);
         }
       } else {
-        CustomSnackbar.showError(context, 'Failed to update wishlist.');
+        AppUtils.showToast('Failed to update wishlist.');
       }
     } catch (e) {
-      CustomSnackbar.showError(context, 'An error occurred. Please try again.');
+      AppUtils.showToast('An error occurred. Please try again.');
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -213,7 +206,10 @@ class FreshPicksProvider extends ChangeNotifier {
     // Check authentication first
     final bool loggedIn = await _isLoggedIn();
     if (!loggedIn) {
-      navigateToLogin(context, 'Please log in to manage your wishlist');
+      if (context.mounted) {
+        // Check if context is still valid
+        navigateToLogin(context, 'Please log in to manage your wishlist');
+      }
       return null;
     }
 
@@ -234,16 +230,16 @@ class FreshPicksProvider extends ChangeNotifier {
         final wishlistResponse = WishlistResponseModels.fromJson(responseData);
 
         if (!wishlistResponse.error!) {
-          CustomSnackbar.showSuccess(context, wishlistResponse.message!);
+          AppUtils.showToast(wishlistResponse.message!, isSuccess: true);
           return wishlistResponse;
         } else {
-          CustomSnackbar.showError(context, wishlistResponse.message!);
+          AppUtils.showToast(wishlistResponse.message!);
         }
       } else {
-        CustomSnackbar.showError(context, 'Failed to update wishlist.');
+        AppUtils.showToast('Failed to update wishlist.');
       }
     } catch (e) {
-      CustomSnackbar.showError(context, 'An error occurred. Please try again.');
+      AppUtils.showToast('An error occurred. Please try again.');
     } finally {
       _isLoading = false;
       notifyListeners();

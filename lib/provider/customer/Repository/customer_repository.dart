@@ -3,8 +3,8 @@ import 'package:event_app/models/account_models/customer_upload_profile_pic_mode
 import 'package:event_app/models/account_models/reviews/customer_get_product_reviews_model.dart';
 import 'package:event_app/models/vendor_models/common_models/common_post_request_model.dart';
 
-import '../../../data/vendor/data/network/dio/DioBaseApiServices.dart';
-import '../../../data/vendor/data/network/dio/DioNetworkApiServices.dart';
+import '../../../data/vendor/data/network/dio/dio_base_api_services.dart';
+import '../../../data/vendor/data/network/dio/dio_network_api_services.dart';
 
 class CustomerRepository {
   final DioBaseApiServices _dioBaseApiServices = DioNetworkApiServices();

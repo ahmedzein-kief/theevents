@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../../core/constants/app_strings.dart';
 import '../../core/network/api_endpoints/api_end_point.dart';
-import '../../core/services/shared_preferences_helper.dart';
+import '../../core/utils/app_utils.dart';
 import '../../core/widgets/custom_items_views/product_card.dart';
 import '../../models/product_packages_models/product_models.dart';
 import '../../provider/cart_item_provider/cart_item_provider.dart';
@@ -29,23 +29,31 @@ class ProductRelatedItemsScreen extends StatefulWidget {
   final Function(bool loader) onActionUpdate;
 
   @override
-  State<ProductRelatedItemsScreen> createState() =>
-      _ProductRelatedItemsScreenState();
+  State<ProductRelatedItemsScreen> createState() => _ProductRelatedItemsScreenState();
 }
 
 class _ProductRelatedItemsScreenState extends State<ProductRelatedItemsScreen> {
   Future<void> fetchWishListItems() async {
-    final token = await SecurePreferencesUtil.getToken();
     final provider = Provider.of<WishlistProvider>(context, listen: false);
-    provider.fetchWishlist(token ?? '', context);
+    provider.fetchWishlist();
+  }
+
+  /// Handle add to cart with proper error handling
+  Future<void> _handleAddToCart(int productId) async {
+    final result = await context.read<CartProvider>().addToCart(productId, 1);
+
+    if (result.success) {
+      AppUtils.showToast(result.message, isSuccess: true);
+    } else {
+      AppUtils.showToast(result.message);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final freshPicksProvider = Provider.of<FreshPicksProvider>(context);
-    final wishlistProvider =
-        Provider.of<WishlistProvider>(context, listen: false);
-    final cartProvider = Provider.of<CartProvider>(context);
+    final wishlistProvider = Provider.of<WishlistProvider>(context, listen: false);
+    Provider.of<CartProvider>(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -72,10 +80,10 @@ class _ProductRelatedItemsScreenState extends State<ProductRelatedItemsScreen> {
 
               return Padding(
                 padding: const EdgeInsets.symmetric(
-                    horizontal: 8.0,), // Add horizontal padding
+                  horizontal: 8.0,
+                ), // Add horizontal padding
                 child: SizedBox(
-                  width: widget.screenWidth *
-                      0.4, // Set a fixed width for each item
+                  width: widget.screenWidth * 0.4, // Set a fixed width for each item
                   child: GestureDetector(
                     onTap: () {
                       Navigator.push(
@@ -93,54 +101,43 @@ class _ProductRelatedItemsScreenState extends State<ProductRelatedItemsScreen> {
                     },
                     child: ProductCard(
                       isOutOfStock: product.outOfStock ?? false,
-                      off: widget.offPercentage.isNotEmpty
-                          ? '${widget.offPercentage}% ${AppStrings.off.tr}'
-                          : '',
-                      priceWithTaxes: (product.prices?.frontSalePrice ?? 0) <
-                              (product.prices?.price ?? 0)
+                      off: widget.offPercentage.isNotEmpty ? '${widget.offPercentage}% ${AppStrings.off.tr}' : '',
+                      priceWithTaxes: (product.prices?.frontSalePrice ?? 0) < (product.prices?.price ?? 0)
                           ? product.prices!.priceWithTaxes
                           : null,
                       itemsId: product.id,
-                      imageUrl:
-                          (product.image != null && product.image!.isNotEmpty)
-                              ? (ApiEndpoints.imageBaseURL + product.image!)
-                              : '',
-                      frontSalePriceWithTaxes:
-                          product.review?.rating?.toString() ?? '0',
+                      imageUrl: (product.image != null && product.image!.isNotEmpty)
+                          ? (ApiEndpoints.imageBaseURL + product.image!)
+                          : '',
+                      frontSalePriceWithTaxes: product.review?.rating?.toString() ?? '0',
                       name: product.name,
                       storeName: product.store!.name.toString(),
                       price: product.prices!.price.toString(),
                       optionalIcon: Icons.shopping_cart,
-                      onOptionalIconTap: () async {
-                        widget.onActionUpdate(true);
-                        final token = await SecurePreferencesUtil.getToken();
-                        if (token != null) {
-                          await cartProvider.addToCart(product.id, context, 1);
-                        }
-                        widget.onActionUpdate(false);
-                      },
+                      onOptionalIconTap: () => _handleAddToCart(product.id),
                       reviewsCount: product.review?.reviewsCount?.toInt(),
-                      isHeartObscure: wishlistProvider.wishlist?.data?.products
-                              .any((wishlistProduct) =>
-                                  wishlistProduct.id == product.id,) ??
+                      isHeartObscure: wishlistProvider.wishlist?.data?.products.any(
+                            (wishlistProduct) => wishlistProduct.id == product.id,
+                          ) ??
                           false,
                       onHeartTap: () async {
                         widget.onActionUpdate(true);
-                        final token = await SecurePreferencesUtil.getToken();
-                        final bool isInWishlist = wishlistProvider
-                                .wishlist?.data?.products
-                                .any((wishlistProduct) =>
-                                    wishlistProduct.id == product.id,) ??
+                        final bool isInWishlist = wishlistProvider.wishlist?.data?.products.any(
+                              (wishlistProduct) => wishlistProduct.id == product.id,
+                            ) ??
                             false;
                         if (isInWishlist) {
                           await wishlistProvider.deleteWishlistItem(
-                              product.id ?? 0, context, token ?? '',);
+                            product.id ?? 0,
+                            context,
+                          );
                         } else {
                           await freshPicksProvider.handleHeartTap(
-                              context, product.id ?? 0,);
+                            context,
+                            product.id ?? 0,
+                          );
                         }
-                        await wishlistProvider.fetchWishlist(
-                            token ?? '', context,);
+                        await wishlistProvider.fetchWishlist();
                         widget.onActionUpdate(false);
                       },
                     ),

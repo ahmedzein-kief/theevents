@@ -1,3 +1,8 @@
+import 'dart:developer';
+
+import 'package:event_app/core/constants/app_strings.dart';
+import 'package:event_app/core/constants/vendor_app_strings.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/styles/app_sizes.dart';
 import 'package:event_app/models/vendor_models/dashboard/dashboard_data_response.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +20,7 @@ class DashboardInfoSection extends StatefulWidget {
   final Data? data;
 
   @override
-  _DashboardInfoSectionState createState() => _DashboardInfoSectionState();
+  State<DashboardInfoSection> createState() => _DashboardInfoSectionState();
 }
 
 class _DashboardInfoSectionState extends State<DashboardInfoSection> {
@@ -29,9 +34,9 @@ class _DashboardInfoSectionState extends State<DashboardInfoSection> {
   void populateData() {
     data = [
       {
-        'title': 'Earnings',
+        'title': AppStrings.rewardsEarnedTitle.tr,
         'amount': 'AED ${widget.data?.balance?.toString() ?? '0'}', // Use the stateful earnings here
-        'onTap': () => print('Earnings'),
+        'onTap': () => log('Earnings'),
         'icon': SvgPicture.asset(
           colorFilter: const ColorFilter.mode(
             AppColors.peachyPink,
@@ -44,9 +49,9 @@ class _DashboardInfoSectionState extends State<DashboardInfoSection> {
         'containerColor': VendorColors.vendorDashboard,
       },
       {
-        'title': 'Revenue',
+        'title': VendorAppStrings.revenues.tr,
         'amount': 'AED ${widget.data?.revenue.amount?.toString() ?? '0'}',
-        'onTap': () => print('Revenue'),
+        'onTap': () => log('Revenue'),
         'icon': SvgPicture.asset(
           colorFilter: const ColorFilter.mode(
             AppColors.peachyPink,
@@ -59,9 +64,9 @@ class _DashboardInfoSectionState extends State<DashboardInfoSection> {
         'containerColor': VendorColors.vendorDashboard,
       },
       {
-        'title': 'Orders',
+        'title': AppStrings.orders.tr,
         'amount': widget.data?.totalOrders?.toString() ?? '0',
-        'onTap': () => print('Orders'),
+        'onTap': () => log('Orders'),
         'icon': SvgPicture.asset(
           colorFilter: const ColorFilter.mode(
             AppColors.peachyPink,
@@ -74,9 +79,9 @@ class _DashboardInfoSectionState extends State<DashboardInfoSection> {
         'containerColor': VendorColors.peachColor,
       },
       {
-        'title': 'Return Orders',
+        'title': VendorAppStrings.orderReturns.tr,
         'amount': widget.data?.returnOrders.toString() ?? '0',
-        'onTap': () => print('Return Orders'),
+        'onTap': () => log('Return Orders'),
         'icon': SvgPicture.asset(
           colorFilter: const ColorFilter.mode(
             AppColors.peachyPink,
@@ -89,9 +94,9 @@ class _DashboardInfoSectionState extends State<DashboardInfoSection> {
         'containerColor': VendorColors.peachColor,
       },
       {
-        'title': 'Live Products',
+        'title': AppStrings.products.tr,
         'amount': widget.data?.liveProducts.toString() ?? '0',
-        'onTap': () => print('Live Products'),
+        'onTap': () => log('Live Products'),
         'icon': SvgPicture.asset(
           colorFilter: const ColorFilter.mode(
             AppColors.peachyPink,
@@ -104,9 +109,9 @@ class _DashboardInfoSectionState extends State<DashboardInfoSection> {
         'containerColor': VendorColors.pastelGreenColor,
       },
       {
-        'title': 'Pending Products',
+        'title': AppStrings.pendingProducts.tr,
         'amount': widget.data?.pendingProducts.toString() ?? '0',
-        'onTap': () => print('Pending Products'),
+        'onTap': () => log('Pending Products'),
         'icon': SvgPicture.asset(
           colorFilter: const ColorFilter.mode(
             AppColors.peachyPink,
@@ -119,9 +124,9 @@ class _DashboardInfoSectionState extends State<DashboardInfoSection> {
         'containerColor': VendorColors.pastelGreenColor,
       },
       {
-        'title': 'Live Packages',
+        'title': AppStrings.packages.tr,
         'amount': widget.data?.livePackages.toString() ?? '0',
-        'onTap': () => print('Live Packages'),
+        'onTap': () => log('Live Packages'),
         'icon': SvgPicture.asset(
           colorFilter: const ColorFilter.mode(
             AppColors.peachyPink,
@@ -134,9 +139,9 @@ class _DashboardInfoSectionState extends State<DashboardInfoSection> {
         'containerColor': VendorColors.pastelPinkColor,
       },
       {
-        'title': 'Pending Packages',
+        'title': AppStrings.pendingPackages.tr,
         'amount': widget.data?.pendingPackages.toString() ?? '0',
-        'onTap': () => print('Pending Packages'),
+        'onTap': () => log('Pending Packages'),
         'icon': SvgPicture.asset(
           colorFilter: const ColorFilter.mode(
             AppColors.peachyPink,

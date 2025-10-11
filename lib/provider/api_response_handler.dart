@@ -1,24 +1,24 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 
 import '../core/helper/di/locator.dart';
-import '../views/auth_screens/auth_page_view.dart';
 
 class ApiResponseHandler {
   ApiResponseHandler({Dio? dio}) : dio = dio ?? locator.get<Dio>();
   final Dio dio;
 
-  Future<dynamic> getRequest(String url,
-      {Map<String, String> headers = const {},
-      Map<String, dynamic>? extra,
-      Map<String, String> queryParams = const {},
-      bool authService = false,
-      required BuildContext context,
-      ResponseType? responseType}) async {
+  Future<dynamic> getRequest(
+    String url, {
+    Map<String, String> headers = const {},
+    Map<String, dynamic>? extra,
+    Map<String, String> queryParams = const {},
+    bool authService = false,
+    ResponseType? responseType,
+  }) async {
     try {
       final response = await dio.get(
         url,
@@ -29,16 +29,13 @@ class ApiResponseHandler {
           extra: extra,
         ),
       );
-      if (response.statusCode != 401) {
-        return authService ? _handleDioResponse(response) : response;
-      } else {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => AuthScreen()),
-        );
-        throw Exception('Failed with status code: ${response.statusCode}');
-      }
+
+      return authService ? _handleDioResponse(response) : response;
     } catch (e) {
+      // Preserve AuthException so it can be handled by the caller
+      if (e is DioException && e.error is AuthException) {
+        throw e.error as AuthException;
+      }
       throw authService ? _handleException(e) : Exception('Error during API request: $e');
     }
   }
@@ -71,6 +68,10 @@ class ApiResponseHandler {
 
       return response;
     } catch (e) {
+      // Preserve AuthException
+      if (e is DioException && e.error is AuthException) {
+        throw e.error as AuthException;
+      }
       throw Exception('Error during API request: $e');
     }
   }
@@ -87,12 +88,13 @@ class ApiResponseHandler {
         queryParameters: queryParams.isNotEmpty ? queryParams : null,
         options: Options(headers: headers.isNotEmpty ? headers : null, extra: extra),
       );
-      if (response.statusCode != 401) {
-        return response;
-      } else {
-        throw Exception('Failed with status code: ${response.statusCode}');
-      }
+
+      return response;
     } catch (e) {
+      // Preserve AuthException
+      if (e is DioException && e.error is AuthException) {
+        throw e.error as AuthException;
+      }
       throw Exception('Error during API request: $e');
     }
   }
@@ -128,11 +130,14 @@ class ApiResponseHandler {
 
       return authService ? _handleDioResponse(response) : response;
     } catch (e) {
+      // Preserve AuthException so it can be handled by the caller
+      if (e is DioException && e.error is AuthException) {
+        throw e.error as AuthException;
+      }
       throw authService ? _handleException(e) : Exception('Error during API request: $e');
     }
   }
 
-// Change this to return an Exception instead of Map
   Exception _handleException(Object e) {
     if (e is SocketException) {
       return Exception(
@@ -169,7 +174,6 @@ class ApiResponseHandler {
     Map<String, String>? headers,
     Map<String, dynamic>? extra,
   }) {
-    // Make Dio request
     try {
       return dio.post(
         url,
@@ -184,8 +188,8 @@ class ApiResponseHandler {
     } catch (e) {
       if (e is DioException) {
         final errorDetails = e.response?.data;
-      } else {}
-      // Re-throw the exception or return a dummy response if needed
+        log(errorDetails.toString());
+      }
       throw Exception('Dio request failed: $e');
     }
   }
@@ -196,7 +200,6 @@ class ApiResponseHandler {
     Map<String, dynamic>? extra,
     ResponseType? responseType,
   }) {
-    // Make Dio request
     try {
       return dio.get(
         url,
@@ -245,4 +248,13 @@ class ApiResponseHandler {
         return {'status': false, 'message': errorMessages};
     }
   }
+}
+
+class AuthException implements Exception {
+  final String message;
+
+  AuthException(this.message);
+
+  @override
+  String toString() => message;
 }

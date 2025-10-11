@@ -58,7 +58,7 @@ class _OrderCancelScreenState extends State<OrderCancelScreen> {
                     Container(
                       height: 1,
                       width: screenWidth,
-                      color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.08),
+                      color: Theme.of(context).colorScheme.onPrimary.withAlpha((0.08 * 255).toInt()),
                     ),
                     SizedBox(height: screenHeight * 0.04),
                     Container(
@@ -82,7 +82,7 @@ class _OrderCancelScreenState extends State<OrderCancelScreen> {
                     Container(
                       height: 1,
                       width: screenWidth,
-                      color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.08),
+                      color: Theme.of(context).colorScheme.onPrimary.withAlpha((0.08 * 255).toInt()),
                     ),
                     Material(
                       elevation: 10,

@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import '../../core/constants/app_strings.dart';
-import '../../core/services/shared_preferences_helper.dart';
 import '../../core/widgets/bottom_navigation_bar.dart';
 import '../../provider/cart_item_provider/cart_item_provider.dart';
 
@@ -182,7 +181,6 @@ class PaymentViewState extends State<PaymentViewScreen> {
         }
 
         // Check for error codes in URL parameters
-        final status = uri.queryParameters['status'];
         final error = uri.queryParameters['error'];
         if (error != null) {
           errorMessage = error;
@@ -283,17 +281,13 @@ class PaymentViewState extends State<PaymentViewScreen> {
 
   Future<void> _clearCartAndRefreshProviders() async {
     try {
-      final token = await SecurePreferencesUtil.getToken();
-
-      if (!mounted) return;
-
       // Clear cart provider
       final cartProvider = Provider.of<CartProvider>(context, listen: false);
       // Optimistic clear to update app bar badge immediately
       cartProvider.clearCartLocally();
 
       // Then fetch from server to be sure
-      await cartProvider.fetchCartData(token ?? '', context);
+      await cartProvider.fetchCartData();
     } catch (e) {
       log('Error clearing cart: $e');
     }

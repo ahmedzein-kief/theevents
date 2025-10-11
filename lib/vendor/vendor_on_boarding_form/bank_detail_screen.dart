@@ -51,7 +51,7 @@ class _BankDetailScreenState extends State<BankDetailScreen> {
 
   Future<void> getAllMetaData() async {
     final provider = Provider.of<VendorSignUpProvider>(context, listen: false);
-    final response = await provider.getAllMetaData(context);
+    final response = await provider.getAllMetaData();
 
     if (response != null) {
       /**
@@ -122,7 +122,7 @@ class _BankDetailScreenState extends State<BankDetailScreen> {
                           decoration: BoxDecoration(
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.2), // Shadow color
+                                color: Colors.black.withAlpha((0.2 * 255).toInt()), // Shadow color
                                 spreadRadius: 2, // How much the shadow spreads
                                 blurRadius: 5, // How blurry the shadow is
                                 offset: const Offset(0, 2), // Shadow offset (X, Y)
@@ -133,7 +133,7 @@ class _BankDetailScreenState extends State<BankDetailScreen> {
                             key: _formKey,
                             child: Material(
                               shadowColor: Colors.black,
-                              color: Colors.white,
+                              // color: Colors.white,
                               elevation: 15,
                               child: Padding(
                                 padding: const EdgeInsets.only(

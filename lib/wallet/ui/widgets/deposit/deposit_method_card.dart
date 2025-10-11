@@ -11,11 +11,11 @@ class DepositMethodCard extends StatelessWidget {
   final VoidCallback onTap;
 
   const DepositMethodCard({
-    Key? key,
+    super.key,
     required this.method,
     required this.isSelected,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +56,8 @@ class DepositMethodCard extends StatelessWidget {
             Icon(
               method.type == DepositMethodType.giftCard ? Icons.card_giftcard : Icons.credit_card,
               size: 30,
-              color: theme.iconTheme.color?.withOpacity(0.7) ?? (isDark ? Colors.grey[400] : Colors.grey[600]),
+              color: theme.iconTheme.color?.withAlpha((0.7 * 255).toInt()) ??
+                  (isDark ? Colors.grey[400] : Colors.grey[600]),
             ),
             const SizedBox(width: 15),
             Expanded(
@@ -96,7 +97,7 @@ class DepositMethodCard extends StatelessWidget {
                     method.subtitle,
                     style: GoogleFonts.openSans(
                       fontSize: 12,
-                      color: theme.textTheme.bodyMedium?.color?.withOpacity(0.8),
+                      color: theme.textTheme.bodyMedium?.color?.withAlpha((0.8 * 255).toInt()),
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -104,7 +105,7 @@ class DepositMethodCard extends StatelessWidget {
                     method.processingInfo,
                     style: GoogleFonts.openSans(
                       fontSize: 10,
-                      color: theme.textTheme.bodySmall?.color?.withOpacity(0.7),
+                      color: theme.textTheme.bodySmall?.color?.withAlpha((0.7 * 255).toInt()),
                     ),
                   ),
                 ],

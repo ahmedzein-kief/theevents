@@ -12,7 +12,7 @@ class VendorApiEndpoints {
   static const String meta = '${baseUrl}meta';
   static const String vendorTypes = 'https://apistaging.theevents.ae/api/v1/getVendorsTypes';
   static const String vendorPermissions = '${baseUrl}getPermissions';
-  static const String settings_subscription = '${baseUrlSettings}settings/subscription';
+  static const String settingsSubscription = '${baseUrlSettings}settings/subscription';
   static const String pay = '${baseUrlSettings}payment-methods';
   static const String emailResend = '${baseUrlSettings}email/resend';
   static const String previewAgreement = '${baseUrl}preview-agreement';

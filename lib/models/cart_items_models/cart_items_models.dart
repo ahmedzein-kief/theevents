@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 class CartModel {
   CartModel({required this.error, required this.data});
 
@@ -23,7 +25,7 @@ class Data {
     required this.formattedRawTax,
     required this.formattedFinalTotal,
     required this.isTaxEnabled,
-    required this.tracked_start_checkout,
+    required this.trackedStartCheckout,
   });
 
   factory Data.fromJson(Map<String, dynamic> json) {
@@ -40,7 +42,9 @@ class Data {
         final contentMap = json['content'] as Map<String, dynamic>;
         content = contentMap.map((key, value) => MapEntry(key, CartItem.fromJson(value)));
       } else {}
-    } catch (e) {}
+    } catch (e) {
+      log(e.toString());
+    }
 
     List<Product> products = [];
     // Ensure products is a List
@@ -49,7 +53,9 @@ class Data {
         final productsList = json['products'] as List<dynamic>;
         products = productsList.map((i) => Product.fromJson(i)).toList();
       } else {}
-    } catch (e) {}
+    } catch (e) {
+      log(e.toString());
+    }
 
     return Data(
       count: json['count'] is String ? int.parse(json['count']) : json['count'],
@@ -64,7 +70,7 @@ class Data {
       formattedRawTax: json['formatedRawTax']?.toString() ?? 'AED0.00',
       formattedFinalTotal: json['formatedFinalTotal']?.toString() ?? 'AED0.00',
       isTaxEnabled: json['isTaxEnabled'] ?? false,
-      tracked_start_checkout: json['tracked_start_checkout']?.toString() ?? '',
+      trackedStartCheckout: json['tracked_start_checkout']?.toString() ?? '',
     );
   }
 
@@ -80,7 +86,7 @@ class Data {
   final String formattedRawTax;
   final String formattedFinalTotal;
   final bool isTaxEnabled;
-  final String tracked_start_checkout;
+  final String trackedStartCheckout;
 }
 
 class CartItem {

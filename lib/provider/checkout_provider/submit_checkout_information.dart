@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:event_app/provider/api_response_handler.dart';
 import 'package:flutter/cupertino.dart';
 
+import '../../core/network/api_endpoints/api_contsants.dart';
 import '../../core/network/api_status/api_status.dart';
 
 class SubMitCheckoutInformationProvider extends ChangeNotifier {
@@ -23,7 +24,6 @@ class SubMitCheckoutInformationProvider extends ChangeNotifier {
   }
 
   Future<dynamic> submitCheckoutInformation({
-    required BuildContext context,
     required String trackedStartCheckout,
     required String addressId,
     required String name,
@@ -36,16 +36,12 @@ class SubMitCheckoutInformationProvider extends ChangeNotifier {
     required int vendorId,
     required String shippingMethod,
     required String shippingOption,
-    required String token, // Token parameter
     String? billingAddressSameAsShippingAddress,
   }) async {
     _isLoading = true;
     notifyListeners();
     setStatus(ApiStatus.loading);
     final url = 'https://apistaging.theevents.ae/api/v1/checkout/$trackedStartCheckout/information';
-    final headers = {
-      'Authorization': token,
-    };
 
     final FormData formData = FormData.fromMap({
       'tracked_start_checkout': trackedStartCheckout,
@@ -70,13 +66,13 @@ class SubMitCheckoutInformationProvider extends ChangeNotifier {
     try {
       final response = await _apiResponseHandler.postDioMultipartRequest(
         url,
-        headers: headers,
+        extra: {ApiConstants.requireAuthKey: true},
         formData: formData,
       );
       if (response.statusCode == 200) {
         setStatus(ApiStatus.completed);
         final responseData = response.data;
-        final cartUpdateResponse = InformationUpdate.fromJson(responseData);
+        InformationUpdate.fromJson(responseData);
         notifyListeners();
         _isLoading = false;
         notifyListeners();

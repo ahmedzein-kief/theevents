@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/helper/mixins/media_query_mixin.dart';
@@ -15,6 +16,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/constants/app_strings.dart';
 import '../../../core/constants/vendor_app_strings.dart';
 import '../../../core/styles/app_colors.dart';
 import '../../../core/utils/app_utils.dart';
@@ -55,7 +57,9 @@ class _VendorOrdersViewState extends State<VendorOrdersView> with MediaQueryMixi
       setState(() {}); // ✅ Force UI update immediately after clearing
       await provider.vendorGetOrders(search: _searchController.text);
       setState(() {});
-    } catch (e) {}
+    } catch (e) {
+      log(e.toString());
+    }
   }
 
   Future<void> _loadMoreData() async {
@@ -248,11 +252,11 @@ class _VendorOrdersViewState extends State<VendorOrdersView> with MediaQueryMixi
                       rowData.shippingAmountFormat.toString(),
                     ),
                     buildRow(
-                      'Payment Method',
+                      VendorAppStrings.payment.tr,
                       (rowData.paymentMethod?.value == null) ? '--' : rowData.paymentMethod?.label?.toString(),
                     ),
                     buildStatusRow(
-                      label: 'Payment Status',
+                      label: AppStrings.paymentType.tr,
                       buttonText: (rowData.paymentStatus?.value == null) ? '--' : rowData.paymentStatus!.label!,
                       color: AppColors.getPaymentStatusColor(
                         rowData.paymentStatus?.value,
@@ -264,10 +268,10 @@ class _VendorOrdersViewState extends State<VendorOrdersView> with MediaQueryMixi
                     ),
                     buildRow(
                       VendorAppStrings.createdAt.tr,
-                      rowData.createdAt.toString() ?? '',
+                      rowData.createdAt.toString(),
                     ),
                     buildStatusRow(
-                      label: 'Status',
+                      label: VendorAppStrings.status.tr,
                       buttonText: rowData.status?.label?.toString() ?? '',
                       color: AppColors.getOrderStatusColor(
                         rowData.status?.value,

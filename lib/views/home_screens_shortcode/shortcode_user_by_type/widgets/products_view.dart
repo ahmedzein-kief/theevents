@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/network/api_endpoints/api_end_point.dart';
-import '../../../../core/services/shared_preferences_helper.dart';
+import '../../../../core/utils/app_utils.dart';
 import '../../../../core/widgets/custom_items_views/product_card.dart';
 import '../../../../core/widgets/items_empty_view.dart';
 import '../../../../provider/cart_item_provider/cart_item_provider.dart';
@@ -13,7 +13,7 @@ import '../../../filters/product_filters_screen.dart';
 import '../../../filters/sort_an_filter_widget.dart';
 import '../../../product_detail_screens/product_detail_screen.dart';
 
-class ProductsView extends StatelessWidget {
+class ProductsView extends StatefulWidget {
   final String storeId;
   final int currentPage;
   final String selectedSortBy;
@@ -32,18 +32,33 @@ class ProductsView extends StatelessWidget {
   });
 
   @override
+  State<ProductsView> createState() => _ProductsViewState();
+}
+
+class _ProductsViewState extends State<ProductsView> {
+  /// Handle add to cart with proper error handling
+  Future<void> _handleAddToCart(int productId) async {
+    final result = await context.read<CartProvider>().addToCart(productId, 1);
+
+    if (result.success) {
+      AppUtils.showToast(result.message, isSuccess: true);
+    } else {
+      AppUtils.showToast(result.message);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final double screenHeight = MediaQuery.sizeOf(context).height;
     final double screenWidth = MediaQuery.sizeOf(context).width;
     final freshPicksProvider = Provider.of<FreshPicksProvider>(context);
     final wishlistProvider = Provider.of<WishlistProvider>(context, listen: false);
-    final cartProvider = Provider.of<CartProvider>(context);
+    Provider.of<CartProvider>(context);
 
     return Column(
       children: [
         Consumer<ProductProvider>(
           builder: (context, productProvider, child) {
-            if (productProvider.isLoadingProducts && currentPage == 1) {
+            if (productProvider.isLoadingProducts && widget.currentPage == 1) {
               return const Center(
                 child: CircularProgressIndicator(
                   color: Colors.black,
@@ -66,19 +81,19 @@ class ProductsView extends StatelessWidget {
                       children: [
                         Flexible(
                           child: SortAndFilterWidget(
-                            selectedSortBy: selectedSortBy,
-                            onSortChanged: onSortChanged,
+                            selectedSortBy: widget.selectedSortBy,
+                            onSortChanged: widget.onSortChanged,
                             onFilterPressed: () {
                               showModalBottomSheet(
                                 context: context,
                                 isScrollControlled: true,
                                 builder: (context) => FilterBottomSheet(
                                   filters: productProvider.productFilters,
-                                  selectedIds: selectedFilters,
+                                  selectedIds: widget.selectedFilters,
                                 ),
                               ).then((result) {
                                 if (result != null) {
-                                  onFiltersChanged(result);
+                                  widget.onFiltersChanged(result);
                                 }
                               });
                             },
@@ -163,23 +178,13 @@ class ProductsView extends StatelessWidget {
                                   storeName: product.store!.name.toString(),
                                   price: product.prices!.price.toString(),
                                   optionalIcon: Icons.shopping_cart,
-                                  onOptionalIconTap: () async {
-                                    final token = await SecurePreferencesUtil.getToken();
-                                    if (token != null) {
-                                      await cartProvider.addToCart(
-                                        product.id,
-                                        context,
-                                        1,
-                                      );
-                                    }
-                                  },
+                                  onOptionalIconTap: () => _handleAddToCart(product.id),
                                   reviewsCount: product.review!.reviewsCount!.toInt(),
                                   isHeartObscure: wishlistProvider.wishlist?.data?.products.any(
                                         (wishlistProduct) => wishlistProduct.id == product.id,
                                       ) ??
                                       false,
                                   onHeartTap: () async {
-                                    final token = await SecurePreferencesUtil.getToken();
                                     final bool isInWishlist = wishlistProvider.wishlist?.data?.products.any(
                                           (wishlistProduct) => wishlistProduct.id == product.id,
                                         ) ??
@@ -188,7 +193,6 @@ class ProductsView extends StatelessWidget {
                                       await wishlistProvider.deleteWishlistItem(
                                         product.id ?? 0,
                                         context,
-                                        token ?? '',
                                       );
                                     } else {
                                       await freshPicksProvider.handleHeartTap(
@@ -196,10 +200,7 @@ class ProductsView extends StatelessWidget {
                                         product.id ?? 0,
                                       );
                                     }
-                                    await wishlistProvider.fetchWishlist(
-                                      token ?? '',
-                                      context,
-                                    );
+                                    await wishlistProvider.fetchWishlist();
                                   },
                                 ),
                               );

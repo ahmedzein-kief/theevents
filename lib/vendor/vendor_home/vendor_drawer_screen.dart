@@ -20,12 +20,13 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../../core/utils/app_utils.dart';
 import '../../models/dashboard/vendor_permissions.dart';
 
 class VendorDrawerScreen extends StatefulWidget {
-  VendorDrawerScreen({super.key, this.selectedIndex});
+  const VendorDrawerScreen({super.key, this.selectedIndex});
 
-  int? selectedIndex;
+  final int? selectedIndex;
 
   @override
   State<VendorDrawerScreen> createState() => _VendorDrawerScreenState();
@@ -56,18 +57,8 @@ class _VendorDrawerScreenState extends State<VendorDrawerScreen> {
     try {
       final provider = Provider.of<UserProvider>(context, listen: false);
       await provider.downloadAgreement(context, userModel!.id);
-
-      // ScaffoldMessenger.of(context).showSnackBar(
-      //   SnackBar(
-      //     content: Text('$result'),
-      //   ),
-      // );
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('${VendorAppStrings.error.tr}${e.toString()}'),
-        ),
-      );
+      AppUtils.showToast('${VendorAppStrings.error.tr}${e.toString()}');
     } finally {}
   }
 
@@ -96,7 +87,7 @@ class _VendorDrawerScreenState extends State<VendorDrawerScreen> {
       const VendorWithdrawalsView(),
       const VendorReviewsView(),
       const VendorRevenuesView(),
-      VendorProfileSettingsView(),
+      const VendorProfileSettingsView(),
       // Add more screens as needed
     ];
 

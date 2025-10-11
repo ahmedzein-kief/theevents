@@ -1,4 +1,4 @@
-import 'package:event_app/models/vendor_models/products/VendorGetProductsModel.dart';
+import 'package:event_app/models/vendor_models/products/vendor_get_products_model.dart';
 
 class VendorGetWithdrawalsModel {
   VendorGetWithdrawalsModel({this.error, this.data, this.message});

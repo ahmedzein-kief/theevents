@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/models/dashboard/information_icons_models/new_products_models.dart';
 import 'package:event_app/models/product_packages_models/product_filters_model.dart';
@@ -26,10 +28,7 @@ class NewProductsProvider extends ChangeNotifier {
       _errorMessage = null;
       notifyListeners();
 
-      final response = await _apiResponseHandler.getRequest(
-        newProductUrl,
-        context: context,
-      );
+      final response = await _apiResponseHandler.getRequest(newProductUrl);
 
       if (response.statusCode == 200) {
         final jsonResponse = response.data;
@@ -38,7 +37,7 @@ class NewProductsProvider extends ChangeNotifier {
         _errorMessage = '';
       }
     } catch (error) {
-      print(error.toString());
+      log(error.toString());
       _errorMessage = error.toString();
     } finally {
       // _isLoading = false;
@@ -49,7 +48,8 @@ class NewProductsProvider extends ChangeNotifier {
   ///      +++++++++++++++++++++++++++++  New Products Provider +++++++++++++++++++++++++++++
 
   List<Records> _products = [];
-  Pagination? _pagination;
+
+  // Pagination? _pagination;
   NewProductsModels? _newProductsModels;
   bool _isMoreLoading = false;
   ProductFiltersModel? _productFilters;
@@ -105,23 +105,20 @@ class NewProductsProvider extends ChangeNotifier {
     final baseUrl = '${ApiEndpoints.newProducts}?per-page=$perPage&page=$page&sort-by=$sortBy';
     final url = filtersQuery.isNotEmpty ? '$baseUrl&$filtersQuery&allcategories=1' : baseUrl;
 
-    print('URL $url');
+    log('URL $url');
 
     try {
-      final response = await _apiResponseHandler.getRequest(
-        url,
-        context: context,
-      );
+      final response = await _apiResponseHandler.getRequest(url);
 
       if (response.statusCode == 200) {
-        final jsonData = response.data;
+        // final jsonData = response.data;
         // final newProducts = NewProductsModels.fromJson(jsonData).data?.records ?? [];
         final Map<String, dynamic> jsonResponse = response.data;
         final NewProductsModels apiResponse = NewProductsModels.fromJson(jsonResponse);
 
         if (page == 1) {
           _products = apiResponse.data?.records ?? [];
-          _pagination = apiResponse.data?.pagination;
+          // _pagination = apiResponse.data?.pagination;
           _productFilters = apiResponse.data?.filters;
         } else {
           _products.addAll(apiResponse.data?.records ?? []);
@@ -129,7 +126,7 @@ class NewProductsProvider extends ChangeNotifier {
         }
       } else {}
     } catch (error) {
-      print(error.toString());
+      log(error.toString());
     }
 
     _isLoading = false;

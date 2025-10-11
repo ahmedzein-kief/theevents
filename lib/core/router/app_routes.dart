@@ -103,7 +103,7 @@ class AppRoutes {
 
       case vendorProfileSettingsView:
         return MaterialPageRoute(
-          builder: (context) => VendorProfileSettingsView(),
+          builder: (context) => const VendorProfileSettingsView(),
           settings: settings,
         );
 

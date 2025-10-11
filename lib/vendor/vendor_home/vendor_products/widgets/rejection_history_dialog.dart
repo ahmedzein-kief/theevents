@@ -1,4 +1,6 @@
 // Rejection History Dialog Widget
+import 'package:event_app/core/constants/app_strings.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/vendor/vendor_home/vendor_products/widgets/rejection_history_tile.dart';
 import 'package:flutter/material.dart';
 
@@ -50,9 +52,7 @@ class RejectionHistoryDialog extends StatelessWidget {
             Flexible(
               child: SingleChildScrollView(
                 child: Column(
-                  children: rejectionHistory
-                      .map((item) => RejectionHistoryTile(item: item))
-                      .toList(),
+                  children: rejectionHistory.map((item) => RejectionHistoryTile(item: item)).toList(),
                 ),
               ),
             ),
@@ -65,7 +65,7 @@ class RejectionHistoryDialog extends StatelessWidget {
                   backgroundColor: Colors.grey[600],
                   foregroundColor: Colors.white,
                 ),
-                child: const Text('Close'),
+                child: Text(AppStrings.dismiss.tr),
               ),
             ),
           ],

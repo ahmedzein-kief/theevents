@@ -31,16 +31,13 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _passShowNot = true;
-  final bool _confPass = true;
   String selectedGender = 'Female'; // To keep track of the selected gender
 
   @override
   Widget build(BuildContext context) {
-    final double screenWidth = MediaQuery.sizeOf(context).width;
     final double screeHeight = MediaQuery.sizeOf(context).height;
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
@@ -62,25 +59,33 @@ class _SignupScreenState extends State<SignupScreen> {
                           padding: EdgeInsets.only(top: screeHeight * 0.02),
                           child: CustomTextFields(
                             leftIcon: SvgPicture.asset(
-                                color: Theme.of(context).colorScheme.onPrimary,
-                                AppStrings.profileName.tr,
-                                height: screeHeight * 0.025,),
+                              colorFilter: ColorFilter.mode(
+                                Theme.of(context).colorScheme.onPrimary,
+                                BlendMode.srcIn,
+                              ),
+                              AppStrings.profileName.tr,
+                              height: screeHeight * 0.025,
+                            ),
                             textEditingController: _nameController,
                             inputType: TextInputType.name,
                             formFieldValidator: Validator.name,
                             hintText: AppStrings.fullName.tr,
                             hintStyle: GoogleFonts.inter(
-                                fontWeight: FontWeight.w400,
-                                fontSize: 16,
-                                color:
-                                    Theme.of(context).colorScheme.onSecondary,),
+                              fontWeight: FontWeight.w400,
+                              fontSize: 16,
+                              color: Theme.of(context).colorScheme.onSecondary,
+                            ),
                           ),
                         ),
                         CustomTextFields(
                           leftIcon: SvgPicture.asset(
-                              color: Theme.of(context).colorScheme.onPrimary,
-                              AppStrings.emailIcon.tr,
-                              height: screeHeight * 0.02,),
+                            colorFilter: ColorFilter.mode(
+                              Theme.of(context).colorScheme.onPrimary,
+                              BlendMode.srcIn,
+                            ),
+                            AppStrings.emailIcon.tr,
+                            height: screeHeight * 0.02,
+                          ),
                           hintStyle: GoogleFonts.inter(
                             fontWeight: FontWeight.w400, fontSize: 16,
                             color: Theme.of(context).colorScheme.onSecondary,
@@ -93,9 +98,13 @@ class _SignupScreenState extends State<SignupScreen> {
                         ),
                         CustomTextFields(
                           leftIcon: SvgPicture.asset(
-                              color: Theme.of(context).colorScheme.onPrimary,
-                              AppStrings.passwordIcon.tr,
-                              height: screeHeight * 0.025,),
+                            colorFilter: ColorFilter.mode(
+                              Theme.of(context).colorScheme.onPrimary,
+                              BlendMode.srcIn,
+                            ),
+                            AppStrings.passwordIcon.tr,
+                            height: screeHeight * 0.025,
+                          ),
                           hintStyle: GoogleFonts.inter(
                             fontWeight: FontWeight.w400,
                             fontSize: 16,
@@ -104,25 +113,27 @@ class _SignupScreenState extends State<SignupScreen> {
                           ),
                           textEditingController: _passwordController,
                           inputType: TextInputType.visiblePassword,
-                          formFieldValidator:
-                              Validator.signUpPasswordValidation,
+                          formFieldValidator: Validator.signUpPasswordValidation,
                           isObsecureText: true,
                           hintText: AppStrings.enterYourPassword.tr,
                         ),
                         CustomTextFields(
                           leftIcon: SvgPicture.asset(
-                            color: Theme.of(context).colorScheme.onPrimary,
+                            colorFilter: ColorFilter.mode(
+                              Theme.of(context).colorScheme.onPrimary,
+                              BlendMode.srcIn,
+                            ),
                             AppStrings.passwordIcon.tr,
                             height: screeHeight * 0.025,
                           ),
                           hintStyle: GoogleFonts.inter(
-                              fontWeight: FontWeight.w400,
-                              color: Theme.of(context).colorScheme.onSecondary,
-                              fontSize: 16,),
+                            fontWeight: FontWeight.w400,
+                            color: Theme.of(context).colorScheme.onSecondary,
+                            fontSize: 16,
+                          ),
                           textEditingController: _confirmPasswordController,
                           inputType: TextInputType.visiblePassword,
-                          formFieldValidator:
-                              Validator.signUpPasswordValidation,
+                          formFieldValidator: Validator.signUpPasswordValidation,
                           isObsecureText: _passShowNot,
                           suffixIcon: TextButton(
                             onPressed: () {
@@ -133,10 +144,11 @@ class _SignupScreenState extends State<SignupScreen> {
                             child: SvgPicture.asset(
                               height: screeHeight * 0.02,
                               fit: BoxFit.cover,
-                              color: Theme.of(context).colorScheme.onPrimary,
-                              _passShowNot
-                                  ? AppStrings.hideEye.tr
-                                  : AppStrings.showEye.tr,
+                              colorFilter: ColorFilter.mode(
+                                Theme.of(context).colorScheme.onPrimary,
+                                BlendMode.srcIn,
+                              ),
+                              _passShowNot ? AppStrings.hideEye.tr : AppStrings.showEye.tr,
                             ),
                           ),
                           hintText: AppStrings.confirmPassword.tr,
@@ -230,16 +242,16 @@ class _SignupScreenState extends State<SignupScreen> {
                             text: TextSpan(
                               children: [
                                 TextSpan(
-                                    text: AppStrings.agreement.tr,
-                                    style: loginTermsConditionStyle(context),),
+                                  text: AppStrings.agreement.tr,
+                                  style: loginTermsConditionStyle(context),
+                                ),
                                 TextSpan(
                                   recognizer: TapGestureRecognizer()
                                     ..onTap = () {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) =>
-                                              const TermsAndCondtionScreen(),
+                                          builder: (context) => const TermsAndCondtionScreen(),
                                         ),
                                       );
                                     },
@@ -251,16 +263,16 @@ class _SignupScreenState extends State<SignupScreen> {
                                   ),
                                 ),
                                 TextSpan(
-                                    text: ' & ',
-                                    style: loginTermsConditionStyle(context),),
+                                  text: ' & ',
+                                  style: loginTermsConditionStyle(context),
+                                ),
                                 TextSpan(
                                   recognizer: TapGestureRecognizer()
                                     ..onTap = () {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) =>
-                                              const PrivacyPolicyScreen(),
+                                          builder: (context) => const PrivacyPolicyScreen(),
                                         ),
                                       );
                                     },
@@ -282,39 +294,35 @@ class _SignupScreenState extends State<SignupScreen> {
                             child: Column(
                               children: [
                                 Consumer<AuthProvider>(
-                                  builder: (context, authProvider, child) =>
-                                      CustomAuthButton(
-                                    title: authProvider.isLoading
-                                        ? '${AppStrings.signUp.tr}....'
-                                        : AppStrings.signUp.tr,
-                                    isLoading: authProvider.isLoading,
-                                    // title: 'Sign Up',
-                                    onPressed: () async {
-                                      if (_formKey.currentState?.validate() ??
-                                          false) {
-                                        final result =
-                                            await authProvider.signUp(
-                                                _nameController.text,
-                                                _emailController.text,
-                                                _passwordController.text,
-                                                _confirmPasswordController.text,
-                                                context,);
+                                  builder: (context, authProvider, child) => CustomAuthButton(
+                                      title:
+                                          authProvider.isLoading ? '${AppStrings.signUp.tr}....' : AppStrings.signUp.tr,
+                                      isLoading: authProvider.isLoading,
+                                      // title: 'Sign Up',
+                                      onPressed: () async {
+                                        if (!(_formKey.currentState?.validate() ?? false)) return;
+
+                                        final navigator = Navigator.of(context); // ✅ Capture before async
+                                        final result = await authProvider.signUp(
+                                          _nameController.text,
+                                          _emailController.text,
+                                          _passwordController.text,
+                                          _confirmPasswordController.text,
+                                          context,
+                                        );
+
+                                        if (!context.mounted) return; // ✅ Prevent using context if unmounted
+
                                         if (result != null) {
-                                          await SecurePreferencesUtil
-                                              .saveUserName(
-                                                  result.data?.name ?? '',);
-                                          await SecurePreferencesUtil
-                                              .saveUserMail(
-                                                  result.data?.email ?? '',);
-                                          Navigator.pushReplacement(
-                                              context,
-                                              CupertinoPageRoute(
-                                                  builder: (context) =>
-                                                      AuthScreen(),),);
+                                          await SecurePreferencesUtil.saveUserName(result.data?.name ?? '');
+                                          await SecurePreferencesUtil.saveUserMail(result.data?.email ?? '');
+
+                                          if (!context.mounted) return; // ✅ Recheck after awaits
+                                          navigator.pushReplacement(
+                                            CupertinoPageRoute(builder: (_) => const AuthScreen()),
+                                          );
                                         }
-                                      }
-                                    },
-                                  ),
+                                      }),
                                 ),
                               ],
                             ),

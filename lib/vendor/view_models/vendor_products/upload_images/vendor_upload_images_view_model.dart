@@ -1,12 +1,14 @@
+import 'dart:developer';
+
 import 'package:dio/dio.dart';
 import 'package:event_app/models/vendor_models/products/create_product/upload_images_data_response.dart';
 import 'package:event_app/models/vendor_models/products/holder_models/upload_images_model.dart';
 import 'package:event_app/provider/vendor/vendor_repository.dart';
-import 'package:event_app/vendor/components/services/alert_services.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../../../../core/services/shared_preferences_helper.dart';
-import '../../../../data/vendor/data/response/ApiResponse.dart';
+import '../../../../core/utils/app_utils.dart';
+import '../../../../data/vendor/data/response/api_response.dart';
 
 class VendorUploadImagesViewModel with ChangeNotifier {
   String? _token;
@@ -35,7 +37,9 @@ class VendorUploadImagesViewModel with ChangeNotifier {
   }
 
   Future<List<UploadImagesModel?>> uploadAllImages(
-      BuildContext context, List<UploadImagesModel> images,) async {
+    BuildContext context,
+    List<UploadImagesModel> images,
+  ) async {
     try {
       setLoading(true);
       setApiResponse = ApiResponse.loading();
@@ -47,8 +51,7 @@ class VendorUploadImagesViewModel with ChangeNotifier {
       };
 
       // Create a list of upload tasks for each image
-      final List<Future<UploadImagesModel?>> uploadTasks =
-          images.map((image) async {
+      final List<Future<UploadImagesModel?>> uploadTasks = images.map((image) async {
         final formData = FormData();
         formData.files.add(
           MapEntry(
@@ -60,10 +63,8 @@ class VendorUploadImagesViewModel with ChangeNotifier {
           ),
         );
 
-        return _myRepo
-            .vendorUploadImages(headers: headers, formData: formData)
-            .then((response) {
-          print('upload data ==> ${response.data}');
+        return _myRepo.vendorUploadImages(headers: headers, formData: formData).then((response) {
+          log('upload data ==> ${response.data}');
 
           image.serverFullUrl = response.data?.fullUrl ?? '';
           image.serverUrl = response.data?.url ?? '';
@@ -75,7 +76,7 @@ class VendorUploadImagesViewModel with ChangeNotifier {
 
           return image;
         }).catchError((error) {
-          print(error.toString());
+          log(error.toString());
           return UploadImagesModel();
         });
       }).toList();
@@ -85,19 +86,16 @@ class VendorUploadImagesViewModel with ChangeNotifier {
 
       // Handle overall result
       if (results.any((e) => e?.file == null)) {
-        AlertServices.showErrorSnackBar(
-            message: 'Some images failed to upload', context: context,);
-      } else {
-        AlertServices.showSuccessSnackBar(
-          message: 'All images uploaded successfully',
-          context: context,
+        AppUtils.showToast(
+          'Some images failed to upload',
         );
+      } else {
+        AppUtils.showToast('All images uploaded successfully', isSuccess: true);
       }
       return results;
     } catch (error) {
       setApiResponse = ApiResponse.error(error.toString());
-      AlertServices.showErrorSnackBar(
-          message: error.toString(), context: context,);
+      AppUtils.showToast(error.toString());
       return [];
     } finally {
       setLoading(false);

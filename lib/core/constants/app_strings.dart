@@ -38,7 +38,7 @@ class AppStrings {
   static const String addToCart = 'Add to cart';
   static const String subTotalColon = 'Subtotal:  ';
   static const String taxColon = 'Tax:  ';
-  static const String couponCodeText = 'Coupon code: ';
+  static const String couponCodeText = 'Coupon code';
   static const String couponCodeAmount = 'Coupon code discount amount: ';
   static const String shippingFee = 'Shipping fee';
   static const String switchLanguage = 'Switch Language';
@@ -337,6 +337,7 @@ class AppStrings {
   static const String wishlist = 'WISHLIST';
   static const String pleaseLogInToWishList = 'Please Log-In to add items to your Wishlist.';
   static const String pleaseLogInToCart = 'Please Log-In to add items to Your Cart.';
+  static const String pleaseLogInToContinue = 'pleaseLogInToContinue';
   static const String noAttributesAvailable = 'No attributes available';
   static const String customerReviews = 'Customer Reviews';
   static const String view = 'View';
@@ -423,6 +424,8 @@ class AppStrings {
       'This app requires access to your device\'s external storage to store the invoice. Please grant the permission to proceed.';
   static const String allow = 'Allow';
   static const String pending = 'Pending';
+  static const String pendingProducts = 'pendingProducts';
+  static const String pendingPackages = 'pendingPackages';
   static const String completed = 'Completed';
   static const String noOrders = 'No orders found';
 
@@ -443,7 +446,7 @@ class AppStrings {
   static const String charges = 'Charges';
   static const String totalAmount = 'Total Amount';
   static const String confirmation = 'Confirmation';
-  static const String confirmationMessage = 'Are you sure you want to cancel this order?';
+  static const String cancelOrderConfirmationMessage = 'Are you sure you want to cancel this order?';
 
   static const String shippingInfo = 'Shipping Info';
   static const String shippingStatus = 'Shipping Status:';
@@ -542,4 +545,36 @@ class AppStrings {
   static const String notificationTypes = 'notificationTypes';
   static const String noExpiringFundsFound = 'noExpiringFundsFound';
   static const String card = 'card';
+  static const String pleaseSelectAnAddress = 'pleaseSelectAnAddress';
+  static const String pleaseAddNewAddress = 'pleaseAddNewAddress';
+  static const String becomeSeller = 'becomeSeller';
+  static const String yesBecomeSeller = 'yesBecomeSeller';
+  static const String becomeSellerConfirmation = 'becomeSellerConfirmation';
+  static const String noRecordFound = 'noRecordFound';
+  static const String sku = 'sku';
+  static const String code = 'code';
+  static const String amount = 'amount';
+  static const String totalUsed = 'totalUsed';
+  static const String noGiftCardsFound = 'noGiftCardsFound';
+  static const String createFirstGiftCard = 'createFirstGiftCard';
+  static const String createGiftCard = 'createGiftCard';
+  static const String dismiss = 'dismiss';
+
+  // Weekday short labels
+  static const String mondayShort = 'mondayShort';
+  static const String tuesdayShort = 'tuesdayShort';
+  static const String wednesdayShort = 'wednesdayShort';
+  static const String thursdayShort = 'thursdayShort';
+  static const String fridayShort = 'fridayShort';
+  static const String saturdayShort = 'saturdayShort';
+  static const String sundayShort = 'sundayShort';
+  static const String request = 'request';
+  static const String publish = 'publish';
+  static const String afterCancelAmountAndFeeWillBeRefundedBackInYourBalance =
+      'After cancel amount and fee will be refunded back in your balance.';
+  static const String doYouWantToCancelThisWithdrawal = 'Do you want to cancel this withdrawal?';
+  static const String youWillReceiveMoneyThroughTheInformation = 'You will receive money through the information: ';
+  static const String payoutInfo = 'Payout Info';
+  static const String camera = 'Camera';
+  static const String gallery = 'Gallery';
 }

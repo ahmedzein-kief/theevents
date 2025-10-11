@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/helper/validators/validator.dart';
 import 'package:event_app/core/widgets/bottom_navigation_bar.dart';
@@ -108,7 +106,10 @@ class LoginScreenState extends State<LoginScreen> {
                             inputType: TextInputType.emailAddress,
                             hintText: AppStrings.enterYourEmail.tr,
                             leftIcon: SvgPicture.asset(
-                              color: Theme.of(context).colorScheme.onPrimary,
+                              colorFilter: ColorFilter.mode(
+                                Theme.of(context).colorScheme.onPrimary,
+                                BlendMode.srcIn,
+                              ),
                               AppStrings.emailIcon.tr,
                               height: screeHeight * 0.02,
                             ),
@@ -127,7 +128,10 @@ class LoginScreenState extends State<LoginScreen> {
                               color: Theme.of(context).colorScheme.onSecondary,
                             ),
                             leftIcon: SvgPicture.asset(
-                              color: Theme.of(context).colorScheme.onPrimary,
+                              colorFilter: ColorFilter.mode(
+                                Theme.of(context).colorScheme.onPrimary,
+                                BlendMode.srcIn,
+                              ),
                               AppStrings.passwordIcon.tr,
                               height: screeHeight * 0.025,
                             ),
@@ -147,7 +151,10 @@ class LoginScreenState extends State<LoginScreen> {
                               child: SvgPicture.asset(
                                 height: screeHeight * 0.02,
                                 fit: BoxFit.cover,
-                                color: Theme.of(context).colorScheme.onPrimary,
+                                colorFilter: ColorFilter.mode(
+                                  Theme.of(context).colorScheme.onPrimary,
+                                  BlendMode.srcIn,
+                                ),
                                 _passShowNot ? AppStrings.hideEye.tr : AppStrings.showEye.tr,
                               ),
                             ),
@@ -208,7 +215,6 @@ class LoginScreenState extends State<LoginScreen> {
                                       _rememberMe,
                                       tokenName: mobileLogin,
                                     );
-                                    log('userData response: ${userData?.data}');
 
                                     if (userData?.data != null) {
                                       await SecurePreferencesUtil.setVendorData(
@@ -228,6 +234,9 @@ class LoginScreenState extends State<LoginScreen> {
                                         );
                                       }
 
+                                      // FIX: Check context.mounted after async operations
+                                      if (!context.mounted) return;
+
                                       if (userData?.data?.isVendor == 1) {
                                         // Handle vendor users
                                         final isApproved = userData?.data?.isApproved == true;
@@ -239,7 +248,7 @@ class LoginScreenState extends State<LoginScreen> {
                                         if (isApproved && isVerified) {
                                           // Vendor is approved and verified - go to vendor dashboard
                                           Navigator.of(context).pushReplacement(
-                                            MaterialPageRoute(builder: (_) => VendorDrawerScreen()),
+                                            MaterialPageRoute(builder: (_) => const VendorDrawerScreen()),
                                           );
                                         } else if (isPaid && !isApproved) {
                                           // Vendor is paid but not approved yet - go to BaseHomeScreen

@@ -1,12 +1,13 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:event_app/provider/vendor/vendor_repository.dart';
-import 'package:event_app/vendor/components/services/alert_services.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../../../core/services/shared_preferences_helper.dart';
-import '../../../data/vendor/data/response/ApiResponse.dart';
+import '../../../core/utils/app_utils.dart';
+import '../../../data/vendor/data/response/api_response.dart';
 import '../../../models/vendor_models/vendor_coupons_models/vendor_create_coupon_model.dart';
 
 class VendorCreateCouponViewModel with ChangeNotifier {
@@ -48,23 +49,20 @@ class VendorCreateCouponViewModel with ChangeNotifier {
       };
       final body = jsonEncode(form);
 
-      final VendorCreateCouponModel response =
-          await _myRepo.vendorCreateCoupon(headers: headers, body: body);
+      final VendorCreateCouponModel response = await _myRepo.vendorCreateCoupon(headers: headers, body: body);
       setApiResponse = ApiResponse.completed(response);
-      AlertServices.showSuccessSnackBar(
-          message: response.message.toString(), context: context,);
+      AppUtils.showToast(response.message.toString(), isSuccess: true);
       setLoading(false);
       return true;
     } catch (error) {
       if (error is DioException) {
-        print('yes dio exception');
+        log('yes dio exception');
       } else {
-        print('no dio exception');
+        log('no dio exception');
       }
 
       setApiResponse = ApiResponse.error(error.toString());
-      AlertServices.showErrorSnackBar(
-          message: error.toString(), context: context,);
+      AppUtils.showToast(error.toString());
       setLoading(false);
       return false;
     }

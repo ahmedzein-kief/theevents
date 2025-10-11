@@ -9,10 +9,9 @@ import 'package:provider/provider.dart';
 
 import '../../../core/constants/app_strings.dart';
 import '../../../core/network/api_endpoints/api_contsants.dart';
-import '../../../core/services/shared_preferences_helper.dart';
 import '../../../core/widgets/custom_app_views/search_bar.dart';
 import '../../../core/widgets/padded_network_banner.dart';
-import '../../../provider/shortcode_fresh_picks_provider/eCom_tags_provider.dart';
+import '../../../provider/shortcode_fresh_picks_provider/ecom_tags_provider.dart';
 import '../../../provider/wishlist_items_provider/wishlist_provider.dart';
 
 class EComTagsScreens extends StatefulWidget {
@@ -44,9 +43,8 @@ class _EComTagsScreensState extends State<EComTagsScreens> {
   }
 
   Future<void> _fetchWishListItems() async {
-    final token = await SecurePreferencesUtil.getToken();
     final provider = Provider.of<WishlistProvider>(context, listen: false);
-    provider.fetchWishlist(token ?? '', context);
+    provider.fetchWishlist();
   }
 
   Future<void> _fetchBannerData() async {

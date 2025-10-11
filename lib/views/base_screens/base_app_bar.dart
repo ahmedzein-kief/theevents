@@ -3,9 +3,7 @@ import 'package:event_app/views/home_screens_shortcode/shortcode_information_ico
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../core/services/shared_preferences_helper.dart';
 import '../../core/styles/app_colors.dart';
 import '../../core/widgets/custom_app_views/app_bar.dart';
 import '../../core/widgets/custom_slider_route.dart';
@@ -68,7 +66,6 @@ class BaseAppBar extends StatefulWidget {
 }
 
 class _BaseScreenState extends State<BaseAppBar> {
-  late bool _isLoggedIn = false;
   bool _showSuggestions = false;
   List<Records>? _lastSuggestions;
   FocusNode? _searchFocusNode;
@@ -76,9 +73,12 @@ class _BaseScreenState extends State<BaseAppBar> {
   @override
   void initState() {
     super.initState();
-    _fetchCartItemCount();
-    _fetchWishListCount();
-    _loadLoginState();
+
+    // Defer API calls until after the first frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _fetchCartItemCount();
+      _fetchWishListCount();
+    });
 
     if (widget.showSearchBar) {
       _searchFocusNode = FocusNode();
@@ -90,7 +90,6 @@ class _BaseScreenState extends State<BaseAppBar> {
         }
       });
 
-      // Listen to search controller changes
       widget.searchController?.addListener(_onSearchChanged);
     }
   }
@@ -119,34 +118,17 @@ class _BaseScreenState extends State<BaseAppBar> {
     }
   }
 
-  void _hideSuggestions() {
-    widget.searchController?.clear();
-    final provider = Provider.of<SearchSuggestionsProvider>(context, listen: false);
-    provider.clearSearchSuggestions();
-    setState(() => _showSuggestions = false);
-    _searchFocusNode?.unfocus();
-  }
-
-  Future<void> _loadLoginState() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
-    });
-  }
-
   /// +++++++++++++++++++ FUNCTION to fetch the cart item count   =================================================================
   Future<void> _fetchCartItemCount() async {
-    final token = await SecurePreferencesUtil.getToken();
     final cartProvider = Provider.of<CartProvider>(context, listen: false);
-    await cartProvider.fetchCartData(token ?? '', context);
+    await cartProvider.fetchCartData();
   }
 
   /// +++++++++++++++++++ FUNCTION FOR  FETCH THE WISH LIST ITEM COUNT  =================================================================
 
   Future<void> _fetchWishListCount() async {
-    final token = await SecurePreferencesUtil.getToken();
     final cartProvider = Provider.of<WishlistProvider>(context, listen: false);
-    await cartProvider.fetchWishlist(token ?? '', context);
+    await cartProvider.fetchWishlist();
   }
 
   Widget _buildSuggestionsOverlay() {
@@ -474,8 +456,6 @@ class _BaseScreenState extends State<BaseAppBar> {
       ),
     );
   }
-
-  final bool _isNavigating = false;
 
   ///  navigate to notification screen
   void _navigateToNotifications() {

@@ -1,10 +1,14 @@
+import 'dart:developer';
+
 import 'package:another_stepper/dto/stepper_data.dart';
 import 'package:another_stepper/widgets/another_stepper.dart';
+import 'package:event_app/core/constants/app_strings.dart';
 import 'package:event_app/core/constants/vendor_app_strings.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/helper/mixins/media_query_mixin.dart';
 import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/core/styles/app_sizes.dart';
+import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/core/widgets/custom_auth_views/app_custom_button.dart';
 import 'package:event_app/data/vendor/data/response/apis_status.dart';
 import 'package:event_app/provider/payment_address/customer_address.dart';
@@ -13,14 +17,12 @@ import 'package:event_app/vendor/components/buttons/custom_icon_button_with_text
 import 'package:event_app/vendor/components/data_tables/custom_data_tables.dart';
 import 'package:event_app/vendor/components/dialogs/delete_item_alert_dialog.dart';
 import 'package:event_app/vendor/components/dropdowns/custom_dropdown.dart';
-import 'package:event_app/vendor/components/services/alert_services.dart';
 import 'package:event_app/vendor/components/settings_components/simple_card.dart';
 import 'package:event_app/vendor/components/status_constants/order_confirmation_constants.dart';
 import 'package:event_app/vendor/components/status_constants/order_status_constants.dart';
 import 'package:event_app/vendor/components/status_constants/payment_status_constants.dart';
 import 'package:event_app/vendor/components/status_constants/shipment_status_constants.dart';
 import 'package:event_app/vendor/components/text_fields/custom_text_form_field.dart';
-import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/vendor/vendor_home/vendor_orders/vendor_update_shipping_address_bottom_sheet_view.dart';
 import 'package:event_app/vendor/view_models/vendor_orders/vendor_cancel_order.dart';
 import 'package:event_app/vendor/view_models/vendor_orders/vendor_confirm_order_view_model.dart';
@@ -111,7 +113,6 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView> with MediaQue
             context: context,
           ),
         ),
-        backgroundColor: AppColors.bgColor,
       );
 
   final _noteController = TextEditingController();
@@ -542,10 +543,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView> with MediaQue
                       onTap: () async {
                         try {
                           if (_noteController.text.isEmpty) {
-                            AlertServices.showErrorSnackBar(
-                              message: 'Please add note.',
-                              context: context,
-                            );
+                            AppUtils.showToast('Please add note.');
                           } else {
                             await vendorUpdateOrderProvider.vendorUpdateOrder(
                               orderID: widget.orderID.toString(),
@@ -553,7 +551,9 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView> with MediaQue
                               context: context,
                             );
                           }
-                        } catch (e) {}
+                        } catch (e) {
+                          log(e.toString());
+                        }
                       },
                     ),
                   ),
@@ -588,7 +588,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView> with MediaQue
                         create: (context) => VendorConfirmOrderViewModel(),
                         child: Consumer<VendorConfirmOrderViewModel>(
                           builder: (context, vendorConfirmOrderProvider, _) => CustomAppButton(
-                            buttonText: 'Confirm',
+                            buttonText: VendorAppStrings.confirm.tr,
                             buttonColor: Colors.blue,
                             padding: const EdgeInsets.symmetric(
                               vertical: 4,
@@ -602,21 +602,26 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView> with MediaQue
                             isLoading: vendorConfirmOrderProvider.apiResponse.status == ApiStatus.LOADING,
                             onTap: () async {
                               try {
+                                // Get provider before async operation
+                                final vendorAllOrdersProvider = context.read<VendorGetOrdersViewModel>();
+
                                 final result = await vendorConfirmOrderProvider.vendorConfirmOrder(
                                   orderID: widget.orderID.toString(),
                                   context: context,
                                 );
-                                if (result) {
+
+                                if (result && context.mounted) {
+                                  // Check if context is still valid
                                   await _onRefresh();
-                                  final vendorAllOrdersProvider = context.read<VendorGetOrdersViewModel>();
                                   vendorAllOrdersProvider.clearList();
-
-                                  /// clear all orders list first.
                                   vendorAllOrdersProvider.vendorGetOrders();
-
-                                  /// refreshing the all orders list the.
                                 }
-                              } catch (e) {}
+                              } catch (e) {
+                                log(e.toString());
+                                if (context.mounted) {
+                                  AppUtils.showToast('Failed to confirm order.');
+                                }
+                              }
                             },
                           ),
                         ),
@@ -757,26 +762,26 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView> with MediaQue
                               ),
                             ),
                             child: Text(
-                              'Update Shipping Status',
+                              VendorAppStrings.updateShippingStatus.tr,
                               style: detailsTitleStyle.copyWith(fontSize: 16),
                             ),
                           ),
                           content: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              fieldTitle(text: 'Status'),
-                              CustomDropdown(
-                                hintText: 'Select shipment status',
+                              fieldTitle(text: VendorAppStrings.status.tr),
+                              CustomDropdown<String>(
+                                // ← Add type parameter
+                                hintText: VendorAppStrings.selectShipmentStatus.tr,
                                 textStyle: const TextStyle(color: Colors.black),
                                 menuItemsList: provider.apiResponse.data?.data?.shippingStatuses
                                         ?.map(
-                                          (element) => DropdownMenuItem(
+                                          (element) => DropdownMenuItem<String>(
+                                            // ← Add type parameter
                                             value: element.value?.toString(),
                                             child: Text(
                                               element.label?.toString() ?? '',
-                                              style: const TextStyle(
-                                                color: Colors.black,
-                                              ),
+                                              style: const TextStyle(color: Colors.black),
                                             ),
                                           ),
                                         )
@@ -784,7 +789,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView> with MediaQue
                                     [],
                                 onChanged: (value) {
                                   setState(() {
-                                    _shipmentStatusController.text = value;
+                                    _shipmentStatusController.text = value ?? ''; // ← Handle nullable
                                   });
                                 },
                               ),
@@ -792,7 +797,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView> with MediaQue
                           ),
                           actions: [
                             CustomAppButton(
-                              buttonText: 'Cancel',
+                              buttonText: AppStrings.cancel.tr,
                               buttonColor: Colors.white,
                               borderRadius: kSmallButtonRadius,
                               padding: const EdgeInsets.symmetric(
@@ -809,7 +814,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView> with MediaQue
                               create: (context) => VendorUpdateShipmentStatusViewModel(),
                               child: Consumer<VendorUpdateShipmentStatusViewModel>(
                                 builder: (context, updateStatusProvider, _) => CustomAppButton(
-                                  buttonText: 'Update',
+                                  buttonText: AppStrings.update.tr,
                                   buttonColor: AppColors.lightCoral,
                                   borderRadius: kSmallButtonRadius,
                                   padding: const EdgeInsets.symmetric(
@@ -821,22 +826,25 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView> with MediaQue
                                   onTap: () async {
                                     try {
                                       if (_shipmentStatusController.text.isEmpty) {
-                                        AlertServices.showErrorSnackBar(
-                                          message: 'Please Select shipment status',
-                                          context: context,
-                                        );
+                                        AppUtils.showToast(VendorAppStrings.pleaseSelectShipmentStatus.tr);
                                       } else {
                                         final bool result = await updateStatusProvider.vendorUpdateShipmentStatus(
                                           shipmentID: shipment?.id?.toString().trim() ?? '',
                                           shipmentStatus: _shipmentStatusController.text.toString().trim(),
                                           context: context,
                                         );
-                                        if (result) {
+                                        if (result && context.mounted) {
+                                          // Check if context is still valid
                                           Navigator.of(context).pop();
                                           await _onRefresh();
                                         }
                                       }
-                                    } catch (e) {}
+                                    } catch (e) {
+                                      log(e.toString());
+                                      if (context.mounted) {
+                                        AppUtils.showToast(VendorAppStrings.failedToUpdateShipmentStatus.tr);
+                                      }
+                                    }
                                   },
                                 ),
                               ),
@@ -872,7 +880,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView> with MediaQue
                   bottom: kExtraSmallPadding,
                 ),
                 child: Text(
-                  'History',
+                  AppStrings.history.tr,
                   style: titleTextStyle(),
                 ),
               ),
@@ -916,7 +924,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView> with MediaQue
                         create: (context) => VendorSendConfirmationEmailViewModel(),
                         child: Consumer<VendorSendConfirmationEmailViewModel>(
                           builder: (context, sendConfirmationEmailProvider, _) => CustomAppButton(
-                            buttonText: 'Resend Email',
+                            buttonText: VendorAppStrings.resendEmail.tr,
                             buttonColor: Colors.transparent,
                             textStyle: const TextStyle(color: AppColors.lightCoral),
                             borderRadius: kSmallButtonRadius,
@@ -932,7 +940,9 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView> with MediaQue
                                 if (result) {
                                   await _onRefresh();
                                 }
-                              } catch (e) {}
+                              } catch (e) {
+                                log(e.toString());
+                              }
                             },
                           ),
                         ),
@@ -971,7 +981,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView> with MediaQue
                   top: kPadding,
                   bottom: kSmallPadding,
                 ),
-                child: Text('Customer', style: titleTextStyle()),
+                child: Text(VendorAppStrings.customer.tr, style: titleTextStyle()),
               ),
             ],
           ),
@@ -1063,7 +1073,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView> with MediaQue
                   children: [
                     Expanded(
                       child: Text(
-                        'Shipping Information',
+                        VendorAppStrings.shippingInformation.tr,
                         style: detailsTitleStyle.copyWith(
                           fontSize: 17,
                           fontWeight: FontWeight.w500,
@@ -1206,7 +1216,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView> with MediaQue
                     create: (context) => VendorCancelOrderViewModel(),
                     child: Consumer<VendorCancelOrderViewModel>(
                       builder: (context, cancelOrderProvider, _) => CustomAppButton(
-                        buttonText: 'Cancel',
+                        buttonText: AppStrings.cancel.tr,
                         borderColor: AppColors.stoneGray,
                         borderRadius: kSmallButtonRadius,
                         buttonColor: Colors.white,
@@ -1220,8 +1230,8 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView> with MediaQue
                         onTap: () async {
                           deleteItemAlertDialog(
                             context: context,
-                            descriptionText: 'Are you sure you want to cancel this order?',
-                            buttonText: 'Cancel',
+                            descriptionText: AppStrings.cancelOrderConfirmationMessage.tr,
+                            buttonText: AppStrings.cancel.tr,
                             onDelete: () async {
                               try {
                                 Navigator.of(context).pop();
@@ -1232,7 +1242,9 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView> with MediaQue
                                 if (result) {
                                   await _onRefresh();
                                 }
-                              } catch (e) {}
+                              } catch (e) {
+                                log(e.toString());
+                              }
                             },
                           );
                         },

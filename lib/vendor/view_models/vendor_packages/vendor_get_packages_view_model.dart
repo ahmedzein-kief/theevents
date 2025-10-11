@@ -1,6 +1,6 @@
 import 'package:event_app/core/services/shared_preferences_helper.dart';
-import 'package:event_app/data/vendor/data/response/ApiResponse.dart';
-import 'package:event_app/models/vendor_models/products/VendorGetProductsModel.dart';
+import 'package:event_app/data/vendor/data/response/api_response.dart';
+import 'package:event_app/models/vendor_models/products/vendor_get_products_model.dart';
 import 'package:event_app/provider/vendor/vendor_repository.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -55,7 +55,9 @@ class VendorGetPackagesViewModel with ChangeNotifier {
       if (_currentPage <= _lastPage) {
         setApiResponse = ApiResponse.loading();
         final VendorGetProductsModel response = await _myRepo.vendorGetPackages(
-            headers: headers, queryParams: queryParams,);
+          headers: headers,
+          queryParams: queryParams,
+        );
         setLastPage(response);
         resetList(response);
         setApiResponse = ApiResponse.completed(response);
@@ -71,8 +73,8 @@ class VendorGetPackagesViewModel with ChangeNotifier {
   }
 
   void resetList(VendorGetProductsModel response) {
-    _list.addAll(response.data!.records!);
-    _lastPage = response.data!.pagination!.lastPage!;
+    _list.addAll(response.data!.records);
+    _lastPage = response.data!.pagination!.lastPage;
     _currentPage++;
     notifyListeners();
   }

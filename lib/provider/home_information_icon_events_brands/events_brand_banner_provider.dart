@@ -96,7 +96,6 @@ class EventsBrandProvider extends ChangeNotifier {
 
       final response = await _apiResponseHandler.getRequest(
         url,
-        context: context,
       );
 
       if (response.statusCode == 200) {

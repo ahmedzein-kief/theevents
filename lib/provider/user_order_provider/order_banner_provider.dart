@@ -1,5 +1,4 @@
 import 'package:event_app/core/network/api_status/api_status.dart';
-import 'package:event_app/provider/api_response_handler.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../../data/repository/featured_category_repository.dart';
@@ -8,7 +7,7 @@ import '../../models/dashboard/feature_categories_model/feature_category_banner_
 class UserOrderProvider extends ChangeNotifier {
   ///   =====================================================   ORDERS SCREEN BANNER  =====================================================
 
-  final ApiResponseHandler _apiResponseHandler = ApiResponseHandler();
+  // final ApiResponseHandler _apiResponseHandler = ApiResponseHandler();
 
   PageData? _pageData;
 
@@ -24,7 +23,7 @@ class UserOrderProvider extends ChangeNotifier {
     _apiStatus = ApiStatus.loading;
     notifyListeners();
     try {
-      final pageData = await _authRepository.orderScreenBanner(context);
+      final pageData = await _authRepository.orderScreenBanner();
       _pageData = pageData;
       _apiStatus = ApiStatus.completed;
     } catch (e) {

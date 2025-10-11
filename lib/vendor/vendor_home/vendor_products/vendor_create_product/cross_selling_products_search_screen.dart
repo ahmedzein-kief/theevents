@@ -1,20 +1,24 @@
+import 'dart:developer';
+
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/core/styles/app_sizes.dart';
+import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/models/vendor_models/products/create_product/vendor_search_product_data_response.dart';
 import 'package:event_app/models/vendor_models/products/holder_models/search_dropdown_model.dart';
 import 'package:event_app/vendor/components/dropdowns/generic_dropdown.dart';
 import 'package:event_app/vendor/components/dropdowns/search_dropdown.dart';
 import 'package:event_app/vendor/components/list_tiles/spinner_records_list_tile.dart';
-import 'package:event_app/vendor/components/services/alert_services.dart';
 import 'package:event_app/vendor/components/text_fields/custom_text_form_field.dart';
-import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/vendor/components/vendor_text_style.dart';
 import 'package:event_app/vendor/view_models/vendor_products/vendor_create_product_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../core/constants/vendor_app_strings.dart';
+
 class CrossSellingProductsSearchScreen extends StatefulWidget {
-  CrossSellingProductsSearchScreen({
+  const CrossSellingProductsSearchScreen({
     super.key,
     required this.title,
     required this.dataId,
@@ -22,11 +26,11 @@ class CrossSellingProductsSearchScreen extends StatefulWidget {
   });
 
   final String title;
-  String? dataId;
-  List<SearchProductRecord> selectedCrossSellingProducts = [];
+  final String? dataId;
+  final List<SearchProductRecord> selectedCrossSellingProducts;
 
   @override
-  _CrossSellingProductsSearchScreenState createState() => _CrossSellingProductsSearchScreenState();
+  State<CrossSellingProductsSearchScreen> createState() => _CrossSellingProductsSearchScreenState();
 }
 
 class _CrossSellingProductsSearchScreenState extends State<CrossSellingProductsSearchScreen> {
@@ -60,7 +64,7 @@ class _CrossSellingProductsSearchScreenState extends State<CrossSellingProductsS
       setProcessing(true);
       return await provider.productSearch(query, dataId);
     } catch (e) {
-      print('Error: $e');
+      log('Error: $e');
       return null;
     } finally {
       setProcessing(false);
@@ -90,15 +94,13 @@ class _CrossSellingProductsSearchScreenState extends State<CrossSellingProductsS
               mainAxisSize: MainAxisSize.min, // Wraps content height
               children: [
                 _buildFormattedText(
-                  title: 'Price field',
-                  description:
-                      'Enter the amount you want to reduce from the original price. Example: If the original price is \$100, enter 20 to reduce the price to \$80.',
+                  title: VendorAppStrings.priceField.tr,
+                  description: VendorAppStrings.priceFieldDescription.tr,
                 ),
                 const SizedBox(height: 8),
                 _buildFormattedText(
-                  title: 'Type field',
-                  description:
-                      'Choose the discount type: Fixed (reduce a specific amount) or Percent (reduce by a percentage).',
+                  title: VendorAppStrings.typeField.tr,
+                  description: VendorAppStrings.typeFieldDescription.tr,
                 ),
               ],
             ),
@@ -135,7 +137,7 @@ class _CrossSellingProductsSearchScreenState extends State<CrossSellingProductsS
               ),
             ],
           ),
-          backgroundColor: AppColors.bgColor,
+          //
           body: AppUtils.modelProgressHud(
             context: context,
             processing: _isProcessing,
@@ -149,7 +151,7 @@ class _CrossSellingProductsSearchScreenState extends State<CrossSellingProductsS
                     top: 4.0,
                   ),
                   child: SearchDropdown(
-                    hint: 'Search products',
+                    hint: VendorAppStrings.searchProducts.tr,
                     searchDropdownModel: searchDropdownModel,
                     onSelected: (selectedProduct) {
                       FocusScope.of(context).unfocus();
@@ -163,10 +165,7 @@ class _CrossSellingProductsSearchScreenState extends State<CrossSellingProductsS
                         )) {
                           listSearchProducts.add(selectedProduct);
                         } else {
-                          AlertServices.showErrorSnackBar(
-                            message: 'Selected product already added in the list',
-                            context: context,
-                          );
+                          AppUtils.showToast(VendorAppStrings.selectedProductAlreadyAdded.tr);
                         }
                       });
                     },
@@ -196,10 +195,10 @@ class _CrossSellingProductsSearchScreenState extends State<CrossSellingProductsS
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: kSmallPadding),
           child: listSearchProducts.isEmpty
-              ? const Center(
+              ? Center(
                   child: Text(
-                    'Please search and add products',
-                    style: TextStyle(fontSize: 16, color: Colors.grey),
+                    VendorAppStrings.pleaseSearchAndAddProducts.tr,
+                    style: const TextStyle(fontSize: 16, color: Colors.grey),
                   ),
                 )
               : SingleChildScrollView(
@@ -256,18 +255,18 @@ class _CrossSellingProductsSearchScreenState extends State<CrossSellingProductsS
                   Expanded(
                     flex: 1,
                     child: CustomTextFormField(
-                      labelText: 'Price',
+                      labelText: VendorAppStrings.price.tr,
                       showTitle: false,
                       controller: product.controller,
                       keyboardType: TextInputType.number,
                       onChanged: (value) {
                         setState(() {
-                          print(
+                          log(
                             'User Input 1 : $value',
                           ); // Debugging user input
                           final int index = listSearchProducts.indexWhere((option) => option.id == product.id);
                           if (index != -1) {
-                            print(
+                            log(
                               'User Input 2 : $value',
                             ); // Debugging user input
 
@@ -278,7 +277,7 @@ class _CrossSellingProductsSearchScreenState extends State<CrossSellingProductsS
                         });
                       },
                       required: false,
-                      hintText: 'Price',
+                      hintText: VendorAppStrings.price.tr,
                     ),
                   ),
                   const SizedBox(
@@ -317,7 +316,7 @@ class _CrossSellingProductsSearchScreenState extends State<CrossSellingProductsS
   }) =>
       RichText(
         text: TextSpan(
-          style: const TextStyle(fontSize: 14, color: Colors.black87),
+          // style: const TextStyle(fontSize: 14, color: Colors.black87),
           children: [
             TextSpan(
               text: '$title:\n',

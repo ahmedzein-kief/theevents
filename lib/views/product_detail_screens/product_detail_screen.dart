@@ -1,7 +1,6 @@
 import 'dart:developer';
 
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
-import 'package:event_app/core/utils/custom_toast.dart';
 import 'package:event_app/views/base_screens/base_app_bar.dart';
 import 'package:event_app/views/product_detail_screens/product_actions.dart';
 import 'package:event_app/views/product_detail_screens/product_realted_items.dart';
@@ -11,6 +10,7 @@ import 'package:provider/provider.dart';
 import '../../core/constants/app_strings.dart';
 import '../../core/helper/functions/functions.dart';
 import '../../core/styles/app_colors.dart';
+import '../../core/utils/app_utils.dart';
 import '../../models/product_packages_models/product_attributes_model.dart';
 import '../../models/product_variation_model.dart';
 import '../../provider/product_package_provider/product_details_provider.dart';
@@ -50,6 +50,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   // Add listener reference to properly dispose
   VoidCallback? _providerListener;
 
+  // Store provider reference for safe disposal
+  ProductItemsProvider? _providerReference;
+
   @override
   void initState() {
     super.initState();
@@ -63,9 +66,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     // Check if the slug has changed (new product)
     if (widget.slug != oldWidget.slug) {
       // Remove old listener if exists
-      if (_providerListener != null) {
-        final provider = Provider.of<ProductItemsProvider>(context, listen: false);
-        provider.removeListener(_providerListener!);
+      if (_providerListener != null && _providerReference != null) {
+        _providerReference!.removeListener(_providerListener!);
         _providerListener = null;
       }
 
@@ -92,14 +94,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   @override
   void dispose() {
     // Remove listener to prevent setState after dispose
-    if (_providerListener != null) {
-      try {
-        final provider = Provider.of<ProductItemsProvider>(context, listen: false);
-        provider.removeListener(_providerListener!);
-      } catch (e) {
-        // Provider might already be disposed
-        log('Error removing listener: $e');
-      }
+    if (_providerListener != null && _providerReference != null) {
+      _providerReference!.removeListener(_providerListener!);
     }
     super.dispose();
   }
@@ -109,6 +105,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       if (!mounted) return;
 
       final provider = Provider.of<ProductItemsProvider>(context, listen: false);
+
+      // Store provider reference for safe disposal
+      _providerReference = provider;
+
       provider.resetData();
 
       // Reset the selected image URL when initializing a new product
@@ -218,19 +218,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     );
   }
 
-  Future<void> _isBrandFetched() async {
-    if (!mounted) return;
-    final brandStore = Provider.of<StoreProvider>(context, listen: false);
-    await brandStore.fetchStore(widget.slug, context);
-  }
-
-  void _handleAttributeUpdate(List<Map<String, dynamic>?> selectedAttribute, dynamic record) async {
+  Future<void> _handleAttributeUpdate(List<Map<String, dynamic>?> selectedAttribute, record) async {
     if (!mounted) return;
 
     final result = await updateProductAttributes(selectedAttribute);
     if (result != null && mounted) {
       if (result.data.successMessage == null) {
-        CustomSnackbar.showError(context, 'Out of stock');
+        AppUtils.showToast('Out of stock');
       }
 
       // Update selected attributes

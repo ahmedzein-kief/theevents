@@ -57,7 +57,7 @@ class CustomListView extends StatelessWidget {
                         offset: const Offset(0, 1),
                         blurRadius: 0.5,
                         spreadRadius: 0.5,
-                        color: Colors.white.withOpacity(0.3),
+                        color: Colors.white.withAlpha((0.3 * 255).toInt()),
                       ),
                     ],
                   ),
@@ -152,7 +152,7 @@ class CustomListView extends StatelessWidget {
                                       GestureDetector(
                                         onTap: () {},
                                         child: Container(
-                                          color: Colors.redAccent.shade100.withOpacity(0.8),
+                                          color: Colors.redAccent.shade100.withAlpha((0.8 * 255).toInt()),
                                           height: 20,
                                           width: 80,
                                           child: const Row(

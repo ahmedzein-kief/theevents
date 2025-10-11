@@ -16,7 +16,6 @@ class GiftCardListScreen extends StatefulWidget {
 }
 
 class _GiftCardListScreenState extends State<GiftCardListScreen> {
-  // Add ScrollController for synchronized scrolling
   late ScrollController _horizontalScrollController;
 
   @override
@@ -41,6 +40,8 @@ class _GiftCardListScreenState extends State<GiftCardListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return BaseAppBar(
       textBack: AppStrings.back.tr,
       customBackIcon: const Icon(Icons.arrow_back_ios_sharp, size: 16),
@@ -48,19 +49,19 @@ class _GiftCardListScreenState extends State<GiftCardListScreen> {
       secondRightIconPath: AppStrings.secondRightIconPath.tr,
       thirdRightIconPath: AppStrings.thirdRightIconPath.tr,
       body: Scaffold(
-        backgroundColor: const Color(0xFFF8F9FA),
+        backgroundColor: isDark ? Colors.grey.shade900 : const Color(0xFFF8F9FA),
         body: SafeArea(
           child: Consumer<GiftCardListProvider>(
             builder: (context, giftCardProvider, _) {
               if (giftCardProvider.loading) {
-                return const Center(
+                return Center(
                   child: CircularProgressIndicator(
-                    color: Colors.black,
+                    color: isDark ? Colors.white : Colors.black,
                     strokeWidth: 2.0,
                   ),
                 );
               }
-              if (giftCardProvider.error != null && giftCardProvider.error != 'No record found!') {
+              if (giftCardProvider.error != null && giftCardProvider.error != AppStrings.noRecordFound.tr) {
                 return Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -91,7 +92,9 @@ class _GiftCardListScreenState extends State<GiftCardListScreen> {
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                        child: const Text('Retry'),
+                        child: Text(
+                          AppStrings.retry.tr,
+                        ),
                       ),
                     ],
                   ),
@@ -105,16 +108,16 @@ class _GiftCardListScreenState extends State<GiftCardListScreen> {
                   // Header with title and create button
                   Container(
                     padding: const EdgeInsetsDirectional.fromSTEB(24, 20, 12, 20),
-                    color: Colors.white,
+                    color: isDark ? Colors.grey.shade800 : Colors.white,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
-                          'Gift Cards',
+                        Text(
+                          AppStrings.giftCards.tr,
                           style: TextStyle(
                             fontSize: 28,
                             fontWeight: FontWeight.w700,
-                            color: Color(0xFF1F2937),
+                            color: isDark ? Colors.white : const Color(0xFF1F2937),
                             letterSpacing: -0.5,
                           ),
                         ),
@@ -128,9 +131,9 @@ class _GiftCardListScreenState extends State<GiftCardListScreen> {
                             );
                           },
                           icon: const Icon(Icons.add, color: Colors.white, size: 18),
-                          label: const Text(
-                            'Create',
-                            style: TextStyle(
+                          label: Text(
+                            AppStrings.create.tr,
+                            style: const TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.w600,
                               fontSize: 14,
@@ -153,29 +156,31 @@ class _GiftCardListScreenState extends State<GiftCardListScreen> {
                     ),
                   ),
                   if (giftCards.isEmpty)
-                    _buildEmptyState()
+                    _buildEmptyState(isDark)
                   else
                     Expanded(
                       child: Container(
                         margin: const EdgeInsets.symmetric(vertical: 24),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: isDark ? Colors.grey.shade800 : Colors.white,
                           borderRadius: BorderRadius.circular(12),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withAlpha((0.04 * 255).toInt()),
+                              color: isDark
+                                  ? Colors.black.withAlpha((0.3 * 255).toInt())
+                                  : Colors.black.withAlpha((0.04 * 255).toInt()),
                               spreadRadius: 0,
                               blurRadius: 8,
                               offset: const Offset(0, 2),
                             ),
                           ],
                           border: Border.all(
-                            color: const Color(0xFFE5E7EB),
+                            color: isDark ? Colors.grey.shade700 : const Color(0xFFE5E7EB),
                             width: 1,
                           ),
                         ),
                         child: SingleChildScrollView(
-                          controller: _horizontalScrollController, // Single controller for horizontal scrolling
+                          controller: _horizontalScrollController,
                           scrollDirection: Axis.horizontal,
                           child: SizedBox(
                             width:
@@ -185,27 +190,28 @@ class _GiftCardListScreenState extends State<GiftCardListScreen> {
                                 // Table Header
                                 Container(
                                   padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
-                                  decoration: const BoxDecoration(
-                                    color: Color(0xFFF9FAFB),
-                                    borderRadius: BorderRadius.only(
+                                  decoration: BoxDecoration(
+                                    color: isDark ? Colors.grey.shade900 : const Color(0xFFF9FAFB),
+                                    borderRadius: const BorderRadius.only(
                                       topLeft: Radius.circular(12),
                                       topRight: Radius.circular(12),
                                     ),
                                     border: Border(
                                       bottom: BorderSide(
-                                        color: Color(0xFFE5E7EB),
+                                        color: isDark ? Colors.grey.shade700 : const Color(0xFFE5E7EB),
                                         width: 1,
                                       ),
                                     ),
                                   ),
                                   child: Row(
                                     children: [
-                                      _buildHeaderCell('SKU', minWidth: 80),
-                                      _buildHeaderCell('Code', minWidth: 140),
-                                      _buildHeaderCell('Name', minWidth: 100),
-                                      _buildHeaderCell('Email', minWidth: 180),
-                                      _buildHeaderCell('Amount', minWidth: 100),
-                                      _buildHeaderCell('Total Used', minWidth: 100, alignCenter: true),
+                                      _buildHeaderCell(AppStrings.sku.tr, minWidth: 80, isDark: isDark),
+                                      _buildHeaderCell(AppStrings.code.tr, minWidth: 140, isDark: isDark),
+                                      _buildHeaderCell(AppStrings.name.tr, minWidth: 100, isDark: isDark),
+                                      _buildHeaderCell(AppStrings.email.tr, minWidth: 180, isDark: isDark),
+                                      _buildHeaderCell(AppStrings.amount.tr, minWidth: 100, isDark: isDark),
+                                      _buildHeaderCell(AppStrings.totalUsed.tr,
+                                          minWidth: 100, alignCenter: true, isDark: isDark),
                                     ],
                                   ),
                                 ),
@@ -221,11 +227,11 @@ class _GiftCardListScreenState extends State<GiftCardListScreen> {
                                       return Container(
                                         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
                                         decoration: BoxDecoration(
-                                          color: Colors.white,
+                                          color: isDark ? Colors.grey.shade800 : Colors.white,
                                           border: index < giftCards.length - 1
-                                              ? const Border(
+                                              ? Border(
                                                   bottom: BorderSide(
-                                                    color: Color(0xFFF3F4F6),
+                                                    color: isDark ? Colors.grey.shade700 : const Color(0xFFF3F4F6),
                                                     width: 1,
                                                   ),
                                                 )
@@ -236,42 +242,47 @@ class _GiftCardListScreenState extends State<GiftCardListScreen> {
                                             _buildCell(
                                               giftCard.sku ?? '',
                                               minWidth: 80,
-                                              style: const TextStyle(
+                                              isDark: isDark,
+                                              style: TextStyle(
                                                 fontSize: 14,
                                                 fontWeight: FontWeight.w500,
-                                                color: Color(0xFF374151),
+                                                color: isDark ? Colors.white : const Color(0xFF374151),
                                               ),
                                             ),
                                             _buildCell(
                                               giftCard.code ?? '',
                                               minWidth: 140,
-                                              style: const TextStyle(
+                                              isDark: isDark,
+                                              style: TextStyle(
                                                 fontSize: 14,
                                                 fontWeight: FontWeight.w500,
-                                                color: Color(0xFF6B7280),
+                                                color: isDark ? Colors.grey.shade400 : const Color(0xFF6B7280),
                                                 fontFamily: 'monospace',
                                               ),
                                             ),
                                             _buildCell(
                                               giftCard.recipientName ?? '',
                                               minWidth: 100,
-                                              style: const TextStyle(
+                                              isDark: isDark,
+                                              style: TextStyle(
                                                 fontSize: 14,
                                                 fontWeight: FontWeight.w500,
-                                                color: Color(0xFF374151),
+                                                color: isDark ? Colors.white : const Color(0xFF374151),
                                               ),
                                             ),
                                             _buildCell(
                                               giftCard.recipientEmail ?? '',
                                               minWidth: 180,
-                                              style: const TextStyle(
+                                              isDark: isDark,
+                                              style: TextStyle(
                                                 fontSize: 14,
-                                                color: Color(0xFF6B7280),
+                                                color: isDark ? Colors.grey.shade400 : const Color(0xFF6B7280),
                                               ),
                                             ),
                                             _buildCell(
                                               giftCard.price ?? '',
                                               minWidth: 100,
+                                              isDark: isDark,
                                               style: const TextStyle(
                                                 fontSize: 14,
                                                 fontWeight: FontWeight.w600,
@@ -323,15 +334,13 @@ class _GiftCardListScreenState extends State<GiftCardListScreen> {
     );
   }
 
-  // Helper method to get badge color based on usage
   Color _getUsedBadgeColor(int used) {
     if (used == 0) return const Color(0xFF6B7280);
     if (used == 1) return const Color(0xFFDC2626);
     return const Color(0xFF7C2D12);
   }
 
-  // Empty state widget
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(bool isDark) {
     return Expanded(
       child: Center(
         child: Column(
@@ -340,30 +349,30 @@ class _GiftCardListScreenState extends State<GiftCardListScreen> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const Color(0xFFF3F4F6),
+                color: isDark ? Colors.grey.shade800 : const Color(0xFFF3F4F6),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
                 Icons.card_giftcard_outlined,
                 size: 48,
-                color: Colors.grey[500],
+                color: isDark ? Colors.grey.shade400 : Colors.grey[500],
               ),
             ),
             const SizedBox(height: 24),
             Text(
-              'No gift cards found',
+              AppStrings.noGiftCardsFound.tr,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
-                color: Colors.grey[700],
+                color: isDark ? Colors.grey.shade300 : Colors.grey[700],
               ),
             ),
             const SizedBox(height: 8),
             Text(
-              'Create your first gift card to get started',
+              AppStrings.createFirstGiftCard.tr,
               style: TextStyle(
                 fontSize: 14,
-                color: Colors.grey[500],
+                color: isDark ? Colors.grey.shade400 : Colors.grey[500],
               ),
             ),
             const SizedBox(height: 32),
@@ -377,9 +386,9 @@ class _GiftCardListScreenState extends State<GiftCardListScreen> {
                 );
               },
               icon: const Icon(Icons.add, color: Colors.white, size: 18),
-              label: const Text(
-                'Create Gift Card',
-                style: TextStyle(
+              label: Text(
+                AppStrings.createGiftCard.tr,
+                style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.w600,
                 ),
@@ -402,17 +411,16 @@ class _GiftCardListScreenState extends State<GiftCardListScreen> {
     );
   }
 
-  // Header cell builder
-  Widget _buildHeaderCell(String text, {required double minWidth, bool alignCenter = false}) {
+  Widget _buildHeaderCell(String text, {required double minWidth, bool alignCenter = false, required bool isDark}) {
     return SizedBox(
       width: minWidth,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
         child: Text(
           text,
-          style: const TextStyle(
+          style: TextStyle(
             fontWeight: FontWeight.w700,
-            color: Color(0xFF374151),
+            color: isDark ? Colors.white : const Color(0xFF374151),
             fontSize: 13,
             letterSpacing: 0.5,
           ),
@@ -422,10 +430,10 @@ class _GiftCardListScreenState extends State<GiftCardListScreen> {
     );
   }
 
-  // Data cell builder
   Widget _buildCell(
     String text, {
     required double minWidth,
+    required bool isDark,
     TextStyle? style,
     bool alignCenter = false,
   }) {
@@ -436,9 +444,9 @@ class _GiftCardListScreenState extends State<GiftCardListScreen> {
         child: Text(
           text,
           style: style ??
-              const TextStyle(
+              TextStyle(
                 fontSize: 14,
-                color: Color(0xFF374151),
+                color: isDark ? Colors.white : const Color(0xFF374151),
               ),
           textAlign: alignCenter ? TextAlign.center : TextAlign.left,
           overflow: TextOverflow.visible,

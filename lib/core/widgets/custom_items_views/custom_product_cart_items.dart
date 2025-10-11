@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 
 import '../../network/api_endpoints/api_contsants.dart';
 import '../../styles/custom_text_styles.dart';
-import '../PriceRow.dart';
 import '../padded_network_banner.dart';
+import '../price_row.dart';
 
 class ProductCartItems extends StatelessWidget {
   const ProductCartItems({

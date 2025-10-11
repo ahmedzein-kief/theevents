@@ -4,8 +4,9 @@ import 'package:event_app/provider/api_response_handler.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../../core/network/api_endpoints/api_contsants.dart';
 import '../../core/network/api_status/api_status.dart';
-import '../../core/utils/custom_toast.dart';
+import '../../core/utils/app_utils.dart';
 
 class CustomerAddressModels {
   CustomerAddressModels({this.error, this.data, this.message});
@@ -192,33 +193,22 @@ class CustomerAddressProvider with ChangeNotifier {
   String? get errorMessage => _errorMessage;
 
   Future<CustomerAddressModels?> fetchCustomerAddresses(
-    String token,
     BuildContext context, {
     int perPage = 12,
     page = 1,
   }) async {
-    setStatus(ApiStatus.loading);
     if (page == 1) {
       _addresses.clear();
-      _isLoadingAddresses = true;
     }
 
+    _isLoadingAddresses = true;
     notifyListeners();
 
     try {
       final url = '${ApiEndpoints.customerAddressList}?per-page=$perPage&page=$page';
-      final headers = {
-        'Authorization': token,
-      };
-
-      final response = await _apiResponseHandler.getRequest(
-        url,
-        headers: headers,
-        context: context,
-      );
+      final response = await _apiResponseHandler.getRequest(url, extra: {ApiConstants.requireAuthKey: true});
 
       if (response.statusCode == 200) {
-        setStatus(ApiStatus.completed);
         final CustomerAddressModels customerAddressModels = CustomerAddressModels.fromJson(response.data);
 
         if (page == 1) {
@@ -228,14 +218,10 @@ class CustomerAddressProvider with ChangeNotifier {
           _addresses.addAll(customerAddressModels.data?.records ?? []);
         }
 
-        _isLoadingAddresses = false;
-        notifyListeners();
+        _errorMessage = null;
         return customerAddressModels;
       } else {
         _errorMessage = 'Failed to load addresses';
-        _isLoadingAddresses = false;
-        setStatus(ApiStatus.error);
-        notifyListeners();
         return null;
       }
     } catch (error) {
@@ -243,12 +229,9 @@ class CustomerAddressProvider with ChangeNotifier {
       return null;
     } finally {
       _isLoadingAddresses = false;
-      setStatus(ApiStatus.error);
       notifyListeners();
     }
   }
-
-  ///  TODO :  DELETE THE ADDRESS OF USER
 
   bool _isLoadingDelete = false;
 
@@ -271,12 +254,12 @@ class CustomerAddressProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         final data = response.data;
         if (data['error'] == false) {
-          CustomSnackbar.showSuccess(context, 'Address Delete successfully!');
+          AppUtils.showToast('Address Delete successfully!', isSuccess: true);
 
           addresses.removeWhere((address) => address.id == addressId);
         } else {
           errorMessageDelete = data['message'] ?? 'Failed to delete address';
-          CustomSnackbar.showError(context, 'Failed to delete address!');
+          AppUtils.showToast('Failed to delete address!');
         }
       } else {
         errorMessageDelete = 'Failed to delete address';

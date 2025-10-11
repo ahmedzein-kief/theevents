@@ -67,8 +67,8 @@ class AuthProvider with ChangeNotifier {
         _isLoading = false;
         notifyListeners();
         if (context.mounted) {
-          CustomSnackbar.showSuccess(
-            context,
+          AppUtils.showToast(
+            isSuccess: true,
             userLoginModel.message ?? 'Login successfully.',
           );
         }
@@ -80,7 +80,7 @@ class AuthProvider with ChangeNotifier {
         _isLoading = false;
         notifyListeners();
         if (context.mounted) {
-          CustomSnackbar.showError(context, userLoginModel.message ?? '');
+          AppUtils.showToast(userLoginModel.message ?? '');
         }
         return userLoginModel;
       }
@@ -89,7 +89,7 @@ class AuthProvider with ChangeNotifier {
       _isLoading = false;
       notifyListeners();
       if (context.mounted) {
-        CustomSnackbar.showError(context, exception.toString());
+        AppUtils.showToast(exception.toString());
       }
       return null;
     } finally {
@@ -146,13 +146,13 @@ class AuthProvider with ChangeNotifier {
         final jsonData = response.data;
         final SignUpResponse dataModel = SignUpResponse.fromJson(jsonData);
         _isLoading = false;
-        CustomSnackbar.showError(context, dataModel.formattedErrors);
+        AppUtils.showToast(dataModel.formattedErrors);
         notifyListeners();
         return null;
       }
     } catch (exception) {
       _isLoading = false;
-      CustomSnackbar.showError(context, exception.toString());
+      AppUtils.showToast(exception.toString());
       notifyListeners();
       return null;
     } finally {
@@ -183,7 +183,6 @@ class AuthProvider with ChangeNotifier {
     final response = await _apiResponseHandler.getRequest(
       url,
       headers: headers,
-      context: context,
     );
 
     setLoading(false);
@@ -191,7 +190,7 @@ class AuthProvider with ChangeNotifier {
       final responseBody = response.data;
       final UserLogoutModel userLogoutModel = UserLogoutModel.fromJson(responseBody);
       if (userLogoutModel.error == false) {
-        await SecurePreferencesUtil.clearSharedPreferences();
+        // await SecurePreferencesUtil.clearSharedPreferences();
 
         Navigator.of(context).popUntil((route) => route.isFirst);
         Navigator.pushReplacement(

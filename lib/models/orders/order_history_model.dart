@@ -215,14 +215,24 @@ class OrderProduct {
       };
 }
 
-enum ProductSlugPrefix { PRODUCTS, EMPTY }
+enum ProductSlugPrefix {
+  // ignore: constant_identifier_names
+  PRODUCTS,
+  // ignore: constant_identifier_names
+  EMPTY
+}
 
 final productSlugPrefixValues = EnumValues({
   'products': ProductSlugPrefix.PRODUCTS,
   '': ProductSlugPrefix.EMPTY,
 });
 
-enum ProductType { PHYSICAL, PRODUCT }
+enum ProductType {
+  // ignore: constant_identifier_names
+  PHYSICAL,
+  // ignore: constant_identifier_names
+  PRODUCT
+}
 
 final productTypeValues = EnumValues({
   'physical': ProductType.PHYSICAL,
@@ -300,7 +310,7 @@ class Store {
     required this.slug,
   });
 
-  factory Store.fromJson(dynamic json) {
+  factory Store.fromJson(json) {
     if (json == null || json is List) {
       return Store(thumb: '', name: '', logo: '', slug: '');
     }
@@ -330,10 +340,8 @@ class EnumValues<T> {
   EnumValues(this.map);
 
   Map<String, T> map;
-  late Map<T, String> _reverseMap;
 
   Map<T, String> get reverse {
-    _reverseMap = map.map((k, v) => MapEntry(v, k));
-    return _reverseMap;
+    return map.map((k, v) => MapEntry(v, k));
   }
 }

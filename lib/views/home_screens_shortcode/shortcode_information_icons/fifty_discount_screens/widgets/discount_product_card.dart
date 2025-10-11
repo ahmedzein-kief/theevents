@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../../core/services/shared_preferences_helper.dart';
+import '../../../../../core/utils/app_utils.dart';
 import '../../../../../core/widgets/custom_items_views/product_card.dart';
 import '../../../../../provider/cart_item_provider/cart_item_provider.dart';
 import '../../../../../provider/shortcode_fresh_picks_provider/fresh_picks_provider.dart';
 import '../../../../../provider/wishlist_items_provider/wishlist_provider.dart';
 import '../../../../product_detail_screens/product_detail_screen.dart';
 
-class DiscountProductCard extends StatelessWidget {
+class DiscountProductCard extends StatefulWidget {
   final dynamic product; // Replace with your actual Product model type
 
   const DiscountProductCard({
@@ -16,6 +16,11 @@ class DiscountProductCard extends StatelessWidget {
     required this.product,
   });
 
+  @override
+  State<DiscountProductCard> createState() => _DiscountProductCardState();
+}
+
+class _DiscountProductCardState extends State<DiscountProductCard> {
   @override
   Widget build(BuildContext context) {
     return Consumer3<WishlistProvider, FreshPicksProvider, CartProvider>(
@@ -26,20 +31,20 @@ class DiscountProductCard extends StatelessWidget {
         return GestureDetector(
           onTap: () => _navigateToProductDetail(context),
           child: ProductCard(
-            isOutOfStock: product.outOfStock ?? false,
+            isOutOfStock: widget.product.outOfStock ?? false,
             off: offPercentage.isNotEmpty ? '$offPercentage%off' : '',
-            priceWithTaxes: (product.prices?.frontSalePrice ?? 0) < (product.prices?.price ?? 0)
-                ? product.prices!.priceWithTaxes
+            priceWithTaxes: (widget.product.prices?.frontSalePrice ?? 0) < (widget.product.prices?.price ?? 0)
+                ? widget.product.prices!.priceWithTaxes
                 : null,
             itemsId: 0,
-            imageUrl: product.image,
-            frontSalePriceWithTaxes: product.review?.average ?? '0',
-            name: product.name,
-            storeName: product.store?.name.toString(),
-            price: product.prices?.price.toString(),
-            reviewsCount: product.review?.reviewsCount?.toInt(),
+            imageUrl: widget.product.image,
+            frontSalePriceWithTaxes: widget.product.review?.average ?? '0',
+            name: widget.product.name,
+            storeName: widget.product.store?.name.toString(),
+            price: widget.product.prices?.price.toString(),
+            reviewsCount: widget.product.review?.reviewsCount?.toInt(),
             optionalIcon: Icons.shopping_cart,
-            onOptionalIconTap: () => _handleCartTap(context, cartProvider),
+            onOptionalIconTap: () => _handleAddToCart(widget.product.id),
             isHeartObscure: isInWishlist,
             onHeartTap: () => _handleWishlistTap(
               context,
@@ -54,8 +59,8 @@ class DiscountProductCard extends StatelessWidget {
   }
 
   String _calculateDiscountPercentage() {
-    final double? frontSalePrice = product.prices?.frontSalePrice?.toDouble();
-    final double? price = product.prices?.price?.toDouble();
+    final double? frontSalePrice = widget.product.prices?.frontSalePrice?.toDouble();
+    final double? price = widget.product.prices?.price?.toDouble();
 
     if (frontSalePrice != null && price != null && price > 0) {
       final double discount = 100 - ((frontSalePrice / price) * 100);
@@ -68,7 +73,7 @@ class DiscountProductCard extends StatelessWidget {
 
   bool _isProductInWishlist(WishlistProvider wishlistProvider) {
     return wishlistProvider.wishlist?.data?.products.any(
-          (wishlistProduct) => wishlistProduct.id == product.id,
+          (wishlistProduct) => wishlistProduct.id == widget.product.id,
         ) ??
         false;
   }
@@ -78,21 +83,21 @@ class DiscountProductCard extends StatelessWidget {
       context,
       MaterialPageRoute(
         builder: (context) => ProductDetailScreen(
-          key: ValueKey(product.slug.toString()),
-          slug: product.slug.toString(),
+          key: ValueKey(widget.product.slug.toString()),
+          slug: widget.product.slug.toString(),
         ),
       ),
     );
   }
 
-  Future<void> _handleCartTap(BuildContext context, CartProvider cartProvider) async {
-    final token = await SecurePreferencesUtil.getToken();
-    if (token != null) {
-      await cartProvider.addToCart(
-        product.id,
-        context,
-        1,
-      );
+  /// Handle add to cart with proper error handling
+  Future<void> _handleAddToCart(int productId) async {
+    final result = await context.read<CartProvider>().addToCart(productId, 1);
+
+    if (result.success) {
+      AppUtils.showToast(result.message, isSuccess: true);
+    } else {
+      AppUtils.showToast(result.message);
     }
   }
 
@@ -102,24 +107,18 @@ class DiscountProductCard extends StatelessWidget {
     FreshPicksProvider freshPicksProvider,
     bool isInWishlist,
   ) async {
-    final token = await SecurePreferencesUtil.getToken();
-
     if (isInWishlist) {
       await wishlistProvider.deleteWishlistItem(
-        product.id ?? 0,
+        widget.product.id ?? 0,
         context,
-        token ?? '',
       );
     } else {
       await freshPicksProvider.handleHeartTap(
         context,
-        product.id ?? 0,
+        widget.product.id ?? 0,
       );
     }
 
-    await wishlistProvider.fetchWishlist(
-      token ?? '',
-      context,
-    );
+    await wishlistProvider.fetchWishlist();
   }
 }

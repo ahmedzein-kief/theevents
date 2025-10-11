@@ -1,9 +1,11 @@
+import 'dart:developer';
+
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/models/product_packages_models/product_filters_model.dart';
 import 'package:event_app/provider/api_response_handler.dart';
 import 'package:flutter/material.dart';
 
-import '../../models/dashboard/fresh_picks_models/eCom_tags_models.dart';
+import '../../models/dashboard/fresh_picks_models/e_com_tags_models.dart';
 
 class EComTagProvider with ChangeNotifier {
   ///  +++++++++++++++++++++++++++++++++++++++++   E-COM TOP BANNER  +++++++++++++++++++++++++++++++++
@@ -26,10 +28,7 @@ class EComTagProvider with ChangeNotifier {
 
     final url = '${ApiEndpoints.eComBanner}$slug';
     try {
-      final response = await _apiResponseHandler.getRequest(
-        url,
-        context: context,
-      );
+      final response = await _apiResponseHandler.getRequest(url);
       if (response.statusCode == 200) {
         final jsonData = response.data;
         _ecomTag = EcomTag.fromJson(jsonData['data']);
@@ -43,7 +42,8 @@ class EComTagProvider with ChangeNotifier {
   ///   ++++++++++++++++++++++++++++   E-COM PRODUCTS PROVIDER +++++++++++++++++++++++++++++++++
 
   List<Records> _products = [];
-  Pagination? _pagination;
+
+  // Pagination? _pagination;
   bool _isMoreLoading = false;
 
   ProductFiltersModel? _productFilters;
@@ -94,12 +94,9 @@ class EComTagProvider with ChangeNotifier {
     final url = filtersQuery.isNotEmpty ? '$baseUrl&$filtersQuery&allcategories=1' : baseUrl;
 
     try {
-      final response = await _apiResponseHandler.getRequest(
-        url,
-        context: context,
-      );
+      final response = await _apiResponseHandler.getRequest(url);
       if (response.statusCode == 200) {
-        final jsonData = response.data;
+        // final jsonData = response.data;
         // final jsonResponse = NewProductsModels.fromJson(jsonData).data?.records ?? [];
 
         final Map<String, dynamic> jsonResponse = response.data;
@@ -107,14 +104,16 @@ class EComTagProvider with ChangeNotifier {
 
         if (page == 1) {
           _products = apiResponse.data?.records ?? [];
-          _pagination = apiResponse.data?.pagination;
+          // _pagination = apiResponse.data?.pagination;
           _productFilters = apiResponse.data?.filters;
         } else {
           _products.addAll(apiResponse.data?.records ?? []);
           _productFilters = apiResponse.data?.filters;
         }
       } else {}
-    } catch (error) {}
+    } catch (error) {
+      log(error.toString());
+    }
     _isLoading = false;
     _isMoreLoading = false;
     notifyListeners();
@@ -123,7 +122,8 @@ class EComTagProvider with ChangeNotifier {
   ///   ++++++++++++++++++++++++++++   E-COM PACKAGES PROVIDER +++++++++++++++++++++++++++++++++
 
   List<Records> _packages = [];
-  Pagination? _paginationPackage;
+
+  // Pagination? _paginationPackage;
 
   bool _isPackagesLoading = false;
 
@@ -145,12 +145,9 @@ class EComTagProvider with ChangeNotifier {
     final url = '${ApiEndpoints.packagesECom}$slug?per-page=$perPage&page=$page&sort-by=$sortBy';
 
     try {
-      final response = await _apiResponseHandler.getRequest(
-        url,
-        context: context,
-      );
+      final response = await _apiResponseHandler.getRequest(url);
       if (response.statusCode == 200) {
-        final jsonData = response.data;
+        // final jsonData = response.data;
         // final jsonResponse = NewProductsModels.fromJson(jsonData).data?.records ?? [];
 
         final Map<String, dynamic> jsonResponse = response.data;
@@ -158,12 +155,14 @@ class EComTagProvider with ChangeNotifier {
 
         if (page == 1) {
           _packages = apiResponse.data?.records ?? [];
-          _paginationPackage = apiResponse.data?.pagination;
+          // _paginationPackage = apiResponse.data?.pagination;
         } else {
           _packages.addAll(apiResponse.data?.records ?? []);
         }
       } else {}
-    } catch (error) {}
+    } catch (error) {
+      log(error.toString());
+    }
     _isPackagesLoading = false;
     notifyListeners();
   }

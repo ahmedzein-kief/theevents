@@ -16,4 +16,5 @@ class ApiConstants {
   static const String cacheError = 'cache_error';
   static const String noInternetError = 'no_internet_error';
   static const requireAuthKey = 'requireAuth';
+  static const noTokenError = 'noTokenError';
 }

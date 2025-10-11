@@ -548,8 +548,7 @@ class EnumValues<T> {
   late Map<T, String> reverseMap;
 
   Map<T, String> get reverse {
-    reverseMap = map.map((k, v) => MapEntry(v, k));
-    return reverseMap;
+    return reverseMap = map.map((k, v) => MapEntry(v, k));
   }
 }
 

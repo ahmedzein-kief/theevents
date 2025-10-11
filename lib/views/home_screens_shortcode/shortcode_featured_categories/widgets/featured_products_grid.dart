@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../core/services/shared_preferences_helper.dart';
+import '../../../../core/utils/app_utils.dart';
 import '../../../../core/widgets/custom_items_views/product_card.dart';
 import '../../../../core/widgets/items_empty_view.dart';
 import '../../../../provider/cart_item_provider/cart_item_provider.dart';
@@ -11,7 +11,7 @@ import '../../../../provider/wishlist_items_provider/wishlist_provider.dart';
 import '../../../filters/sort_an_filter_widget.dart';
 import '../../../product_detail_screens/product_detail_screen.dart';
 
-class FeaturedProductsGrid extends StatelessWidget {
+class FeaturedProductsGrid extends StatefulWidget {
   const FeaturedProductsGrid({
     super.key,
     required this.slug,
@@ -30,12 +30,27 @@ class FeaturedProductsGrid extends StatelessWidget {
   final bool isFetchingMore;
 
   @override
+  State<FeaturedProductsGrid> createState() => _FeaturedProductsGridState();
+}
+
+class _FeaturedProductsGridState extends State<FeaturedProductsGrid> {
+  /// Handle add to cart with proper error handling
+  Future<void> _handleAddToCart(int productId) async {
+    final result = await context.read<CartProvider>().addToCart(productId, 1);
+
+    if (result.success) {
+      AppUtils.showToast(result.message, isSuccess: true);
+    } else {
+      AppUtils.showToast(result.message);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.sizeOf(context).width;
     final double screenHeight = MediaQuery.sizeOf(context).height;
     final freshPicksProvider = Provider.of<FreshPicksProvider>(context, listen: false);
     final wishlistProvider = Provider.of<WishlistProvider>(context, listen: false);
-    final cartProvider = Provider.of<CartProvider>(context, listen: false);
 
     return Column(
       mainAxisSize: MainAxisSize.max,
@@ -44,7 +59,7 @@ class FeaturedProductsGrid extends StatelessWidget {
       children: [
         Consumer<FeaturedCategoriesDetailProvider>(
           builder: (context, provider, child) {
-            if (provider.isLoadingProducts && currentPage == 1) {
+            if (provider.isLoadingProducts && widget.currentPage == 1) {
               return const Center(
                 child: CircularProgressIndicator(
                   color: Colors.black,
@@ -63,9 +78,9 @@ class FeaturedProductsGrid extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     SortAndFilterWidget(
-                      selectedSortBy: selectedSortBy,
-                      onSortChanged: onSortChanged,
-                      onFilterPressed: onFilterPressed,
+                      selectedSortBy: widget.selectedSortBy,
+                      onSortChanged: widget.onSortChanged,
+                      onFilterPressed: widget.onFilterPressed,
                     ),
                     if (provider.recordsProducts.isEmpty)
                       const ItemsEmptyView()
@@ -77,11 +92,11 @@ class FeaturedProductsGrid extends StatelessWidget {
                           mainAxisSpacing: 10,
                           crossAxisSpacing: 10,
                         ),
-                        itemCount: provider.recordsProducts.length + (isFetchingMore ? 1 : 0),
+                        itemCount: provider.recordsProducts.length + (widget.isFetchingMore ? 1 : 0),
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
                         itemBuilder: (context, index) {
-                          if (isFetchingMore && index == provider.recordsProducts.length) {
+                          if (widget.isFetchingMore && index == provider.recordsProducts.length) {
                             return const Align(
                               alignment: Alignment.center,
                               child: Center(
@@ -132,22 +147,12 @@ class FeaturedProductsGrid extends StatelessWidget {
                               price: product.prices.frontSalePrice.toString(),
                               reviewsCount: product.review.reviewsCount.toInt(),
                               optionalIcon: Icons.shopping_cart,
-                              onOptionalIconTap: () async {
-                                final token = await SecurePreferencesUtil.getToken();
-                                if (token != null) {
-                                  await cartProvider.addToCart(
-                                    product.id,
-                                    context,
-                                    1,
-                                  );
-                                }
-                              },
+                              onOptionalIconTap: () => _handleAddToCart(product.id),
                               isHeartObscure: wishlistProvider.wishlist?.data?.products.any(
                                     (wishlistProduct) => wishlistProduct.id == product.id,
                                   ) ??
                                   false,
                               onHeartTap: () async {
-                                final token = await SecurePreferencesUtil.getToken();
                                 final bool isInWishlist = wishlistProvider.wishlist?.data?.products.any(
                                       (wishlistProduct) => wishlistProduct.id == product.id,
                                     ) ??
@@ -156,7 +161,6 @@ class FeaturedProductsGrid extends StatelessWidget {
                                   await wishlistProvider.deleteWishlistItem(
                                     product.id ?? 0,
                                     context,
-                                    token ?? '',
                                   );
                                 } else {
                                   await freshPicksProvider.handleHeartTap(
@@ -164,10 +168,7 @@ class FeaturedProductsGrid extends StatelessWidget {
                                     product.id ?? 0,
                                   );
                                 }
-                                await wishlistProvider.fetchWishlist(
-                                  token ?? '',
-                                  context,
-                                );
+                                await wishlistProvider.fetchWishlist();
                               },
                             ),
                           );

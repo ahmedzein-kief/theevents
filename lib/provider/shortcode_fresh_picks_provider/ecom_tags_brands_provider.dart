@@ -1,16 +1,16 @@
-
 import 'package:event_app/provider/api_response_handler.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../../core/network/api_endpoints/api_end_point.dart';
 
-///     +++++++++++++++++++++++++++++++++   E-COM TAGS BRANDS PROVIDER +++++++++++++++++++++++++++++++++
+/// +++++++++++++++++++++++++++++++++   E-COM TAGS BRANDS PROVIDER +++++++++++++++++++++++++++++++++
 
 class EComBrandsProvider extends ChangeNotifier {
   final ApiResponseHandler _apiResponseHandler = ApiResponseHandler();
 
   List<BrandRecord> _records = [];
-  BrandPagination? _topBrandPagination;
+
+  // BrandPagination? _topBrandPagination;
   bool _isInitialLoad = true; // Track initial load to show loader
 
   bool _isMoreLoadingBrands = false;
@@ -21,11 +21,13 @@ class EComBrandsProvider extends ChangeNotifier {
 
   List<BrandRecord> get records => _records;
 
-  Future<void> fetchBrands(BuildContext context,
-      {int perPage = 12,
-      page = 1,
-      String sortBy = 'default_sorting',
-      required int id,}) async {
+  Future<void> fetchBrands(
+    BuildContext context, {
+    int perPage = 12,
+    page = 1,
+    String sortBy = 'default_sorting',
+    required int id,
+  }) async {
     if (page == 1) {
       _records.clear();
       _isInitialLoad = true; // Reset for new fetch
@@ -34,21 +36,17 @@ class EComBrandsProvider extends ChangeNotifier {
     _isMoreLoadingBrands = true;
     notifyListeners();
 
-    final url =
-        '${ApiEndpoints.brands}?per-page=$perPage&page=$page&sort-by=$sortBy&tag_id=$id';
+    final url = '${ApiEndpoints.brands}?per-page=$perPage&page=$page&sort-by=$sortBy&tag_id=$id';
 
     try {
-      final response = await _apiResponseHandler.getRequest(
-        url,
-        context: context,
-      );
+      final response = await _apiResponseHandler.getRequest(url);
 
       if (response.statusCode == 200) {
         final jsonResponse = response.data;
         final brandsResponse = BrandsResponse.fromJson(jsonResponse);
         if (page == 1) {
           _records = brandsResponse.data.records;
-          _topBrandPagination = brandsResponse.data.pagination;
+          // _topBrandPagination = brandsResponse.data.pagination;
           notifyListeners();
         } else {
           _records.addAll(brandsResponse.data.records);
@@ -64,7 +62,7 @@ class EComBrandsProvider extends ChangeNotifier {
 
   void reset() {
     _records.clear();
-    _topBrandPagination = null;
+    // _topBrandPagination = null;
     notifyListeners();
   }
 }
@@ -139,9 +137,7 @@ class Data {
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
         pagination: BrandPagination.fromJson(json['pagination']),
-        records: (json['records'] as List)
-            .map((item) => BrandRecord.fromJson(item))
-            .toList(),
+        records: (json['records'] as List).map((item) => BrandRecord.fromJson(item)).toList(),
       );
   final BrandPagination pagination;
   final List<BrandRecord> records;
@@ -155,8 +151,7 @@ class BrandPagination {
     required this.perPage,
   });
 
-  factory BrandPagination.fromJson(Map<String, dynamic> json) =>
-      BrandPagination(
+  factory BrandPagination.fromJson(Map<String, dynamic> json) => BrandPagination(
         total: json['total'],
         lastPage: json['last_page'],
         currentPage: json['current_page'],

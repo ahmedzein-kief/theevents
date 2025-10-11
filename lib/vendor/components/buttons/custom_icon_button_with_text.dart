@@ -43,9 +43,7 @@ class CustomIconButtonWithText extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(borderRadius ?? 8.0),
           side: BorderSide(
-            color: isLoading
-                ? Theme.of(context).colorScheme.primary
-                : borderColor ?? Theme.of(context).colorScheme.outline,
+            color: isLoading ? Theme.of(context).colorScheme.primary : borderColor,
           ),
         ),
         child: isLoading

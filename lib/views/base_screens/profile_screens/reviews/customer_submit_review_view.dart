@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
@@ -21,17 +22,17 @@ import 'package:provider/provider.dart';
 
 import '../../../../core/helper/validators/validator.dart';
 import '../../../../core/styles/app_colors.dart';
-import '../../../../core/widgets/custom_profile_views/custom_back_appbar_view.dart';
 import '../../../../core/utils/app_utils.dart' show AppUtils;
+import '../../../../core/widgets/custom_profile_views/custom_back_appbar_view.dart';
 
 class CustomerSubmitReviewView extends StatefulWidget {
-  CustomerSubmitReviewView({
+  const CustomerSubmitReviewView({
     super.key,
-    this.currentRating,
+    this.initialRating,
     required this.productsAvailableForReview,
   });
 
-  double? currentRating;
+  final double? initialRating;
   final ProductsAvailableForReview productsAvailableForReview;
 
   @override
@@ -41,24 +42,30 @@ class CustomerSubmitReviewView extends StatefulWidget {
 class _CustomerSubmitReviewViewState extends State<CustomerSubmitReviewView> with MediaQueryMixin {
   final TextEditingController _reviewController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final List<File?> _photos = [];
+
+  double? _currentRating;
 
   @override
   void initState() {
     super.initState();
+    _currentRating = widget.initialRating;
   }
 
   @override
   void dispose() {
+    _reviewController.dispose();
     super.dispose();
   }
-
-  final List<File?> _photos = [];
 
   Future<void> _addPhotos() async {
     try {
       final files = await MediaServices().getMultipleFilesFromPicker(
         allowedExtensions: MediaServices().allowedImageExtension,
       );
+
+      // FIX: Check mounted after async operation
+      if (!mounted) return;
 
       if (files?.isNotEmpty ?? false) {
         const int maxCount = 6; // Maximum number of files allowed
@@ -79,6 +86,9 @@ class _CustomerSubmitReviewViewState extends State<CustomerSubmitReviewView> wit
           }
 
           final bool validFileSize = await AppUtils.compareFileSize(file: file, maxSizeInKB: maxSizeInKB);
+
+          // FIX: Check mounted after async operation
+          if (!mounted) return;
 
           if (validFileSize) {
             _photos.add(file);
@@ -101,7 +111,7 @@ class _CustomerSubmitReviewViewState extends State<CustomerSubmitReviewView> wit
         setState(() {});
       }
     } catch (e) {
-      print('${AppStrings.failedToAddPhotos.tr} $e');
+      log('${AppStrings.failedToAddPhotos.tr} $e');
     }
   }
 
@@ -167,7 +177,7 @@ class _CustomerSubmitReviewViewState extends State<CustomerSubmitReviewView> wit
 
                 /// Stars
                 RatingBar.builder(
-                  initialRating: widget.currentRating ?? 0.0,
+                  initialRating: _currentRating ?? 0.0,
                   minRating: 1,
                   direction: Axis.horizontal,
                   itemCount: 5,
@@ -180,7 +190,9 @@ class _CustomerSubmitReviewViewState extends State<CustomerSubmitReviewView> wit
                   ),
                   onRatingUpdate: (rating) async {
                     /// navigate to submit review view
-                    widget.currentRating = rating;
+                    setState(() {
+                      _currentRating = rating;
+                    });
                   },
                 ),
                 kSmallSpace,
@@ -235,10 +247,18 @@ class _CustomerSubmitReviewViewState extends State<CustomerSubmitReviewView> wit
                                   if (_formKey.currentState?.validate() ?? false) {
                                     try {
                                       _createForm();
+
+                                      // FIX: Use context.mounted instead of mounted
+                                      if (!context.mounted) return;
+
                                       final result = await provider.customerSubmitReview(
                                         form: formData,
                                         context: context,
                                       );
+
+                                      // FIX: Use context.mounted after async operation
+                                      if (!context.mounted) return;
+
                                       if (result) {
                                         Navigator.pop(context, 1);
                                         Navigator.pushReplacement(
@@ -251,9 +271,7 @@ class _CustomerSubmitReviewViewState extends State<CustomerSubmitReviewView> wit
                                         );
                                       }
                                     } catch (e) {
-                                      print(
-                                        '${AppStrings.errorSubmittingReview.tr} $e',
-                                      );
+                                      log('${AppStrings.errorSubmittingReview.tr} $e');
                                     }
                                   }
                                 },
@@ -292,7 +310,7 @@ class _CustomerSubmitReviewViewState extends State<CustomerSubmitReviewView> wit
   void _createForm() {
     final fields = {
       'product_id': widget.productsAvailableForReview.id,
-      'star': widget.currentRating?.toInt(),
+      'star': _currentRating?.toInt(),
       'comment': _reviewController.text,
     };
     final files = <MultipartFile>[];

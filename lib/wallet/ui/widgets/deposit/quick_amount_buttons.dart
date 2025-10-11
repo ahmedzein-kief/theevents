@@ -33,7 +33,7 @@ class QuickAmountButtons extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
             decoration: BoxDecoration(
               color: isSelected
-                  ? (isDark ? theme.textTheme.bodySmall?.color?.withOpacity(0.6) : Colors.black)
+                  ? (isDark ? theme.textTheme.bodySmall?.color?.withAlpha((0.6 * 255).toInt()) : Colors.black)
                   : (isDark ? Colors.grey[800] : Colors.grey[200]),
               borderRadius: BorderRadius.circular(3),
               border: isDark && !isSelected ? Border.all(color: Colors.grey[700]!) : null,

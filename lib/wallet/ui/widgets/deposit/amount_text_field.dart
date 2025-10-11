@@ -22,12 +22,12 @@ class AmountTextField extends StatelessWidget {
       enabled: false,
       controller: controller,
       keyboardType: TextInputType.number,
-      style: TextStyle(color: theme.textTheme.bodySmall?.color?.withOpacity(0.6)),
+      style: TextStyle(color: theme.textTheme.bodySmall?.color?.withAlpha((0.6 * 255).toInt())),
       decoration: InputDecoration(
         hintText: 'AED 100.00',
         hintStyle: GoogleFonts.openSans(
           fontSize: 12,
-          color: theme.textTheme.bodySmall?.color?.withOpacity(0.6),
+          color: theme.textTheme.bodySmall?.color?.withAlpha((0.6 * 255).toInt()),
         ),
         filled: true,
         fillColor: isDark ? Colors.grey[800] : Colors.white,

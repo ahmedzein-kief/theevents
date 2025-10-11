@@ -31,7 +31,6 @@ class VendorByTypeProvider extends ChangeNotifier {
     try {
       final response = await _apiResponseHandler.getRequest(
         url,
-        context: context,
         queryParams: {'locale': currentLocale},
       );
 
@@ -90,7 +89,6 @@ class VendorByTypeProvider extends ChangeNotifier {
 
       final response = await _apiResponseHandler.getRequest(
         url,
-        context: context,
         queryParams: {'locale': currentLocale},
       );
 

@@ -5,16 +5,14 @@ import 'package:event_app/core/helper/extensions/app_localizations_extension.dar
 import 'package:event_app/core/helper/validators/validator.dart';
 import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/core/styles/app_sizes.dart';
+import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/core/widgets/custom_auth_views/app_custom_button.dart';
 import 'package:event_app/data/vendor/data/response/apis_status.dart';
 import 'package:event_app/models/vendor_models/vendor_settings_models/vendor_get_settings_model.dart';
 import 'package:event_app/vendor/components/dropdowns/custom_dropdown.dart';
 import 'package:event_app/vendor/components/enums/enums.dart';
-import 'package:event_app/vendor/components/services/alert_services.dart';
-import 'package:event_app/vendor/components/services/media_services.dart';
 import 'package:event_app/vendor/components/settings_components/simple_card.dart';
 import 'package:event_app/vendor/components/text_fields/custom_text_form_field.dart';
-import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/vendor/view_models/vendor_settings/vendor_get_settings_view_model.dart';
 import 'package:event_app/vendor/view_models/vendor_settings/vendor_settings_view_model.dart';
 import 'package:flutter/material.dart';
@@ -52,8 +50,6 @@ class _PayoutInfoViewState extends State<PayoutInfoView> {
   final FocusNode upiIdFocusNode = FocusNode();
   final FocusNode descriptionFocusNode = FocusNode();
 
-  late MediaServices _mediaServices;
-
   // Dispose all controllers when done
   @override
   void dispose() {
@@ -81,7 +77,6 @@ class _PayoutInfoViewState extends State<PayoutInfoView> {
   @override
   void initState() {
     /// Initialize MediaServices
-    _mediaServices = MediaServices();
     WidgetsBinding.instance.addPostFrameCallback((callback) async {
       await _onRefresh();
     });
@@ -89,13 +84,8 @@ class _PayoutInfoViewState extends State<PayoutInfoView> {
   }
 
   /// To show modal progress hud
-  bool _isProcessing = false;
 
-  void setProcessing(bool value) {
-    setState(() {
-      _isProcessing = value;
-    });
-  }
+  void setProcessing(bool value) {}
 
   Future _onRefresh() async {
     final VendorGetSettingsViewModel vendorGetSettingsProvider = context.read<VendorGetSettingsViewModel>();
@@ -317,7 +307,7 @@ class _PayoutInfoViewState extends State<PayoutInfoView> {
                   onTap: () async {
                     try {
                       if (_formKey.currentState?.validate() ?? false) {
-                        print('Form is valid');
+                        log('Form is valid');
                         setProcessing(true);
                         _createForm();
                         final vendorSettingsProvider = context.read<VendorSettingsViewModel>();
@@ -331,14 +321,11 @@ class _PayoutInfoViewState extends State<PayoutInfoView> {
                           await _onRefresh();
                         }
                       } else {
-                        print('Form validation failed!');
+                        log('Form validation failed!');
                       }
                     } catch (e) {
                       setProcessing(false);
-                      AlertServices.showErrorSnackBar(
-                        message: VendorAppStrings.error.tr + 'Oops! something went wrong..',
-                        context: context,
-                      );
+                      AppUtils.showToast('${VendorAppStrings.error.tr}Oops! something went wrong..');
                     }
                   },
                 ),

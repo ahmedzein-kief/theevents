@@ -39,8 +39,8 @@ import 'package:event_app/provider/search_suggestions_provider.dart';
 import 'package:event_app/provider/shortcode_events_bazaar_provider/events_bazaar_provider.dart';
 import 'package:event_app/provider/shortcode_featured_categories_provider/featured_categories_detail_provider.dart';
 import 'package:event_app/provider/shortcode_featured_categories_provider/featured_categories_provider.dart';
-import 'package:event_app/provider/shortcode_fresh_picks_provider/eCom_Tags_brands_Provider.dart';
-import 'package:event_app/provider/shortcode_fresh_picks_provider/eCom_tags_provider.dart';
+import 'package:event_app/provider/shortcode_fresh_picks_provider/ecom_tags_brands_provider.dart';
+import 'package:event_app/provider/shortcode_fresh_picks_provider/ecom_tags_provider.dart';
 import 'package:event_app/provider/shortcode_fresh_picks_provider/fresh_picks_provider.dart';
 import 'package:event_app/provider/shortcode_home_page_provider.dart';
 import 'package:event_app/provider/shortcode_vendor_type_by_provider/vendor_type_by_provider.dart';
@@ -313,11 +313,9 @@ ThemeData lightTheme = ThemeData(
   ),
   brightness: Brightness.light,
   useMaterial3: true,
-  scaffoldBackgroundColor: AppColors.bgColor,
   bottomAppBarTheme: const BottomAppBarTheme(color: Colors.white),
   unselectedWidgetColor: Colors.grey,
   appBarTheme: const AppBarTheme(
-    backgroundColor: AppColors.bgColor,
     elevation: 0.5,
     shadowColor: Colors.grey,
     titleTextStyle: TextStyle(color: Colors.black),

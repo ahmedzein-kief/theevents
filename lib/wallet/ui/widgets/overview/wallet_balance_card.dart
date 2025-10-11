@@ -5,7 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/utils/formatters.dart';
-import '../../../../core/widgets/PriceRow.dart';
+import '../../../../core/widgets/price_row.dart';
 import '../../../logic/drawer/drawer_cubit.dart';
 import '../../../logic/wallet/wallet_state.dart';
 
@@ -27,7 +27,7 @@ class WalletBalanceCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(6),
         boxShadow: [
           BoxShadow(
-            color: isDark ? Colors.black.withOpacity(0.3) : Colors.black.withOpacity(0.05),
+            color: isDark ? Colors.black.withAlpha((0.3 * 255).toInt()) : Colors.black.withAlpha((0.05 * 255).toInt()),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -58,7 +58,7 @@ class WalletBalanceCard extends StatelessWidget {
             '${AppStrings.lastUpdatedPrefix.tr} ${Formatters.formatDateTime(state.wallet.lastUpdated)}',
             style: GoogleFonts.openSans(
               fontSize: 12,
-              color: theme.textTheme.bodySmall?.color?.withOpacity(0.7),
+              color: theme.textTheme.bodySmall?.color?.withAlpha((0.7 * 255).toInt()),
             ),
           ),
           const SizedBox(height: 35),

@@ -1,8 +1,8 @@
 import 'package:event_app/core/constants/vendor_app_strings.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/styles/app_sizes.dart';
-import 'package:event_app/vendor/components/app_bars/vendor_common_app_bar.dart';
 import 'package:event_app/core/utils/app_utils.dart';
+import 'package:event_app/vendor/components/app_bars/vendor_common_app_bar.dart';
 import 'package:event_app/vendor/vendor_home/vendor_settings/tab_bar_views/payout_info_view.dart';
 import 'package:event_app/vendor/vendor_home/vendor_settings/tab_bar_views/store_view.dart';
 import 'package:event_app/vendor/vendor_home/vendor_settings/tab_bar_views/tax_info_view.dart';
@@ -12,9 +12,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class VendorProfileSettingsView extends StatefulWidget {
-  VendorProfileSettingsView({super.key, this.initialIndex});
+  const VendorProfileSettingsView({super.key, this.initialIndex});
 
-  int? initialIndex;
+  final int? initialIndex;
 
   @override
   State<VendorProfileSettingsView> createState() => _VendorProfileSettingsViewState();

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/helper/mixins/media_query_mixin.dart';
 import 'package:event_app/core/styles/app_sizes.dart';
@@ -53,7 +55,9 @@ class _VendorCouponViewState extends State<VendorCouponView> with MediaQueryMixi
       setState(() {});
       await provider.vendorGetCoupons(search: _searchController.text);
       setState(() {});
-    } catch (e) {}
+    } catch (e) {
+      log(e.toString());
+    }
   }
 
   Future<void> _loadMoreData() async {
@@ -240,8 +244,6 @@ class _VendorCouponViewState extends State<VendorCouponView> with MediaQueryMixi
     required BuildContext context,
     required CouponRecords rowData,
   }) {
-    final totalQuantity = rowData.quantity != null ? "/${rowData.quantity?.toString() ?? ''}" : '';
-
     /// showing through bottom sheet
     showModalBottomSheet(
       context: context,

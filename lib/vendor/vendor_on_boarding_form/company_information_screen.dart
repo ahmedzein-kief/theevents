@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:camera_gallery_image_picker/camera_gallery_image_picker.dart';
@@ -75,13 +76,15 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
       if (countryModel != null) {
         getAllMetaData();
       }
-    } catch (error) {}
+    } catch (error) {
+      log(error.toString());
+    }
   }
 
   Future<void> getAllMetaData() async {
     final provider = Provider.of<VendorSignUpProvider>(context, listen: false);
     vendorTypes = await provider.getAllVendorTypes();
-    final response = await provider.getAllMetaData(context);
+    final response = await provider.getAllMetaData();
 
     if (response != null) {
       SecurePreferencesUtil.saveServerStep(
@@ -112,7 +115,6 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
       ciModel.vatFileName = _vatCertificateController.text = response.data['vat_file_name'] ?? '';
       ciModel.vatFileServerPath = response.data['vat_file_path'] ?? '';
     }
-    print('selectedHomeShopOption $selectedHomeShopOption');
   }
 
   String findCountryNameUsingCode(String code) {
@@ -219,7 +221,7 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                           decoration: BoxDecoration(
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.2), // Shadow color
+                                color: Colors.black.withAlpha((0.2 * 255).toInt()), // Shadow color
                                 spreadRadius: 2, // How much the shadow spreads
                                 blurRadius: 5, // How blurry the shadow is
                                 offset: const Offset(0, 2), // Shadow offset (X, Y)
@@ -230,7 +232,7 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                             key: _formKey,
                             child: Material(
                               shadowColor: Colors.black,
-                              color: Colors.white,
+                              // color: Colors.white,
                               elevation: 15,
                               child: Padding(
                                 padding: const EdgeInsets.only(

@@ -1,9 +1,11 @@
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/views/payment_screens/payment_view_screen.dart';
 import 'package:event_app/wallet/logic/drawer/drawer_cubit.dart';
 import 'package:event_app/wallet/ui/widgets/shared/wallet_current_rewards_cards.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../core/constants/app_strings.dart';
 import '../../../core/utils/app_utils.dart';
 import '../../logic/deposit/deposit_cubit.dart';
 import '../../logic/deposit/deposit_state.dart';
@@ -129,10 +131,10 @@ class _AddFundsScreenState extends State<AddFundsScreen> {
         context.read<DrawerCubit>().setSelectedScreen(0);
 
         // Payment successful
-        AppUtils.showToast('Payment completed successfully!', isSuccess: true);
+        AppUtils.showToast(AppStrings.paymentCompletedSuccessfully.tr, isSuccess: true);
       } else if (result == false) {
         // Payment failed or canceled - reset the cubit state
-        AppUtils.showToast('Payment was canceled or failed');
+        AppUtils.showToast('payment_cancelled'.tr);
 
         // Reset the cubit state back to loaded so the form becomes interactive again
         context.read<DepositCubit>().resetToLoaded();
@@ -143,7 +145,7 @@ class _AddFundsScreenState extends State<AddFundsScreen> {
         context.read<DepositCubit>().resetToLoaded();
       }
     } catch (e) {
-      AppUtils.showToast('Error processing payment');
+      AppUtils.showToast(AppStrings.paymentFailed.tr);
 
       // Reset state on error as well
       if (context.mounted) {

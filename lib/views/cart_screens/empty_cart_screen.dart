@@ -29,10 +29,12 @@ class _EmptyCartScreenState extends State<EmptyCartScreen> {
                   Image.asset('assets/emptyCart.png'),
                   Padding(
                     padding: const EdgeInsets.only(top: 25),
-                    child: Text(AppStrings.cartIsEmpty.tr,
-                        style: cartTextStyle(context),
-                        softWrap: true,
-                        textAlign: TextAlign.center,),
+                    child: Text(
+                      AppStrings.cartIsEmpty.tr,
+                      style: cartTextStyle(context),
+                      softWrap: true,
+                      textAlign: TextAlign.center,
+                    ),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 20),
@@ -43,25 +45,28 @@ class _EmptyCartScreenState extends State<EmptyCartScreen> {
                         AppCustomButton(
                           onPressed: () {
                             Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const WishListScreen(),),);
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const WishListScreen(),
+                              ),
+                            );
                           },
                           title: AppStrings.gotoWishlist.tr,
                         ),
                         GestureDetector(
                           onTap: () async {
-                            final bool isLoggedIn =
-                                await SecurePreferencesUtil.isLoggedIn();
+                            // Capture navigator before any async operations
+                            final navigator = Navigator.of(context);
+
+                            final bool isLoggedIn = await SecurePreferencesUtil.isLoggedIn();
                             if (isLoggedIn) {
-                              Navigator.pop(context);
+                              navigator.pop();
                             } else {
-                              Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          const BaseHomeScreen(),),);
+                              navigator.pushReplacement(
+                                MaterialPageRoute(
+                                  builder: (context) => const BaseHomeScreen(),
+                                ),
+                              );
                             }
                             // PersistentNavBarNavigator.pushNewScreen(
                             //   context,
@@ -78,10 +83,12 @@ class _EmptyCartScreenState extends State<EmptyCartScreen> {
                               mainAxisSize: MainAxisSize.min,
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Text(AppStrings.continueShopping.tr,
-                                    softWrap: true,
-                                    maxLines: 1,
-                                    style: addToCartText(context),),
+                                Text(
+                                  AppStrings.continueShopping.tr,
+                                  softWrap: true,
+                                  maxLines: 1,
+                                  style: addToCartText(context),
+                                ),
                               ],
                             ),
                           ),

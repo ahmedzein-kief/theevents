@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class CustomTextFormField extends StatefulWidget {
-  CustomTextFormField({
+  const CustomTextFormField({
     super.key,
     this.prefixIconColor,
     this.borderSideColor,
@@ -68,31 +68,31 @@ class CustomTextFormField extends StatefulWidget {
   final Color? suffixIconColor;
   final Color? prefixIconColor;
   final BorderSide? borderSideColor;
-  dynamic validator;
-  dynamic onChanged;
-  int? maxLength;
-  int? maxLines;
-  Widget? suffix;
-  bool showTitle;
-  TextStyle? hintStyle;
-  TextStyle? labelTextStyle;
-  EdgeInsetsGeometry? contentPadding;
-  double? borderRadius;
-  double? borderWidth;
-  Widget? prefix;
-  bool isOutlinedBorder;
-  bool? filled;
-  Color? fillColor;
-  double? height;
-  double? width;
+  final dynamic validator;
+  final dynamic onChanged;
+  final int? maxLength;
+  final int? maxLines;
+  final Widget? suffix;
+  final bool showTitle;
+  final TextStyle? hintStyle;
+  final TextStyle? labelTextStyle;
+  final EdgeInsetsGeometry? contentPadding;
+  final double? borderRadius;
+  final double? borderWidth;
+  final Widget? prefix;
+  final bool isOutlinedBorder;
+  final bool? filled;
+  final Color? fillColor;
+  final double? height;
+  final double? width;
   final bool? readOnly;
   final dynamic onTap;
   final bool isExpanded;
   final TextStyle? textStyle;
-  String? errorText;
+  final String? errorText;
 
   @override
-  _CustomTextFormFieldState createState() => _CustomTextFormFieldState();
+  State<CustomTextFormField> createState() => _CustomTextFormFieldState();
 }
 
 class _CustomTextFormFieldState extends State<CustomTextFormField> {
@@ -167,7 +167,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
               errorMaxLines: 100,
               hintText: widget.hintText,
               suffixIcon: widget.suffix,
-              hintStyle: widget.hintStyle ?? const TextStyle(color: Colors.grey, fontSize: 12),
+              hintStyle: widget.hintStyle,
               prefixIcon: widget.prefix,
               border: border,
               focusedBorder: border,
@@ -179,7 +179,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
 
               // 🔑 Adaptive fillColor with opposite alpha in dark mode
               fillColor: widget.fillColor ??
-                  (widget.readOnly ?? false ? Colors.grey.shade200 : _getAdaptiveFillColor(context)),
+                  (widget.readOnly ?? false ? _getReadOnlyFillColor(context) : _getAdaptiveFillColor(context)),
             ),
           ),
         ),
@@ -190,8 +190,14 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
 
 Color _getAdaptiveFillColor(BuildContext context) {
   return Theme.of(context).brightness == Brightness.dark
-      ? const Color(0xFF3A3A3A) // Dark → opposite alpha
-      : const Color(0xFFF5F5F5); // Light → normal alpha
+      ? const Color(0xFF3A3A3A) // Dark mode
+      : const Color(0xFFF5F5F5); // Light mode
+}
+
+Color _getReadOnlyFillColor(BuildContext context) {
+  return Theme.of(context).brightness == Brightness.dark
+      ? const Color(0xFF2A2A2A) // Darker gray for dark mode
+      : Colors.grey.shade200; // Light gray for light mode
 }
 
 /// field label

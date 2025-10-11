@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../data/repository/featured_category_repository.dart';
 import '../../models/dashboard/feature_categories_model/feature_category_banner_model.dart';
-import '../../models/dashboard/feature_categories_model/feature_category_viewAll_models.dart';
+import '../../models/dashboard/feature_categories_model/feature_category_view_all_models.dart';
 import '../../models/dashboard/feature_categories_model/featured_categories_models.dart';
 
 class FeaturedCategoriesProvider with ChangeNotifier {
@@ -34,10 +34,7 @@ class FeaturedCategoriesProvider with ChangeNotifier {
     final String url = '${ApiEndpoints.baseUrl}$shortcode';
 
     try {
-      final response = await _apiResponseHandler.getRequest(
-        url,
-        context: context,
-      );
+      final response = await _apiResponseHandler.getRequest(url);
 
       if (response.statusCode == 200) {
         _gifts = FeaturedCategoriesModels.fromJson(response.data);
@@ -78,7 +75,8 @@ class FeaturedCategoriesProvider with ChangeNotifier {
 
   List<Category> categories = [];
   bool isLoading = false;
-  Pagination? _paginationCategory;
+
+  // Pagination? _paginationCategory;
   bool _isMoreLoading = false;
 
   bool get isMoreLoading => _isMoreLoading;
@@ -101,10 +99,7 @@ class FeaturedCategoriesProvider with ChangeNotifier {
 
     final url = '${ApiEndpoints.categoryViewAllItems}?per_page=$perPage&page=$page&sort-by=$sortBy';
 
-    final response = await _apiResponseHandler.getRequest(
-      url,
-      context: context,
-    );
+    final response = await _apiResponseHandler.getRequest(url);
 
     if (response.statusCode == 200) {
       final jsonResponse = response.data;
@@ -112,10 +107,10 @@ class FeaturedCategoriesProvider with ChangeNotifier {
 
       if (page == 1) {
         categories = categoryResponse.data.records;
-        _paginationCategory = categoryResponse.data.pagination;
+        // _paginationCategory = categoryResponse.data.pagination;
       } else {
         categories.addAll(categoryResponse.data.records);
-        _paginationCategory = categoryResponse.data.pagination;
+        // _paginationCategory = categoryResponse.data.pagination;
       }
     } else {
       throw Exception('Failed to load categories');

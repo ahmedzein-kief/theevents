@@ -121,9 +121,9 @@ class ChangePasswordScreen extends StatelessWidget {
     final request = ChangePasswordRequest(
       oldPassword: oldPassword,
       password: newPassword,
-      password_confirmation: reEnterPassword,
+      passwordConfirmation: reEnterPassword,
     );
 
-    await provider.changePassword(token ?? '', request, context);
+    await provider.changePassword(token ?? '', request);
   }
 }

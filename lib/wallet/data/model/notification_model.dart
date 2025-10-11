@@ -74,7 +74,7 @@ class NotificationModel extends Equatable {
       );
     } catch (e) {
       // Log the error and return a default notification
-      print('Error parsing NotificationModel: $e');
+      log('Error parsing NotificationModel: $e');
       return NotificationModel(
         id: json['id']?.toString() ?? DateTime.now().millisecondsSinceEpoch.toString(),
         title: 'Error parsing notification',

@@ -343,7 +343,7 @@ class Store {
     _coverImage = coverImage;
   }
 
-  Store.fromJson(dynamic json) {
+  Store.fromJson(json) {
     if (json == null || json is List) {
       _name = '';
       _slug = '';

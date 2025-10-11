@@ -111,7 +111,7 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen> {
                                           //       provider.forgotPassword(_emailController.text).then((_) {
                                           //         if (provider.message != null) {
                                           //           if (provider.errors != null) {
-                                          //             CustomSnackbar.showError(context, provider.errors!.values.first[0]);
+                                          //            AppUtils.showToast( provider.errors!.values.first[0]);
                                           //           } else {
                                           //             CustomSnackbar.showSuccess(context, provider.message!);
                                           //           }
@@ -136,7 +136,7 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen> {
                                                   // if (provider.message != null) {
                                                   //   if (provider.errors != null) {
                                                   //     // Display the first error message from errors map
-                                                  //     CustomSnackbar.showError(context, provider.errors!.values.first[0]);
+                                                  //    AppUtils.showToast( provider.errors!.values.first[0]);
                                                   //   } else {
                                                   //     // Display success message
                                                   //     CustomSnackbar.showSuccess(context, provider.message!);
@@ -160,7 +160,7 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen> {
                                                 onTap: () {
                                                   PersistentNavBarNavigator.pushNewScreen(
                                                     context,
-                                                    screen: AuthScreen(
+                                                    screen: const AuthScreen(
                                                       initialIndex: 1,
                                                     ),
                                                     withNavBar: false,

@@ -1,11 +1,13 @@
+import 'dart:developer';
+
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/helper/mixins/media_query_mixin.dart';
 import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/core/styles/app_sizes.dart';
+import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/data/vendor/data/response/apis_status.dart';
 import 'package:event_app/vendor/components/common_widgets/vendor_data_list_builder.dart';
 import 'package:event_app/vendor/components/list_tiles/records_list_tile.dart';
-import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/views/base_screens/profile_screens/reviews/customer_submit_review_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -51,7 +53,9 @@ class _CustomerWaitingForReviewsViewState extends State<CustomerWaitingForReview
       setState(() {});
       await provider.customerGetProductReviews(search: _searchController.text);
       setState(() {});
-    } catch (e) {}
+    } catch (e) {
+      log('_onRefresh CustomerWaitingForReviewsView error: $e');
+    }
   }
 
   Future<void> _loadMoreData() async {
@@ -92,7 +96,7 @@ class _CustomerWaitingForReviewsViewState extends State<CustomerWaitingForReview
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        // backgroundColor: AppColors.bgColor,
+        //
         body: AppUtils.modelProgressHud(
           context: context,
           processing: _isProcessing,
@@ -191,7 +195,7 @@ class _CustomerWaitingForReviewsViewState extends State<CustomerWaitingForReview
                     await Navigator.of(context).push(
                       CupertinoPageRoute(
                         builder: (context) => CustomerSubmitReviewView(
-                          currentRating: rating,
+                          initialRating: rating,
                           productsAvailableForReview: record,
                         ),
                       ),

@@ -146,6 +146,8 @@ class ApiEndpoints {
   static const String notificationDeleteAll = '${wallet}notification';
   static const String notificationPreferences = '${wallet}notification-preferences';
   static const String notificationPreferencesByType = '${wallet}notification-preferences/{type}';
+
+  static const String becomeVendor = '${baseUrl}become-vendor';
 }
 
 class CommonVariables {

@@ -104,7 +104,7 @@ class _ShortcodeInformationIconsScreenState extends State<ShortcodeInformationIc
         color: AppColors.infoBackGround,
         boxShadow: [
           BoxShadow(
-            color: Colors.white.withOpacity(0.2),
+            color: Colors.white.withAlpha((0.2 * 255).toInt()),
             spreadRadius: 1,
             blurRadius: 5,
             offset: const Offset(0, 3),
@@ -129,16 +129,18 @@ class _ShortcodeInformationIconsScreenState extends State<ShortcodeInformationIc
                   width: _itemWidth,
                   child: GestureDetector(
                     onTap: () async {
+                      // Capture navigator before any async operations
+                      final navigator = Navigator.of(context);
+
                       String routeName;
 
                       switch (index) {
                         case 0:
                           final bool isLoggedIn = await SecurePreferencesUtil.isLoggedIn();
                           if (!isLoggedIn) {
-                            Navigator.push(
-                              context,
+                            navigator.push(
                               CupertinoPageRoute(
-                                builder: (context) => AuthScreen(),
+                                builder: (context) => const AuthScreen(),
                                 fullscreenDialog: true,
                               ),
                             );
@@ -166,8 +168,7 @@ class _ShortcodeInformationIconsScreenState extends State<ShortcodeInformationIc
                       }
 
                       if (routeName.isNotEmpty) {
-                        Navigator.pushNamed(
-                          context,
+                        navigator.pushNamed(
                           routeName,
                           arguments: {'title': items[index]['title']},
                         );
@@ -191,7 +192,7 @@ class _ShortcodeInformationIconsScreenState extends State<ShortcodeInformationIc
                                 borderRadius: BorderRadius.circular(8),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.white.withOpacity(0.2),
+                                    color: Colors.white.withAlpha((0.2 * 255).toInt()),
                                     spreadRadius: 1,
                                     blurRadius: 5,
                                     offset: const Offset(0, 3),

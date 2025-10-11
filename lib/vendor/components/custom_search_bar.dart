@@ -16,7 +16,7 @@ class CustomSearchBarVendor extends StatefulWidget {
   final String? hintText;
 
   @override
-  _CustomSearchBarState createState() => _CustomSearchBarState();
+  State<CustomSearchBarVendor> createState() => _CustomSearchBarState();
 }
 
 class _CustomSearchBarState extends State<CustomSearchBarVendor> {

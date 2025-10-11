@@ -71,14 +71,11 @@ class CityRecord {
   }
 }
 
-Future<StateModels?> fetchStates(BuildContext context, int countryId) async {
+Future<StateModels?> fetchStates(int countryId) async {
   final ApiResponseHandler apiResponseHandler = ApiResponseHandler();
   final url = '${ApiEndpoints.stateList}?country_id=$countryId';
 
-  final response = await apiResponseHandler.getRequest(
-    url,
-    context: context,
-  );
+  final response = await apiResponseHandler.getRequest(url);
 
   if (response.statusCode == 200) {
     final jsonResponse = response.data;
@@ -96,10 +93,7 @@ Future<CityModels?> fetchCities(
   final ApiResponseHandler apiResponseHandler = ApiResponseHandler();
   final url = '${ApiEndpoints.cityList}?state_id=$stateId&country_id=$countryId';
 
-  final response = await apiResponseHandler.getRequest(
-    url,
-    context: context,
-  );
+  final response = await apiResponseHandler.getRequest(url);
   if (response.statusCode == 200) {
     final jsonResponse = response.data;
     return CityModels.fromJson(jsonResponse);

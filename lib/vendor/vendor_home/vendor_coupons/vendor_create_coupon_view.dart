@@ -1,7 +1,11 @@
+import 'package:event_app/core/constants/app_strings.dart';
+import 'package:event_app/core/constants/vendor_app_strings.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/helper/mixins/media_query_mixin.dart';
 import 'package:event_app/core/helper/validators/validator.dart';
 import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/core/styles/app_sizes.dart';
+import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/core/widgets/custom_auth_views/app_custom_button.dart';
 import 'package:event_app/data/vendor/data/response/apis_status.dart';
 import 'package:event_app/vendor/components/app_bars/vendor_common_app_bar.dart';
@@ -12,7 +16,6 @@ import 'package:event_app/vendor/components/dropdowns/custom_dropdown.dart';
 import 'package:event_app/vendor/components/settings_components/simple_card.dart';
 import 'package:event_app/vendor/components/text_fields/custom_date_time_picker_field.dart';
 import 'package:event_app/vendor/components/text_fields/custom_text_form_field.dart';
-import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/vendor/components/vendor_text_style.dart';
 import 'package:event_app/vendor/vendor_home/vendor_coupons/coupon_view_utils.dart';
 import 'package:event_app/vendor/view_models/vendor_coupons/vendor_create_coupon_view_model.dart';
@@ -126,13 +129,12 @@ class _VendorCreateCouponViewState extends State<VendorCreateCouponView> with Me
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: const VendorCommonAppBar(title: 'Coupons'),
+        appBar: VendorCommonAppBar(title: VendorAppStrings.coupons.tr),
         body: AppUtils.modelProgressHud(
           context: context,
           processing: _isProcessing,
           child: _buildUi(context),
         ),
-        backgroundColor: AppColors.bgColor,
       );
 
   Widget _buildUi(context) => Padding(
@@ -152,8 +154,9 @@ class _VendorCreateCouponViewState extends State<VendorCreateCouponView> with Me
                         create: (context) => VendorGenerateCouponCodeViewModel(),
                         child: Consumer<VendorGenerateCouponCodeViewModel>(
                           builder: (context, provider, _) => CustomTextFormField(
-                            labelText: 'Create Coupon Code',
-                            labelTextStyle: CouponViewUtils.couponLabelTextStyle(),
+                            labelText: VendorAppStrings.createCouponCode.tr,
+                            labelTextStyle: CouponViewUtils.couponLabelTextStyle()
+                                .copyWith(color: Theme.of(context).colorScheme.onPrimary),
                             required: true,
                             hintText: '',
                             borderRadius: 4,
@@ -161,7 +164,7 @@ class _VendorCreateCouponViewState extends State<VendorCreateCouponView> with Me
                             validator: Validator.fieldCannotBeEmpty,
                             suffix: CustomActionButton(
                               isLoading: provider.apiResponse.status == ApiStatus.LOADING,
-                              name: 'Generate Coupon Code',
+                              name: VendorAppStrings.createCouponCode.tr,
                               textStyle: const TextStyle(
                                 fontWeight: FontWeight.w700,
                                 fontSize: 15,
@@ -177,20 +180,20 @@ class _VendorCreateCouponViewState extends State<VendorCreateCouponView> with Me
 
                       /// short description of coupon code use
                       Text(
-                        'Customers will enter this coupon code when they checkout',
-                        style: subtitleTextStyle(context),
+                        VendorAppStrings.couponCode.tr,
+                        style: subtitleTextStyle(context).copyWith(color: Theme.of(context).hintColor),
                         textAlign: TextAlign.start,
                       ),
                       kFormFieldSpace,
 
                       /// Coupon name
                       CustomTextFormField(
-                        labelText: 'Coupon Name',
+                        labelText: VendorAppStrings.couponName.tr,
                         showTitle: false,
                         required: false,
                         validator: Validator.fieldCannotBeEmpty,
                         borderRadius: 4,
-                        hintText: 'Enter Coupon name',
+                        hintText: VendorAppStrings.enterCouponName.tr,
                         hintStyle: const TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.grey,
@@ -202,7 +205,7 @@ class _VendorCreateCouponViewState extends State<VendorCreateCouponView> with Me
                       /// is unlimited coupon
                       CustomCheckboxWithTitle(
                         isChecked: isUnlimitedCoupon,
-                        title: 'Unlimited coupon?',
+                        title: VendorAppStrings.unlimitedCoupon.tr,
                         onChanged: (value) {
                           setState(() {
                             isUnlimitedCoupon = value ?? false;
@@ -224,14 +227,15 @@ class _VendorCreateCouponViewState extends State<VendorCreateCouponView> with Me
                           children: [
                             kSmallSpace,
                             CustomTextFormField(
-                              labelText: 'Enter Number',
-                              labelTextStyle: CouponViewUtils.couponLabelTextStyle(),
+                              labelText: VendorAppStrings.enterNumber.tr,
+                              labelTextStyle: CouponViewUtils.couponLabelTextStyle()
+                                  .copyWith(color: Theme.of(context).colorScheme.onPrimary),
                               required: !isUnlimitedCoupon,
                               showTitle: true,
                               keyboardType: TextInputType.number,
                               borderRadius: 4,
                               validator: Validator.validateNumberOfCoupons,
-                              hintText: 'Enter Number of Coupons',
+                              hintText: VendorAppStrings.enterNumberOfCoupons.tr,
                               controller: _numberOfCouponsController,
                             ),
                             kSmallSpace,
@@ -241,9 +245,10 @@ class _VendorCreateCouponViewState extends State<VendorCreateCouponView> with Me
                       /// Display coupon code at the checkout page ?
                       CustomCheckboxWithTitle(
                         isChecked: isCouponCodeVisible,
-                        title: 'Display coupon code at the checkout page?',
-                        subTitle:
-                            'The list of coupon codes will be displayed at the checkout page and customers can choose to apply.',
+                        title: VendorAppStrings.displayCouponCodeAtCheckout.tr,
+                        subTitle: AppStrings.couponHint.tr,
+                        subTitleStyle:
+                            subtitleTextStyle(context).copyWith(color: Theme.of(context).hintColor, height: 0),
                         onChanged: (value) {
                           setState(() {
                             isCouponCodeVisible = value ?? false;
@@ -260,13 +265,15 @@ class _VendorCreateCouponViewState extends State<VendorCreateCouponView> with Me
                       kFormFieldSpace,
 
                       /// Select Coupon Type
-                      fieldTitle(text: 'Coupon type'),
+                      fieldTitle(text: VendorAppStrings.selectCouponType.tr),
                       kExtraSmallSpace,
                       CustomDropdown(
                         menuItemsList: CouponViewUtils.couponTypeMenuItems(),
                         textColor: AppColors.stoneGray,
-                        textStyle: CouponViewUtils.couponLabelTextStyle().copyWith(color: AppColors.stoneGray),
-                        hintText: 'Select Coupon type',
+                        textStyle: CouponViewUtils.couponLabelTextStyle()
+                            .copyWith(color: Theme.of(context).colorScheme.onPrimary)
+                            .copyWith(color: AppColors.stoneGray),
+                        hintText: VendorAppStrings.selectCouponType.tr,
                         borderRadius: 4,
                         value: couponType,
                         onChanged: (value) {
@@ -278,8 +285,9 @@ class _VendorCreateCouponViewState extends State<VendorCreateCouponView> with Me
 
                       /// Enter Discount
                       CustomTextFormField(
-                        labelText: 'Discount',
-                        labelTextStyle: CouponViewUtils.couponLabelTextStyle(),
+                        labelText: VendorAppStrings.discount.tr,
+                        labelTextStyle: CouponViewUtils.couponLabelTextStyle()
+                            .copyWith(color: Theme.of(context).colorScheme.onPrimary),
                         showTitle: false,
                         required: true,
                         validator: Validator.validateDiscountOfCoupons,
@@ -322,8 +330,9 @@ class _VendorCreateCouponViewState extends State<VendorCreateCouponView> with Me
                           bottom: kSmallPadding,
                         ),
                         child: Text(
-                          'Time',
-                          style: CouponViewUtils.couponLabelTextStyle(),
+                          AppStrings.time.tr,
+                          style: CouponViewUtils.couponLabelTextStyle()
+                              .copyWith(color: Theme.of(context).colorScheme.onPrimary),
                         ),
                       ),
 
@@ -338,8 +347,9 @@ class _VendorCreateCouponViewState extends State<VendorCreateCouponView> with Me
                           children: [
                             /// Start Date and time
                             fieldTitle(
-                              text: 'Start Date',
-                              textStyle: CouponViewUtils.couponLabelTextStyle(),
+                              text: VendorAppStrings.startDate.tr,
+                              textStyle: CouponViewUtils.couponLabelTextStyle()
+                                  .copyWith(color: Theme.of(context).colorScheme.onPrimary),
                             ),
                             kSmallSpace,
                             CustomDateTimePickerField(
@@ -369,8 +379,9 @@ class _VendorCreateCouponViewState extends State<VendorCreateCouponView> with Me
 
                             // End Date and time
                             fieldTitle(
-                              text: 'End Date',
-                              textStyle: CouponViewUtils.couponLabelTextStyle(),
+                              text: VendorAppStrings.endDate.tr,
+                              textStyle: CouponViewUtils.couponLabelTextStyle()
+                                  .copyWith(color: Theme.of(context).colorScheme.onPrimary),
                             ),
                             kSmallSpace,
                             CustomDateTimePickerField(
@@ -397,11 +408,14 @@ class _VendorCreateCouponViewState extends State<VendorCreateCouponView> with Me
                               ),
                             ),
 
+                            const SizedBox(height: 10),
+
                             /// Is Expire Date required
                             CustomCheckboxWithTitle(
                               isChecked: isNeverExpired,
-                              title: 'Never Expired?',
-                              titleStyle: CouponViewUtils.couponLabelTextStyle(),
+                              title: VendorAppStrings.neverExpired.tr,
+                              titleStyle: CouponViewUtils.couponLabelTextStyle()
+                                  .copyWith(color: Theme.of(context).colorScheme.onPrimary),
                               onChanged: (value) {
                                 setState(() {
                                   isNeverExpired = value ?? false;
@@ -446,22 +460,24 @@ class _VendorCreateCouponViewState extends State<VendorCreateCouponView> with Me
                                     form: form,
                                     context: context,
                                   );
-                                  // setProcessing(false);
 
-                                  /// Calling the get vendor coupons api
-                                  final getCouponsProvider = Provider.of<VendorGetCouponsViewModel>(
-                                    context,
-                                    listen: false,
-                                  );
-                                  getCouponsProvider.clearList();
-                                  getCouponsProvider.vendorGetCoupons();
-                                  setProcessing(false);
-                                  Navigator.pop(context);
+                                  if (context.mounted) {
+                                    // Check if context is still valid
+                                    /// Calling the get vendor coupons api
+                                    final getCouponsProvider = Provider.of<VendorGetCouponsViewModel>(
+                                      context,
+                                      listen: false,
+                                    );
+                                    getCouponsProvider.clearList();
+                                    getCouponsProvider.vendorGetCoupons();
+                                    Navigator.pop(context);
+                                  }
                                 }
                               } catch (e) {
+                                // Handle error appropriately
+                              } finally {
                                 setProcessing(false);
                               }
-                              setProcessing(false);
                             },
                           ),
                         ),
@@ -469,7 +485,8 @@ class _VendorCreateCouponViewState extends State<VendorCreateCouponView> with Me
                       kSmallSpace,
                       CustomAppButton(
                         buttonText: 'Cancel',
-                        textStyle: CouponViewUtils.couponLabelTextStyle(),
+                        textStyle: CouponViewUtils.couponLabelTextStyle()
+                            .copyWith(color: Theme.of(context).colorScheme.onPrimary),
                         mainAxisSize: MainAxisSize.min,
                         borderRadius: kSmallButtonRadius,
                         buttonColor: Colors.transparent,
@@ -485,7 +502,7 @@ class _VendorCreateCouponViewState extends State<VendorCreateCouponView> with Me
                       ),
                     ],
                   ),
-                ),
+                )
               ],
             ),
           ),

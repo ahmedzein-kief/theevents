@@ -102,7 +102,7 @@ class _NotificationsListState extends State<NotificationsList> {
             child: Text(
               'Showing ${widget.notifications.length} of ${widget.meta.total} notifications',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.6),
+                    color: Theme.of(context).textTheme.bodySmall?.color?.withAlpha((0.6 * 255).toInt()),
                   ),
             ),
           ),

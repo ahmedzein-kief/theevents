@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 
 import '../../../../core/services/shared_preferences_helper.dart';
-import '../../../../data/vendor/data/response/ApiResponse.dart';
+import '../../../../core/utils/app_utils.dart';
+import '../../../../data/vendor/data/response/api_response.dart';
 import '../../../../models/vendor_models/products/edit_product/new_product_view_data_response.dart';
 import '../../../../provider/vendor/vendor_repository.dart';
-import '../../../components/services/alert_services.dart';
 
 class VendorGetViewPackageViewModel with ChangeNotifier {
   String? _token;
@@ -24,14 +24,13 @@ class VendorGetViewPackageViewModel with ChangeNotifier {
 
   final _myRepo = VendorRepository();
 
-  ApiResponse<NewProductViewDataResponse> _vendorProductViewApiResponse =
-      ApiResponse.none();
+  ApiResponse<NewProductViewDataResponse> _vendorProductViewApiResponse = ApiResponse.none();
 
-  ApiResponse<NewProductViewDataResponse> get vendorProductViewApiResponse =>
-      _vendorProductViewApiResponse;
+  ApiResponse<NewProductViewDataResponse> get vendorProductViewApiResponse => _vendorProductViewApiResponse;
 
   set setProductViewApiResponse(
-      ApiResponse<NewProductViewDataResponse> response,) {
+    ApiResponse<NewProductViewDataResponse> response,
+  ) {
     _vendorProductViewApiResponse = response;
     notifyListeners();
   }
@@ -45,8 +44,7 @@ class VendorGetViewPackageViewModel with ChangeNotifier {
         'Authorization': _token!,
       };
 
-      final NewProductViewDataResponse response =
-          await _myRepo.vendorViewPackage(
+      final NewProductViewDataResponse response = await _myRepo.vendorViewPackage(
         packageID: packageID,
         headers: headers,
       );
@@ -55,8 +53,7 @@ class VendorGetViewPackageViewModel with ChangeNotifier {
       return true;
     } catch (error) {
       _vendorProductViewApiResponse = ApiResponse.error(error.toString());
-      AlertServices.showErrorSnackBar(
-          message: error.toString(), context: context,);
+      AppUtils.showToast(error.toString());
       setLoading(false);
       return false;
     }

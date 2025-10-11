@@ -1,3 +1,5 @@
+import 'package:event_app/core/constants/app_strings.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/helper/mixins/media_query_mixin.dart';
 import 'package:event_app/core/helper/validators/validator.dart';
 import 'package:event_app/core/styles/app_colors.dart';
@@ -16,39 +18,37 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../../core/constants/vendor_app_strings.dart';
+
 class VendorProductOverviewView extends StatefulWidget {
-  const VendorProductOverviewView(
-      {super.key, this.overviewModel, required this.productType,});
+  const VendorProductOverviewView({
+    super.key,
+    this.overviewModel,
+    required this.productType,
+  });
+
   final String productType;
   final VendorProductOverviewModel? overviewModel;
 
   @override
-  _VendorProductOverviewViewState createState() =>
-      _VendorProductOverviewViewState();
+  State<VendorProductOverviewView> createState() => _VendorProductOverviewViewState();
 }
 
-class _VendorProductOverviewViewState extends State<VendorProductOverviewView>
-    with MediaQueryMixin {
+class _VendorProductOverviewViewState extends State<VendorProductOverviewView> with MediaQueryMixin {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   ///controllers
   final TextEditingController _skuController = TextEditingController();
-  final TextEditingController _priceController =
-      TextEditingController(text: '0');
-  final TextEditingController _priceSaleController =
-      TextEditingController(text: '0');
+  final TextEditingController _priceController = TextEditingController(text: '0');
+  final TextEditingController _priceSaleController = TextEditingController(text: '0');
   final TextEditingController _fromDateController = TextEditingController();
   final TextEditingController _toDateController = TextEditingController();
-  final TextEditingController _costPerItemController =
-      TextEditingController(text: '0');
+  final TextEditingController _costPerItemController = TextEditingController(text: '0');
   final TextEditingController _barcodeController = TextEditingController();
-  final TextEditingController _quantityController =
-      TextEditingController(text: '0');
+  final TextEditingController _quantityController = TextEditingController(text: '0');
   final TextEditingController _stockStatusController = TextEditingController();
-  final TextEditingController _defaultDiscountController =
-      TextEditingController();
-  final TextEditingController _showCurrentAppliedDiscountController =
-      TextEditingController();
+  final TextEditingController _defaultDiscountController = TextEditingController();
+  final TextEditingController _showCurrentAppliedDiscountController = TextEditingController();
 
   bool _chooseDiscountPeriod = false;
   bool _withWareHouseManagement = false;
@@ -77,10 +77,7 @@ class _VendorProductOverviewViewState extends State<VendorProductOverviewView>
     setState(() {});
 
     // If either field is empty, skip validation
-    if (startDate == null ||
-        startDate.isEmpty ||
-        endDate == null ||
-        endDate.isEmpty) {
+    if (startDate == null || startDate.isEmpty || endDate == null || endDate.isEmpty) {
       return;
     }
 
@@ -119,10 +116,8 @@ class _VendorProductOverviewViewState extends State<VendorProductOverviewView>
     try {
       // Parse values safely from controllers
       final double price = double.tryParse(priceController.text.trim()) ?? 0;
-      final double salePrice =
-          double.tryParse(salePriceController.text.trim()) ?? 0;
-      final double defaultDiscount =
-          double.tryParse(discountController.text.trim()) ?? 0;
+      final double salePrice = double.tryParse(salePriceController.text.trim()) ?? 0;
+      final double defaultDiscount = double.tryParse(discountController.text.trim()) ?? 0;
 
       String? errorText;
 
@@ -138,14 +133,12 @@ class _VendorProductOverviewViewState extends State<VendorProductOverviewView>
 
       // Rule 3: If price is not zero, sale price cannot be zero
       if (price != 0 && salePrice == 0) {
-        salePriceController.text =
-            price.toStringAsFixed(2); // Assign price to sale price
+        salePriceController.text = price.toStringAsFixed(2); // Assign price to sale price
       }
 
       // Rule 4: If default discount is not 0, enforce minimum sale price
       if (defaultDiscount > 0) {
-        final double minAllowedPrice =
-            price - (price * (defaultDiscount / 100));
+        final double minAllowedPrice = price - (price * (defaultDiscount / 100));
         if (salePrice < minAllowedPrice) {
           errorText =
               'Sale price cannot be less than $minAllowedPrice after applying the $defaultDiscount% default discount.';
@@ -196,34 +189,27 @@ class _VendorProductOverviewViewState extends State<VendorProductOverviewView>
                       ?.sku
                       ?.toString() ??
                   ''
-              : context
-                      .read<VendorCreateProductViewModel>()
-                      .generalSettingsApiResponse
-                      .data
-                      ?.data
-                      ?.sku
-                      ?.toString() ??
+              : context.read<VendorCreateProductViewModel>().generalSettingsApiResponse.data?.data?.sku?.toString() ??
                   '';
       _priceController.text = overviewModel?.price ?? '0';
       _priceSaleController.text = overviewModel?.priceSale ?? '0';
-      _defaultDiscountController.text =
-          (widget.productType == ProductTypeConstants.PACKAGE)
-              ? context
-                      .read<VendorGetPackageGeneralSettingsViewModel>()
-                      .generalSettingsApiResponse
-                      .data
-                      ?.data
-                      ?.defaultDiscountPercent
-                      .toString() ??
-                  '0'
-              : context
-                      .read<VendorCreateProductViewModel>()
-                      .generalSettingsApiResponse
-                      .data
-                      ?.data
-                      ?.defaultDiscountPercent
-                      .toString() ??
-                  '0';
+      _defaultDiscountController.text = (widget.productType == ProductTypeConstants.PACKAGE)
+          ? context
+                  .read<VendorGetPackageGeneralSettingsViewModel>()
+                  .generalSettingsApiResponse
+                  .data
+                  ?.data
+                  ?.defaultDiscountPercent
+                  .toString() ??
+              '0'
+          : context
+                  .read<VendorCreateProductViewModel>()
+                  .generalSettingsApiResponse
+                  .data
+                  ?.data
+                  ?.defaultDiscountPercent
+                  .toString() ??
+              '0';
       _fromDateController.text = overviewModel?.fromDate ?? '';
       _toDateController.text = overviewModel?.toDate ?? '';
       _costPerItemController.text = overviewModel?.costPerItem ?? '0';
@@ -233,8 +219,7 @@ class _VendorProductOverviewViewState extends State<VendorProductOverviewView>
 
 // Assign boolean values to variables with null safety checks
       _chooseDiscountPeriod = overviewModel?.chooseDiscountPeriod ?? false;
-      _withWareHouseManagement =
-          overviewModel?.withWareHouseManagement ?? false;
+      _withWareHouseManagement = overviewModel?.withWareHouseManagement ?? false;
       _allowCustomerCheckoutWhenProductIsOutOfStock =
           overviewModel?.allowCustomerCheckoutWhenProductIsOutOfStock ?? false;
       setState(() {});
@@ -255,8 +240,7 @@ class _VendorProductOverviewViewState extends State<VendorProductOverviewView>
         'barcode': _barcodeController.text,
         'withWareHouseManagement': _withWareHouseManagement,
         'quantity': _quantityController.text,
-        'allowCustomerCheckoutWhenProductIsOutOfStock':
-            _allowCustomerCheckoutWhenProductIsOutOfStock,
+        'allowCustomerCheckoutWhenProductIsOutOfStock': _allowCustomerCheckoutWhenProductIsOutOfStock,
         'stockStatus': _stockStatusController.text,
       };
 
@@ -278,18 +262,12 @@ class _VendorProductOverviewViewState extends State<VendorProductOverviewView>
   Widget _buildUi(BuildContext context) {
     final VendorGetPackageGeneralSettingsViewModel packageGeneralSettings =
         context.read<VendorGetPackageGeneralSettingsViewModel>();
-    final VendorCreateProductViewModel productGeneralSettings =
-        context.read<VendorCreateProductViewModel>();
+    final VendorCreateProductViewModel productGeneralSettings = context.read<VendorCreateProductViewModel>();
 
     /// SETTINGS STOCK STATUS LIST
-    final List<StockStatuses> stockStatuses =
-        widget.productType == ProductTypeConstants.PACKAGE
-            ? packageGeneralSettings
-                    .generalSettingsApiResponse.data?.data?.stockStatuses ??
-                []
-            : productGeneralSettings
-                    .generalSettingsApiResponse.data?.data?.stockStatuses ??
-                [];
+    final List<StockStatuses> stockStatuses = widget.productType == ProductTypeConstants.PACKAGE
+        ? packageGeneralSettings.generalSettingsApiResponse.data?.data?.stockStatuses ?? []
+        : productGeneralSettings.generalSettingsApiResponse.data?.data?.stockStatuses ?? [];
     return Form(
       key: _formKey,
       child: SafeArea(
@@ -297,17 +275,18 @@ class _VendorProductOverviewViewState extends State<VendorProductOverviewView>
           children: [
             Padding(
               padding: EdgeInsets.only(
-                  left: kPadding,
-                  right: kPadding,
-                  top: viewInsets.top,
-                  bottom: viewInsets.bottom,),
+                left: kPadding,
+                right: kPadding,
+                top: viewInsets.top,
+                bottom: viewInsets.bottom,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   CustomTextFormField(
-                    labelText: 'SKU',
+                    labelText: VendorAppStrings.sku.tr,
                     required: false,
-                    hintText: 'Enter SKU',
+                    hintText: VendorAppStrings.enterSku.tr,
                     focusNode: _skuFocusNode,
                     nextFocusNode: _priceFocusNode,
                     controller: _skuController,
@@ -316,23 +295,21 @@ class _VendorProductOverviewViewState extends State<VendorProductOverviewView>
 
                   /// Price
                   CustomTextFormField(
-                    labelText: 'Price',
+                    labelText: VendorAppStrings.price.tr,
                     required: false,
-                    hintText: 'Enter Price',
-                    keyboardType:
-                        const TextInputType.numberWithOptions(decimal: true),
-                    prefix:
-                        texFieldPrefix(screenWidth: screenWidth, text: 'AED'),
+                    hintText: VendorAppStrings.enterPrice.tr,
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    prefix: texFieldPrefix(screenWidth: screenWidth, text: 'AED'),
                     focusNode: _priceFocusNode,
                     nextFocusNode: _priceSaleFocusNode,
                     controller: _priceController,
                     onChanged: (value) {
                       setState(() {
                         if (_priceSaleController.text.isNotEmpty) {
-                          _showCurrentAppliedDiscountController.text =
-                              calculateDiscountPercentage(_priceController.text,
-                                      _priceSaleController.text,)
-                                  .toString();
+                          _showCurrentAppliedDiscountController.text = calculateDiscountPercentage(
+                            _priceController.text,
+                            _priceSaleController.text,
+                          ).toString();
                         }
                       });
                     },
@@ -341,23 +318,21 @@ class _VendorProductOverviewViewState extends State<VendorProductOverviewView>
 
                   /// Sale Price
                   CustomTextFormField(
-                    labelText: 'Sale Price',
+                    labelText: VendorAppStrings.salePrice.tr,
                     required: false,
-                    hintText: 'Enter Sale Price',
-                    keyboardType:
-                        const TextInputType.numberWithOptions(decimal: true),
-                    prefix:
-                        texFieldPrefix(screenWidth: screenWidth, text: 'AED'),
+                    hintText: VendorAppStrings.enterSalePrice.tr,
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    prefix: texFieldPrefix(screenWidth: screenWidth, text: 'AED'),
                     focusNode: _priceSaleFocusNode,
                     nextFocusNode: _fromDateFocusNode,
                     controller: _priceSaleController,
                     errorText: salePriceErrorText,
                     onChanged: (value) {
                       setState(() {
-                        _showCurrentAppliedDiscountController.text =
-                            calculateDiscountPercentage(_priceController.text,
-                                    _priceSaleController.text,)
-                                .toString();
+                        _showCurrentAppliedDiscountController.text = calculateDiscountPercentage(
+                          _priceController.text,
+                          _priceSaleController.text,
+                        ).toString();
                       });
                     },
                   ),
@@ -370,9 +345,9 @@ class _VendorProductOverviewViewState extends State<VendorProductOverviewView>
                       RichText(
                         text: TextSpan(
                           children: [
-                            const TextSpan(
-                              text: 'Discount ',
-                              style: TextStyle(
+                            TextSpan(
+                              text: VendorAppStrings.discount.tr,
+                              style: const TextStyle(
                                 fontSize: 12,
                                 color: Colors.grey,
                                 decoration: TextDecoration.none,
@@ -380,7 +355,8 @@ class _VendorProductOverviewViewState extends State<VendorProductOverviewView>
                             ),
                             TextSpan(
                               text: Validator.formatToTwoDecimalPlaces(
-                                  _showCurrentAppliedDiscountController.text,),
+                                _showCurrentAppliedDiscountController.text,
+                              ),
                               style: const TextStyle(
                                 fontSize: 12,
                                 color: Colors.grey,
@@ -388,9 +364,9 @@ class _VendorProductOverviewViewState extends State<VendorProductOverviewView>
                                 decoration: TextDecoration.none,
                               ),
                             ),
-                            const TextSpan(
-                              text: '% from original price.',
-                              style: TextStyle(
+                            TextSpan(
+                              text: VendorAppStrings.percentFromOriginalPrice.tr,
+                              style: const TextStyle(
                                 fontSize: 12,
                                 color: Colors.grey,
                                 decoration: TextDecoration.none,
@@ -411,12 +387,13 @@ class _VendorProductOverviewViewState extends State<VendorProductOverviewView>
                         },
                         child: Text(
                           _chooseDiscountPeriod
-                              ? 'Cancel'
-                              : 'Choose Discount Period',
+                              ? VendorAppStrings.cancelButton.tr
+                              : VendorAppStrings.chooseDiscountPeriod.tr,
                           style: const TextStyle(
-                              color: AppColors.lightCoral,
-                              decoration: TextDecoration.none,
-                              fontSize: 13,),
+                            color: AppColors.lightCoral,
+                            decoration: TextDecoration.none,
+                            fontSize: 13,
+                          ),
                         ),
                       ),
                     ],
@@ -428,7 +405,7 @@ class _VendorProductOverviewViewState extends State<VendorProductOverviewView>
                       children: [
                         /// From Date
                         CustomTextFormField(
-                          labelText: 'From Date',
+                          labelText: VendorAppStrings.fromDate.tr,
                           required: false,
                           readOnly: true,
                           hintText: 'YY-MM-DD HH:mm:ss',
@@ -443,9 +420,7 @@ class _VendorProductOverviewViewState extends State<VendorProductOverviewView>
                                 context: context,
                                 onDateTimeChanged: (value) {
                                   startDateErrorText = null;
-                                  _fromDateController.text =
-                                      DateFormat('yyyy-MM-dd HH:mm:ss')
-                                          .format(value);
+                                  _fromDateController.text = DateFormat('yyyy-MM-dd HH:mm:ss').format(value);
                                 },
                               );
                             });
@@ -455,7 +430,7 @@ class _VendorProductOverviewViewState extends State<VendorProductOverviewView>
 
                         /// To Date
                         CustomTextFormField(
-                          labelText: 'To Date',
+                          labelText: VendorAppStrings.toDate.tr,
                           required: false,
                           readOnly: true,
                           hintText: 'YY-MM-DD HH:mm:ss',
@@ -470,9 +445,7 @@ class _VendorProductOverviewViewState extends State<VendorProductOverviewView>
                                 context: context,
                                 onDateTimeChanged: (value) {
                                   endDateErrorText = null;
-                                  _toDateController.text =
-                                      DateFormat('yyyy-MM-dd HH:mm:ss')
-                                          .format(value);
+                                  _toDateController.text = DateFormat('yyyy-MM-dd HH:mm:ss').format(value);
                                 },
                               );
                             });
@@ -484,20 +457,18 @@ class _VendorProductOverviewViewState extends State<VendorProductOverviewView>
 
                   /// Cost Per Item
                   CustomTextFormField(
-                    labelText: 'Cost Per Item',
+                    labelText: VendorAppStrings.costPerItem.tr,
                     required: false,
-                    hintText: 'Enter Cost Per Item',
-                    keyboardType:
-                        const TextInputType.numberWithOptions(decimal: true),
-                    prefix:
-                        texFieldPrefix(screenWidth: screenWidth, text: 'AED'),
+                    hintText: VendorAppStrings.enterCostPerItem.tr,
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    prefix: texFieldPrefix(screenWidth: screenWidth, text: 'AED'),
                     focusNode: _costPerItemFocusNode,
                     nextFocusNode: _barcodeFocusNode,
                     controller: _costPerItemController,
                   ),
-                  const Text(
-                    "Customer won't see this price.",
-                    style: TextStyle(
+                  Text(
+                    VendorAppStrings.customerWontSeeThisPrice.tr,
+                    style: const TextStyle(
                       color: Colors.grey,
                       decoration: TextDecoration.none,
                     ),
@@ -506,9 +477,9 @@ class _VendorProductOverviewViewState extends State<VendorProductOverviewView>
 
                   /// Barcode
                   CustomTextFormField(
-                    labelText: 'Barcode (ISBN, UPC, GTIN, etc.)',
+                    labelText: VendorAppStrings.bankCodeIfsc.tr,
                     required: false,
-                    hintText: 'Enter Barcode',
+                    hintText: VendorAppStrings.enterBarcode.tr,
                     focusNode: _barcodeFocusNode,
                     nextFocusNode: _quantityFocusNode,
                     controller: _barcodeController,
@@ -520,7 +491,7 @@ class _VendorProductOverviewViewState extends State<VendorProductOverviewView>
                     children: [
                       CustomCheckboxWithTitle(
                         isChecked: _withWareHouseManagement,
-                        title: 'With storehouse management.',
+                        title: VendorAppStrings.withStorehouseManagement.tr,
                         onChanged: (value) {
                           setState(() {
                             _withWareHouseManagement = value!;
@@ -528,8 +499,7 @@ class _VendorProductOverviewViewState extends State<VendorProductOverviewView>
                               _quantityController.text = '0';
                               _stockStatusController.text = '';
                             } else {
-                              _allowCustomerCheckoutWhenProductIsOutOfStock =
-                                  false;
+                              _allowCustomerCheckoutWhenProductIsOutOfStock = false;
                               _stockStatusController.text = 'in_stock';
                             }
                           });
@@ -545,9 +515,9 @@ class _VendorProductOverviewViewState extends State<VendorProductOverviewView>
                       children: [
                         /// Quantity
                         CustomTextFormField(
-                          labelText: 'Quantity',
+                          labelText: VendorAppStrings.quantity.tr,
                           required: false,
-                          hintText: 'Enter Quantity',
+                          hintText: VendorAppStrings.enterQuantity.tr,
                           keyboardType: TextInputType.number,
                           focusNode: _quantityFocusNode,
                           nextFocusNode: null,
@@ -558,14 +528,11 @@ class _VendorProductOverviewViewState extends State<VendorProductOverviewView>
 
                         /// Allow customers when item is not available
                         CustomCheckboxWithTitle(
-                          isChecked:
-                              _allowCustomerCheckoutWhenProductIsOutOfStock,
-                          title:
-                              'Allow customer checkout when this product is out of stock.',
+                          isChecked: _allowCustomerCheckoutWhenProductIsOutOfStock,
+                          title: VendorAppStrings.allowCustomerCheckoutWhenOutOfStock.tr,
                           onChanged: (value) {
                             setState(() {
-                              _allowCustomerCheckoutWhenProductIsOutOfStock =
-                                  value!;
+                              _allowCustomerCheckoutWhenProductIsOutOfStock = value!;
                             });
                           },
                         ),
@@ -578,29 +545,29 @@ class _VendorProductOverviewViewState extends State<VendorProductOverviewView>
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        fieldTitle(text: 'Stock Status'),
+                        fieldTitle(text: VendorAppStrings.stockStatus.tr),
                         Wrap(
                           spacing: screenWidth * 0.01,
                           runSpacing: screenWidth * 0.01,
                           children: stockStatuses
-                                  .map(
-                                    (element) => Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: kExtraSmallPadding,),
-                                      child: VendorCustomRadioListTile(
-                                        value: element.value,
-                                        groupValue: _stockStatusController.text,
-                                        title: element.label?.toString() ?? '',
-                                        onChanged: (value) {
-                                          setState(() {
-                                            _stockStatusController.text = value;
-                                          });
-                                        },
-                                      ),
-                                    ),
-                                  )
-                                  .toList() ??
-                              [],
+                              .map(
+                                (element) => Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: kExtraSmallPadding,
+                                  ),
+                                  child: VendorCustomRadioListTile(
+                                    value: element.value,
+                                    groupValue: _stockStatusController.text,
+                                    title: element.label?.tr ?? '',
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _stockStatusController.text = value;
+                                      });
+                                    },
+                                  ),
+                                ),
+                              )
+                              .toList(),
                         ),
                       ],
                     ),
@@ -616,7 +583,7 @@ class _VendorProductOverviewViewState extends State<VendorProductOverviewView>
                       SizedBox(
                         width: screenWidth * 0.25,
                         child: CustomAppButton(
-                          buttonText: 'Save',
+                          buttonText: AppStrings.save.tr,
                           buttonColor: AppColors.lightCoral,
                           onTap: () {
                             /// validate sale price
@@ -628,8 +595,9 @@ class _VendorProductOverviewViewState extends State<VendorProductOverviewView>
                               );
                             });
                             validateDateAndAssignErrors(
-                                _fromDateController.text,
-                                _toDateController.text,);
+                              _fromDateController.text,
+                              _toDateController.text,
+                            );
                             if ((_formKey.currentState?.validate() ?? false) &&
                                 startDateErrorText == null &&
                                 endDateErrorText == null &&
@@ -651,13 +619,14 @@ class _VendorProductOverviewViewState extends State<VendorProductOverviewView>
   }
 }
 
-Widget texFieldPrefix(
-        {required screenWidth,
-        padding,
-        text,
-        textStyle,
-        onTap,
-        tooltipMessage,}) =>
+Widget texFieldPrefix({
+  required screenWidth,
+  padding,
+  text,
+  textStyle,
+  onTap,
+  tooltipMessage,
+}) =>
     Material(
       color: Colors.transparent,
       child: Tooltip(
@@ -670,10 +639,8 @@ Widget texFieldPrefix(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Padding(
-                padding: padding ??
-                    EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
-                child:
-                    Text(text, style: textStyle, textAlign: TextAlign.center),
+                padding: padding ?? EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
+                child: Text(text, style: textStyle, textAlign: TextAlign.center),
               ),
             ],
           ),

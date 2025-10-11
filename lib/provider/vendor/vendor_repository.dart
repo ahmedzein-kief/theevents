@@ -2,12 +2,11 @@ import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:event_app/core/network/api_endpoints/vendor_api_end_point.dart';
-import 'package:event_app/data/vendor/data/network/dio/DioBaseApiServices.dart';
-import 'package:event_app/data/vendor/data/network/dio/DioNetworkApiServices.dart';
+import 'package:event_app/data/vendor/data/network/dio/dio_base_api_services.dart';
+import 'package:event_app/data/vendor/data/network/dio/dio_network_api_services.dart';
 import 'package:event_app/models/vendor_models/common_models/common_post_request_model.dart';
 import 'package:event_app/models/vendor_models/dashboard/dashboard_data_response.dart';
 import 'package:event_app/models/vendor_models/packages/vendor_get_package_general_settings_model.dart';
-import 'package:event_app/models/vendor_models/products/VendorGetProductsModel.dart';
 import 'package:event_app/models/vendor_models/products/create_product/attribute_sets_data_response.dart';
 import 'package:event_app/models/vendor_models/products/create_product/common_data_response.dart';
 import 'package:event_app/models/vendor_models/products/create_product/create_product_data_response.dart';
@@ -20,6 +19,7 @@ import 'package:event_app/models/vendor_models/products/edit_product/edit_variat
 import 'package:event_app/models/vendor_models/products/edit_product/new_product_view_data_response.dart';
 import 'package:event_app/models/vendor_models/products/edit_product/vendor_get_product_variations_model.dart';
 import 'package:event_app/models/vendor_models/products/vendor_get_product_general_settings_model.dart';
+import 'package:event_app/models/vendor_models/products/vendor_get_products_model.dart';
 import 'package:event_app/models/vendor_models/revenues/revenue_data_response.dart';
 import 'package:event_app/models/vendor_models/reviews/reviews_data_response.dart';
 import 'package:event_app/models/vendor_models/vendor_coupons_models/vendor_create_coupon_model.dart';
@@ -47,8 +47,7 @@ class VendorRepository {
     try {
       // API call
       final response = await _dioBaseApiServices.dioDeleteApiService(
-        url:
-            '${VendorApiEndpoints.vendorDeleteProductVariation}$productVariationId',
+        url: '${VendorApiEndpoints.vendorDeleteProductVariation}$productVariationId',
         headers: headers,
       );
 
@@ -115,9 +114,10 @@ class VendorRepository {
     // try {
     // API call
     final response = await _dioBaseApiServices.dioPostApiService(
-        url: VendorApiEndpoints.vendorGenerateCouponCode,
-        headers: headers,
-        body: null,);
+      url: VendorApiEndpoints.vendorGenerateCouponCode,
+      headers: headers,
+      body: null,
+    );
 
     // Map the response to the model
     return VendorGenerateCouponCodeModel.fromJson(response);
@@ -136,9 +136,10 @@ class VendorRepository {
   }) async {
     // API call
     final response = await _dioBaseApiServices.dioPostApiService(
-        url: VendorApiEndpoints.vendorCreateCoupon,
-        headers: headers,
-        body: body,);
+      url: VendorApiEndpoints.vendorCreateCoupon,
+      headers: headers,
+      body: body,
+    );
 
     // Map the response to the model
     return VendorCreateCouponModel.fromJson(response);
@@ -180,7 +181,11 @@ class VendorRepository {
   }) async {
     // API call
     final response = await _dioBaseApiServices.dioMultipartApiService(
-        method: 'POST', url: url, headers: headers, data: body,);
+      method: 'POST',
+      url: url,
+      headers: headers,
+      data: body,
+    );
     // Map the response to the model
     return VendorSettingsModel.fromJson(response);
   }
@@ -238,8 +243,7 @@ class VendorRepository {
             VendorApiEndpoints.vendorGenerateOrderInvoice + orderId,
             options: Options(
               headers: headers,
-              responseType: ResponseType
-                  .bytes, // Receive the response as bytes (binary data)
+              responseType: ResponseType.bytes, // Receive the response as bytes (binary data)
               extra: {
                 'cache': true, // Enable cache for this request
               },
@@ -344,9 +348,10 @@ class VendorRepository {
     required body,
   }) async {
     final response = await _dioBaseApiServices.dioPostApiService(
-        url: VendorApiEndpoints.vendorUpdateShippingStatus + shipmentID,
-        headers: headers,
-        body: body,);
+      url: VendorApiEndpoints.vendorUpdateShippingStatus + shipmentID,
+      headers: headers,
+      body: body,
+    );
 
     // Map the response to the model
     return VendorUpdateShipmentStatusModel.fromJson(response);
@@ -359,9 +364,10 @@ class VendorRepository {
     required body,
   }) async {
     final response = await _dioBaseApiServices.dioPostApiService(
-        url: VendorApiEndpoints.vendorUpdateOrder + orderID,
-        headers: headers,
-        body: body,);
+      url: VendorApiEndpoints.vendorUpdateOrder + orderID,
+      headers: headers,
+      body: body,
+    );
     // Map the response to the model
     return CommonPostRequestModel.fromJson(response);
   }
@@ -547,8 +553,7 @@ class VendorRepository {
     required String productVariationID,
   }) async {
     final response = await _dioBaseApiServices.dioPostApiService(
-      url: VendorApiEndpoints.vendorSetDefaultProductVariation +
-          productVariationID,
+      url: VendorApiEndpoints.vendorSetDefaultProductVariation + productVariationID,
       headers: headers,
       body: null,
     );
@@ -733,10 +738,11 @@ class VendorRepository {
     required body,
   }) async {
     final response = await _dioBaseApiServices.dioMultipartApiService(
-        url: VendorApiEndpoints.vendorCreatePackage,
-        headers: headers,
-        data: body,
-        method: 'POST',);
+      url: VendorApiEndpoints.vendorCreatePackage,
+      headers: headers,
+      data: body,
+      method: 'POST',
+    );
     // Map the response to the model
     return CreateProductDataResponse.fromJson(response);
   }
@@ -775,10 +781,11 @@ class VendorRepository {
     required String packageID,
   }) async {
     final response = await _dioBaseApiServices.dioMultipartApiService(
-        url: VendorApiEndpoints.vendorUpdatePackage + packageID,
-        headers: headers,
-        data: body,
-        method: 'POST',);
+      url: VendorApiEndpoints.vendorUpdatePackage + packageID,
+      headers: headers,
+      data: body,
+      method: 'POST',
+    );
     // Map the response to the model
     return CommonPostRequestModel.fromJson(response);
   }
@@ -863,10 +870,11 @@ class VendorRepository {
     required String productID,
   }) async {
     final response = await _dioBaseApiServices.dioMultipartApiService(
-        url: VendorApiEndpoints.vendorCreateProductVariation + productID,
-        headers: headers,
-        data: body,
-        method: 'POST',);
+      url: VendorApiEndpoints.vendorCreateProductVariation + productID,
+      headers: headers,
+      data: body,
+      method: 'POST',
+    );
     // Map the response to the model
     return CommonPostRequestModel.fromJson(response);
   }
@@ -878,71 +886,12 @@ class VendorRepository {
     required String productVariationID,
   }) async {
     final response = await _dioBaseApiServices.dioMultipartApiService(
-        url: VendorApiEndpoints.vendorUpdateProductVariation +
-            productVariationID,
-        headers: headers,
-        data: body,
-        method: 'POST',);
+      url: VendorApiEndpoints.vendorUpdateProductVariation + productVariationID,
+      headers: headers,
+      data: body,
+      method: 'POST',
+    );
     // Map the response to the model
     return CommonPostRequestModel.fromJson(response);
-  }
-
-  String _errorMessage(response) {
-    var errors;
-    var error;
-    var message;
-
-    if (response is Response) {
-      if (response.data != null) {
-        final errorData = response.data;
-        errors = errorData['errors'] ?? errorData['data'];
-        error = errorData['error'];
-        message = errorData['message'];
-      }
-    } else {
-      final jsonData = response.data;
-      if (response != null) {
-        errors = jsonData['errors'];
-        error = jsonData['error'];
-        message = jsonData['message'];
-      }
-    }
-
-    try {
-      // Initialize a variable to store error messages
-      String allErrors = '';
-
-      // Check if `errors` is present and process it
-      if (errors != null && errors is Map) {
-        errors.forEach((key, value) {
-          if (value is List) {
-            for (final msg in value) {
-              allErrors += '$key: $msg\n'; // Append each error message
-            }
-          }
-        });
-      }
-
-      // Check if `error` is present and append it
-      if (error != null && error is String) {
-        allErrors += 'Error: $error\n';
-      }
-
-      // Check if `message` is present and append it
-      // if (message != null && message is String) {
-      //   allErrors += 'Message: $message\n';
-      // }
-
-      // Return the collected error messages
-      if (allErrors.isNotEmpty) {
-        return allErrors.trim(); // Remove trailing newline
-      }
-
-      return 'An unknown error occurred.'; // Fallback message if no errors are found
-
-      return 'Unknown error occurred';
-    } catch (e) {
-      return 'Unknown error occurred with status code: ${response.statusCode}';
-    }
   }
 }

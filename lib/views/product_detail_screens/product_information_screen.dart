@@ -5,7 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../core/constants/app_strings.dart'; // <--- IMPORT AppStrings
 import '../../core/styles/custom_text_styles.dart';
-import '../../core/widgets/PriceRow.dart';
+import '../../core/widgets/price_row.dart';
 import '../../models/product_packages_models/product_details_models.dart';
 
 class ProductInformationScreen extends StatefulWidget {

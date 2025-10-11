@@ -4,6 +4,7 @@ import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 
 import '../../../views/auth_screens/auth_page_view.dart';
 import '../../constants/app_strings.dart';
+import '../../services/shared_preferences_helper.dart';
 import '../../widgets/custom_items_views/custom_toast.dart';
 import '../enums/enums.dart';
 
@@ -26,19 +27,24 @@ String getFilterText(String filter) {
 
 // Helper method to get opposite color for better visibility
 Color getOppositeColor(Color backgroundColor) {
-  // Calculate luminance to determine if background is light or dark
-  final double luminance =
-      (0.299 * backgroundColor.red + 0.587 * backgroundColor.green + 0.114 * backgroundColor.blue) / 255;
+  // computeLuminance returns 0.0 (dark) to 1.0 (light)
+  final double luminance = backgroundColor.computeLuminance();
 
-  // If background is light, return dark color; if dark, return light color
+  // If background is light, return dark color; otherwise light color
   return luminance > 0.5 ? Colors.black87 : Colors.white;
+}
+
+/// Check if user is logged in
+Future<bool> isLoggedIn() async {
+  final token = await SecurePreferencesUtil.getToken();
+  return token != null && token.isNotEmpty;
 }
 
 /// Navigate to login screen with appropriate message
 void navigateToLogin(BuildContext context, String messageKey) {
   PersistentNavBarNavigator.pushNewScreen(
     context,
-    screen: AuthScreen(),
+    screen: const AuthScreen(),
     withNavBar: false,
     pageTransitionAnimation: PageTransitionAnimation.fade,
   );

@@ -7,7 +7,6 @@ import 'package:event_app/views/base_screens/user_profile_login.dart';
 import 'package:event_app/views/home_screens_shortcode/shortcode_user_by_type/user_by_types_items_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -51,7 +50,7 @@ class _HomeScreenState extends State<BaseHomeScreen> {
   // Store context reference for safe async operations
   BuildContext? _lastValidContext;
 
-  final _controller = PersistentTabController(initialIndex: 2);
+  // final _controller = PersistentTabController(initialIndex: 2);
 
   @override
   void initState() {

@@ -17,11 +17,7 @@ class CheckoutScreenRepository {
       final headers = {
         'Authorization': 'Bearer $tokenLogin',
       };
-      final response = await _apiResponseHandler.getRequest(
-        url,
-        headers: headers,
-        context: context,
-      );
+      final response = await _apiResponseHandler.getRequest(url, headers: headers);
       if (response['status']) {
         return CheckoutResponse.fromJson(response['data']);
       } else {

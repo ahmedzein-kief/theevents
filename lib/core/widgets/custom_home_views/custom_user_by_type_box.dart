@@ -72,7 +72,7 @@ class CustomUserByTypeBox extends StatelessWidget {
                             offset: const Offset(0, 1),
                             blurRadius: 0.5,
                             spreadRadius: 0.5,
-                            color: Colors.grey.withOpacity(0.3),
+                            color: Colors.grey.withAlpha((0.3 * 255).toInt()),
                           ),
                         ],
                       ),

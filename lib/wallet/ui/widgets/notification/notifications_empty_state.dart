@@ -13,14 +13,14 @@ class NotificationsEmptyState extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.notifications_none, size: 64, color: theme.iconTheme.color?.withOpacity(0.4)),
+          Icon(Icons.notifications_none, size: 64, color: theme.iconTheme.color?.withAlpha((0.4 * 255).toInt())),
           const SizedBox(height: 16),
           Text(
             AppStrings.noNotifications.tr,
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: theme.textTheme.titleMedium?.color?.withOpacity(0.8),
+              color: theme.textTheme.titleMedium?.color?.withAlpha((0.8 * 255).toInt()),
             ),
           ),
         ],

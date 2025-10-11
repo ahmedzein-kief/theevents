@@ -1,7 +1,11 @@
 import 'dart:async';
+import 'dart:developer';
 
+import 'package:event_app/core/constants/vendor_app_strings.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/helper/mixins/media_query_mixin.dart';
 import 'package:event_app/core/styles/app_sizes.dart';
+import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/data/vendor/data/response/apis_status.dart';
 import 'package:event_app/models/vendor_models/products/create_product/vendor_product_seo_model.dart';
 import 'package:event_app/vendor/components/app_bars/vendor_modify_sections_app_bar.dart';
@@ -12,7 +16,6 @@ import 'package:event_app/vendor/components/settings_components/simple_card.dart
 import 'package:event_app/vendor/components/status_constants/seo_index_constants.dart';
 import 'package:event_app/vendor/components/text_fields/custom_editable_text_field.dart';
 import 'package:event_app/vendor/components/text_fields/custom_text_form_field.dart';
-import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/vendor/vendor_home/vendor_products/vendor_create_product/product_sections/vendor_product_overview_view.dart';
 import 'package:event_app/vendor/view_models/vendor_products/vendor_create_product_view_model.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +27,7 @@ class VendorProductSeoView extends StatefulWidget {
   final VendorProductSeoModel? vendorProductSeoModel;
 
   @override
-  _VendorProductSeoViewState createState() => _VendorProductSeoViewState();
+  State<VendorProductSeoView> createState() => _VendorProductSeoViewState();
 }
 
 class _VendorProductSeoViewState extends State<VendorProductSeoView> with MediaQueryMixin {
@@ -88,7 +91,7 @@ class _VendorProductSeoViewState extends State<VendorProductSeoView> with MediaQ
       setProcessing(false);
     } catch (e) {
       setProcessing(false);
-      print('Error: $e');
+      log('Error: $e');
     }
   }
 
@@ -142,7 +145,7 @@ class _VendorProductSeoViewState extends State<VendorProductSeoView> with MediaQ
       child: Scaffold(
         backgroundColor: theme.scaffoldBackgroundColor,
         appBar: VendorModifySectionsAppBar(
-          title: 'Edit SEO meta',
+          title: VendorAppStrings.editSeoMeta.tr,
           onGoBack: _return,
         ),
         body: AppUtils.modelProgressHud(
@@ -168,9 +171,9 @@ class _VendorProductSeoViewState extends State<VendorProductSeoView> with MediaQ
               children: [
                 /// title
                 CustomTextFormField(
-                  labelText: 'Title',
+                  labelText: VendorAppStrings.title.tr,
                   required: false,
-                  hintText: 'Enter Title',
+                  hintText: VendorAppStrings.enterTitle.tr,
                   maxLength: 70,
                   focusNode: _titleFocusNode,
                   nextFocusNode: _descriptionFocusNode,
@@ -179,9 +182,9 @@ class _VendorProductSeoViewState extends State<VendorProductSeoView> with MediaQ
 
                 /// description
                 CustomTextFormField(
-                  labelText: 'Description',
+                  labelText: VendorAppStrings.description.tr,
                   required: false,
-                  hintText: 'Enter Description',
+                  hintText: VendorAppStrings.enterDescription.tr,
                   maxLength: 160,
                   maxLines: 3,
                   keyboardType: TextInputType.multiline,
@@ -193,16 +196,16 @@ class _VendorProductSeoViewState extends State<VendorProductSeoView> with MediaQ
                 /// Keywords Section
                 Consumer<VendorCreateProductViewModel>(
                   builder: (context, provider, _) => CustomTextFormField(
-                    labelText: 'SEO Keywords',
+                    labelText: VendorAppStrings.seoKeywords.tr,
                     required: false,
-                    hintText: 'Enter SEO Keywords',
+                    hintText: VendorAppStrings.enterSeoKeywords.tr,
                     focusNode: _keywordsFocusNode,
                     controller: _keywordsTextFieldController,
                     suffix: _keywordsTextFieldController.text.isNotEmpty
                         ? texFieldPrefix(
                             screenWidth: screenWidth,
-                            text: 'Add',
-                            tooltipMessage: 'Add Keyword',
+                            text: VendorAppStrings.add.tr,
+                            tooltipMessage: VendorAppStrings.addKeyword.tr,
                             onTap: _onAddCustomKeyword,
                           )
                         : null,
@@ -247,8 +250,8 @@ class _VendorProductSeoViewState extends State<VendorProductSeoView> with MediaQ
                                     ),
                                     trailing: texFieldPrefix(
                                       screenWidth: screenWidth,
-                                      text: 'Add',
-                                      tooltipMessage: 'Add Keyword',
+                                      text: VendorAppStrings.add.tr,
+                                      tooltipMessage: VendorAppStrings.addKeyword.tr,
                                       onTap: () => _onAddAvailableKeyword(
                                         keyword,
                                       ), // Wrap in a closure
@@ -303,7 +306,7 @@ class _VendorProductSeoViewState extends State<VendorProductSeoView> with MediaQ
                   spacing: kPadding,
                   children: [
                     VendorCustomRadioListTile(
-                      title: 'Index',
+                      title: VendorAppStrings.index.tr,
                       value: SeoIndexType.INDEX,
                       groupValue: seoIndexType,
                       onChanged: (value) {
@@ -313,7 +316,7 @@ class _VendorProductSeoViewState extends State<VendorProductSeoView> with MediaQ
                       },
                     ),
                     VendorCustomRadioListTile(
-                      title: 'No Index',
+                      title: VendorAppStrings.noIndex.tr,
                       value: SeoIndexType.NON_INDEX,
                       groupValue: seoIndexType,
                       onChanged: (value) {
@@ -370,7 +373,7 @@ class _VendorProductSeoViewState extends State<VendorProductSeoView> with MediaQ
         });
       }
     } catch (e) {
-      print('Error: $e');
+      log('Error: $e');
     }
   }
 
@@ -382,7 +385,7 @@ class _VendorProductSeoViewState extends State<VendorProductSeoView> with MediaQ
         _filteredKeywords.remove(keyword);
       });
     } catch (e) {
-      print('Error: $e');
+      log('Error: $e');
     }
   }
 }

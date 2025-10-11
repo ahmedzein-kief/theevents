@@ -70,8 +70,8 @@ class _ProfileReviewScreenState extends State<ProfileReviewScreen> with SingleTi
                   decoration: BoxDecoration(
                     borderRadius: const BorderRadius.all(Radius.circular(9)),
                     color: Theme.of(context).brightness == Brightness.dark
-                        ? Color(0xff787880).withAlpha(((1 - 0.12) * 255).toInt()) // opposite alpha
-                        : Color(0xff787880).withAlpha((0.12 * 255).toInt()), // normal alpha
+                        ? const Color(0xff787880).withAlpha(((1 - 0.12) * 255).toInt()) // opposite alpha
+                        : const Color(0xff787880).withAlpha((0.12 * 255).toInt()), // normal alpha
                   ),
                   child: Consumer<CustomerGetProductReviewsViewModel>(
                     builder: (context, provider, _) => TabBar(
@@ -120,9 +120,9 @@ class _ProfileReviewScreenState extends State<ProfileReviewScreen> with SingleTi
 }
 
 class WaitingForReviewTab extends StatelessWidget {
-  WaitingForReviewTab({super.key, this.count});
+  const WaitingForReviewTab({super.key, this.count});
 
-  String? count;
+  final String? count;
 
   @override
   Widget build(BuildContext context) => Tab(
@@ -141,9 +141,9 @@ class WaitingForReviewTab extends StatelessWidget {
 }
 
 class ReviewedTab extends StatelessWidget {
-  ReviewedTab({super.key, this.count});
+  const ReviewedTab({super.key, this.count});
 
-  String? count;
+  final String? count;
 
   @override
   Widget build(BuildContext context) => Tab(

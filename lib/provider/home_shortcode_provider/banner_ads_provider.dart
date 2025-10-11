@@ -24,10 +24,7 @@ class BannerAdsProvider with ChangeNotifier {
     try {
       final url = '${ApiEndpoints.homeBrands}${data['attributes']['key']}';
 
-      final response = await _apiResponseHandler.getRequest(
-        url,
-        context: context,
-      );
+      final response = await _apiResponseHandler.getRequest(url);
 
       if (response.statusCode == 200) {
         _homeBannerModels = HomeBottomBannerModels.fromJson(response.data);

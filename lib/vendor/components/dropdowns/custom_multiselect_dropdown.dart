@@ -25,32 +25,27 @@ class CustomMultiselectDropdown extends StatelessWidget {
   Widget build(BuildContext context) => MultiDropdown(
         controller: dropdownController,
         dropdownDecoration: DropdownDecoration(
-          backgroundColor: Colors.white,
+          backgroundColor: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(kCardRadius),
         ),
         fieldDecoration: FieldDecoration(
-          backgroundColor: Colors.transparent,
+          // backgroundColor: Theme.of(context).colorScheme.onPrimary,
           border: InputBordersHub.getOutlinedInputBorder(),
           hintText: hintText,
-          hintStyle: const TextStyle(
-            color: Colors.black,
-            fontSize: 14,
-            fontWeight: FontWeight.w400,
-          ),
           suffixIcon: const Icon(Icons.keyboard_arrow_down_outlined),
         ),
         dropdownItemDecoration: const DropdownItemDecoration(
-          selectedBackgroundColor: AppColors.lightCoral,
+          // selectedBackgroundColor: AppColors.lightCoral,
           selectedIcon: Icon(
             CupertinoIcons.checkmark_alt,
-            color: Colors.white,
+            // color: Colors.white,
           ),
-          selectedTextColor: Colors.white,
+          // selectedTextColor: Colors.white,
         ),
         chipDecoration: ChipDecoration(
-          backgroundColor: AppColors.lightCoral,
+          // backgroundColor: AppColors.lightCoral,
           borderRadius: BorderRadius.circular(3),
-          labelStyle: const TextStyle(color: Colors.white, fontSize: 15),
+          // labelStyle: const TextStyle(color: Colors.white, fontSize: 15),
         ),
         searchDecoration: SearchFieldDecoration(
           border: InputBordersHub.getOutlinedInputBorder(

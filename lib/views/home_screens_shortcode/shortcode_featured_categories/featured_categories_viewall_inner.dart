@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/views/base_screens/base_app_bar.dart';
 import 'package:event_app/views/filters/product_filters_screen.dart';
@@ -5,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/constants/app_strings.dart';
-import '../../../core/services/shared_preferences_helper.dart';
 import '../../../provider/cart_item_provider/cart_item_provider.dart';
 import '../../../provider/shortcode_featured_categories_provider/featured_categories_detail_provider.dart';
 import '../../../provider/shortcode_fresh_picks_provider/fresh_picks_provider.dart';
@@ -60,9 +61,8 @@ class _FeaturedCategoriesViewallInnerState extends State<FeaturedCategoriesViewA
   }
 
   Future<void> fetchWishListItems() async {
-    final token = await SecurePreferencesUtil.getToken();
     final provider = Provider.of<WishlistProvider>(context, listen: false);
-    provider.fetchWishlist(token ?? '', context);
+    provider.fetchWishlist();
   }
 
   Future<void> fetchDataOfBanner() async {
@@ -72,7 +72,9 @@ class _FeaturedCategoriesViewallInnerState extends State<FeaturedCategoriesViewA
         context,
         listen: false,
       ).fetchFeaturedCategoryBanner(slug: widget.data.slug, context);
-    } catch (error) {}
+    } catch (error) {
+      log('Error fetching banner data: $error');
+    }
   }
 
   void _onSortChanged(String newValue) {

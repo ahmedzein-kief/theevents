@@ -9,8 +9,11 @@ import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 import '../../vendor/Components/data_tables/custom_data_tables.dart';
+import '../constants/app_strings.dart';
+import '../helper/extensions/app_localizations_extension.dart';
 import '../styles/app_colors.dart';
 
 class AppUtils {
@@ -24,7 +27,7 @@ class AppUtils {
     return result;
   }
 
-  static void showToast(String text, {bool isSuccess = false, bool isInfo = false, bool long = false}) {
+  static void showToast(String text, {bool isSuccess = false, bool isInfo = false, bool long = true}) {
     Color color = Colors.red;
     if (isInfo) {
       color = Colors.orangeAccent;
@@ -117,7 +120,6 @@ class AppUtils {
       height: 60,
       width: 60,
       decoration: BoxDecoration(
-        color: Colors.white,
         borderRadius: BorderRadius.circular(16), // Curved border
         // image: DecorationImage(image: AssetImage("assets/app_logo.jpg"))
       ),
@@ -180,16 +182,16 @@ class AppUtils {
 
   //*------Common Loading Indicators End------*/
   /// Show on something went wrong
-  static Widget somethingWentWrong() => const Center(
+  static Widget somethingWentWrong() => Center(
         child: Text(
-          'Something went wrong...',
+          AppStrings.errorFetchingData.tr,
         ),
       );
 
-  static Widget noDataAvailable() => const Center(
+  static Widget noDataAvailable() => Center(
         child: Text(
-          'No data to display.',
-          style: TextStyle(height: 3),
+          AppStrings.noDataAvailable.tr,
+          style: const TextStyle(height: 3),
         ),
       );
 
@@ -262,16 +264,21 @@ class AppUtils {
 
   /// launch url
   static Future<void> launchUrl(url) async {
-    // Check if the URL is a Uri object and convert it to a string
-    if (url is Uri) {
-      url = url.toString();
+    // Convert URL to Uri if it's a string
+    Uri uri;
+    if (url is String) {
+      uri = Uri.parse(url);
+    } else if (url is Uri) {
+      uri = url;
+    } else {
+      throw ArgumentError('URL must be either a String or Uri');
     }
 
     // Continue with the URL launching logic
-    if (await canLaunch(url)) {
-      await launch(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrlString(uri.toString());
     } else {
-      throw 'Could not launch $url';
+      throw Exception('Could not launch $uri');
     }
   }
 
@@ -283,12 +290,16 @@ class AppUtils {
         path: emailAddress,
       );
       if (await canLaunchUrl(emailLaunchUri)) {
-        await launchUrl(emailLaunchUri);
+        await launchUrlString(emailLaunchUri.toString());
+      } else {
+        AppUtils.showToast(AppStrings.error.tr);
       }
-    } catch (e) {}
+    } catch (e) {
+      AppUtils.showToast('${AppStrings.error.tr}${e.toString()}');
+    }
   }
 
-  // make phone call
+// make phone call
   static Future<void> makePhoneCall({
     required String phoneNumber,
     required BuildContext context,
@@ -299,8 +310,14 @@ class AppUtils {
     );
 
     try {
-      await launchUrl(launchUri);
-    } catch (e) {}
+      if (await canLaunchUrl(launchUri)) {
+        await launchUrlString(launchUri.toString());
+      } else {
+        AppUtils.showToast(AppStrings.error.tr);
+      }
+    } catch (e) {
+      AppUtils.showToast('${AppStrings.error.tr}${e.toString()}');
+    }
   }
 
   // Static method to format the timestamp
@@ -323,7 +340,7 @@ class AppUtils {
               child: AppUtils.pageLoadingIndicator(context: context),
             ),
             const SizedBox(width: 8),
-            const Text('Searching...', style: TextStyle(color: Colors.grey)),
+            Text(AppStrings.loading.tr, style: const TextStyle(color: Colors.grey)),
           ],
         ),
       );

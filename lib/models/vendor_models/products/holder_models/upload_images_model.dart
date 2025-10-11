@@ -36,13 +36,12 @@ class UploadImagesModel {
   String serverBaseName;
 
   @override
-  String toString() =>
-      'UploadImagesModel(File: $file, Filename: $fileName, Extension: $fileExtension,'
+  String toString() => 'UploadImagesModel(File: $file, Filename: $fileName, Extension: $fileExtension,'
       'ServerUrl; $serverUrl, ServerFullUrl: $serverFullUrl, ServerName: $serverName,ServerBaseName: $serverBaseName,'
       'ServerID: $serverID, Uploaded $uploaded)';
 }
 
-extension convertToMultipartFile on UploadImagesModel {
+extension ConvertToMultipartFile on UploadImagesModel {
   MultipartFile toMultipartFile() => MultipartFile.fromFileSync(
         file.path,
         filename: fileName,

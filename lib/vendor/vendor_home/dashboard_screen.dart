@@ -1,16 +1,20 @@
+import 'package:event_app/core/constants/vendor_app_strings.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/core/styles/app_sizes.dart';
+import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/data/vendor/data/response/apis_status.dart';
 import 'package:event_app/models/vendor_models/dashboard/dashboard_data_response.dart';
 import 'package:event_app/vendor/components/data_tables/custom_data_tables.dart';
 import 'package:event_app/vendor/components/list_tiles/records_list_tile.dart';
-import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/vendor/components/vendor_text_style.dart';
 import 'package:event_app/vendor/vendor_home/vendor_coupons/dashboard_info_section.dart';
 import 'package:event_app/vendor/view_models/dashboard/vendor_dashboard_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+
+import '../../core/constants/app_strings.dart';
 
 class VendorDashBoardScreen extends StatefulWidget {
   const VendorDashBoardScreen({
@@ -299,13 +303,13 @@ class _VendorDashBoardScreenState extends State<VendorDashBoardScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                          'Mon',
-                          'Tue',
-                          'Wed',
-                          'Thu',
-                          'Fri',
-                          'Sat',
-                          'Sun',
+                          AppStrings.mondayShort.tr,
+                          AppStrings.tuesdayShort.tr,
+                          AppStrings.wednesdayShort.tr,
+                          AppStrings.thursdayShort.tr,
+                          AppStrings.fridayShort.tr,
+                          AppStrings.saturdayShort.tr,
+                          AppStrings.sundayShort.tr,
                         ]
                             .map(
                               (day) => Container(
@@ -316,7 +320,7 @@ class _VendorDashBoardScreenState extends State<VendorDashBoardScreen> {
                                   day,
                                   style: TextStyle(
                                     fontSize: 12,
-                                    color: AppColors.peachyPink.withOpacity(0.7),
+                                    color: AppColors.peachyPink.withAlpha((0.7 * 255).toInt()),
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
@@ -367,13 +371,13 @@ class _VendorDashBoardScreenState extends State<VendorDashBoardScreen> {
                           child: Container(
                             height: 50,
                             decoration: BoxDecoration(
-                              color: AppColors.peachyPink.withOpacity(0.8),
+                              color: AppColors.peachyPink.withAlpha((0.8 * 255).toInt()),
                               borderRadius: BorderRadius.circular(25),
                             ),
-                            child: const Center(
+                            child: Center(
                               child: Text(
-                                'Cancel',
-                                style: TextStyle(
+                                AppStrings.cancel.tr,
+                                style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
                                   color: Colors.white,
@@ -402,10 +406,10 @@ class _VendorDashBoardScreenState extends State<VendorDashBoardScreen> {
                               color: AppColors.peachyPink,
                               borderRadius: BorderRadius.circular(25),
                             ),
-                            child: const Center(
+                            child: Center(
                               child: Text(
-                                'Apply',
-                                style: TextStyle(
+                                AppStrings.apply.tr,
+                                style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
                                   color: Colors.white,
@@ -533,7 +537,7 @@ class _VendorDashBoardScreenState extends State<VendorDashBoardScreen> {
           color: isSelected
               ? AppColors.peachyPink
               : isInRange
-                  ? AppColors.peachyPink.withOpacity(0.2)
+                  ? AppColors.peachyPink.withAlpha((0.2 * 255).toInt())
                   : Colors.transparent,
         ),
         child: Center(
@@ -607,8 +611,7 @@ class _VendorDashBoardScreenState extends State<VendorDashBoardScreen> {
                             ),
                             SizedBox(width: screenWidth * 0.02),
                             Text(
-                              'From $formatStartDate to $formatEndDate',
-                              // style: vendorDate(context),
+                              '${VendorAppStrings.fromDate.tr} $formatStartDate ${VendorAppStrings.toDate.tr} $formatEndDate',
                             ),
                           ],
                         ),
@@ -641,8 +644,8 @@ class _VendorDashBoardScreenState extends State<VendorDashBoardScreen> {
           children: [
             if (dataResponse?.data.orders.isNotEmpty == true) ...[
               _buildSection(
-                title: 'Recent Orders',
-                actionText: 'View All Orders',
+                title: VendorAppStrings.recentOrders.tr,
+                actionText: '${AppStrings.viewAll.tr} ${AppStrings.orders.tr}',
                 onTapViewAll: () {
                   /// navigate to all orders view at index 3 of Main scaffold
                   widget.onIndexUpdate(3);
@@ -654,8 +657,8 @@ class _VendorDashBoardScreenState extends State<VendorDashBoardScreen> {
             const SizedBox(height: 20),
             if (dataResponse?.data.products.isNotEmpty == true) ...[
               _buildSection(
-                title: 'Top Selling Products',
-                actionText: 'View All Products',
+                title: VendorAppStrings.topSellingProducts.tr,
+                actionText: '${AppStrings.viewAll.tr} ${AppStrings.products.tr}',
                 onTapViewAll: () {
                   /// navigate to all orders view at index 1 of Main scaffold
                   widget.onIndexUpdate(1);

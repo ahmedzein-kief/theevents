@@ -1,12 +1,14 @@
+import 'dart:developer';
+
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/helper/mixins/media_query_mixin.dart';
 import 'package:event_app/core/styles/app_sizes.dart';
+import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/data/vendor/data/response/apis_status.dart';
 import 'package:event_app/models/vendor_models/reviews/reviews_data_response.dart';
 import 'package:event_app/vendor/components/common_widgets/vendor_data_list_builder.dart';
 import 'package:event_app/vendor/components/data_tables/custom_data_tables.dart';
 import 'package:event_app/vendor/components/list_tiles/records_list_tile.dart';
-import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/vendor/components/vendor_tool_bar_widgets/vendor_tool_bar_widgets.dart';
 import 'package:event_app/vendor/view_models/vendor_reviews/vendor_reviews_view_model.dart';
 import 'package:flutter/material.dart';
@@ -48,7 +50,9 @@ class _VendorReviewsViewState extends State<VendorReviewsView> with MediaQueryMi
       setState(() {});
       await provider.vendorReviews(search: _searchController.text);
       setState(() {});
-    } catch (e) {}
+    } catch (e) {
+      log(e.toString());
+    }
   }
 
   Future<void> _loadMoreData() async {

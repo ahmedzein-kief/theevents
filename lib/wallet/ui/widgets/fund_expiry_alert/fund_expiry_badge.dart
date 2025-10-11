@@ -31,11 +31,11 @@ class FundExpiryBadge extends StatelessWidget {
     switch (fund.fundStatus) {
       // Use fundStatus getter
       case FundStatus.expired:
-        return Colors.red.withOpacity(0.3);
+        return Colors.red.withAlpha((0.3 * 255).toInt());
       case FundStatus.expiringSoon:
-        return Colors.orange.withOpacity(0.2);
+        return Colors.orange.withAlpha((0.2 * 255).toInt());
       case FundStatus.active:
-        return Colors.green.withOpacity(0.2);
+        return Colors.green.withAlpha((0.2 * 255).toInt());
     }
   }
 

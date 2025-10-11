@@ -5,22 +5,23 @@ import 'package:flutter_quill_delta_from_html/parser/html_to_delta.dart';
 import 'package:vsc_quill_delta_to_html/vsc_quill_delta_to_html.dart';
 
 class CustomEditableTextField extends StatefulWidget {
-  CustomEditableTextField(
-      {super.key,
-      required this.placeholder,
-      required this.quillController,
-      this.borderRadius,
-      this.showToolBar = true,
-      this.fieldHeight = 500,});
+  const CustomEditableTextField({
+    super.key,
+    required this.placeholder,
+    required this.quillController,
+    this.borderRadius,
+    this.showToolBar = true,
+    this.fieldHeight = 500,
+  });
+
   final QuillController quillController;
   final String placeholder;
   final double? borderRadius;
-  bool? showToolBar;
-  double? fieldHeight;
+  final bool? showToolBar;
+  final double? fieldHeight;
 
   @override
-  State<CustomEditableTextField> createState() =>
-      _CustomEditableTextFieldState();
+  State<CustomEditableTextField> createState() => _CustomEditableTextFieldState();
 }
 
 class _CustomEditableTextFieldState extends State<CustomEditableTextField> {
@@ -29,8 +30,9 @@ class _CustomEditableTextFieldState extends State<CustomEditableTextField> {
         height: widget.fieldHeight,
         child: Container(
           decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey, width: 0.5),
-              borderRadius: BorderRadius.circular(widget.borderRadius ?? 10),),
+            border: Border.all(color: Colors.grey, width: 0.5),
+            borderRadius: BorderRadius.circular(widget.borderRadius ?? 10),
+          ),
           child: Column(
             children: [
               if (widget.showToolBar == true)
@@ -46,9 +48,9 @@ class _CustomEditableTextFieldState extends State<CustomEditableTextField> {
                         toolbarSectionSpacing: 0,
                         multiRowsDisplay: true,
                         decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border:
-                                Border(top: BorderSide(color: Colors.black)),),
+                          shape: BoxShape.circle,
+                          border: Border(top: BorderSide(color: Colors.black)),
+                        ),
                         showClipboardCopy: false,
                         showClipboardPaste: false,
                       ),
@@ -94,7 +96,6 @@ Delta convertHtmlToDelta({required String htmlContent}) {
 }
 
 String removeHtmlTags({required String htmlString}) {
-  final RegExp regExp =
-      RegExp(r'<[^>]*>', multiLine: true, caseSensitive: false);
+  final RegExp regExp = RegExp(r'<[^>]*>', multiLine: true, caseSensitive: false);
   return htmlString.replaceAll(regExp, '').trim();
 }

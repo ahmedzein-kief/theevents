@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:event_app/core/constants/vendor_app_strings.dart';
@@ -24,12 +25,10 @@ class AuthorizedSignatoryInformationScreen extends StatefulWidget {
   final Function(AuthorizedSignatoryInfoPostData) onASIModelUpdate;
 
   @override
-  State<AuthorizedSignatoryInformationScreen> createState() =>
-      _AuthorizedSignatoryInformationScreenState();
+  State<AuthorizedSignatoryInformationScreen> createState() => _AuthorizedSignatoryInformationScreenState();
 }
 
-class _AuthorizedSignatoryInformationScreenState
-    extends State<AuthorizedSignatoryInformationScreen> {
+class _AuthorizedSignatoryInformationScreenState extends State<AuthorizedSignatoryInformationScreen> {
   final _nameFocusNode = FocusNode();
   final _phNumberFocusNode = FocusNode();
   final _countryFocusNode = FocusNode();
@@ -59,25 +58,24 @@ class _AuthorizedSignatoryInformationScreenState
       if (countryModel != null) {
         _nameController.text = widget.asiModel.ownerDisplayName ?? '';
         _phNumberController.text = widget.asiModel.ownerPhoneNumber ?? '';
-        _countryController.text =
-            findCountryNameUsingCode(widget.asiModel.ownerCountry ?? '');
+        _countryController.text = findCountryNameUsingCode(widget.asiModel.ownerCountry ?? '');
         _regionController.text = widget.asiModel.ownerRegion ?? '';
         _emiratesIdController.text = widget.asiModel.ownerEIDNumber ?? '';
-        _emiratesExpireDateController.text =
-            widget.asiModel.ownerEIDExpiry ?? '';
+        _emiratesExpireDateController.text = widget.asiModel.ownerEIDExpiry ?? '';
         _eidPdfController.text = widget.asiModel.ownerEIDFileName ?? '';
         _passportController.text = widget.asiModel.passportFileName ?? '';
         _poaMoaController.text = widget.asiModel.poamoaFileName ?? '';
       }
-    } catch (error) {}
+    } catch (error) {
+      log('Error fetching country data: $error');
+    }
   }
 
   String findCountryNameUsingCode(String code) {
+    if (code.isEmpty) return '';
+
     countryCode = code;
-    return countryModel?.data?.list
-            ?.firstWhere((countryData) => countryData.code == code)
-            .name ??
-        '';
+    return countryModel?.data?.list?.firstWhere((countryData) => countryData.code == code).name ?? '';
   }
 
   @override
@@ -121,15 +119,16 @@ class _AuthorizedSignatoryInformationScreenState
       children: [
         Padding(
           padding: EdgeInsets.only(
-              left: screenWidth * 0.04,
-              right: screenWidth * 0.04,
-              top: screenHeight * 0.03,
-              bottom: screenHeight * 0.015,),
+            left: screenWidth * 0.04,
+            right: screenWidth * 0.04,
+            top: screenHeight * 0.03,
+            bottom: screenHeight * 0.015,
+          ),
           child: Container(
             decoration: BoxDecoration(
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.2), // Shadow color
+                  color: Colors.black.withAlpha((0.2 * 255).toInt()), // Shadow color
                   spreadRadius: 2, // How much the shadow spreads
                   blurRadius: 5, // How blurry the shadow is
                   offset: const Offset(0, 2), // Shadow offset (X, Y)
@@ -138,11 +137,14 @@ class _AuthorizedSignatoryInformationScreenState
             ),
             child: Material(
               shadowColor: Colors.black,
-              color: Colors.white,
               elevation: 10,
               child: Padding(
                 padding: const EdgeInsets.only(
-                    top: 20, left: 10, right: 10, bottom: 30,),
+                  top: 20,
+                  left: 10,
+                  right: 10,
+                  bottom: 30,
+                ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -196,12 +198,11 @@ class _AuthorizedSignatoryInformationScreenState
                       suffixIcon: Icons.keyboard_arrow_down_outlined,
                       validator: Validator.country,
                       onIconPressed: () {
-                        if (countryModel != null &&
-                            countryModel?.data != null) {
-                          final List<CountryList> filteredList = countryModel
-                                  ?.data?.list
-                                  ?.where((value) =>
-                                      value.code?.toLowerCase() == '+971',)
+                        if (countryModel != null && countryModel?.data != null) {
+                          final List<CountryList> filteredList = countryModel?.data?.list
+                                  ?.where(
+                                    (value) => value.code?.toLowerCase() == '+971',
+                                  )
                                   .toList() ??
                               [];
                           showDialog(
@@ -212,10 +213,8 @@ class _AuthorizedSignatoryInformationScreenState
                               onCountrySelected: (selectedCountry) {
                                 setState(() {
                                   countryCode = selectedCountry.code ?? '';
-                                  _countryController.text =
-                                      selectedCountry.name ?? '';
-                                  widget.asiModel.ownerCountry =
-                                      selectedCountry.code;
+                                  _countryController.text = selectedCountry.name ?? '';
+                                  widget.asiModel.ownerCountry = selectedCountry.code;
                                   widget.onASIModelUpdate(widget.asiModel);
                                 });
                               },
@@ -238,7 +237,9 @@ class _AuthorizedSignatoryInformationScreenState
                       validator: Validator.region,
                       onIconPressed: () async {
                         final region = await showRegionDropdown(
-                            context, _regionController.text,);
+                          context,
+                          _regionController.text,
+                        );
                         if (region != null) {
                           _regionController.text = region;
                           widget.asiModel.ownerRegion = region;
@@ -274,7 +275,9 @@ class _AuthorizedSignatoryInformationScreenState
                       validator: Validator.emiratesIdNumberDate,
                       onIconPressed: () async {
                         final result = await showDatePickerDialog(
-                            context, VendorAppStrings.ddMmYyyy.tr,);
+                          context,
+                          VendorAppStrings.ddMmYyyy.tr,
+                        );
                         if (result != null) {
                           final date = result.toString().split(' ')[0];
                           _emiratesExpireDateController.text = date;
@@ -296,12 +299,10 @@ class _AuthorizedSignatoryInformationScreenState
                       prefixIconColor: Colors.black,
                       prefixIcon: Icons.upload_outlined,
                       prefixContainerColor: Colors.grey.shade300,
-                      borderSideColor:
-                          const BorderSide(color: Colors.grey, width: 0.5),
+                      borderSideColor: const BorderSide(color: Colors.grey, width: 0.5),
                       validator: Validator.fieldRequired,
                       onIconPressed: () async {
-                        final FilePickerResult? result =
-                            await FilePicker.platform.pickFiles(
+                        final FilePickerResult? result = await FilePicker.platform.pickFiles(
                           type: FileType.custom,
                           allowedExtensions: ['pdf'],
                         );
@@ -309,8 +310,7 @@ class _AuthorizedSignatoryInformationScreenState
                           final File file = File(result.files.single.path!);
                           _eidPdfController.text = result.files.single.name;
                           widget.asiModel.ownerEIDFile = file;
-                          widget.asiModel.ownerEIDFileName =
-                              result.files.single.name;
+                          widget.asiModel.ownerEIDFileName = result.files.single.name;
                           widget.onASIModelUpdate(widget.asiModel);
                         } else {
                           _eidPdfController.text = '';
@@ -333,12 +333,10 @@ class _AuthorizedSignatoryInformationScreenState
                       prefixIcon: Icons.upload_outlined,
                       prefixContainerColor: Colors.grey.shade300,
                       prefixIconColor: Colors.black,
-                      borderSideColor:
-                          const BorderSide(color: Colors.grey, width: 0.5),
+                      borderSideColor: const BorderSide(color: Colors.grey, width: 0.5),
                       validator: Validator.fieldRequired,
                       onIconPressed: () async {
-                        final FilePickerResult? result =
-                            await FilePicker.platform.pickFiles(
+                        final FilePickerResult? result = await FilePicker.platform.pickFiles(
                           type: FileType.custom,
                           allowedExtensions: ['pdf'],
                         );
@@ -346,8 +344,7 @@ class _AuthorizedSignatoryInformationScreenState
                           final File file = File(result.files.single.path!);
                           _passportController.text = result.files.single.name;
                           widget.asiModel.passportFile = file;
-                          widget.asiModel.passportFileName =
-                              result.files.single.name;
+                          widget.asiModel.passportFileName = result.files.single.name;
                           widget.onASIModelUpdate(widget.asiModel);
                         } else {
                           _passportController.text = '';
@@ -368,13 +365,11 @@ class _AuthorizedSignatoryInformationScreenState
                       isPrefixFilled: true,
                       prefixIcon: Icons.upload_outlined,
                       prefixContainerColor: Colors.grey.shade300,
-                      borderSideColor:
-                          const BorderSide(color: Colors.grey, width: 0.5),
+                      borderSideColor: const BorderSide(color: Colors.grey, width: 0.5),
                       prefixIconColor: Colors.black,
                       validator: Validator.fieldRequired,
                       onIconPressed: () async {
-                        final FilePickerResult? result =
-                            await FilePicker.platform.pickFiles(
+                        final FilePickerResult? result = await FilePicker.platform.pickFiles(
                           type: FileType.custom,
                           allowedExtensions: ['pdf'],
                         );
@@ -382,8 +377,7 @@ class _AuthorizedSignatoryInformationScreenState
                           final File file = File(result.files.single.path!);
                           _poaMoaController.text = result.files.single.name;
                           widget.asiModel.poamoaFile = file;
-                          widget.asiModel.poamoaFileName =
-                              result.files.single.name;
+                          widget.asiModel.poamoaFileName = result.files.single.name;
                           widget.onASIModelUpdate(widget.asiModel);
                         } else {
                           _poaMoaController.text = '';

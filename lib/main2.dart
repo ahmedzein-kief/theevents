@@ -17,9 +17,9 @@ import 'package:event_app/provider/home_shortcode_provider/users_by_type_provide
 import 'package:event_app/provider/home_shortcode_provider/vendor_by_types_provider.dart';
 import 'package:event_app/provider/information_icons_provider/best_seller_provider.dart';
 import 'package:event_app/provider/information_icons_provider/fifty_discount_provider.dart';
-import 'package:event_app/provider/information_icons_provider/payment_methods_provider.dart';
 import 'package:event_app/provider/information_icons_provider/gift_card_provider.dart';
 import 'package:event_app/provider/information_icons_provider/new_products_provider.dart';
+import 'package:event_app/provider/information_icons_provider/payment_methods_provider.dart';
 import 'package:event_app/provider/login_profile_provider/change_password.dart';
 import 'package:event_app/provider/login_profile_provider/profile_update.dart';
 import 'package:event_app/provider/orders_provider/order_data_provider.dart';
@@ -33,8 +33,8 @@ import 'package:event_app/provider/search_bar_provider/search_bar_provider.dart'
 import 'package:event_app/provider/shortcode_events_bazaar_provider/events_bazaar_provider.dart';
 import 'package:event_app/provider/shortcode_featured_categories_provider/featured_categories_detail_provider.dart';
 import 'package:event_app/provider/shortcode_featured_categories_provider/featured_categories_provider.dart';
-import 'package:event_app/provider/shortcode_fresh_picks_provider/eCom_Tags_brands_Provider.dart';
-import 'package:event_app/provider/shortcode_fresh_picks_provider/eCom_tags_provider.dart';
+import 'package:event_app/provider/shortcode_fresh_picks_provider/ecom_tags_brands_provider.dart';
+import 'package:event_app/provider/shortcode_fresh_picks_provider/ecom_tags_provider.dart';
 import 'package:event_app/provider/shortcode_fresh_picks_provider/fresh_picks_provider.dart';
 import 'package:event_app/provider/shortcode_home_page_provider.dart';
 import 'package:event_app/provider/shortcode_vendor_type_by_provider/vendor_type_by_provider.dart';
@@ -202,9 +202,7 @@ ThemeData lightTheme = ThemeData(
   ),
   brightness: Brightness.light,
   useMaterial3: true,
-  scaffoldBackgroundColor: AppColors.bgColor,
   appBarTheme: const AppBarTheme(
-    backgroundColor: AppColors.bgColor,
     elevation: 0.5,
     shadowColor: Colors.grey,
     titleTextStyle: TextStyle(color: Colors.black),

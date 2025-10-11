@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import '../constants/app_strings.dart';
 
 class BackIcon extends StatelessWidget {
-  const BackIcon({super.key});
+  const BackIcon({super.key, this.color});
+
+  final Color? color;
 
   @override
   Widget build(BuildContext context) => GestureDetector(
@@ -17,13 +19,13 @@ class BackIcon extends StatelessWidget {
             Icon(
               Icons.arrow_back_ios_sharp,
               size: 16,
-              color: Theme.of(context).colorScheme.onPrimary,
+              color: color ?? Theme.of(context).colorScheme.onPrimary,
             ), // Back icon
             const SizedBox(width: 5),
             Text(
               AppStrings.back.tr,
               style: TextStyle(
-                color: Theme.of(context).colorScheme.onPrimary,
+                color: color ?? Theme.of(context).colorScheme.onPrimary,
               ),
             ), // Back text
           ],

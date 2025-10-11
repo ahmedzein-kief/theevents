@@ -110,7 +110,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withAlpha((0.1 * 255).toInt()),
                     blurRadius: 8,
                     offset: const Offset(0, 4),
                   ),
@@ -141,7 +141,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withAlpha((0.1 * 255).toInt()),
                     blurRadius: 8,
                     offset: const Offset(0, 4),
                   ),
@@ -174,7 +174,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withAlpha((0.1 * 255).toInt()),
                   blurRadius: 8,
                   offset: const Offset(0, 4),
                 ),
@@ -194,7 +194,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
                     itemCount: limitedSuggestions.length,
                     separatorBuilder: (_, __) => Divider(
                       height: 1,
-                      color: AppColors.semiTransparentBlack.withOpacity(0.1),
+                      color: AppColors.semiTransparentBlack.withAlpha((0.1 * 255).toInt()),
                     ),
                     itemBuilder: (context, index) {
                       final suggestion = limitedSuggestions[index];
@@ -227,7 +227,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
                                 style: GoogleFonts.inter(
                                   fontSize: (widget.fontSize ?? 14) - 2,
                                   fontWeight: FontWeight.w400,
-                                  color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.6),
+                                  color: Theme.of(context).colorScheme.onPrimary.withAlpha((0.6 * 255).toInt()),
                                 ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
@@ -269,7 +269,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
                 if (hasMoreResults && currentQuery.isNotEmpty) ...[
                   Divider(
                     height: 1,
-                    color: AppColors.semiTransparentBlack.withOpacity(0.2),
+                    color: AppColors.semiTransparentBlack.withAlpha((0.2 * 255).toInt()),
                   ),
                   InkWell(
                     onTap: () {
@@ -289,7 +289,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
                       width: double.infinity,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       decoration: BoxDecoration(
-                        color: AppColors.searchBackground.withOpacity(0.3),
+                        color: AppColors.searchBackground.withAlpha((0.3 * 255).toInt()),
                         borderRadius: BorderRadius.only(
                           bottomLeft: Radius.circular(widget.borderRadius ?? 12),
                           bottomRight: Radius.circular(widget.borderRadius ?? 12),
@@ -301,22 +301,22 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
                           Icon(
                             Icons.search,
                             size: 18,
-                            color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.7),
+                            color: Theme.of(context).colorScheme.onPrimary.withAlpha((0.7 * 255).toInt()),
                           ),
                           const SizedBox(width: 8),
                           Text(
                             'See all results',
                             style: GoogleFonts.inter(
-                              fontSize: (widget.fontSize ?? 14),
+                              fontSize: widget.fontSize ?? 14,
                               fontWeight: FontWeight.w500,
-                              color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.8),
+                              color: Theme.of(context).colorScheme.onPrimary.withAlpha((0.8 * 255).toInt()),
                             ),
                           ),
                           const SizedBox(width: 4),
                           Icon(
                             Icons.arrow_forward,
                             size: 16,
-                            color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.7),
+                            color: Theme.of(context).colorScheme.onPrimary.withAlpha((0.7 * 255).toInt()),
                           ),
                         ],
                       ),

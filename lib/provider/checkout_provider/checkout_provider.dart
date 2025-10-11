@@ -1,10 +1,12 @@
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/models/dashboard/information_icons_models/gift_card_models/checkout_payment_model.dart';
 import 'package:event_app/provider/api_response_handler.dart';
+import 'package:event_app/views/cart_screens/widgets/coupon_state.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/constants/app_strings.dart';
@@ -20,23 +22,136 @@ class CheckoutProvider with ChangeNotifier {
 
   CheckoutResponse? get checkoutData => _checkoutData;
 
-  bool isLoading = false;
+  bool _isLoading = false;
 
-  // NEW: Track if we're processing payment to prevent UI rebuilds
+  bool get isLoading => _isLoading;
+
+  bool _isCouponLoading = false;
+
+  bool get isCouponLoading => _isCouponLoading;
+
   bool _isProcessingPayment = false;
 
   bool get isProcessingPayment => _isProcessingPayment;
 
-  void setLoading(bool value) {
-    isLoading = value;
-    // Only notify if we're not in the middle of payment processing
+  // NEW: Coupon state managed in provider
+  CouponState _couponState = CouponState.empty();
+
+  CouponState get couponState => _couponState;
+
+  void _setLoading(bool value) {
+    _isLoading = value;
     if (!_isProcessingPayment) {
       notifyListeners();
     }
   }
 
+  void _setCouponLoading(bool value) {
+    _isCouponLoading = value;
+    notifyListeners();
+  }
+
+  void _updateCouponState(CouponState state) {
+    _couponState = state;
+    notifyListeners();
+  }
+
+  // NEW: Initialize checkout with all logic encapsulated
+  Future<bool> initializeCheckout({
+    required String checkoutToken,
+    required String token,
+    required Map<String, String> shippingMethod,
+  }) async {
+    _setLoading(true);
+
+    final success = await fetchCheckoutData(
+      checkoutToken,
+      token,
+      null,
+      shippingMethod,
+    );
+
+    if (success) {
+      _syncCouponStateFromCheckout();
+    }
+
+    _setLoading(false);
+    return success;
+  }
+
+  // NEW: Sync coupon state from checkout data
+  void _syncCouponStateFromCheckout() {
+    final sessionData = _checkoutData?.data?.sessionCheckoutData;
+
+    if (sessionData?.hasValidCoupon ?? false) {
+      final appliedCoupon = sessionData!.appliedCouponCode;
+      final discount = _checkoutData?.data?.couponDiscountAmount ?? 0;
+
+      if (appliedCoupon != null && appliedCoupon.isNotEmpty && discount > 0) {
+        _updateCouponState(CouponState(
+          code: appliedCoupon,
+          isValid: true,
+          message: AppStrings.couponAppliedSuccess.tr,
+        ));
+        return;
+      }
+    }
+
+    _updateCouponState(CouponState.empty());
+  }
+
+  // NEW: Handle coupon input change
+  void updateCouponInput(String code) {
+    if (code.isEmpty) {
+      _updateCouponState(CouponState.empty());
+    } else {
+      _updateCouponState(_couponState.copyWith(code: code));
+    }
+  }
+
+  // NEW: Handle coupon apply/remove action
+  Future<void> handleCouponAction({
+    required BuildContext context,
+    required String checkoutToken,
+    required String token,
+    required String couponCode,
+    required bool isApply,
+    required Map<String, String> shippingMethod,
+  }) async {
+    if (couponCode.isEmpty && isApply) return;
+
+    _setCouponLoading(true);
+
+    final success = await _applyRemoveCouponCode(
+      context,
+      checkoutToken,
+      token,
+      couponCode,
+      isApply,
+    );
+
+    if (success) {
+      // Refresh checkout data
+      await fetchCheckoutData(
+        checkoutToken,
+        token,
+        null,
+        shippingMethod,
+      );
+      _syncCouponStateFromCheckout();
+    } else if (isApply) {
+      // Show error for failed apply
+      _updateCouponState(CouponState(
+        code: couponCode,
+        isValid: false,
+        message: AppStrings.couponInvalidOrExpired.tr,
+      ));
+    }
+
+    _setCouponLoading(false);
+  }
+
   Future<bool> fetchCheckoutData(
-    BuildContext context,
     String checkoutToken,
     String tokenLogin,
     SessionCheckoutData? sessionCheckoutData,
@@ -65,7 +180,6 @@ class CheckoutProvider with ChangeNotifier {
       final response = await _apiResponseHandler.getRequest(
         url,
         headers: headers,
-        context: context,
         queryParams: postDataMap,
       );
 
@@ -81,7 +195,7 @@ class CheckoutProvider with ChangeNotifier {
     return false;
   }
 
-  Future<bool> applyRemoveCouponCode(
+  Future<bool> _applyRemoveCouponCode(
     BuildContext context,
     String checkoutToken,
     String tokenLogin,
@@ -107,20 +221,15 @@ class CheckoutProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         final jsonData = response.data;
-        notifyListeners();
-        if (jsonData['error'] == false) {
-          return true;
-        } else {
-          return false;
-        }
+        return jsonData['error'] == false;
       }
     } catch (e) {
       log('Error applying coupon code: $e');
     }
+
     return false;
   }
 
-  // NEW: Process gateway payment with navigation handling
   Future<void> processGatewayPayment({
     required BuildContext context,
     required String checkoutToken,
@@ -130,12 +239,10 @@ class CheckoutProvider with ChangeNotifier {
   }) async {
     if (_checkoutData == null) return;
 
-    // Mark that we're processing payment - this prevents rebuilds
     _isProcessingPayment = true;
-    setLoading(true);
+    _setLoading(true);
 
     try {
-      // Get checkout URL
       final checkoutURL = await checkoutPaymentLink(
         context,
         checkoutToken,
@@ -155,7 +262,6 @@ class CheckoutProvider with ChangeNotifier {
         return;
       }
 
-      // Navigate to payment screen - context is still valid here
       if (!context.mounted) {
         log('Context unmounted, cannot navigate');
         return;
@@ -174,7 +280,7 @@ class CheckoutProvider with ChangeNotifier {
       }
     } finally {
       _isProcessingPayment = false;
-      setLoading(false);
+      _setLoading(false);
     }
   }
 
@@ -189,7 +295,6 @@ class CheckoutProvider with ChangeNotifier {
     final data = checkoutData.data;
     if (data == null) return null;
 
-    // Don't set loading here - let the caller handle it
     try {
       final formData = FormData.fromMap({
         'tracked_start_checkout': checkoutToken,
@@ -206,14 +311,15 @@ class CheckoutProvider with ChangeNotifier {
       }
 
       final session = data.sessionCheckoutData;
+
       formData.fields.addAll([
-        MapEntry('address[name]', session.name),
-        MapEntry('address[email]', session.email),
-        MapEntry('address[phone]', session.phone),
-        MapEntry('address[country]', session.country),
-        MapEntry('address[city]', session.city),
-        MapEntry('address[address]', session.address),
-        MapEntry('address[address_id]', isNewAddress ? 'new' : data.sessionCheckoutData.addressId.toString()),
+        MapEntry('address[name]', session.name ?? ''),
+        MapEntry('address[email]', session.email ?? ''),
+        MapEntry('address[phone]', session.phone ?? ''),
+        MapEntry('address[country]', session.country ?? ''),
+        MapEntry('address[city]', session.city ?? ''),
+        MapEntry('address[address]', session.address ?? ''),
+        MapEntry('address[address_id]', isNewAddress ? 'new' : (data.sessionCheckoutData.addressId?.toString() ?? '')),
       ]);
 
       final vendorData = data.sessionCheckoutData.marketplace;
@@ -244,7 +350,7 @@ class CheckoutProvider with ChangeNotifier {
         return paymentData.data.checkoutUrl;
       } else {
         final jsonResponse = response.data;
-        AppUtils.showToast('${AppStrings.paymentFailed} ${jsonResponse["message"]}');
+        AppUtils.showToast('${AppStrings.paymentFailed.tr} ${jsonResponse["message"]}');
         throw Exception('Failed to load data');
       }
     } catch (e) {
@@ -252,9 +358,9 @@ class CheckoutProvider with ChangeNotifier {
 
       if (e is DioException) {
         final errorMessage = e.response?.data?['message'] ?? e.message;
-        AppUtils.showToast('${AppStrings.paymentFailed} $errorMessage');
+        AppUtils.showToast('${AppStrings.paymentFailed.tr} $errorMessage');
       } else {
-        AppUtils.showToast('${AppStrings.paymentFailed} ${e.toString()}');
+        AppUtils.showToast('${AppStrings.paymentFailed.tr} ${e.toString()}');
       }
       return null;
     }
@@ -269,7 +375,6 @@ class CheckoutProvider with ChangeNotifier {
     if (checkoutData == null || checkoutData.data == null) return;
     final data = checkoutData.data!;
 
-    // Mark as processing to prevent rebuilds
     _isProcessingPayment = true;
 
     final formData = FormData.fromMap({
@@ -280,14 +385,15 @@ class CheckoutProvider with ChangeNotifier {
     });
 
     final session = data.sessionCheckoutData;
+
     formData.fields.addAll([
-      MapEntry('address[name]', session.name),
-      MapEntry('address[email]', session.email),
-      MapEntry('address[phone]', session.phone),
-      MapEntry('address[country]', session.country),
-      MapEntry('address[city]', session.city),
-      MapEntry('address[address]', session.address),
-      MapEntry('address[address_id]', isNewAddress ? 'new' : data.sessionCheckoutData.addressId.toString()),
+      MapEntry('address[name]', session.name ?? ''),
+      MapEntry('address[email]', session.email ?? ''),
+      MapEntry('address[phone]', session.phone ?? ''),
+      MapEntry('address[country]', session.country ?? ''),
+      MapEntry('address[city]', session.city ?? ''),
+      MapEntry('address[address]', session.address ?? ''),
+      MapEntry('address[address_id]', isNewAddress ? 'new' : (data.sessionCheckoutData.addressId?.toString() ?? '')),
     ]);
 
     final vendorData = data.sessionCheckoutData.marketplace;
@@ -304,7 +410,7 @@ class CheckoutProvider with ChangeNotifier {
     final url = '${ApiEndpoints.checkout}$checkoutToken/process';
 
     try {
-      setLoading(true);
+      _setLoading(true);
 
       final response = await _apiResponseHandler.postDioMultipartRequest(
         url,
@@ -323,7 +429,6 @@ class CheckoutProvider with ChangeNotifier {
           final orderId = jsonData['order_id'];
 
           if (context.mounted && orderId != null) {
-            // Use pushAndRemoveUntil to clear the entire navigation stack
             Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(
@@ -332,17 +437,17 @@ class CheckoutProvider with ChangeNotifier {
                   orderId: orderId.toString(),
                 ),
               ),
-              (route) => false, // Remove all previous routes
+              (route) => false,
             );
           }
         } else {
           final jsonResponse = urlResponse.data;
-          AppUtils.showToast('${AppStrings.paymentFailed} ${jsonResponse["message"]}');
+          AppUtils.showToast('${AppStrings.paymentFailed.tr} ${jsonResponse["message"]}');
           throw Exception('Failed to load data');
         }
       } else {
         final jsonResponse = response.data;
-        AppUtils.showToast('${AppStrings.paymentFailed} ${jsonResponse["message"]}');
+        AppUtils.showToast('${AppStrings.paymentFailed.tr} ${jsonResponse["message"]}');
         throw Exception('Failed to load data');
       }
     } catch (e) {
@@ -350,13 +455,13 @@ class CheckoutProvider with ChangeNotifier {
 
       if (e is DioException) {
         final errorMessage = e.response?.data?['message'] ?? e.message;
-        AppUtils.showToast('${AppStrings.paymentFailed}: $errorMessage');
+        AppUtils.showToast('${AppStrings.paymentFailed.tr}: $errorMessage');
       } else {
-        AppUtils.showToast('${AppStrings.paymentFailed}: ${e.toString()}');
+        AppUtils.showToast('${AppStrings.paymentFailed.tr}: ${e.toString()}');
       }
     } finally {
       _isProcessingPayment = false;
-      setLoading(false);
+      _setLoading(false);
     }
   }
 }

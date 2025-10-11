@@ -4,7 +4,7 @@ import 'package:dio/dio.dart';
 
 import '../../../../../core/helper/di/locator.dart';
 import '../../app_exceptions.dart';
-import 'DioBaseApiServices.dart';
+import 'dio_base_api_services.dart';
 
 class DioNetworkApiServices extends DioBaseApiServices {
   // DioNetworkApiServices() {
@@ -189,7 +189,8 @@ class DioNetworkApiServices extends DioBaseApiServices {
         throw InternalServerErrorException(_errorMessage(response));
       default:
         throw FetchDataException(
-            'Error occurred while communicating with server with status code ${response.statusCode}',);
+          'Error occurred while communicating with server with status code ${response.statusCode}',
+        );
     }
   }
 
@@ -209,7 +210,8 @@ class DioNetworkApiServices extends DioBaseApiServices {
             return ValidationException(_errorMessage(error.response!));
           }
           return FetchDataException(
-              'Received invalid status code: ${error.response?.statusCode}',);
+            'Received invalid status code: ${error.response?.statusCode}',
+          );
         case DioExceptionType.cancel:
           return FetchDataException('Request cancelled');
         case DioExceptionType.badCertificate:
@@ -244,13 +246,17 @@ class DioNetworkApiServices extends DioBaseApiServices {
 
         // Check if `errors` is present and process it
         if (errors != null && errors is Map) {
+          final errorBuffer = StringBuffer();
+
           errors.forEach((key, value) {
             if (value is List) {
               for (final msg in value) {
-                allErrors += '$key: $msg\n'; // Append each error message
+                errorBuffer.writeln('$key: $msg'); // Append each error message
               }
             }
           });
+
+          allErrors = errorBuffer.toString();
         }
 
         // Check if `error` is present and append it

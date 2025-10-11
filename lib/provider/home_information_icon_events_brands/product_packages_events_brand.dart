@@ -1,4 +1,3 @@
-
 import 'package:event_app/models/product_packages_models/product_filters_model.dart';
 import 'package:event_app/provider/api_response_handler.dart';
 import 'package:flutter/cupertino.dart';
@@ -10,10 +9,12 @@ class EventsBrandProductProvider extends ChangeNotifier {
 
   final ApiResponseHandler _apiResponseHandler = ApiResponseHandler();
   List<ProductRecords> _records = [];
-  BrandsPagination? _brandsPagination;
+
+  // BrandsPagination? _brandsPagination;
   TopBrandsProducts? _topBrandsProducts;
   bool _isLoadingProducts = false;
-  bool _isMoreLoadingProducts = false;
+
+  // bool _isMoreLoadingProducts = false;
   ProductFiltersModel? _productFilters;
 
   List<ProductRecords> get records => _records;
@@ -59,26 +60,19 @@ class EventsBrandProductProvider extends ChangeNotifier {
       }
     }).join('&');
 
-    final baseUrl =
-        '${ApiEndpoints.eventBrandProducts}?per-page=$perPage&page=$page&sort-by=$sortBy';
-    final url = filtersQuery.isNotEmpty
-        ? '$baseUrl&$filtersQuery&allcategories=1'
-        : baseUrl;
+    final baseUrl = '${ApiEndpoints.eventBrandProducts}?per-page=$perPage&page=$page&sort-by=$sortBy';
+    final url = filtersQuery.isNotEmpty ? '$baseUrl&$filtersQuery&allcategories=1' : baseUrl;
 
     try {
-      final response = await _apiResponseHandler.getRequest(
-        url,
-        context: context,
-      );
+      final response = await _apiResponseHandler.getRequest(url);
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonResponse = response.data;
-        final TopBrandsProducts apiResponse =
-            TopBrandsProducts.fromJson(jsonResponse);
+        final TopBrandsProducts apiResponse = TopBrandsProducts.fromJson(jsonResponse);
 
         if (page == 1) {
           _records = apiResponse.data?.records ?? [];
-          _brandsPagination = apiResponse.data?.pagination;
+          // _brandsPagination = apiResponse.data?.pagination;
           _productFilters = apiResponse.data?.filters;
         } else {
           _records.addAll(apiResponse.data?.records ?? []);
@@ -93,7 +87,7 @@ class EventsBrandProductProvider extends ChangeNotifier {
       throw Exception('Failed to load products: $error');
     } finally {
       _isLoadingProducts = false;
-      _isMoreLoadingProducts = false;
+      // _isMoreLoadingProducts = false;
       notifyListeners();
     }
   }
@@ -101,10 +95,12 @@ class EventsBrandProductProvider extends ChangeNotifier {
   ///   ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++  FEATURED TOP BRANDS PACKAGES PROVIDER +++++++++++++++++++++++++++++++++++++++++++++++++
 
   List<ProductRecords> _recordsPackages = [];
-  BrandsPagination? _packagesPagination;
-  TopBrandsProducts? _topBrandsPackages;
+
+  // BrandsPagination? _packagesPagination;
+  // TopBrandsProducts? _topBrandsPackages;
   bool _isLoadingPackages = false;
-  bool _isMoreLoadingPackages = false;
+
+  // bool _isMoreLoadingPackages = false;
 
   List<ProductRecords> get recordsPackages => _recordsPackages;
 
@@ -146,23 +142,18 @@ class EventsBrandProductProvider extends ChangeNotifier {
       }
     }).join('&');
 
-    final url =
-        '${ApiEndpoints.eventBrandPackages}?per-page=$perPage&page=$page&sort-by=$sortBy&$filtersQuery';
+    final url = '${ApiEndpoints.eventBrandPackages}?per-page=$perPage&page=$page&sort-by=$sortBy&$filtersQuery';
 
     try {
-      final response = await _apiResponseHandler.getRequest(
-        url,
-        context: context,
-      );
+      final response = await _apiResponseHandler.getRequest(url);
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonResponse = response.data;
-        final TopBrandsProducts apiResponse =
-            TopBrandsProducts.fromJson(jsonResponse);
+        final TopBrandsProducts apiResponse = TopBrandsProducts.fromJson(jsonResponse);
 
         if (page == 1) {
           _recordsPackages = apiResponse.data?.records ?? [];
-          _packagesPagination = apiResponse.data?.pagination;
+          // _packagesPagination = apiResponse.data?.pagination;
           _productFilters = apiResponse.data?.filters;
         } else {
           _recordsPackages.addAll(apiResponse.data?.records ?? []);
@@ -177,7 +168,7 @@ class EventsBrandProductProvider extends ChangeNotifier {
       throw Exception('Failed to load products: $error');
     } finally {
       _isLoadingPackages = false;
-      _isMoreLoadingPackages = false;
+      // _isMoreLoadingPackages = false;
       notifyListeners();
     }
   }
@@ -212,18 +203,14 @@ class Data {
 
   Data.fromJson(Map<String, dynamic> json) {
     parent = json['parent'] != null ? Parent.fromJson(json['parent']) : null;
-    pagination = json['pagination'] != null
-        ? BrandsPagination.fromJson(json['pagination'])
-        : null;
+    pagination = json['pagination'] != null ? BrandsPagination.fromJson(json['pagination']) : null;
     if (json['records'] != null) {
       records = <ProductRecords>[];
       json['records'].forEach((v) {
         records!.add(ProductRecords.fromJson(v));
       });
     }
-    filters = json['filters'] != null
-        ? ProductFiltersModel.fromJson(json['filters'])
-        : null;
+    filters = json['filters'] != null ? ProductFiltersModel.fromJson(json['filters']) : null;
   }
 
   Parent? parent;
@@ -250,15 +237,16 @@ class Data {
 }
 
 class Parent {
-  Parent(
-      {this.id,
-      this.name,
-      this.image,
-      this.thumb,
-      this.coverImage,
-      this.description,
-      this.website,
-      this.slug,});
+  Parent({
+    this.id,
+    this.name,
+    this.image,
+    this.thumb,
+    this.coverImage,
+    this.description,
+    this.website,
+    this.slug,
+  });
 
   Parent.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -436,11 +424,12 @@ class Review {
 }
 
 class Prices {
-  Prices(
-      {this.frontSalePrice,
-      this.price,
-      this.frontSalePriceWithTaxes,
-      this.priceWithTaxes,});
+  Prices({
+    this.frontSalePrice,
+    this.price,
+    this.frontSalePriceWithTaxes,
+    this.priceWithTaxes,
+  });
 
   Prices.fromJson(Map<String, dynamic> json) {
     frontSalePrice = json['front_sale_price'];
@@ -484,17 +473,18 @@ class Store {
 }
 
 class Filters {
-  Filters(
-      {this.categories,
-      this.brands,
-      this.tags,
-      this.rand,
-      this.categoryRequest,
-      this.categoryId,
-      this.brandRequest,
-      this.tagRequest,
-      this.priceRange,
-      this.rating,});
+  Filters({
+    this.categories,
+    this.brands,
+    this.tags,
+    this.rand,
+    this.categoryRequest,
+    this.categoryId,
+    this.brandRequest,
+    this.tagRequest,
+    this.priceRange,
+    this.rating,
+  });
 
   Filters.fromJson(Map<String, dynamic> json) {
     if (json['categories'] != null) {
@@ -516,19 +506,11 @@ class Filters {
       });
     }
     rand = json['rand'];
-    categoryRequest = json['category_request'] != null
-        ? List<String>.from(json['category_request'])
-        : null;
+    categoryRequest = json['category_request'] != null ? List<String>.from(json['category_request']) : null;
     categoryId = json['category_id'];
-    brandRequest = json['brand_request'] != null
-        ? List<String>.from(json['brand_request'])
-        : null;
-    tagRequest = json['tag_request'] != null
-        ? List<String>.from(json['tag_request'])
-        : null;
-    priceRange = json['price_range'] != null
-        ? List<String>.from(json['price_range'])
-        : null;
+    brandRequest = json['brand_request'] != null ? List<String>.from(json['brand_request']) : null;
+    tagRequest = json['tag_request'] != null ? List<String>.from(json['tag_request']) : null;
+    priceRange = json['price_range'] != null ? List<String>.from(json['price_range']) : null;
     rating = json['rating'] != null ? List<String>.from(json['rating']) : null;
   }
 

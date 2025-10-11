@@ -1,7 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:dio/dio.dart';
+import 'package:event_app/core/constants/app_strings.dart';
+import 'package:event_app/core/constants/vendor_app_strings.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/helper/mixins/media_query_mixin.dart';
 import 'package:event_app/core/helper/validators/validator.dart';
 import 'package:event_app/core/network/api_endpoints/vendor_api_end_point.dart';
@@ -58,14 +62,14 @@ import '../../../components/text_fields/custom_editable_text_field.dart';
 import '../../../view_models/vendor_products/vendor_get_products_view_model.dart';
 
 class VendorCreatePhysicalProductView extends StatefulWidget {
-  VendorCreatePhysicalProductView({
+  const VendorCreatePhysicalProductView({
     super.key,
     this.productType,
-    this.productID,
+    this.initialProductId,
   });
 
   final VendorProductType? productType;
-  String? productID;
+  final String? initialProductId;
 
   @override
   State<VendorCreatePhysicalProductView> createState() => VendorCreatePhysicalProductViewState();
@@ -116,8 +120,11 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
     });
   }
 
+  String? _productId;
+
   @override
   void initState() {
+    _productId = widget.initialProductId;
     WidgetsBinding.instance.addPostFrameCallback((callback) async {
       await _onRefresh();
     });
@@ -128,16 +135,21 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
     try {
       setProcessing(true);
 
-      /// ser package id
-      _currentProductId = widget.productID;
+      /// set package id
+      _currentProductId = _productId;
+
+      if (!mounted) return;
       final provider = Provider.of<VendorCreateProductViewModel>(context, listen: false);
+
       await provider.vendorGetProductGeneralSettings();
       await provider.getAttributeSetsData();
       await provider.vendorGetProductTags();
-      if (widget.productID != null) {
-        print('PRODUCT ID ==> ${widget.productID}');
 
-        await provider.getProductView(context, widget.productID!);
+      if (_productId != null) {
+        log('PRODUCT ID ==> $_productId');
+
+        if (!mounted) return;
+        await provider.getProductView(context, _productId!);
 
         final viewData = provider.vendorProductViewApiResponse.data;
 
@@ -153,7 +165,7 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
       setProcessing(false);
     } catch (e) {
       setProcessing(false);
-      print('Error: $e');
+      log('Error: $e');
     }
   }
 
@@ -325,12 +337,12 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
           answer: innerList[1].value ?? '',
         ),
       );
-      print(
+      log(
         'Added FAQModel: Q: ${innerList[0].value} | A: ${innerList[1].value}',
       );
     });
 
-    print('data --> ${productViewData?.selectedExistingFaqs?.length}');
+    log('data --> ${productViewData?.selectedExistingFaqs?.length}');
 
     selectedParentFaqs?.listExistingFaqs = productViewData?.selectedExistingFaqs ?? [];
     _handleFaqData(selectedParentFaqs);
@@ -377,8 +389,8 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
       }
       createProductPostData.productFiles = productFilesIds;
 
-      print('selectedDigitalLinks ===> ${selectedDigitalLinks?.length}');
-      print('selectedDigitalImages ===> ${selectedDigitalImages?.length}');
+      log('selectedDigitalLinks ===> ${selectedDigitalLinks?.length}');
+      log('selectedDigitalImages ===> ${selectedDigitalImages?.length}');
 
       _handleDigitalLinksData(selectedDigitalLinks);
       _handleDigitalAttachmentsData(selectedDigitalImages);
@@ -403,10 +415,10 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
 
       void logFormData(FormData formData) {
         for (final field in formData.fields) {
-          print('Field: ${field.key} = ${field.value}');
+          log('Field: ${field.key} = ${field.value}');
         }
         for (final file in formData.files) {
-          print('File: ${file.key} = ${file.value.filename}');
+          log('File: ${file.key} = ${file.value.filename}');
         }
       }
 
@@ -414,6 +426,7 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
       final formData = createProductPostData.toFormData();
       logFormData(formData);
 
+      if (!mounted) return false;
       final createUpdateProvider = Provider.of<VendorCreateProductViewModel>(context, listen: false);
 
       /// create product
@@ -426,9 +439,11 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
         );
         if (result) {
           /// on success go back and refresh the products list
-          widget.productID =
+          if (!mounted) return false;
+          _productId =
               context.read<VendorCreateProductViewModel>().vendorCreateProductApiResponse.data?.data.id.toString();
           await _onRefresh();
+          if (!mounted) return false;
           context.read<VendorGetProductsViewModel>().clearList();
           context.read<VendorGetProductsViewModel>().vendorGetProducts();
           // Navigator.pop(context);
@@ -437,7 +452,7 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
         /// note: product is already set in populateViewData()
         final result = await createUpdateProvider.vendorUpdateProduct(
           context: context,
-          productID: widget.productID ?? '',
+          productID: _productId ?? '',
           productPostDataModel: createProductPostData,
         );
         if (result) {
@@ -450,7 +465,7 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
       return true;
     } catch (e) {
       setProcessing(false);
-      print('Error is: $e');
+      log('Error is: $e');
       return false;
     }
   }
@@ -471,7 +486,7 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
     if (selectedDigitalImages != null) {
       _digitalImageCountController.text = selectedDigitalImages!.isNotEmpty
           ? '${selectedDigitalImages?.length} attachment(s) selected'
-          : 'No attachments selected';
+          : VendorAppStrings.noAttachmentsSelected.tr;
     } else {
       _digitalImageCountController.clear();
     }
@@ -553,7 +568,7 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
     if (images != null) {
       final List<String> serverImages = images.where((e) => e.serverUrl.isNotEmpty).map((e) => e.serverUrl).toList();
       createProductPostData.images = serverImages;
-      print('Selected Server Images: $serverImages');
+      log('Selected Server Images: $serverImages');
     } else {
       createProductPostData.images = [];
     }
@@ -607,7 +622,7 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
   void _handleDigitalLinksData(links) {
     if (links != null) {
       // List<String> serverImages = links.where((e) => e.serverUrl.isNotEmpty).map((e) => e.serverUrl).toList();
-      // print('Selected Digital Links: $serverImages');
+      // log('Selected Digital Links: $serverImages');
     } else {}
 
     setState(() {
@@ -615,7 +630,7 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
       createProductPostData.productFilesExternal =
           selectedDigitalLinks?.where((test) => test.isSaved == false).toList() ?? [];
       for (final e in selectedDigitalLinks ?? []) {
-        print(e.toString());
+        log(e.toString());
       }
       _updateDigitalLinksCount();
     });
@@ -630,8 +645,8 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
     final attributes = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => VendorProductAttributeScreen(
-          productId: widget.productID,
+        builder: (context) => VendorProductAttributesScreen(
+          productId: _productId,
           initialAttributes: selectedAttributes,
           listAttributesSets: attributesData?.data,
         ),
@@ -649,7 +664,7 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
 
   void _handleAttributesData(attributes) {
     if (attributes != null) {
-      print('attributes $attributes');
+      log('attributes $attributes');
       createProductPostData.addedAttributes = {
         for (final attr in attributes) '${attr["id"]}': '${attr["value_id"]}',
       };
@@ -699,12 +714,12 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
             final int valueIndex = valueEntry.key; // Get index for values
             final value = valueEntry.value;
             return OptionValues(
-              affectType: value.affectType.toString() ?? '',
+              affectType: value.affectType.toString(),
               affectPrice: value.affectPrice.toString(),
-              id: value.id.toString() ?? '',
+              id: value.id.toString(),
               order: valueIndex.toString(),
               // Use value index
-              optionValue: option.getType().toLowerCase() == 'location' ? value.optionValue.toString() ?? '' : '',
+              optionValue: option.getType().toLowerCase() == 'location' ? value.optionValue.toString() : '',
             );
           }).toList(),
         );
@@ -730,8 +745,8 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
       context,
       MaterialPageRoute(
         builder: (context) => RelatedProductsSearchScreen(
-          title: 'Related products',
-          dataId: widget.productID,
+          title: VendorAppStrings.relatedProducts.tr,
+          dataId: _productId,
           selectedRelatedProducts: selectedRelatedProducts,
         ),
       ),
@@ -764,8 +779,8 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
       context,
       MaterialPageRoute(
         builder: (context) => CrossSellingProductsSearchScreen(
-          title: 'Cross-selling products',
-          dataId: widget.productID,
+          title: VendorAppStrings.crossSellingProducts.tr,
+          dataId: _productId,
           selectedCrossSellingProducts: selectedCrossSellingProducts,
         ),
       ),
@@ -851,18 +866,21 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
   Future<void> _openOverviewView() async {
     final overviewSelectedData = await showDraggableModalBottomSheet<VendorProductOverviewModel>(
       context: context,
-      builder: (scrollController) => SingleChildScrollView(
-        controller: scrollController,
-        child: Column(
-          children: [
-            AppUtils.dragHandle(context: context),
-            VendorProductOverviewView(
-              overviewModel: overviewModel,
-              productType: (widget.productType == VendorProductType.physical)
-                  ? ProductTypeConstants.PHYSICAL
-                  : ProductTypeConstants.DIGITAL,
-            ),
-          ],
+      builder: (scrollController) => Container(
+        color: Theme.of(context).cardColor,
+        child: SingleChildScrollView(
+          controller: scrollController,
+          child: Column(
+            children: [
+              AppUtils.dragHandle(context: context),
+              VendorProductOverviewView(
+                overviewModel: overviewModel,
+                productType: (widget.productType == VendorProductType.physical)
+                    ? ProductTypeConstants.PHYSICAL
+                    : ProductTypeConstants.DIGITAL,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -909,7 +927,7 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
       ),
     );
 
-    print('vendorProductDimensionsModel $vendorProductDimensionsModel');
+    log('vendorProductDimensionsModel $vendorProductDimensionsModel');
     _handleShippingData(vendorProductDimensionsModel);
     setState(() {});
   }
@@ -931,7 +949,7 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
       context,
       CupertinoPageRoute(
         builder: (context) => VendorProductHasVariationsView(
-          productID: widget.productID,
+          productID: _productId,
         ),
       ),
     );
@@ -944,11 +962,7 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
   Future attributeVariationInterchange() async {
     final provider = Provider.of<VendorCreateProductViewModel>(context, listen: false);
 
-    await provider.getProductView(context, widget.productID!);
-
-    final viewData = provider.vendorProductViewApiResponse.data;
-
-    final data = viewData!.data!;
+    await provider.getProductView(context, _productId!);
 
     setState(() {});
   }
@@ -1103,7 +1117,7 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
     _productTagsDropdownItems = provider.productTagsApiResponse.data?.vendorProductTags
             ?.map(
               (tag) => DropdownItem(
-                label: tag.toString() ?? '',
+                label: tag.toString(),
                 value: tag.toString(),
                 selected: tags.contains(tag),
               ),
@@ -1139,7 +1153,7 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
     try {
       final slugGenerated = await createProductSlugProvider.vendorCreateProductSlug(
         productName: slug,
-        productID: widget.productID,
+        productID: _productId,
         slugID: _slugID,
         context: context,
       );
@@ -1152,7 +1166,7 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
         });
       }
     } catch (e) {
-      print('Error: $e');
+      log('Error: $e');
     }
   }
 
@@ -1161,11 +1175,11 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
   String getHeaderText() {
     switch (widget.productType) {
       case VendorProductType.physical:
-        return 'New Physical product';
+        return AppStrings.products.tr;
       case VendorProductType.digital:
-        return 'New Digital product';
+        return VendorAppStrings.digitalAttachments.tr;
       default:
-        return 'Product Id or Name';
+        return AppStrings.productDetails.tr;
     }
   }
 
@@ -1197,7 +1211,7 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: VendorCommonAppBar(
-        title: widget.productID == null ? getHeaderText() : 'Edit Product ${widget.productID}',
+        title: _productId == null ? getHeaderText() : '${AppStrings.edit.tr} ${AppStrings.products.tr} $_productId',
       ),
       body: AppUtils.modelProgressHud(
         context: context,
@@ -1221,71 +1235,70 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
                       color: Colors.grey,
                       height: 1,
                     ),
-                    Row(
-                      children: [
-                        Flexible(
-                          flex: 1,
-                          child: SizedBox(
-                            width: MediaQuery.of(context).size.width,
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8.0,
-                                vertical: 8.0,
-                              ),
-                              child: CustomAppButton(
-                                borderRadius: 4,
-                                buttonText: 'Save',
-                                buttonColor: AppColors.lightCoral,
-                                onTap: () async {
-                                  _handleOverViewData(overviewModel);
+                    SafeArea(
+                      child: Row(
+                        children: [
+                          Flexible(
+                            flex: 1,
+                            child: SizedBox(
+                              width: MediaQuery.of(context).size.width,
+                              child: Padding(
+                                padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 0.0),
+                                child: CustomAppButton(
+                                  borderRadius: 4,
+                                  buttonText: AppStrings.save.tr,
+                                  buttonColor: AppColors.lightCoral,
+                                  onTap: () async {
+                                    _handleOverViewData(overviewModel);
 
-                                  /// assign some default values if nothing is selected in overview because we need to assign 0 to quantity and prices
-                                  setState(() {});
-                                  /*if (_formKey.currentState?.validate() ?? false) {
-                                        await _createUpdateProduct();
-                                      }*/
+                                    /// assign some default values if nothing is selected in overview because we need to assign 0 to quantity and prices
+                                    setState(() {});
+                                    /*if (_formKey.currentState?.validate() ?? false) {
+                                          await _createUpdateProduct();
+                                        }*/
 
-                                  if (_formKey.currentState?.validate() ?? false) {
-                                    final result = await _createUpdateProduct();
-                                  }
-                                },
+                                    if (_formKey.currentState?.validate() ?? false) {
+                                      await _createUpdateProduct();
+                                    }
+                                  },
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        /*Flexible(
-                              flex: 1,
-                              child: Container(
-                                width: MediaQuery.of(context).size.width,
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-                                  child: CustomAppButton(
-                                    borderRadius: 4,
-                                    borderColor: AppColors.lightCoral,
-                                    buttonText: "Save & Exit",
-                                    buttonColor: Colors.white,
-                                    textStyle: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                    onTap: () async {
-                                      if (_formKey.currentState?.validate() ?? false) {
-                                        final result = await _createUpdateProduct();
-                                        if (result) {
-                                          /// on success go back and refresh the products list
-                                          final allProductProvider = Provider.of<VendorGetProductsViewModel>(context, listen: false);
-                                          allProductProvider.clearList();
-                                          allProductProvider.vendorGetProducts();
-                                          Navigator.pop(context);
+                          /*Flexible(
+                                flex: 1,
+                                child: Container(
+                                  width: MediaQuery.of(context).size.width,
+                                  child: Padding(
+                                    padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+                                    child: CustomAppButton(
+                                      borderRadius: 4,
+                                      borderColor: AppColors.lightCoral,
+                                      buttonText: "Save & Exit",
+                                      buttonColor: Colors.white,
+                                      textStyle: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      onTap: () async {
+                                        if (_formKey.currentState?.validate() ?? false) {
+                                          final result = await _createUpdateProduct();
+                                          if (result) {
+                                            /// on success go back and refresh the products list
+                                            final allProductProvider = Provider.of<VendorGetProductsViewModel>(context, listen: false);
+                                            allProductProvider.clearList();
+                                            allProductProvider.vendorGetProducts();
+                                            Navigator.pop(context);
+                                          }
                                         }
-                                      }
-                                    },
+                                      },
+                                    ),
                                   ),
                                 ),
-                              ),
-                            )*/
-                      ],
+                              )*/
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -1302,8 +1315,8 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
           final settings = provider.generalSettingsApiResponse.data?.data;
           final viewData = provider.vendorProductViewApiResponse.data?.data;
 
-          print(
-            'view data ==> ${viewData?.totalVariations} || ${widget.productID}',
+          log(
+            'view data ==> ${viewData?.totalVariations} || $_productId',
           );
 
           /// Build overview, general info, image
@@ -1322,22 +1335,22 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
           ];
 
           ///Build shipping
-          if (widget.productID == null && widget.productType?.name == VendorProductType.physical.name) {
+          if (_productId == null && widget.productType?.name == VendorProductType.physical.name) {
             sections.add(_shippingSection(theme: theme, context: context));
           }
 
-          if (widget.productID != null &&
+          if (_productId != null &&
               viewData?.totalVariations == 0 &&
               viewData?.productType?.value?.toLowerCase() == VendorProductType.physical.name) {
             sections.add(_shippingSection(theme: theme, context: context));
           }
 
-          if (widget.productID == null && widget.productType?.name == VendorProductType.digital.name) {
+          if (_productId == null && widget.productType?.name == VendorProductType.digital.name) {
             sections.add(_digitalAttachments(theme: theme, context: context));
             sections.add(_digitalAttachmentsLinks(theme: theme, context: context));
           }
 
-          if (widget.productID != null &&
+          if (_productId != null &&
               viewData?.totalVariations == 0 &&
               viewData?.productType?.value?.toLowerCase() == VendorProductType.digital.name) {
             sections.add(_digitalAttachments(theme: theme, context: context));
@@ -1345,7 +1358,7 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
           }
 
           ///Build variations
-          if (widget.productID != null && (viewData?.totalVariations ?? 0) > 0) {
+          if (_productId != null && (viewData?.totalVariations ?? 0) > 0) {
             sections.add(
               _productVariationsSection(
                 theme: theme,
@@ -1356,7 +1369,7 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
           }
 
           ///Build attributes
-          if (widget.productID == null || viewData?.totalVariations == 0) {
+          if (_productId == null || viewData?.totalVariations == 0) {
             sections.add(
               _attributesSection(
                 theme: theme,
@@ -1428,9 +1441,9 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
       children: [
         /// product name
         CustomTextFormField(
-          labelText: 'Name',
+          labelText: AppStrings.name.tr,
           required: true,
-          hintText: 'Enter Name',
+          hintText: AppStrings.enterName.tr,
           maxLength: 250,
           focusNode: _nameFocusNode,
           nextFocusNode: _permalinkFocusNode,
@@ -1451,7 +1464,7 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
           builder: (context, createProductSlugProvider, _) {
             final createSlugApiResponse = createProductSlugProvider.vendorCreateSlugApiResponse.status;
             return CustomTextFormField(
-              labelText: 'Permalink',
+              labelText: VendorAppStrings.permalink.tr,
               required: true,
               hintText: '',
               maxLines: 1,
@@ -1467,7 +1480,7 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
               suffix: _permalinkController.text.isNotEmpty || _nameController.text.isNotEmpty
                   ? InkResponse(
                       highlightColor: AppColors.lightCoral.withAlpha((0.5 * 255).toInt()),
-                      splashColor: AppColors.lightCoral.withOpacity(0.3),
+                      splashColor: AppColors.lightCoral.withAlpha((0.3 * 255).toInt()),
                       radius: 10,
                       onTap: createSlugApiResponse != ApiStatus.LOADING
                           ? () {
@@ -1499,7 +1512,7 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
         kFormFieldSpace,
 
         /// description
-        fieldTitle(text: 'Description'),
+        fieldTitle(text: AppStrings.description.tr),
         CustomEditableTextField(
           placeholder: '',
           showToolBar: false,
@@ -1509,7 +1522,7 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
         kFormFieldSpace,
 
         /// content
-        fieldTitle(text: 'Content'),
+        fieldTitle(text: VendorAppStrings.content.tr),
         CustomEditableTextField(
           placeholder: '',
           showToolBar: false,
@@ -1519,12 +1532,11 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
         kFormFieldSpace,
 
         /// brands
-        fieldTitle(text: 'Brand'),
+        fieldTitle(text: AppStrings.brands.tr),
         kMinorSpace,
         CustomDropdown(
           menuItemsList: _brandDropdownMenuItemsList,
-          textColor: Colors.black,
-          hintText: 'Select Brand',
+          hintText: VendorAppStrings.selectBrand.tr,
           value: _brandDropdownMenuItemsList.map((item) => item.value).firstWhere(
                 (id) => id == createProductPostData.brandId,
                 orElse: () => null,
@@ -1536,57 +1548,57 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
         kFormFieldSpace,
 
         /// categories
-        fieldTitle(text: 'Categories'),
+        fieldTitle(text: AppStrings.categories.tr),
         kMinorSpace,
         CustomMultiselectDropdown(
           dropdownItems: _categoryDropdownItems,
           dropdownController: _categoriesController,
-          hintText: 'Select Categories',
+          hintText: AppStrings.categories.tr,
           onSelectionChanged: (value) {
             if (value is List<ProductCategories>) {
               final List<int> selectedCategoryIds = value.where((e) => e.id != null).map((e) => e.id!).toList();
               createProductPostData.categories = selectedCategoryIds;
-              print('Selected Categories: $selectedCategoryIds');
+              log('Selected Categories: $selectedCategoryIds');
             } else {
-              print('Unexpected data type: ${value.runtimeType}');
+              log('Unexpected data type: ${value.runtimeType}');
             }
           },
         ),
         kFormFieldSpace,
 
         /// product collections
-        fieldTitle(text: 'Product Collections'),
+        fieldTitle(text: VendorAppStrings.relatedProducts.tr),
         kMinorSpace,
         CustomMultiselectDropdown(
           dropdownItems: _productCollectionsDropdownItems,
           dropdownController: _productCollectionsController,
-          hintText: 'Select Product Collection',
+          hintText: VendorAppStrings.selectProductCollection.tr,
           onSelectionChanged: (value) {
             if (value is List<ProductCollections>) {
               final List<int> selectedCollectionIds = value.where((e) => e.id != null).map((e) => e.id!).toList();
               createProductPostData.productCollections = selectedCollectionIds;
-              print('Selected Product Collections: $selectedCollectionIds');
+              log('Selected Product Collections: $selectedCollectionIds');
             } else {
-              print('Unexpected data type: ${value.runtimeType}');
+              log('Unexpected data type: ${value.runtimeType}');
             }
           },
         ),
         kFormFieldSpace,
 
         /// labels
-        fieldTitle(text: 'Labels'),
+        fieldTitle(text: VendorAppStrings.enterLabel.tr),
         kMinorSpace,
         CustomMultiselectDropdown(
           dropdownItems: _productLabelDropdownItems,
           dropdownController: _productLabelController,
-          hintText: 'Select Labels',
+          hintText: VendorAppStrings.selectLabels.tr,
           onSelectionChanged: (value) {
             if (value is List<ProductLabels>) {
               final List<int> selectedLabelsIds = value.where((e) => e.id != null).map((e) => e.id!).toList();
               createProductPostData.productLabels = selectedLabelsIds;
-              print('Selected Labels: $selectedLabelsIds');
+              log('Selected Labels: $selectedLabelsIds');
             } else {
-              print('Unexpected data type: ${value.runtimeType}');
+              log('Unexpected data type: ${value.runtimeType}');
             }
           },
         ),
@@ -1596,19 +1608,19 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
         if (settings?.isTaxEnabled ?? true)
           Column(
             children: [
-              fieldTitle(text: 'Taxes'),
+              fieldTitle(text: VendorAppStrings.selectTaxes.tr),
               kMinorSpace,
               CustomMultiselectDropdown(
                 dropdownItems: _productTaxesDropdownItems,
                 dropdownController: _productTaxesController,
-                hintText: 'Select Taxes',
+                hintText: VendorAppStrings.selectTaxes.tr,
                 onSelectionChanged: (value) {
                   if (value is List<Taxes>) {
                     final List<int> selectedTaxesIds = value.where((e) => e.id != null).map((e) => e.id!).toList();
                     createProductPostData.taxes = selectedTaxesIds;
-                    print('Selected Taxes: $selectedTaxesIds');
+                    log('Selected Taxes: $selectedTaxesIds');
                   } else {
-                    print('Unexpected data type: ${value.runtimeType}');
+                    log('Unexpected data type: ${value.runtimeType}');
                   }
                 },
               ),
@@ -1617,21 +1629,21 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
           ),
 
         /// tags
-        fieldTitle(text: 'Tags'),
+        fieldTitle(text: AppStrings.tags.tr),
         kMinorSpace,
         CustomMultiselectDropdown(
           dropdownItems: _productTagsDropdownItems,
           dropdownController: _productTagsController,
-          hintText: 'Select Tags',
+          hintText: VendorAppStrings.selectTags.tr,
           onSelectionChanged: (value) {
-            print('Selected Tags: $value');
+            log('Selected Tags: $value');
             if (value is List<String>) {
               final List<Map<String, String>> selectedTags =
                   value.where((e) => e.isNotEmpty).map((e) => {'value': e}).toList();
               createProductPostData.tag = selectedTags;
-              print('Selected Tag: $selectedTags');
+              log('Selected Tag: $selectedTags');
             } else {
-              print('Unexpected data type: ${value.runtimeType}');
+              log('Unexpected data type: ${value.runtimeType}');
             }
           },
         ),
@@ -1651,7 +1663,7 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
                     });
                   }
                 },
-                title: 'Generate license code after purchasing this product?',
+                title: VendorAppStrings.generateLicenseCodeAfterPurchase.tr,
               ),
             ],
           ),
@@ -1668,8 +1680,8 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TitleWithArrow(
-            title: 'Upload Images',
-            textStyle: createProductTextStyle(),
+            title: VendorAppStrings.uploadImages.tr,
+            textStyle: createProductTextStyle(context),
             onTap: _openImagePickerScreen,
           ),
           if (selectedImages?.isNotEmpty == true)
@@ -1694,13 +1706,13 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
       Column(
         children: [
           TitleWithArrow(
-            title: 'Overview',
-            textStyle: createProductTextStyle(),
+            title: AppStrings.overview.tr,
+            textStyle: createProductTextStyle(context),
             onTap: () async {
               try {
                 await _openOverviewView();
               } catch (e) {
-                print('Error: $e');
+                log('Error: $e');
               }
             },
           ),
@@ -1714,24 +1726,24 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
                 crossAxisAlignment: CrossAxisAlignment.start,
                 // Align the content to the left
                 children: [
-                  showDetail(label: 'Sku', value: overviewModel?.sku),
-                  showDetail(label: 'Price', value: overviewModel?.price),
+                  showDetail(label: VendorAppStrings.sku.tr, value: overviewModel?.sku),
+                  showDetail(label: VendorAppStrings.price.tr, value: overviewModel?.price),
                   showDetail(
-                    label: 'Sale Price',
+                    label: VendorAppStrings.salePrice.tr,
                     value: overviewModel?.priceSale,
                   ),
                   if (overviewModel?.chooseDiscountPeriod ?? false)
                     Column(
                       children: [
                         showDetail(
-                          label: 'From',
+                          label: VendorAppStrings.fromDate.tr,
                           value: overviewModel?.fromDate,
                         ),
-                        showDetail(label: 'To', value: overviewModel?.toDate),
+                        showDetail(label: VendorAppStrings.toDate.tr, value: overviewModel?.toDate),
                       ],
                     ),
                   showDetail(
-                    label: 'Cost per item',
+                    label: VendorAppStrings.costPerItem.tr,
                     value: overviewModel?.costPerItem,
                   ),
                   showDetail(label: 'Barcode', value: overviewModel?.barcode),
@@ -1765,13 +1777,13 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
     required VendorCreateProductViewModel provider,
   }) =>
       TitleWithArrow(
-        title: 'Product variations',
-        textStyle: createProductTextStyle(),
+        title: VendorAppStrings.productVariations.tr,
+        textStyle: createProductTextStyle(context),
         onTap: () async {
           try {
             _openProductHasVariationsView();
           } catch (e) {
-            print('Error: $e');
+            log('Error: $e');
           }
         },
       );
@@ -1784,13 +1796,13 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
       Column(
         children: [
           TitleWithArrow(
-            title: 'Shipping',
-            textStyle: createProductTextStyle(),
+            title: VendorAppStrings.shippingFee.tr,
+            textStyle: createProductTextStyle(context),
             onTap: () async {
               try {
                 await _openShippingSection();
               } catch (e) {
-                print('Error: $e');
+                log('Error: $e');
               }
             },
           ),
@@ -1803,19 +1815,19 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
               expandedContent: Column(
                 children: [
                   showDetail(
-                    label: 'Weight (g)',
+                    label: VendorAppStrings.weightG.tr,
                     value: vendorProductDimensionsModel?.weight,
                   ),
                   showDetail(
-                    label: 'Length (cm)',
+                    label: VendorAppStrings.lengthCm.tr,
                     value: vendorProductDimensionsModel?.length,
                   ),
                   showDetail(
-                    label: 'Width (cm)',
+                    label: VendorAppStrings.widthCm.tr,
                     value: vendorProductDimensionsModel?.width,
                   ),
                   showDetail(
-                    label: 'Height (cm)',
+                    label: VendorAppStrings.heightCm.tr,
                     value: vendorProductDimensionsModel?.height,
                   ),
                 ],
@@ -1833,8 +1845,8 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TitleWithArrow(
-            title: 'Digital Attachments',
-            textStyle: createProductTextStyle(),
+            title: VendorAppStrings.digitalAttachments.tr,
+            textStyle: createProductTextStyle(context),
             onTap: _openDigitalPickerScreen,
           ),
           if (selectedDigitalImages?.isNotEmpty == true)
@@ -1859,8 +1871,8 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TitleWithArrow(
-            title: 'Digital Attachment Links',
-            textStyle: createProductTextStyle(),
+            title: VendorAppStrings.digitalAttachmentLinks.tr,
+            textStyle: createProductTextStyle(context),
             onTap: _openDigitalLinksScreen,
           ),
           if (selectedDigitalLinks?.isNotEmpty == true)
@@ -1886,8 +1898,8 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TitleWithArrow(
-            title: 'Attributes',
-            textStyle: createProductTextStyle(),
+            title: VendorAppStrings.attributes.tr,
+            textStyle: createProductTextStyle(context),
             onTap: () => _openAttributesScreen(provider.attributeSetsApiResponse.data),
           ),
           if (selectedAttributes?.isNotEmpty == true)
@@ -1911,8 +1923,8 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TitleWithArrow(
-            title: 'Product Options',
-            textStyle: createProductTextStyle(),
+            title: VendorAppStrings.productOptions.tr,
+            textStyle: createProductTextStyle(context),
             onTap: () => _openProductOptionsScreen(globalOptions),
           ),
           if (selectedProductOptions?.isNotEmpty == true)
@@ -1935,8 +1947,8 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TitleWithArrow(
-            title: 'Related products',
-            textStyle: createProductTextStyle(),
+            title: VendorAppStrings.relatedProducts.tr,
+            textStyle: createProductTextStyle(context),
             onTap: () => _openRPSearchScreen(),
           ),
           if (selectedRelatedProducts.isNotEmpty == true)
@@ -1959,8 +1971,8 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TitleWithArrow(
-            title: 'Cross-selling products',
-            textStyle: createProductTextStyle(),
+            title: VendorAppStrings.crossSellingProducts.tr,
+            textStyle: createProductTextStyle(context),
             onTap: () => _openCSSearchScreen(),
           ),
           if (selectedCrossSellingProducts.isNotEmpty == true)
@@ -1985,8 +1997,8 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TitleWithArrow(
-            title: 'Product FAQs',
-            textStyle: createProductTextStyle(),
+            title: VendorAppStrings.productFaqs.tr,
+            textStyle: createProductTextStyle(context),
             onTap: () => _openProductFAQScreen(listFaq),
           ),
           if (selectedParentFaqs?.listFaq.isNotEmpty == true)
@@ -2009,8 +2021,8 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
       Column(
         children: [
           TitleWithArrow(
-            title: 'Search Engine Optimization',
-            textStyle: createProductTextStyle(),
+            title: VendorAppStrings.searchEngineOptimization.tr,
+            textStyle: createProductTextStyle(context),
             onTap: _openSeoOptimizeView,
           ),
           if ((_permalinkController.text.isNotEmpty &&
@@ -2086,7 +2098,8 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
       );
 }
 
-TextStyle createProductTextStyle() => detailsTitleStyle.copyWith(fontSize: 16);
+TextStyle createProductTextStyle(BuildContext context) =>
+    detailsTitleStyle.copyWith(fontSize: 16, color: Theme.of(context).colorScheme.onPrimary);
 
 class TitleWithArrow extends StatelessWidget {
   const TitleWithArrow({

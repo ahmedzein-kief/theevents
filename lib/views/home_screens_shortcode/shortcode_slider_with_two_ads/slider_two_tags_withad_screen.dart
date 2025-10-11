@@ -20,7 +20,7 @@ class SliderTwoTagsWithAdScreen extends StatefulWidget {
   final dynamic data;
 
   @override
-  _SimpleSliderState createState() => _SimpleSliderState();
+  State<SliderTwoTagsWithAdScreen> createState() => _SimpleSliderState();
 }
 
 class _SimpleSliderState extends State<SliderTwoTagsWithAdScreen> {
@@ -132,7 +132,7 @@ class _SimpleSliderState extends State<SliderTwoTagsWithAdScreen> {
                     decoration: BoxDecoration(
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.3),
+                          color: Colors.black.withAlpha((0.3 * 255).toInt()),
                           spreadRadius: 1,
                           blurRadius: 2,
                           offset: const Offset(0, 01),
@@ -140,8 +140,8 @@ class _SimpleSliderState extends State<SliderTwoTagsWithAdScreen> {
                       ],
                       borderRadius: BorderRadius.circular(14),
                       color: currentIndexCarousel == entry.key
-                          ? Colors.white.withOpacity(0.7)
-                          : Colors.white.withOpacity(0.7),
+                          ? Colors.white.withAlpha((0.7 * 255).toInt())
+                          : Colors.white.withAlpha((0.7 * 255).toInt()),
                     ),
                   ),
                 )

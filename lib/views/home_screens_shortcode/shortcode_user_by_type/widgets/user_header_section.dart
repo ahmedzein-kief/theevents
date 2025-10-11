@@ -34,7 +34,7 @@ class UserHeaderSection extends StatelessWidget {
               color: Theme.of(context).colorScheme.primary,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
+                  color: Colors.black.withAlpha((0.2 * 255).toInt()),
                   spreadRadius: 1,
                   blurRadius: 5,
                   offset: const Offset(0, 3),

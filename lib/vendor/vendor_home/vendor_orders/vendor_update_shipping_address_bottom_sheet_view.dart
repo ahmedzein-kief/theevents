@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'package:event_app/core/constants/vendor_app_strings.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/helper/validators/validator.dart';
-import 'package:event_app/core/network/api_status/api_status.dart';
 import 'package:event_app/core/styles/app_sizes.dart';
 import 'package:event_app/core/widgets/custom_items_views/custom_add_to_cart_button.dart';
 import 'package:event_app/core/widgets/custom_profile_views/custom_text_field_view.dart';
@@ -17,6 +16,7 @@ import 'package:provider/provider.dart';
 
 import '../../../core/styles/app_colors.dart';
 import '../../../core/utils/app_utils.dart';
+import '../../../data/vendor/data/response/apis_status.dart';
 import '../../../models/wishlist_models/states_cities_models.dart';
 import '../../../views/country_picker/country_pick_screen.dart';
 
@@ -41,7 +41,7 @@ class VendorUpdateShippingAddressBottomSheetView extends StatefulWidget {
   final bool showUseDefaultButton;
 
   @override
-  _VendorUpdateShippingAddressBottomSheetViewState createState() => _VendorUpdateShippingAddressBottomSheetViewState();
+  State<VendorUpdateShippingAddressBottomSheetView> createState() => _VendorUpdateShippingAddressBottomSheetViewState();
 }
 
 class _VendorUpdateShippingAddressBottomSheetViewState extends State<VendorUpdateShippingAddressBottomSheetView> {
@@ -138,8 +138,17 @@ class _VendorUpdateShippingAddressBottomSheetViewState extends State<VendorUpdat
     try {
       setProcessing(true);
 
+      // FIX: Check mounted before first async call
+      if (!mounted) return;
+
       // Fetch all countries first
       countryModel = await fetchCountries(context);
+
+      // FIX: Check mounted after async call
+      if (!mounted) {
+        setProcessing(false);
+        return;
+      }
 
       if (widget.customerAddress != null && countryModel?.data?.list?.isNotEmpty == true) {
         final countryName = widget.customerAddress?.country;
@@ -156,7 +165,13 @@ class _VendorUpdateShippingAddressBottomSheetViewState extends State<VendorUpdat
 
         // Fetch states for this country
         if (selectedCountryId != null) {
-          stateModel = await fetchStates(context, selectedCountryId!);
+          stateModel = await fetchStates(selectedCountryId!);
+
+          // FIX: Check mounted after async call
+          if (!mounted) {
+            setProcessing(false);
+            return;
+          }
 
           // Find and set the matching state
           if (stateModel?.data?.isNotEmpty == true) {
@@ -169,11 +184,23 @@ class _VendorUpdateShippingAddressBottomSheetViewState extends State<VendorUpdat
 
             // Fetch cities for this state
             if (selectedState?.id != null) {
+              // FIX: Check mounted before using context
+              if (!mounted) {
+                setProcessing(false);
+                return;
+              }
+
               cityModel = await fetchCities(
                 context,
                 selectedState!.id!,
                 selectedCountryId!,
               );
+
+              // FIX: Check mounted after async call
+              if (!mounted) {
+                setProcessing(false);
+                return;
+              }
 
               // Find and set the matching city
               if (cityModel?.data?.isNotEmpty == true) {
@@ -192,10 +219,14 @@ class _VendorUpdateShippingAddressBottomSheetViewState extends State<VendorUpdat
         _populateAddressForm();
       }
 
-      setProcessing(false);
+      if (mounted) {
+        setProcessing(false);
+      }
     } catch (error) {
       log('Error fetching countries: $error');
-      setProcessing(false);
+      if (mounted) {
+        setProcessing(false);
+      }
     }
   }
 
@@ -237,7 +268,7 @@ class _VendorUpdateShippingAddressBottomSheetViewState extends State<VendorUpdat
         cityModel = null;
       });
 
-      stateModel = await fetchStates(context, countryId);
+      stateModel = await fetchStates(countryId);
 
       log('STATE MODEL ${stateModel?.data?.length.toString() ?? 'No data'}');
 
@@ -529,7 +560,7 @@ class _VendorUpdateShippingAddressBottomSheetViewState extends State<VendorUpdat
                       create: (context) => VendorUpdateShippingAddressViewModel(),
                       child: Consumer<VendorUpdateShippingAddressViewModel>(
                         builder: (context, provider, _) => AppCustomButton(
-                          isLoading: provider.apiResponse.status == ApiStatus.loading,
+                          isLoading: provider.apiResponse.status == ApiStatus.LOADING,
                           title: VendorAppStrings.update.tr,
                           onPressed: () async {
                             try {
@@ -550,11 +581,17 @@ class _VendorUpdateShippingAddressBottomSheetViewState extends State<VendorUpdat
 
                                 final form = address.vendorOrderDetailsUpdateShippingAddressToJson();
 
+                                // FIX: Check if context is still mounted before async call
+                                if (!context.mounted) return;
+
                                 final result = await provider.vendorUpdateShippingAddress(
                                   shippingID: widget.shipmentId.toString(),
                                   form: form,
                                   context: context,
                                 );
+
+                                // FIX: Check if context is still mounted after async call
+                                if (!context.mounted) return;
 
                                 if (result) {
                                   // Refresh the order detail page
@@ -562,9 +599,8 @@ class _VendorUpdateShippingAddressBottomSheetViewState extends State<VendorUpdat
                                         orderId: widget.orderId,
                                       );
 
-                                  if (mounted) {
-                                    Navigator.pop(context);
-                                  }
+                                  // FIX: context.mounted is already checked above, so this is safe
+                                  Navigator.pop(context);
                                 }
                               }
                             } catch (e) {

@@ -103,7 +103,7 @@ class PdfExportService {
         _buildTableHeaderRow(),
 
         // Data Rows
-        ...transactions.map((transaction) => _buildTransactionRow(transaction, formatter, currencyFormatter)).toList(),
+        ...transactions.map((transaction) => _buildTransactionRow(transaction, formatter, currencyFormatter)),
       ],
     );
   }

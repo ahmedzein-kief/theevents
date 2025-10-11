@@ -6,9 +6,9 @@ import 'package:provider/provider.dart';
 
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/network/api_endpoints/api_contsants.dart';
-import '../../../../core/services/shared_preferences_helper.dart';
 import '../../../../core/styles/app_colors.dart';
 import '../../../../core/styles/custom_text_styles.dart';
+import '../../../../core/utils/app_utils.dart';
 import '../../../../core/widgets/custom_app_views/search_bar.dart';
 import '../../../../core/widgets/custom_items_views/product_card.dart';
 import '../../../../core/widgets/items_empty_view.dart';
@@ -123,9 +123,8 @@ class _EventBrandScreenState extends State<EventBrandScreen> {
   ///  ------------  FOR TAKING THE  ICON HEART AS THEIR STATE RED ON WISHLIST ADD BASIS ------------
 
   Future<void> fetchWishListItems() async {
-    final token = await SecurePreferencesUtil.getToken();
     final provider = Provider.of<WishlistProvider>(context, listen: false);
-    provider.fetchWishlist(token ?? '', context);
+    provider.fetchWishlist();
   }
 
   /// ------------   PRODUCTS SORTING  FUNCTION   ------------
@@ -180,6 +179,17 @@ class _EventBrandScreenState extends State<EventBrandScreen> {
           _isFetchingMoreProducts = false;
         });
       }
+    }
+  }
+
+  /// Handle add to cart with proper error handling
+  Future<void> _handleAddToCart(int productId) async {
+    final result = await context.read<CartProvider>().addToCart(productId, 1);
+
+    if (result.success) {
+      AppUtils.showToast(result.message, isSuccess: true);
+    } else {
+      AppUtils.showToast(result.message);
     }
   }
 
@@ -348,7 +358,7 @@ class _EventBrandScreenState extends State<EventBrandScreen> {
                                 ),
 
                                 ///======  TAB PAGES VIEW =================================
-                                if (_currentTab == 'Products') _ProductsView() else _PackagesView(),
+                                if (_currentTab == 'Products') _productsView() else _packagesView(),
                               ],
                             ),
                           ),
@@ -375,12 +385,12 @@ class _EventBrandScreenState extends State<EventBrandScreen> {
   }
 
   ///  ------------------------ BRANDS PRODUCTS VIEW --------------------------------
-  Widget _ProductsView() {
+  Widget _productsView() {
     final double screenHeight = MediaQuery.sizeOf(context).height;
     final double screenWidth = MediaQuery.sizeOf(context).width;
     final freshPicksProvider = Provider.of<FreshPicksProvider>(context, listen: false);
     final wishlistProvider = Provider.of<WishlistProvider>(context, listen: false);
-    final cartProvider = Provider.of<CartProvider>(context, listen: false);
+
     return Column(
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.start,
@@ -508,23 +518,14 @@ class _EventBrandScreenState extends State<EventBrandScreen> {
                               price: product.prices?.price.toString(),
                               optionalIcon: Icons.shopping_cart_checkout_rounded,
                               reviewsCount: product.review?.reviewsCount?.toInt(),
-                              onOptionalIconTap: () async {
-                                final token = await SecurePreferencesUtil.getToken();
-                                if (token != null) {
-                                  await cartProvider.addToCart(
-                                    product.id,
-                                    context,
-                                    1,
-                                  );
-                                }
-                              },
+
+                              onOptionalIconTap: () => _handleAddToCart(product.id),
                               isHeartObscure: wishlistProvider.wishlist?.data?.products.any(
                                     (wishlistProduct) => wishlistProduct.id == product.id,
                                   ) ??
                                   false,
                               // isHeartObscure: wishlistProvider.wishlist?.data?.products.any((wishlistProduct) => wishlistProduct.id == product.id) ?? false,
                               onHeartTap: () async {
-                                final token = await SecurePreferencesUtil.getToken();
                                 final bool isInWishlist = wishlistProvider.wishlist?.data?.products.any(
                                       (wishlistProduct) => wishlistProduct.id == product.id,
                                     ) ??
@@ -533,7 +534,6 @@ class _EventBrandScreenState extends State<EventBrandScreen> {
                                   await wishlistProvider.deleteWishlistItem(
                                     product.id ?? 0,
                                     context,
-                                    token ?? '',
                                   );
                                 } else {
                                   await freshPicksProvider.handleHeartTap(
@@ -541,10 +541,7 @@ class _EventBrandScreenState extends State<EventBrandScreen> {
                                     product.id ?? 0,
                                   );
                                 }
-                                await wishlistProvider.fetchWishlist(
-                                  token ?? '',
-                                  context,
-                                );
+                                await wishlistProvider.fetchWishlist();
                               },
                             ),
                           );
@@ -560,11 +557,10 @@ class _EventBrandScreenState extends State<EventBrandScreen> {
     );
   }
 
-  Widget _PackagesView() {
+  Widget _packagesView() {
     final dynamic screenWidth = MediaQuery.sizeOf(context).width;
     final dynamic screenHeight = MediaQuery.sizeOf(context).height;
     final freshPicksProvider = Provider.of<FreshPicksProvider>(context);
-    final cartProvider = Provider.of<CartProvider>(context, listen: false);
     final wishlistProvider = Provider.of<WishlistProvider>(context, listen: false);
 
     return Center(
@@ -732,23 +728,14 @@ class _EventBrandScreenState extends State<EventBrandScreen> {
                                   price: product.prices?.price.toString(),
                                   optionalIcon: Icons.shopping_cart_checkout_rounded,
                                   reviewsCount: product.review?.reviewsCount?.toInt(),
-                                  onOptionalIconTap: () async {
-                                    final token = await SecurePreferencesUtil.getToken();
-                                    if (token != null) {
-                                      await cartProvider.addToCart(
-                                        product.id,
-                                        context,
-                                        1,
-                                      );
-                                    }
-                                  },
+
+                                  onOptionalIconTap: () => _handleAddToCart(product.id),
                                   isHeartObscure: wishlistProvider.wishlist?.data?.products.any(
                                         (wishlistProduct) => wishlistProduct.id == product.id,
                                       ) ??
                                       false,
                                   // isHeartObscure: wishlistProvider.wishlist?.data?.products.any((wishlistProduct) => wishlistProduct.id == product.id) ?? false,
                                   onHeartTap: () async {
-                                    final token = await SecurePreferencesUtil.getToken();
                                     final bool isInWishlist = wishlistProvider.wishlist?.data?.products.any(
                                           (wishlistProduct) => wishlistProduct.id == product.id,
                                         ) ??
@@ -757,7 +744,6 @@ class _EventBrandScreenState extends State<EventBrandScreen> {
                                       await wishlistProvider.deleteWishlistItem(
                                         product.id ?? 0,
                                         context,
-                                        token ?? '',
                                       );
                                     } else {
                                       await freshPicksProvider.handleHeartTap(
@@ -765,10 +751,7 @@ class _EventBrandScreenState extends State<EventBrandScreen> {
                                         product.id ?? 0,
                                       );
                                     }
-                                    await wishlistProvider.fetchWishlist(
-                                      token ?? '',
-                                      context,
-                                    );
+                                    await wishlistProvider.fetchWishlist();
                                   },
                                 ),
                               );

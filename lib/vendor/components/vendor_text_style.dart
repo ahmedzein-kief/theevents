@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 TextStyle joinSeller() => GoogleFonts.inter(
-    textStyle: const TextStyle(overflow: TextOverflow.ellipsis),
-    fontSize: 20,
-    fontWeight: FontWeight.w600,);
+      textStyle: const TextStyle(overflow: TextOverflow.ellipsis),
+      fontSize: 20,
+      fontWeight: FontWeight.w600,
+    );
 
 TextStyle vendorDescription() => const TextStyle(
       fontSize: 12,
@@ -13,36 +14,43 @@ TextStyle vendorDescription() => const TextStyle(
       fontWeight: FontWeight.w300,
     );
 
-TextStyle vendorDescriptionAgreement() =>
-    GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w300);
+TextStyle vendorDescriptionAgreement() => GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w300);
 
 TextStyle signHere() => GoogleFonts.inter(
-    fontSize: 13, color: Colors.grey, fontWeight: FontWeight.bold,);
+      fontSize: 13,
+      color: Colors.grey,
+      fontWeight: FontWeight.bold,
+    );
 
 TextStyle agreementAccept() => GoogleFonts.inter(
-    fontSize: 13, color: Colors.grey, fontWeight: FontWeight.bold,);
+      fontSize: 13,
+      color: Colors.grey,
+      fontWeight: FontWeight.bold,
+    );
 
 TextStyle headingFields() => GoogleFonts.inter(
-    textStyle: const TextStyle(overflow: TextOverflow.ellipsis),
-    fontSize: 15,
-    fontWeight: FontWeight.w500,);
+      textStyle: const TextStyle(overflow: TextOverflow.ellipsis),
+      fontSize: 15,
+      fontWeight: FontWeight.w500,
+    );
 
 TextStyle loginHeading() => GoogleFonts.inter(
-    textStyle: const TextStyle(overflow: TextOverflow.ellipsis),
-    fontSize: 18,
-    fontWeight: FontWeight.w600,);
+      textStyle: const TextStyle(overflow: TextOverflow.ellipsis),
+      fontSize: 18,
+      fontWeight: FontWeight.w600,
+    );
 
-TextStyle VendorAuth() =>
-    GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w500);
+TextStyle vendorAuth() => GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w500);
 
-TextStyle vendorBusinessInfo() =>
-    GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w500);
+TextStyle vendorBusinessInfo() => GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w500);
 
-TextStyle paymentHeading() =>
-    GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w600);
+TextStyle paymentHeading() => GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w600);
 
 TextStyle congratulations() => GoogleFonts.inter(
-    fontSize: 20, color: Colors.green, fontWeight: FontWeight.bold,);
+      fontSize: 20,
+      color: Colors.green,
+      fontWeight: FontWeight.bold,
+    );
 
 TextStyle paymentDesc() => GoogleFonts.inter(
       fontSize: 14,
@@ -210,8 +218,6 @@ class VendorColors {
   static const Color pastelPinkColor = Color(0xFFFFEEFF);
   static const Color productHeading = Color(0xFFECE6F0);
   static const Color views = Color(0xFF2200CC);
-  static const Color vendorAppBackground =
-      Color(0xFFF0F2F5); // Manually adjusted to be lighter
-  static const Color editColor =
-      Color(0xFFFCBA03); // Manually adjusted to be lighter
+  static const Color vendorAppBackground = Color(0xFFF0F2F5); // Manually adjusted to be lighter
+  static const Color editColor = Color(0xFFFCBA03); // Manually adjusted to be lighter
 }

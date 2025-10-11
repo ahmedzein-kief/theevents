@@ -22,7 +22,7 @@ class StepperScreen extends StatefulWidget {
   final String amount;
 
   @override
-  _StepperScreenState createState() => _StepperScreenState();
+  State<StepperScreen> createState() => _StepperScreenState();
 }
 
 class _StepperScreenState extends State<StepperScreen> {

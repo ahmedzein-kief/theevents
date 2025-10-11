@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 
 import '../../../vendor/Components/vendor_text_style.dart';
 
-class VendorCommonAppBar extends StatelessWidget
-    implements PreferredSizeWidget {
+class VendorCommonAppBar extends StatelessWidget implements PreferredSizeWidget {
   const VendorCommonAppBar({super.key, required this.title});
+
   final String title;
 
   @override
@@ -14,7 +14,7 @@ class VendorCommonAppBar extends StatelessWidget
     return AppBar(
       automaticallyImplyLeading: false,
       centerTitle: false,
-      // backgroundColor: AppColors.bgColor,
+      //
       backgroundColor: theme.appBarTheme.backgroundColor,
       title: Text(
         title,

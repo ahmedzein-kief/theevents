@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:event_app/core/constants/vendor_app_strings.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/styles/app_colors.dart';
@@ -25,7 +27,7 @@ class VendorProductOptionsScreen extends StatefulWidget {
   final List<GlobalOptions> globalOptions;
 
   @override
-  _VendorProductOptionsScreenState createState() => _VendorProductOptionsScreenState();
+  State<VendorProductOptionsScreen> createState() => _VendorProductOptionsScreenState();
 }
 
 class _VendorProductOptionsScreenState extends State<VendorProductOptionsScreen> {
@@ -42,7 +44,7 @@ class _VendorProductOptionsScreenState extends State<VendorProductOptionsScreen>
 
   Future _fetchOptionsData(String optionId) async {
     try {
-      print('Inside fetch options ');
+      log('Inside fetch options ');
       setProcessing(true);
       final provider = Provider.of<VendorCreateProductViewModel>(context, listen: false);
       final result = await provider.getGlobalOptions(optionId);
@@ -55,7 +57,7 @@ class _VendorProductOptionsScreenState extends State<VendorProductOptionsScreen>
       setProcessing(false);
     } catch (e) {
       setProcessing(false);
-      print('Error: $e');
+      log('Error: $e');
     }
   }
 
@@ -97,19 +99,19 @@ class _VendorProductOptionsScreenState extends State<VendorProductOptionsScreen>
         },
         child: Scaffold(
           appBar: AppBar(
-            title: Text('Product Options', style: vendorName(context)),
+            title: Text(VendorAppStrings.productOptions.tr, style: vendorName(context)),
             leading: IconButton(
               icon: const Icon(Icons.arrow_back),
               onPressed: _returnBack,
             ),
           ),
           body: productOptions.isEmpty
-              ? const Padding(
-                  padding: EdgeInsets.all(16),
+              ? Padding(
+                  padding: const EdgeInsets.all(16),
                   child: Center(
                     child: Text(
-                      'Please add product options on the tap of + button at bottom right corner.',
-                      style: TextStyle(fontSize: 16, color: Colors.grey),
+                      VendorAppStrings.productOptionsDes.tr,
+                      style: const TextStyle(fontSize: 16, color: Colors.grey),
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -134,10 +136,10 @@ class _VendorProductOptionsScreenState extends State<VendorProductOptionsScreen>
           itemCount: productOptions.length,
           itemBuilder: (context, sectionIndex) {
             final section = productOptions[sectionIndex];
-            final typeValue = GlobalOptions(
-              id: section.id,
-              value: section.name,
-            );
+            // final typeValue = GlobalOptions(
+            //   id: section.id,
+            //   value: section.name,
+            // );
             productOptions[sectionIndex].nameController.text = productOptions[sectionIndex].name;
             productOptions[sectionIndex].optionTypeController.text = productOptions[sectionIndex].getType();
             return Card(
@@ -227,7 +229,7 @@ class _VendorProductOptionsScreenState extends State<VendorProductOptionsScreen>
                                           keyboardType: TextInputType.number,
                                           controller: productOptions[sectionIndex].values[rowIndex].priceController,
                                           onChanged: (value) {
-                                            print(
+                                            log(
                                               'value  ==> $sectionIndex || $rowIndex || $value',
                                             );
                                             if (value is String) {
@@ -300,9 +302,9 @@ class _VendorProductOptionsScreenState extends State<VendorProductOptionsScreen>
                                 Icons.add,
                                 color: AppColors.lightCoral,
                               ),
-                              label: const Text(
-                                'Add new row',
-                                style: TextStyle(color: AppColors.lightCoral),
+                              label: Text(
+                                VendorAppStrings.addNewRow.tr,
+                                style: const TextStyle(color: AppColors.lightCoral),
                               ),
                               onPressed: () => addNewRow(sectionIndex),
                             ),
@@ -327,53 +329,55 @@ class _VendorProductOptionsScreenState extends State<VendorProductOptionsScreen>
         builder: (context, setState) => Container(
           width: double.infinity,
           decoration: BoxDecoration(
-            color: Colors.white,
             borderRadius: BorderRadius.only(
               topRight: Radius.circular(kSmallCardRadius),
               topLeft: Radius.circular(kSmallCardRadius),
             ),
           ),
-          padding: EdgeInsets.symmetric(horizontal: kPadding, vertical: kPadding),
+          // padding: EdgeInsets.symmetric(horizontal: kPadding, vertical: kPadding),
           child: Material(
             child: Wrap(
               children: [
                 Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Text(
-                      'Select Section Type',
-                      style: TextStyle(
+                    Text(
+                      VendorAppStrings.pleaseSelectType.tr,
+                      style: const TextStyle(
                         fontSize: 17.0,
                         color: AppColors.lightCoral,
                         decoration: TextDecoration.none,
                       ),
                     ),
                     kMediumSpace,
-                    GenericDropdown<GlobalOptions>(
-                      textStyle: const TextStyle(color: Colors.grey, fontSize: 15),
-                      menuItemsList: widget.globalOptions,
-                      displayItem: (GlobalOptions option) => option.value ?? '',
-                      onChanged: (GlobalOptions? selectedOption) {
-                        setState(() {
-                          newGlobalOptionID = selectedOption?.id?.toString() ?? '';
-                          hasError = false;
-                        });
-                      },
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: GenericDropdown<GlobalOptions>(
+                        textStyle: const TextStyle(color: Colors.grey, fontSize: 15),
+                        menuItemsList: widget.globalOptions,
+                        displayItem: (GlobalOptions option) => option.value ?? '',
+                        onChanged: (GlobalOptions? selectedOption) {
+                          setState(() {
+                            newGlobalOptionID = selectedOption?.id?.toString() ?? '';
+                            hasError = false;
+                          });
+                        },
+                      ),
                     ),
                     if (hasError)
-                      const Align(
+                      Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          'Please select type',
-                          style: TextStyle(color: Colors.red),
+                          VendorAppStrings.pleaseSelectType.tr,
+                          style: const TextStyle(color: Colors.red),
                         ),
                       ),
                     const SizedBox(height: 10),
                     CustomAppButton(
-                      buttonText: 'Add Global Options',
+                      buttonText: VendorAppStrings.addGlobalOptions.tr,
                       buttonColor: AppColors.lightCoral,
                       onTap: () async {
-                        print('ID ==> $newGlobalOptionID  || $hasError');
+                        log('ID ==> $newGlobalOptionID  || $hasError');
                         if (newGlobalOptionID.isNotEmpty) {
                           _fetchOptionsData(newGlobalOptionID);
                           Navigator.pop(context);

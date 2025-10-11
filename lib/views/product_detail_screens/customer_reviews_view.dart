@@ -6,16 +6,17 @@ import 'package:flutter/material.dart';
 import '../../core/constants/app_strings.dart';
 
 class CustomerReviews extends StatelessWidget {
-  const CustomerReviews(
-      {super.key, required this.review, required this.customerReviews,});
+  const CustomerReviews({
+    super.key,
+    required this.review,
+    required this.customerReviews,
+  });
 
   final Review review;
   final List<CustomerReviewRecord> customerReviews;
 
   @override
   Widget build(BuildContext context) {
-    print(customerReviews.length);
-
     return Padding(
       padding: const EdgeInsets.all(4.0),
       child: Column(
@@ -28,8 +29,7 @@ class CustomerReviews extends StatelessWidget {
             children: [
               Text(
                 review.ratingFormatted,
-                style:
-                    const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+                style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
               ),
               const SizedBox(width: 6),
               Text(
@@ -56,9 +56,7 @@ class CustomerReviews extends StatelessWidget {
             children: review.averageCountArray
                 .map(
                   (e) => _buildRatingBar(
-                    e.star == 1
-                        ? '${e.star} ${AppStrings.star.tr}'
-                        : '${e.star} ${AppStrings.stars.tr}',
+                    e.star == 1 ? '${e.star} ${AppStrings.star.tr}' : '${e.star} ${AppStrings.stars.tr}',
                     e.percent.toDouble(),
                   ),
                 )
@@ -71,13 +69,10 @@ class CustomerReviews extends StatelessWidget {
             physics: const NeverScrollableScrollPhysics(),
             // Prevents scrolling inside a scrollable parent
             itemCount: customerReviews.length,
-            itemBuilder: (context, index) =>
-                _buildCustomerReview(customerReviews[index]),
-            separatorBuilder: (context, index) => index !=
-                    customerReviews.length - 1
+            itemBuilder: (context, index) => _buildCustomerReview(customerReviews[index]),
+            separatorBuilder: (context, index) => index != customerReviews.length - 1
                 ? const Padding(
-                    padding:
-                        EdgeInsets.only(left: 60), // Adjust margin as needed
+                    padding: EdgeInsets.only(left: 60), // Adjust margin as needed
                     child: Divider(
                       height: 0.2,
                       color: Colors.grey,
@@ -95,8 +90,9 @@ class CustomerReviews extends StatelessWidget {
         child: Row(
           children: [
             SizedBox(
-                width: 60,
-                child: Text(label, style: const TextStyle(fontSize: 16)),),
+              width: 60,
+              child: Text(label, style: const TextStyle(fontSize: 16)),
+            ),
             Expanded(
               child: Stack(
                 alignment: Alignment.center,
@@ -129,8 +125,7 @@ class CustomerReviews extends StatelessWidget {
                     width: 50,
                     height: 50,
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) =>
-                        const Icon(Icons.person, size: 50),
+                    errorBuilder: (context, error, stackTrace) => const Icon(Icons.person, size: 50),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -141,12 +136,13 @@ class CustomerReviews extends StatelessWidget {
                       Text(
                         review.name,
                         style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold,),
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       Text(
                         '${review.createdAtDiffer} ${AppStrings.purchased.tr} ${review.orderCreatedAt}',
-                        style:
-                            const TextStyle(fontSize: 14, color: Colors.grey),
+                        style: const TextStyle(fontSize: 14, color: Colors.grey),
                       ),
                       const SizedBox(height: 4),
                       Row(
@@ -154,9 +150,7 @@ class CustomerReviews extends StatelessWidget {
                           5,
                           (index) => Icon(
                             Icons.star,
-                            color: index < review.star
-                                ? Colors.amber
-                                : Colors.grey,
+                            color: index < review.star ? Colors.amber : Colors.grey,
                             size: 20,
                           ),
                         ),

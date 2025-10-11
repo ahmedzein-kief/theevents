@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/constants/app_strings.dart';
-import '../../../../core/services/shared_preferences_helper.dart';
 import '../../../../core/widgets/custom_app_views/search_bar.dart';
 import '../../../../provider/cart_item_provider/cart_item_provider.dart';
 import '../../../../provider/information_icons_provider/fifty_discount_provider.dart';
@@ -51,11 +50,14 @@ class _DiscountScreenState extends State<DiscountScreen> {
     await fetchHalfDiscountBanner();
     await fetchWishListItems();
     await fetchNewProductsItems();
-    _scrollController.addListener(_onScroll);
+    if (mounted) {
+      _scrollController.addListener(_onScroll);
+    }
   }
 
   /// BANNER OF FIFTY PERCENT DISCOUNTS
   Future<void> fetchHalfDiscountBanner() async {
+    if (!mounted) return;
     final provider = Provider.of<FiftyPercentDiscountProvider>(context, listen: false);
     provider.fetchBannerFiftyPercentDiscount(context);
   }
@@ -71,6 +73,7 @@ class _DiscountScreenState extends State<DiscountScreen> {
 
   Future<void> fetchNewProductsItems() async {
     try {
+      if (!mounted) return;
       setState(() {
         _isFetchingMore = true;
       });
@@ -81,9 +84,11 @@ class _DiscountScreenState extends State<DiscountScreen> {
         sortBy: _selectedSortBy,
         filters: selectedFilters,
       );
-      setState(() {
-        _isFetchingMore = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isFetchingMore = false;
+        });
+      }
     } catch (error) {
       if (mounted) {
         setState(() {
@@ -95,9 +100,8 @@ class _DiscountScreenState extends State<DiscountScreen> {
 
   /// FOR TAKING THE ICON HEART AS THEIR STATE RED ON WISHLIST ADD BASIS
   Future<void> fetchWishListItems() async {
-    final token = await SecurePreferencesUtil.getToken();
     final provider = Provider.of<WishlistProvider>(context, listen: false);
-    provider.fetchWishlist(token ?? '', context);
+    provider.fetchWishlist();
   }
 
   void _onTabChanged(String newTab) {

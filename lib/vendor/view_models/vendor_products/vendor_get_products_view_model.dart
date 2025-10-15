@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:event_app/core/services/shared_preferences_helper.dart';
 import 'package:event_app/data/vendor/data/response/api_response.dart';
 import 'package:event_app/models/vendor_models/products/create_product/common_data_response.dart';
@@ -98,7 +96,6 @@ class VendorGetProductsViewModel with ChangeNotifier {
       setCommonApiResponse = ApiResponse.completed(response);
       return response;
     } catch (error) {
-      log(error.toString());
       setCommonApiResponse = ApiResponse.error(error.toString());
       return null;
     }

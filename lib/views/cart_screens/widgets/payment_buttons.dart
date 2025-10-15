@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:event_app/core/constants/app_strings.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/services/shared_preferences_helper.dart';
@@ -59,10 +57,7 @@ class _PaymentButtonsState extends State<PaymentButtons> {
     Map<String, String> paymentMethod,
     bool isNewAddress,
   ) async {
-    log('paymentResult: $paymentResult');
-
     if (_isProcessing) {
-      log('Payment already in progress, ignoring duplicate call');
       return;
     }
 
@@ -90,7 +85,6 @@ class _PaymentButtonsState extends State<PaymentButtons> {
         );
       }
     } catch (e) {
-      log('Apple Pay error: $e');
       if (mounted) {
         AppUtils.showToast(
           'Apple Pay payment error: ${e.toString()}',
@@ -114,7 +108,6 @@ class _PaymentButtonsState extends State<PaymentButtons> {
 
       final token = await SecurePreferencesUtil.getToken();
       if (token == null) {
-        log('Token is null, cannot process payment');
         return false;
       }
 
@@ -133,7 +126,6 @@ class _PaymentButtonsState extends State<PaymentButtons> {
 
       return true;
     } catch (e) {
-      log('Apple Pay processing error: $e');
       return false;
     }
   }
@@ -192,7 +184,6 @@ class _PaymentButtonsState extends State<PaymentButtons> {
   Future<void> _handlePaymentPress(bool isWalletSelected) async {
     // Prevent multiple simultaneous payment attempts
     if (_isProcessing || widget.provider.isProcessingPayment) {
-      log('Payment already in progress');
       return;
     }
 
@@ -232,7 +223,6 @@ class _PaymentButtonsState extends State<PaymentButtons> {
         );
       }
     } catch (e) {
-      log('Payment error: $e');
       if (mounted) {
         CustomSnackbar.showError(
           context,

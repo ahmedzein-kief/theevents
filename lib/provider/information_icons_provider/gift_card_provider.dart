@@ -1,3 +1,4 @@
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/core/services/shared_preferences_helper.dart';
 import 'package:event_app/models/dashboard/information_icons_models/gift_card_models/checkout_payment_model.dart';
@@ -5,6 +6,7 @@ import 'package:event_app/models/dashboard/information_icons_models/gift_card_mo
 import 'package:event_app/provider/api_response_handler.dart';
 import 'package:flutter/cupertino.dart';
 
+import '../../core/constants/app_strings.dart';
 import '../../core/helper/functions/functions.dart';
 
 class GiftCardInnerProvider with ChangeNotifier {
@@ -34,10 +36,10 @@ class GiftCardInnerProvider with ChangeNotifier {
         _apiResponse = GiftCardPage.fromJson(response.data);
         _error = null;
       } else {
-        _error = 'Failed to load data';
+        _error = AppStrings.failedToLoadData.tr;
       }
     } catch (e) {
-      _error = 'An error occurred';
+      _error = AppStrings.anErrorOccurred.tr;
     } finally {
       _loading = false;
       notifyListeners();
@@ -93,7 +95,7 @@ class CreateGiftCardProvider with ChangeNotifier {
         _error = null;
         return CheckoutPaymentModel.fromJson(response.data);
       } else {
-        _error = 'Failed to load data';
+        _error = AppStrings.failedToLoadData.tr;
       }
     } catch (e) {
       _error = 'An error occurred';

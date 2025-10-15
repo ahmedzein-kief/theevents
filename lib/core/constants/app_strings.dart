@@ -456,7 +456,7 @@ class AppStrings {
   static const String uploadButton = 'Upload Payment Proof';
   static const String viewReceipt = 'View Receipt: ';
   static const String uploadedProofNote = 'You have uploaded a copy of your payment proof.\n\n';
-  static const String reuploadNote = 'Or you can upload a new one, the old one will be replaced.';
+  static const String reUploadNote = 'Or you can upload a new one, the old one will be replaced.';
   static const String noProofUploaded =
       'The order is currently being processed. For expedited processing, kindly upload a copy of your payment proof:';
 

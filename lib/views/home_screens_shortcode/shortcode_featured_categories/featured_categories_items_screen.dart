@@ -92,8 +92,8 @@ class _HomeAllGiftItemsState extends State<FeaturedCategoriesItemsScreen> {
 
         // Fetch fresh data for new locale
         await _fetchAllData();
-      } catch (e) {
-        debugPrint('Error refetching categories data on locale change: $e');
+      } catch (error) {
+        debugPrint(error.toString());
       } finally {
         if (mounted) {
           setState(() => _isRefreshing = false);

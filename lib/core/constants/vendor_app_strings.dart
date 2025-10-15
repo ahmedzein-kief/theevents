@@ -153,9 +153,9 @@ class VendorAppStrings {
   static const String answer = 'Answer';
   static const String seoKeywords = 'SEO Keywords';
   static const String permalink = 'Permalink';
-  static const String fileName = 'File Name';
-  static const String externalLink = 'External Link';
-  static const String size = 'Size';
+  static const String fileName = 'fileName';
+  static const String externalLink = 'externalLink';
+  static const String size = 'size';
   static const String name = 'Name';
 
   // Form Hints
@@ -382,4 +382,8 @@ class VendorAppStrings {
   static const String shippingInformation = 'shippingInformation';
   static const String updateShippingStatus = 'updateShippingStatus';
   static const String errorFetchingProducts = 'errorFetchingProducts';
+  static const String addingNewAttributesInfo = 'addingNewAttributesHelps';
+  static const String digitalLinks = 'digitalLinks';
+  static const String saved = 'saved';
+  static const String unsaved = 'unsaved';
 }

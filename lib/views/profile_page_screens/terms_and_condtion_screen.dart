@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
@@ -105,11 +103,9 @@ class TermsAndConditionProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         final responseBody = response.data;
         _privacyPolicyData = TermsConditionsModels.fromJson(responseBody['data']);
-      } else {
-        log('Failed to load data');
-      }
-    } catch (e) {
-      log('Error fetching data: $e');
+      } else {}
+    } catch (error) {
+      debugPrint(error.toString());
     } finally {
       _isLoading = false;
       notifyListeners();

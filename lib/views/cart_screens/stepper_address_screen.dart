@@ -1,12 +1,14 @@
 import 'package:event_app/core/constants/app_strings.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
-import 'package:event_app/core/widgets/custom_items_views/custom_add_to_cart_button.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
+import '../../core/styles/app_colors.dart';
 import '../../core/utils/app_utils.dart';
 import '../../core/widgets/address_form_bottom_sheet.dart';
+import '../../core/widgets/custom_auth_views/app_custom_button.dart';
 import '../../core/widgets/price_row.dart';
 import '../../provider/checkout_provider/submit_checkout_information.dart';
 import '../../provider/payment_address/customer_address.dart';
@@ -358,14 +360,19 @@ class _StepperAddressScreenState extends State<StepperAddressScreen> {
                 ),
                 const SizedBox(height: 16),
                 // Continue Button
-                AppCustomButton(
-                  title: AppStrings.continueToPayment.tr,
-                  onPressed: selectedAddress != null
-                      ? _handleAddressSelection
-                      : () {
-                          AppUtils.showToast(AppStrings.pleaseAddNewAddress.tr);
-                        },
-                ),
+                Consumer<SubMitCheckoutInformationProvider>(builder: (context, provider, child) {
+                  return CustomAppButton(
+                    buttonColor: AppColors.lightCoral,
+                    buttonText: AppStrings.continueToPayment.tr,
+                    suffixIcon: CupertinoIcons.forward,
+                    isLoading: provider.isLoading,
+                    onTap: selectedAddress != null
+                        ? _handleAddressSelection
+                        : () {
+                            AppUtils.showToast(AppStrings.pleaseAddNewAddress.tr);
+                          },
+                  );
+                }),
               ],
             ),
           ),

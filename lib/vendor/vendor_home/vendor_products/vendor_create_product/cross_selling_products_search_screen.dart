@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/core/styles/app_sizes.dart';
@@ -64,7 +62,6 @@ class _CrossSellingProductsSearchScreenState extends State<CrossSellingProductsS
       setProcessing(true);
       return await provider.productSearch(query, dataId);
     } catch (e) {
-      log('Error: $e');
       return null;
     } finally {
       setProcessing(false);
@@ -261,14 +258,10 @@ class _CrossSellingProductsSearchScreenState extends State<CrossSellingProductsS
                       keyboardType: TextInputType.number,
                       onChanged: (value) {
                         setState(() {
-                          log(
-                            'User Input 1 : $value',
-                          ); // Debugging user input
+                          // Debugging user input
                           final int index = listSearchProducts.indexWhere((option) => option.id == product.id);
                           if (index != -1) {
-                            log(
-                              'User Input 2 : $value',
-                            ); // Debugging user input
+                            // Debugging user input
 
                             if (value is String) {
                               listSearchProducts[index].price = value.isNotEmpty ? int.parse(value) : 0;

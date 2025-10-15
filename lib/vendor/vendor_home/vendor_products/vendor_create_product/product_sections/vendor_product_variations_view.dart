@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:event_app/core/helper/mixins/media_query_mixin.dart';
 import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/core/styles/app_sizes.dart';
@@ -92,7 +90,6 @@ class _VendorProductHasVariationsViewState extends State<VendorProductHasVariati
       setState(() {});
     } catch (e) {
       setProcessing(false);
-      log('Error in fetching products: $e');
     }
   }
 
@@ -569,8 +566,8 @@ class _VendorProductHasVariationsViewState extends State<VendorProductHasVariati
                                                   navigator.pop();
                                                   await _onRefresh();
                                                 }
-                                              } catch (e) {
-                                                log('Error: $e');
+                                              } catch (error) {
+                                                debugPrint(error.toString());
                                               }
 
                                               setState(() {});
@@ -630,7 +627,6 @@ class _VendorProductHasVariationsViewState extends State<VendorProductHasVariati
                             setProcessing(false);
                           } catch (e) {
                             setProcessing(false);
-                            log('Error: $e');
                           }
                         },
                       );
@@ -809,7 +805,6 @@ class _VendorProductHasVariationsViewState extends State<VendorProductHasVariati
             setProcessing(false);
           } catch (e) {
             setProcessing(false);
-            log('Error: $e');
           }
         },
       );
@@ -837,7 +832,6 @@ class _VendorProductHasVariationsViewState extends State<VendorProductHasVariati
       );
       return attribute.title.toString();
     } catch (e) {
-      log('Error: $e');
       return '';
     }
   }

@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:event_app/core/services/shared_preferences_helper.dart';
 import 'package:event_app/data/vendor/data/response/api_response.dart';
@@ -72,7 +71,6 @@ class VendorGetProductVariationsViewModel with ChangeNotifier {
         setApiResponse = ApiResponse.completed(response);
       }
     } catch (error) {
-      log(error.toString());
       setApiResponse = ApiResponse.error(error.toString());
     }
   }

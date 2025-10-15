@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:event_app/core/constants/app_strings.dart';
 import 'package:event_app/core/constants/vendor_app_strings.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
@@ -191,7 +189,6 @@ class _PaymentScreenState extends State<PaymentSubscriptionScreen> {
                   // Capture navigator before any async operations
                   final navigator = Navigator.of(context);
 
-                  log('subscriptionResponse?.data.formatedPriceWithVat ${subscriptionResponse?.data.formatedPriceWithVat}');
                   pModel.cardAmount = double.tryParse(subscriptionResponse?.data.formatedPriceWithVat ?? '');
                   pModel.paymentMethod = paymentMethod;
 

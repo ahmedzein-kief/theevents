@@ -32,7 +32,7 @@ class PDFDownloader {
       await FileSaver.instance.saveAs(
         name: filename,
         bytes: binaryData,
-        ext: 'pdf',
+        fileExtension: 'pdf',
         mimeType: MimeType.pdf,
       );
 
@@ -64,7 +64,7 @@ class PDFDownloader {
       final path = await FileSaver.instance.saveAs(
         name: filename,
         bytes: binaryData,
-        ext: 'pdf',
+        fileExtension: 'pdf',
         mimeType: MimeType.pdf,
       );
 
@@ -103,7 +103,7 @@ class PDFDownloader {
         final path = await FileSaver.instance.saveAs(
           name: filename,
           bytes: binaryData,
-          ext: 'pdf',
+          fileExtension: 'pdf',
           mimeType: MimeType.pdf,
         );
 
@@ -153,7 +153,7 @@ class PDFDownloader {
           final path = await FileSaver.instance.saveAs(
             name: filename,
             bytes: binaryData,
-            ext: 'pdf',
+            fileExtension: 'pdf',
             mimeType: MimeType.pdf,
           );
           return path != null ? AppStrings.fileSavedSuccess.tr : AppStrings.fileSaveError.tr;

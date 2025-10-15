@@ -1,5 +1,8 @@
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/provider/api_response_handler.dart';
 import 'package:flutter/material.dart';
+
+import '../../core/constants/app_strings.dart' show AppStrings;
 
 class EventsBrand {
   EventsBrand({
@@ -103,7 +106,7 @@ class EventsBrandProvider extends ChangeNotifier {
         eventsBrand = EventsBrand.fromJson(data);
         errorMessage = '';
       } else {
-        errorMessage = 'Failed to load data';
+        errorMessage = AppStrings.failedToLoadData.tr;
       }
     } catch (error) {
       errorMessage = error.toString();

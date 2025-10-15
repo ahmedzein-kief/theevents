@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:another_stepper/dto/stepper_data.dart';
 import 'package:another_stepper/widgets/another_stepper.dart';
 import 'package:event_app/core/constants/app_strings.dart';
@@ -551,8 +549,8 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView> with MediaQue
                               context: context,
                             );
                           }
-                        } catch (e) {
-                          log(e.toString());
+                        } catch (error) {
+                          debugPrint(error.toString());
                         }
                       },
                     ),
@@ -617,7 +615,6 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView> with MediaQue
                                   vendorAllOrdersProvider.vendorGetOrders();
                                 }
                               } catch (e) {
-                                log(e.toString());
                                 if (context.mounted) {
                                   AppUtils.showToast('Failed to confirm order.');
                                 }
@@ -840,7 +837,6 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView> with MediaQue
                                         }
                                       }
                                     } catch (e) {
-                                      log(e.toString());
                                       if (context.mounted) {
                                         AppUtils.showToast(VendorAppStrings.failedToUpdateShipmentStatus.tr);
                                       }
@@ -940,8 +936,8 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView> with MediaQue
                                 if (result) {
                                   await _onRefresh();
                                 }
-                              } catch (e) {
-                                log(e.toString());
+                              } catch (error) {
+                                debugPrint(error.toString());
                               }
                             },
                           ),
@@ -1242,8 +1238,8 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView> with MediaQue
                                 if (result) {
                                   await _onRefresh();
                                 }
-                              } catch (e) {
-                                log(e.toString());
+                              } catch (error) {
+                                debugPrint(error.toString());
                               }
                             },
                           );

@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:camera_gallery_image_picker/camera_gallery_image_picker.dart';
@@ -77,7 +76,7 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
         getAllMetaData();
       }
     } catch (error) {
-      log(error.toString());
+      debugPrint(error.toString());
     }
   }
 

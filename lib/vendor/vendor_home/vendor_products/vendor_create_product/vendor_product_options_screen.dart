@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:event_app/core/constants/vendor_app_strings.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/styles/app_colors.dart';
@@ -44,7 +42,6 @@ class _VendorProductOptionsScreenState extends State<VendorProductOptionsScreen>
 
   Future _fetchOptionsData(String optionId) async {
     try {
-      log('Inside fetch options ');
       setProcessing(true);
       final provider = Provider.of<VendorCreateProductViewModel>(context, listen: false);
       final result = await provider.getGlobalOptions(optionId);
@@ -57,7 +54,6 @@ class _VendorProductOptionsScreenState extends State<VendorProductOptionsScreen>
       setProcessing(false);
     } catch (e) {
       setProcessing(false);
-      log('Error: $e');
     }
   }
 
@@ -229,9 +225,6 @@ class _VendorProductOptionsScreenState extends State<VendorProductOptionsScreen>
                                           keyboardType: TextInputType.number,
                                           controller: productOptions[sectionIndex].values[rowIndex].priceController,
                                           onChanged: (value) {
-                                            log(
-                                              'value  ==> $sectionIndex || $rowIndex || $value',
-                                            );
                                             if (value is String) {
                                               productOptions[sectionIndex].values[rowIndex].affectPrice =
                                                   value.isNotEmpty ? int.parse(value) : 0;
@@ -377,7 +370,6 @@ class _VendorProductOptionsScreenState extends State<VendorProductOptionsScreen>
                       buttonText: VendorAppStrings.addGlobalOptions.tr,
                       buttonColor: AppColors.lightCoral,
                       onTap: () async {
-                        log('ID ==> $newGlobalOptionID  || $hasError');
                         if (newGlobalOptionID.isNotEmpty) {
                           _fetchOptionsData(newGlobalOptionID);
                           Navigator.pop(context);

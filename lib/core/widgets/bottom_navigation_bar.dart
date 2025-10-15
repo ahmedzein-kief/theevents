@@ -127,7 +127,6 @@ class _HomeScreenState extends State<BaseHomeScreen> {
         // Refresh all providers that depend on locale with mounted checks
         await _fetchHomePageDataSafely();
       } catch (e) {
-        debugPrint('Error reFetching data on locale change: $e');
         // Only show error if widget is still mounted and context is available
         if (mounted && _lastValidContext != null) {
           // You can add your error handling here, but make sure to check mounted state
@@ -324,7 +323,7 @@ class _HomeScreenState extends State<BaseHomeScreen> {
                         Expanded(
                           child: _buildNavItem(
                             index: 2,
-                            icon: isDarkMode ? AppAssets.eventsDark : AppAssets.events,
+                            icon: isDarkMode ? AppAssets.eventsDarkLogo : AppAssets.eventsLogo,
                             label: null,
                             theme: theme,
                             hasColorFilter: false,

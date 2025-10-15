@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:event_app/core/constants/vendor_app_strings.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/helper/validators/validator.dart';
@@ -223,7 +221,6 @@ class _VendorUpdateShippingAddressBottomSheetViewState extends State<VendorUpdat
         setProcessing(false);
       }
     } catch (error) {
-      log('Error fetching countries: $error');
       if (mounted) {
         setProcessing(false);
       }
@@ -270,13 +267,10 @@ class _VendorUpdateShippingAddressBottomSheetViewState extends State<VendorUpdat
 
       stateModel = await fetchStates(countryId);
 
-      log('STATE MODEL ${stateModel?.data?.length.toString() ?? 'No data'}');
-
       setState(() {
         _stateLoader = false;
       });
     } catch (error) {
-      log('Error fetching states: $error');
       setState(() {
         _stateLoader = false;
       });
@@ -302,7 +296,6 @@ class _VendorUpdateShippingAddressBottomSheetViewState extends State<VendorUpdat
         _cityLoader = false;
       });
     } catch (error) {
-      log('Error fetching cities: $error');
       setState(() {
         _cityLoader = false;
       });
@@ -376,7 +369,6 @@ class _VendorUpdateShippingAddressBottomSheetViewState extends State<VendorUpdat
             )
           : const Icon(Icons.arrow_drop_down_outlined),
       onTap: () async {
-        log('stateModel?.data?.isNotEmpty  ${stateModel?.data?.isNotEmpty}');
         if (stateModel?.data?.isNotEmpty ?? false) {
           showDialog(
             context: context,
@@ -603,8 +595,8 @@ class _VendorUpdateShippingAddressBottomSheetViewState extends State<VendorUpdat
                                   Navigator.pop(context);
                                 }
                               }
-                            } catch (e) {
-                              log('Error while updating address: $e');
+                            } catch (error) {
+                              debugPrint(error.toString());
                             }
                           },
                         ),

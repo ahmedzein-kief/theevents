@@ -55,7 +55,7 @@ class _SplashViewState extends State<SplashScreen> {
     return Scaffold(
       body: Center(
         child: SvgPicture.asset(
-          isDark ? AppAssets.eventsDark : AppAssets.events,
+          isDark ? AppAssets.eventsDarkLogo : AppAssets.eventsLogo,
           height: 100,
           width: 100,
         ),

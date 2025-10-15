@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:dio/dio.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
@@ -189,8 +187,8 @@ class CheckoutProvider with ChangeNotifier {
         notifyListeners();
         return true;
       }
-    } catch (e) {
-      log('fetchCheckoutData error: $e');
+    } catch (error) {
+      debugPrint(error.toString());
     }
     return false;
   }
@@ -223,8 +221,8 @@ class CheckoutProvider with ChangeNotifier {
         final jsonData = response.data;
         return jsonData['error'] == false;
       }
-    } catch (e) {
-      log('Error applying coupon code: $e');
+    } catch (error) {
+      debugPrint(error.toString());
     }
 
     return false;
@@ -252,10 +250,7 @@ class CheckoutProvider with ChangeNotifier {
         isNewAddress,
       );
 
-      log('Checkout URL received: $checkoutURL');
-
       if (checkoutURL == null || checkoutURL.isEmpty) {
-        log('Checkout URL is null or empty');
         if (context.mounted) {
           AppUtils.showToast('Payment link generation failed');
         }
@@ -263,7 +258,6 @@ class CheckoutProvider with ChangeNotifier {
       }
 
       if (!context.mounted) {
-        log('Context unmounted, cannot navigate');
         return;
       }
 
@@ -274,7 +268,6 @@ class CheckoutProvider with ChangeNotifier {
         ),
       );
     } catch (e) {
-      log('Gateway payment error: $e');
       if (context.mounted) {
         AppUtils.showToast('Payment failed: ${e.toString()}');
       }
@@ -351,11 +344,9 @@ class CheckoutProvider with ChangeNotifier {
       } else {
         final jsonResponse = response.data;
         AppUtils.showToast('${AppStrings.paymentFailed.tr} ${jsonResponse["message"]}');
-        throw Exception('Failed to load data');
+        throw Exception(AppStrings.failedToLoadData.tr);
       }
     } catch (e) {
-      log('checkoutPaymentLink error: $e');
-
       if (e is DioException) {
         final errorMessage = e.response?.data?['message'] ?? e.message;
         AppUtils.showToast('${AppStrings.paymentFailed.tr} $errorMessage');
@@ -443,16 +434,14 @@ class CheckoutProvider with ChangeNotifier {
         } else {
           final jsonResponse = urlResponse.data;
           AppUtils.showToast('${AppStrings.paymentFailed.tr} ${jsonResponse["message"]}');
-          throw Exception('Failed to load data');
+          throw Exception(AppStrings.failedToLoadData.tr);
         }
       } else {
         final jsonResponse = response.data;
         AppUtils.showToast('${AppStrings.paymentFailed.tr} ${jsonResponse["message"]}');
-        throw Exception('Failed to load data');
+        throw Exception(AppStrings.failedToLoadData.tr);
       }
     } catch (e) {
-      log('payWithWallet error: $e');
-
       if (e is DioException) {
         final errorMessage = e.response?.data?['message'] ?? e.message;
         AppUtils.showToast('${AppStrings.paymentFailed.tr}: $errorMessage');

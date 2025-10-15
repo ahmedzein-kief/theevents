@@ -307,7 +307,6 @@ class _PayoutInfoViewState extends State<PayoutInfoView> {
                   onTap: () async {
                     try {
                       if (_formKey.currentState?.validate() ?? false) {
-                        log('Form is valid');
                         setProcessing(true);
                         _createForm();
                         final vendorSettingsProvider = context.read<VendorSettingsViewModel>();
@@ -320,9 +319,7 @@ class _PayoutInfoViewState extends State<PayoutInfoView> {
                           setProcessing(false);
                           await _onRefresh();
                         }
-                      } else {
-                        log('Form validation failed!');
-                      }
+                      } else {}
                     } catch (e) {
                       setProcessing(false);
                       AppUtils.showToast('${VendorAppStrings.error.tr}Oops! something went wrong..');

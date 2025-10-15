@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:event_app/core/helper/mixins/media_query_mixin.dart';
 import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/core/styles/app_sizes.dart';
@@ -52,12 +50,10 @@ class CustomRecordListTile extends StatefulWidget {
   State<CustomRecordListTile> createState() => _CustomRecordListTileState();
 }
 
-class _CustomRecordListTileState extends State<CustomRecordListTile>
-    with MediaQueryMixin {
+class _CustomRecordListTileState extends State<CustomRecordListTile> with MediaQueryMixin {
   bool get isRejected => widget.status?.toLowerCase() == 'rejected';
 
   void _handleRejectionTap() {
-    log('_handleRejectionTap ${widget.productId} ${widget.onRejectionHistoryTap}');
     if (widget.productId != null && widget.onRejectionHistoryTap != null) {
       widget.onRejectionHistoryTap!(widget.productId.toString());
     }
@@ -72,7 +68,9 @@ class _CustomRecordListTileState extends State<CustomRecordListTile>
           borderRadius: BorderRadius.circular(kSmallCardRadius),
           child: Container(
             padding: EdgeInsets.symmetric(
-                horizontal: kPadding, vertical: kSmallPadding,),
+              horizontal: kPadding,
+              vertical: kSmallPadding,
+            ),
             decoration: BoxDecoration(
               color: widget.tileColor ?? Colors.white,
               borderRadius: BorderRadius.circular(kSmallCardRadius),
@@ -89,8 +87,7 @@ class _CustomRecordListTileState extends State<CustomRecordListTile>
                         child: Image.network(
                           widget.imageAddress ?? '',
                           width: screenWidth / 4.5, // Maintain width
-                          height:
-                              70, // Set a fixed height to match previous code
+                          height: 70, // Set a fixed height to match previous code
                           fit: BoxFit.cover,
                           errorBuilder: (error, object, _) => const Icon(
                             Icons.error_outline,
@@ -107,8 +104,7 @@ class _CustomRecordListTileState extends State<CustomRecordListTile>
                     children: [
                       Text(
                         widget.title,
-                        style: widget.titleTextStyle ??
-                            dataRowTextStyle().copyWith(fontSize: 15),
+                        style: widget.titleTextStyle ?? dataRowTextStyle().copyWith(fontSize: 15),
                       ),
                       kExtraSmallSpace,
                       widget.subtitleAsWidget ??
@@ -133,12 +129,8 @@ class _CustomRecordListTileState extends State<CustomRecordListTile>
                                 widget.status ?? '',
                                 style: widget.statusTextStyle ??
                                     dataRowTextStyle().copyWith(
-                                      color: isRejected
-                                          ? AppColors.vividRed
-                                          : Colors.black,
-                                      decoration: isRejected
-                                          ? TextDecoration.underline
-                                          : null,
+                                      color: isRejected ? AppColors.vividRed : Colors.black,
+                                      decoration: isRejected ? TextDecoration.underline : null,
                                     ),
                                 textAlign: TextAlign.start,
                               ),
@@ -163,12 +155,9 @@ class _CustomRecordListTileState extends State<CustomRecordListTile>
                         widget.endWidget!
                       else
                         Column(
-                          crossAxisAlignment: widget.status == '0'
-                              ? CrossAxisAlignment.center
-                              : CrossAxisAlignment.end,
+                          crossAxisAlignment: widget.status == '0' ? CrossAxisAlignment.center : CrossAxisAlignment.end,
                           children: [
-                            if (widget.multiplePrice != null)
-                              widget.multiplePrice!,
+                            if (widget.multiplePrice != null) widget.multiplePrice!,
                             if (widget.actionCell != null)
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.end,

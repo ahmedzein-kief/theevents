@@ -1,3 +1,4 @@
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/helper/validators/validator.dart';
 import 'package:event_app/core/styles/app_colors.dart';
 import 'package:event_app/models/vendor_models/products/holder_models/digital_links_model.dart';
@@ -6,6 +7,8 @@ import 'package:event_app/vendor/components/dropdowns/generic_dropdown.dart';
 import 'package:event_app/vendor/components/status_constants/file_size_constants.dart';
 import 'package:event_app/vendor/components/text_fields/custom_text_form_field.dart';
 import 'package:flutter/material.dart';
+
+import '../../../../core/constants/vendor_app_strings.dart';
 
 class DigitalLinksScreen extends StatefulWidget {
   const DigitalLinksScreen({super.key, this.initialLinks});
@@ -67,7 +70,7 @@ class _DigitalLinksScreenState extends State<DigitalLinksScreen> {
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
           title: Text(
-            'Digital Links',
+            VendorAppStrings.digitalLinks.tr,
             style: vendorName(context),
           ),
           leading: IconButton(
@@ -92,7 +95,7 @@ class _DigitalLinksScreenState extends State<DigitalLinksScreen> {
                       showTitle: false,
                       required: false,
                       readOnly: _selectedLinks[index].isSaved,
-                      hintText: 'File Name',
+                      hintText: VendorAppStrings.fileName.tr,
                       controller: _selectedLinks[index].fileNameController,
                       onChanged: (value) {
                         _selectedLinks[index].fileName = value;
@@ -104,7 +107,7 @@ class _DigitalLinksScreenState extends State<DigitalLinksScreen> {
                       showTitle: false,
                       required: false,
                       readOnly: _selectedLinks[index].isSaved,
-                      hintText: 'External Link',
+                      hintText: VendorAppStrings.externalLink.tr,
                       keyboardType: TextInputType.url,
                       controller: _selectedLinks[index].fileLinkController,
                       validator: Validator.isValidUrl,
@@ -122,7 +125,7 @@ class _DigitalLinksScreenState extends State<DigitalLinksScreen> {
                             showTitle: false,
                             required: false,
                             readOnly: _selectedLinks[index].isSaved,
-                            hintText: 'Size',
+                            hintText: VendorAppStrings.size.tr,
                             keyboardType: TextInputType.number,
                             controller: _selectedLinks[index].sizeController,
                             onChanged: (value) {
@@ -158,7 +161,7 @@ class _DigitalLinksScreenState extends State<DigitalLinksScreen> {
                         Flexible(
                           flex: 1,
                           child: Text(
-                            _selectedLinks[index].isSaved ? 'Saved' : 'Unsaved',
+                            _selectedLinks[index].isSaved ? VendorAppStrings.saved.tr : VendorAppStrings.unsaved.tr,
                             style: const TextStyle(color: Colors.orange),
                           ),
                         ),

@@ -5,6 +5,13 @@ import 'app_strings.dart';
 final Map<String, Map<String, String>> appTranslations = {
   // English
   'en': {
+    'addingNewAttributesHelps': 'Adding new attributes helps the product to have many options, such as size or color.',
+    'digitalLinks': 'Digital Links',
+    'fileName': 'File Name',
+    'externalLink': 'External Link',
+    'size': 'Size',
+    'saved': 'Saved',
+    'unsaved': 'Unsaved',
     'authenticationFailed': 'Authentication failed. Please login again.',
     'authenticationRequired': 'Authentication required',
     'requestCancelled': 'Request cancelled',
@@ -585,7 +592,7 @@ final Map<String, Map<String, String>> appTranslations = {
 
     AppStrings.viewReceipt: AppStrings.viewReceipt,
     AppStrings.uploadedProofNote: AppStrings.uploadedProofNote,
-    AppStrings.reuploadNote: AppStrings.reuploadNote,
+    AppStrings.reUploadNote: AppStrings.reUploadNote,
     AppStrings.noProofUploaded: AppStrings.noProofUploaded,
     AppStrings.invoice: AppStrings.invoice,
 
@@ -745,9 +752,6 @@ final Map<String, Map<String, String>> appTranslations = {
     VendorAppStrings.answer: VendorAppStrings.answer,
     VendorAppStrings.seoKeywords: VendorAppStrings.seoKeywords,
     VendorAppStrings.permalink: VendorAppStrings.permalink,
-    VendorAppStrings.fileName: VendorAppStrings.fileName,
-    VendorAppStrings.externalLink: VendorAppStrings.externalLink,
-    VendorAppStrings.size: VendorAppStrings.size,
 
 // Form Hints
     VendorAppStrings.enterBankName: VendorAppStrings.enterBankName,
@@ -910,6 +914,13 @@ final Map<String, Map<String, String>> appTranslations = {
   },
   // Arabic
   'ar': {
+    'addingNewAttributesHelps': 'إضافة سمات جديدة تساعد المنتج على الحصول على العديد من الخيارات مثل الحجم أو اللون.',
+    'digitalLinks': 'روابط رقمية',
+    'fileName': 'اسم الملف',
+    'externalLink': 'رابط خارجي',
+    'size': 'الحجم',
+    'saved': 'تم الحفظ',
+    'unsaved': 'غير محفوظ',
     'authenticationFailed': 'فشل المصادقة. يرجى تسجيل الدخول مرة أخرى.',
     'authenticationRequired': 'مطلوب المصادقة',
     'requestCancelled': 'تم إلغاء الطلب',
@@ -1491,7 +1502,7 @@ final Map<String, Map<String, String>> appTranslations = {
 
     AppStrings.viewReceipt: 'عرض الإيصال: ',
     AppStrings.uploadedProofNote: 'لقد قمت بتحميل نسخة من إثبات الدفع.\n\n',
-    AppStrings.reuploadNote: 'يمكنك أيضاً تحميل نسخة جديدة، وسيتم استبدال القديمة.',
+    AppStrings.reUploadNote: 'يمكنك أيضاً تحميل نسخة جديدة، وسيتم استبدال القديمة.',
     AppStrings.noProofUploaded: 'الطلب قيد المعالجة حالياً. لتسريع المعالجة، يرجى تحميل نسخة من إثبات الدفع:',
     AppStrings.invoice: 'فاتورة',
 
@@ -1652,9 +1663,6 @@ final Map<String, Map<String, String>> appTranslations = {
     VendorAppStrings.answer: 'الإجابة',
     VendorAppStrings.seoKeywords: 'كلمات مفتاحية لتحسين محركات البحث',
     VendorAppStrings.permalink: 'الرابط الدائم',
-    VendorAppStrings.fileName: 'اسم الملف',
-    VendorAppStrings.externalLink: 'رابط خارجي',
-    VendorAppStrings.size: 'الحجم',
 
 // Form Hints
     VendorAppStrings.enterBankName: 'أدخل اسم البنك',
@@ -1809,6 +1817,14 @@ final Map<String, Map<String, String>> appTranslations = {
   },
   // Russian
   'ru': {
+    'addingNewAttributesHelps':
+        'Добавление новых атрибутов помогает продукту иметь больше вариантов, таких как размер или цвет.',
+    'digitalLinks': 'Цифровые ссылки',
+    'fileName': 'Имя файла',
+    'externalLink': 'Внешняя ссылка',
+    'size': 'Размер',
+    'saved': 'Сохранено',
+    'unsaved': 'Не сохранено',
     'authenticationFailed': 'Ошибка аутентификации. Пожалуйста, войдите снова.',
     'authenticationRequired': 'Требуется аутентификация',
     'requestCancelled': 'Запрос отменён',
@@ -2465,7 +2481,7 @@ final Map<String, Map<String, String>> appTranslations = {
 
     AppStrings.viewReceipt: AppStrings.viewReceipt,
     AppStrings.uploadedProofNote: AppStrings.uploadedProofNote,
-    AppStrings.reuploadNote: AppStrings.reuploadNote,
+    AppStrings.reUploadNote: AppStrings.reUploadNote,
     AppStrings.noProofUploaded: AppStrings.noProofUploaded,
     AppStrings.invoice: AppStrings.invoice,
 
@@ -2495,6 +2511,13 @@ final Map<String, Map<String, String>> appTranslations = {
   },
   // Chinese
   'zh': {
+    'addingNewAttributesHelps': '添加新属性可帮助产品拥有更多选项，例如尺寸或颜色。',
+    'digitalLinks': '数字链接',
+    'fileName': '文件名',
+    'externalLink': '外部链接',
+    'size': '大小',
+    'saved': '已保存',
+    'unsaved': '未保存',
     'authenticationFailed': '身份验证失败。请重新登录。',
     'authenticationRequired': '需要身份验证',
     'requestCancelled': '请求已取消',
@@ -3051,7 +3074,7 @@ final Map<String, Map<String, String>> appTranslations = {
 
     AppStrings.viewReceipt: AppStrings.viewReceipt,
     AppStrings.uploadedProofNote: AppStrings.uploadedProofNote,
-    AppStrings.reuploadNote: AppStrings.reuploadNote,
+    AppStrings.reUploadNote: AppStrings.reUploadNote,
     AppStrings.noProofUploaded: AppStrings.noProofUploaded,
     AppStrings.invoice: AppStrings.invoice,
 
@@ -3082,6 +3105,13 @@ final Map<String, Map<String, String>> appTranslations = {
 
 // Hindi
   'hi': {
+    'addingNewAttributesHelps': 'नए गुण जोड़ने से उत्पाद को आकार या रंग जैसे कई विकल्प मिलते हैं।',
+    'digitalLinks': 'डिजिटल लिंक',
+    'fileName': 'फ़ाइल नाम',
+    'externalLink': 'बाहरी लिंक',
+    'size': 'आकार',
+    'saved': 'सहेजा गया',
+    'unsaved': 'असहेजा गया',
     'authenticationFailed': 'प्रमाणीकरण विफल रहा। कृपया फिर से लॉगिन करें।',
     'authenticationRequired': 'प्रमाणीकरण आवश्यक है',
     'requestCancelled': 'अनुरोध रद्द किया गया',
@@ -3659,7 +3689,7 @@ final Map<String, Map<String, String>> appTranslations = {
 
     AppStrings.viewReceipt: AppStrings.viewReceipt,
     AppStrings.uploadedProofNote: AppStrings.uploadedProofNote,
-    AppStrings.reuploadNote: AppStrings.reuploadNote,
+    AppStrings.reUploadNote: AppStrings.reUploadNote,
     AppStrings.noProofUploaded: AppStrings.noProofUploaded,
     AppStrings.invoice: AppStrings.invoice,
 
@@ -3689,6 +3719,13 @@ final Map<String, Map<String, String>> appTranslations = {
   },
   // Urdu
   'ur': {
+    'addingNewAttributesHelps': 'نئی خصوصیات شامل کرنے سے پروڈکٹ کو کئی اختیارات ملتے ہیں جیسے سائز یا رنگ۔',
+    'digitalLinks': 'ڈیجیٹل لنکس',
+    'fileName': 'فائل کا نام',
+    'externalLink': 'بیرونی لنک',
+    'size': 'سائز',
+    'saved': 'محفوظ کیا گیا',
+    'unsaved': 'غیر محفوظ',
     'authenticationFailed': 'تصدیق ناکام ہوگئی۔ براہ کرم دوبارہ لاگ ان کریں۔',
     'authenticationRequired': 'تصدیق درکار ہے',
     'requestCancelled': 'درخواست منسوخ کردی گئی',

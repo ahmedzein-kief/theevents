@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:dio/dio.dart';
 import 'package:event_app/models/vendor_models/products/create_product/upload_images_data_response.dart';
 import 'package:event_app/models/vendor_models/products/holder_models/upload_images_model.dart';
@@ -64,8 +62,6 @@ class VendorUploadImagesViewModel with ChangeNotifier {
         );
 
         return _myRepo.vendorUploadImages(headers: headers, formData: formData).then((response) {
-          log('upload data ==> ${response.data}');
-
           image.serverFullUrl = response.data?.fullUrl ?? '';
           image.serverUrl = response.data?.url ?? '';
           image.serverID = response.data?.id ?? 0;
@@ -76,7 +72,6 @@ class VendorUploadImagesViewModel with ChangeNotifier {
 
           return image;
         }).catchError((error) {
-          log(error.toString());
           return UploadImagesModel();
         });
       }).toList();

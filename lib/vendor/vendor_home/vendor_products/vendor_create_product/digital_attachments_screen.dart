@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:event_app/core/constants/vendor_app_strings.dart';
@@ -110,7 +109,6 @@ class _DigitalAttachmentsScreenState extends State<DigitalAttachmentsScreen> {
                     itemBuilder: (context, index) {
                       String fileName;
                       String fileExtension;
-                      log('has file ${_selectedImages[index].hasFile}');
 
                       if (!_selectedImages[index].hasFile) {
                         final Uri uri = Uri.parse(_selectedImages[index].serverFullUrl);

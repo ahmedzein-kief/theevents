@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -56,11 +55,10 @@ class SearchSuggestionsProvider extends ChangeNotifier {
       _isLoadingSuggestions = true;
       notifyListeners();
 
-      log('Fetching search suggestions for: $query');
-
       final language = SecurePreferencesUtil.getLanguage() ?? 'en';
       final response = await dio.get(
-          '${ApiEndpoints.searchBarSuggestion}?q=$query&language=$language',);
+        '${ApiEndpoints.searchBarSuggestion}?q=$query&language=$language',
+      );
 
       if (response.statusCode == 200) {
         final responseBody = response.data;
@@ -68,16 +66,11 @@ class SearchSuggestionsProvider extends ChangeNotifier {
         _searchSuggestions = ProductCategoryModel.fromJson(responseBody);
 
         if (_searchSuggestions?.data?.records != null) {
-          log('Found ${_searchSuggestions!.data!.records!.length} suggestions');
-        } else {
-          log('No suggestions found in response');
-        }
+        } else {}
       } else {
-        log('Failed to load search suggestions - Status: ${response.statusCode}');
         _searchSuggestions = null;
       }
     } catch (e) {
-      log('Error fetching search suggestions: $e');
       _searchSuggestions = null;
     } finally {
       _isLoadingSuggestions = false;

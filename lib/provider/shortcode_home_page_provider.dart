@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:dio/dio.dart';
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:flutter/cupertino.dart';
@@ -73,16 +71,12 @@ class HomePageProvider with ChangeNotifier {
         // Process the data
         _processHomePageData(homePageData);
       } else {
-        log('Failed to load data: ${response.statusCode}');
-
         // If we have cached data, use it even if API fails
         if (_cachedHomeData[currentLocale] != null) {
           _processHomePageData(_cachedHomeData[currentLocale]!);
         }
       }
     } catch (e) {
-      log('Error fetching data: $e');
-
       // Fallback to cached data if available and context is mounted
       if (context.mounted && _cachedHomeData[currentLocale] != null) {
         _processHomePageData(_cachedHomeData[currentLocale]!);

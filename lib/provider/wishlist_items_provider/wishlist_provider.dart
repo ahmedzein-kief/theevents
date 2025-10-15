@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:event_app/core/network/api_endpoints/api_contsants.dart';
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/core/utils/app_utils.dart';
@@ -38,8 +36,8 @@ class WishlistProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         _wishlist = WishlistModel.fromJson(response.data);
       }
-    } catch (e) {
-      log('Error in fetchWishlist: ${e.toString()}');
+    } catch (error) {
+      debugPrint(error.toString());
     } finally {
       _isLoading = false;
       notifyListeners();

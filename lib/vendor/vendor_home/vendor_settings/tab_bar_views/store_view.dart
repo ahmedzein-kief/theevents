@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
@@ -88,7 +87,7 @@ class _StoreViewState extends State<StoreView> {
     try {
       countryModel = await fetchCountries(context);
     } catch (error) {
-      log('Error fetching countries: $error');
+      debugPrint(error.toString());
     }
   }
 
@@ -116,7 +115,6 @@ class _StoreViewState extends State<StoreView> {
         _stateLoader = false;
       });
     } catch (error) {
-      log('Error fetching states: $error');
       setState(() {
         _stateLoader = false;
       });
@@ -144,7 +142,6 @@ class _StoreViewState extends State<StoreView> {
         _cityLoader = false;
       });
     } catch (error) {
-      log('Error fetching cities: $error');
       setState(() {
         _cityLoader = false;
       });
@@ -214,22 +211,22 @@ class _StoreViewState extends State<StoreView> {
                                 (element) => element.name == cityName,
                               );
                               cityController.text = selectedCity!.name ?? '';
-                            } catch (e) {
-                              log('City not found: $cityName');
+                            } catch (error) {
+                              debugPrint(error.toString());
                             }
                           }
                         }
                       } catch (error) {
-                        log('Error fetching cities for existing store: $error');
+                        debugPrint(error.toString());
                       }
                     }
-                  } catch (e) {
-                    log('State not found: $stateName');
+                  } catch (error) {
+                    debugPrint(error.toString());
                   }
                 }
               }
             } catch (error) {
-              log('Error fetching states for existing store: $error');
+              debugPrint(error.toString());
             }
           }
         }

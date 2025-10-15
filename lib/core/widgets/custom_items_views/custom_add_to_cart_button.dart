@@ -55,7 +55,7 @@ class AppCustomButton extends StatelessWidget {
                   width: 20,
                   height: 20,
                   child: LoadingAnimationWidget.stretchedDots(
-                    color: theme.colorScheme.primary,
+                    color: Colors.white,
                     size: 25,
                   ),
                 )

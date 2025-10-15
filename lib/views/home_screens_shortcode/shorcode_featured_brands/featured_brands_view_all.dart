@@ -95,8 +95,8 @@ class _FeaturedCategoriesScreenState extends State<FeaturedBrandsScreenViewAll> 
 
         // Fetch fresh data for new locale
         await _fetchAllData();
-      } catch (e) {
-        debugPrint('Error refetching brands data on locale change: $e');
+      } catch (error) {
+        debugPrint(error.toString());
       } finally {
         if (mounted) {
           setState(() => _isRefreshing = false);
@@ -212,8 +212,6 @@ class _FeaturedCategoriesScreenState extends State<FeaturedBrandsScreenViewAll> 
                               imageUrl: provider.featuredBrandsBanner?.data.coverImageForMobile ??
                                   provider.featuredBrandsBanner?.data.coverImage ??
                                   ApiConstants.placeholderImage,
-                              height: 160,
-                              borderRadius: 0,
                               fit: BoxFit.cover,
                               padding: EdgeInsets.only(
                                 left: screenWidth * 0.02,

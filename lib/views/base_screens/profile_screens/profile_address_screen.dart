@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -62,7 +60,6 @@ class _ProfileAddressScreenState extends State<ProfileAddressScreen> {
         });
       }
     } catch (error) {
-      log('Error fetching customer data: $error');
       if (mounted) {
         setState(() {
           _isFetchingMore = false;

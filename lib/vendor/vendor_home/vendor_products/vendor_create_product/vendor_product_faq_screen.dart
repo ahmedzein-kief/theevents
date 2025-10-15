@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:event_app/core/constants/vendor_app_strings.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/styles/app_colors.dart';
@@ -45,7 +43,6 @@ class _VendorProductFaqScreenState extends State<VendorProductFaqScreen> {
 
   void _initializeProductCategories() {
     _faqDropdownItems = widget.listFaq.map((productCategory) {
-      log('product ID ${productCategory.id}');
       return DropdownItem(
         label: productCategory.value?.toString() ?? '',
         value: productCategory,
@@ -130,10 +127,7 @@ class _VendorProductFaqScreenState extends State<VendorProductFaqScreen> {
                           if (value is List<Faqs>) {
                             selectedExistingFaqs =
                                 value.where((e) => e.id != null).map((e) => e.id!.toString()).toList();
-                            log('Selected Faqs: $selectedExistingFaqs');
-                          } else {
-                            log('Unexpected data type: ${value.runtimeType}');
-                          }
+                          } else {}
                         },
                       ),
                       const SizedBox(height: 8),

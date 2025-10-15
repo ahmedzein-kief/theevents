@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:event_app/core/constants/app_strings.dart';
@@ -162,7 +161,6 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView> with M
       setProcessing(false);
     } catch (e) {
       setProcessing(false);
-      log('Error: $e');
     }
   }
 
@@ -321,14 +319,7 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView> with M
       if (!mounted) return false;
       final provider = Provider.of<VendorCreatePackageViewModel>(context, listen: false);
 
-      void logFormData(FormData formData) {
-        for (final field in formData.fields) {
-          log('Field: ${field.key} = ${field.value}');
-        }
-        for (final file in formData.files) {
-          log('File: ${file.key} = ${file.value.filename}');
-        }
-      }
+      void logFormData(FormData formData) {}
 
       // Usage:
       final formData = createProductPostData.toFormData();
@@ -369,7 +360,7 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView> with M
       return true;
     } catch (e) {
       setProcessing(false);
-      log('Error: $e');
+
       return false;
     }
   }
@@ -421,7 +412,6 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView> with M
     if (images != null) {
       final List<String> serverImages = images.where((e) => e.serverUrl.isNotEmpty).map((e) => e.serverUrl).toList();
       createProductPostData.images = serverImages;
-      log('Selected Server Images: $serverImages');
     } else {
       createProductPostData.images = [];
     }
@@ -805,8 +795,8 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView> with M
               createProductSlugProvider.vendorCreateSlugApiResponse.data?.data?.toString() ?? '';
         });
       }
-    } catch (e) {
-      log('Error: $e');
+    } catch (error) {
+      debugPrint(error.toString());
     }
   }
 
@@ -1137,9 +1127,7 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView> with M
             if (value is List<ProductCategories>) {
               final List<int> selectedCategoryIds = value.where((e) => e.id != null).map((e) => e.id!).toList();
               createProductPostData.categories = selectedCategoryIds;
-            } else {
-              log('Unexpected data type: ${value.runtimeType}');
-            }
+            } else {}
           },
         ),
         kFormFieldSpace,
@@ -1155,10 +1143,7 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView> with M
             if (value is List<ProductCollections>) {
               final List<int> selectedCollectionIds = value.where((e) => e.id != null).map((e) => e.id!).toList();
               createProductPostData.productCollections = selectedCollectionIds;
-              log('Selected Product Collections: $selectedCollectionIds');
-            } else {
-              log('Unexpected data type: ${value.runtimeType}');
-            }
+            } else {}
           },
         ),
         kFormFieldSpace,
@@ -1174,9 +1159,7 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView> with M
             if (value is List<ProductLabels>) {
               final List<int> selectedLabelsIds = value.where((e) => e.id != null).map((e) => e.id!).toList();
               createProductPostData.productLabels = selectedLabelsIds;
-            } else {
-              log('Unexpected data type: ${value.runtimeType}');
-            }
+            } else {}
           },
         ),
         kFormFieldSpace,
@@ -1195,10 +1178,7 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView> with M
                   if (value is List<Taxes>) {
                     final List<int> selectedTaxesIds = value.where((e) => e.id != null).map((e) => e.id!).toList();
                     createProductPostData.taxes = selectedTaxesIds;
-                    log('Selected Taxes: $selectedTaxesIds');
-                  } else {
-                    log('Unexpected data type: ${value.runtimeType}');
-                  }
+                  } else {}
                 },
               ),
               kFormFieldSpace,
@@ -1217,9 +1197,7 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView> with M
               final List<Map<String, String>> selectedTags =
                   value.where((e) => e.isNotEmpty).map((e) => {'value': e}).toList();
               createProductPostData.tag = selectedTags;
-            } else {
-              log('Unexpected data type: ${value.runtimeType}');
-            }
+            } else {}
           },
         ),
         kFormFieldSpace,
@@ -1267,8 +1245,8 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView> with M
             onTap: () async {
               try {
                 await _openOverviewView();
-              } catch (e) {
-                log('Error: $e');
+              } catch (error) {
+                debugPrint(error.toString());
               }
             },
           ),
@@ -1339,8 +1317,8 @@ class VendorCreatePackageViewState extends State<VendorCreatePackageView> with M
             onTap: () async {
               try {
                 await _openShippingSection();
-              } catch (e) {
-                log('Error: $e');
+              } catch (error) {
+                debugPrint(error.toString());
               }
             },
           ),

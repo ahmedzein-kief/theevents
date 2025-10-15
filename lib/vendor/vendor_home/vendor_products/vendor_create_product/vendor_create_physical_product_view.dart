@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:event_app/core/constants/app_strings.dart';
@@ -146,8 +145,6 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
       await provider.vendorGetProductTags();
 
       if (_productId != null) {
-        log('PRODUCT ID ==> $_productId');
-
         if (!mounted) return;
         await provider.getProductView(context, _productId!);
 
@@ -165,7 +162,6 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
       setProcessing(false);
     } catch (e) {
       setProcessing(false);
-      log('Error: $e');
     }
   }
 
@@ -337,12 +333,7 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
           answer: innerList[1].value ?? '',
         ),
       );
-      log(
-        'Added FAQModel: Q: ${innerList[0].value} | A: ${innerList[1].value}',
-      );
     });
-
-    log('data --> ${productViewData?.selectedExistingFaqs?.length}');
 
     selectedParentFaqs?.listExistingFaqs = productViewData?.selectedExistingFaqs ?? [];
     _handleFaqData(selectedParentFaqs);
@@ -389,9 +380,6 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
       }
       createProductPostData.productFiles = productFilesIds;
 
-      log('selectedDigitalLinks ===> ${selectedDigitalLinks?.length}');
-      log('selectedDigitalImages ===> ${selectedDigitalImages?.length}');
-
       _handleDigitalLinksData(selectedDigitalLinks);
       _handleDigitalAttachmentsData(selectedDigitalImages);
     }
@@ -413,14 +401,7 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
 
       /// ***------------ converting content text to html and storing in content controller end --------***
 
-      void logFormData(FormData formData) {
-        for (final field in formData.fields) {
-          log('Field: ${field.key} = ${field.value}');
-        }
-        for (final file in formData.files) {
-          log('File: ${file.key} = ${file.value.filename}');
-        }
-      }
+      void logFormData(FormData formData) {}
 
       // Usage:
       final formData = createProductPostData.toFormData();
@@ -465,7 +446,7 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
       return true;
     } catch (e) {
       setProcessing(false);
-      log('Error is: $e');
+
       return false;
     }
   }
@@ -568,7 +549,6 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
     if (images != null) {
       final List<String> serverImages = images.where((e) => e.serverUrl.isNotEmpty).map((e) => e.serverUrl).toList();
       createProductPostData.images = serverImages;
-      log('Selected Server Images: $serverImages');
     } else {
       createProductPostData.images = [];
     }
@@ -629,9 +609,7 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
       selectedDigitalLinks = links;
       createProductPostData.productFilesExternal =
           selectedDigitalLinks?.where((test) => test.isSaved == false).toList() ?? [];
-      for (final e in selectedDigitalLinks ?? []) {
-        log(e.toString());
-      }
+
       _updateDigitalLinksCount();
     });
   }
@@ -664,7 +642,6 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
 
   void _handleAttributesData(attributes) {
     if (attributes != null) {
-      log('attributes $attributes');
       createProductPostData.addedAttributes = {
         for (final attr in attributes) '${attr["id"]}': '${attr["value_id"]}',
       };
@@ -927,7 +904,6 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
       ),
     );
 
-    log('vendorProductDimensionsModel $vendorProductDimensionsModel');
     _handleShippingData(vendorProductDimensionsModel);
     setState(() {});
   }
@@ -1165,8 +1141,8 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
               createProductSlugProvider.vendorCreateSlugApiResponse.data?.data?.toString() ?? '';
         });
       }
-    } catch (e) {
-      log('Error: $e');
+    } catch (error) {
+      debugPrint(error.toString());
     }
   }
 
@@ -1314,10 +1290,6 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
         builder: (context, provider, _) {
           final settings = provider.generalSettingsApiResponse.data?.data;
           final viewData = provider.vendorProductViewApiResponse.data?.data;
-
-          log(
-            'view data ==> ${viewData?.totalVariations} || $_productId',
-          );
 
           /// Build overview, general info, image
           final List<Widget> sections = [
@@ -1558,10 +1530,7 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
             if (value is List<ProductCategories>) {
               final List<int> selectedCategoryIds = value.where((e) => e.id != null).map((e) => e.id!).toList();
               createProductPostData.categories = selectedCategoryIds;
-              log('Selected Categories: $selectedCategoryIds');
-            } else {
-              log('Unexpected data type: ${value.runtimeType}');
-            }
+            } else {}
           },
         ),
         kFormFieldSpace,
@@ -1577,10 +1546,7 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
             if (value is List<ProductCollections>) {
               final List<int> selectedCollectionIds = value.where((e) => e.id != null).map((e) => e.id!).toList();
               createProductPostData.productCollections = selectedCollectionIds;
-              log('Selected Product Collections: $selectedCollectionIds');
-            } else {
-              log('Unexpected data type: ${value.runtimeType}');
-            }
+            } else {}
           },
         ),
         kFormFieldSpace,
@@ -1596,10 +1562,7 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
             if (value is List<ProductLabels>) {
               final List<int> selectedLabelsIds = value.where((e) => e.id != null).map((e) => e.id!).toList();
               createProductPostData.productLabels = selectedLabelsIds;
-              log('Selected Labels: $selectedLabelsIds');
-            } else {
-              log('Unexpected data type: ${value.runtimeType}');
-            }
+            } else {}
           },
         ),
         kFormFieldSpace,
@@ -1618,10 +1581,7 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
                   if (value is List<Taxes>) {
                     final List<int> selectedTaxesIds = value.where((e) => e.id != null).map((e) => e.id!).toList();
                     createProductPostData.taxes = selectedTaxesIds;
-                    log('Selected Taxes: $selectedTaxesIds');
-                  } else {
-                    log('Unexpected data type: ${value.runtimeType}');
-                  }
+                  } else {}
                 },
               ),
               kFormFieldSpace,
@@ -1636,15 +1596,11 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
           dropdownController: _productTagsController,
           hintText: VendorAppStrings.selectTags.tr,
           onSelectionChanged: (value) {
-            log('Selected Tags: $value');
             if (value is List<String>) {
               final List<Map<String, String>> selectedTags =
                   value.where((e) => e.isNotEmpty).map((e) => {'value': e}).toList();
               createProductPostData.tag = selectedTags;
-              log('Selected Tag: $selectedTags');
-            } else {
-              log('Unexpected data type: ${value.runtimeType}');
-            }
+            } else {}
           },
         ),
 
@@ -1711,8 +1667,8 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
             onTap: () async {
               try {
                 await _openOverviewView();
-              } catch (e) {
-                log('Error: $e');
+              } catch (error) {
+                debugPrint(error.toString());
               }
             },
           ),
@@ -1782,8 +1738,8 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
         onTap: () async {
           try {
             _openProductHasVariationsView();
-          } catch (e) {
-            log('Error: $e');
+          } catch (error) {
+            debugPrint(error.toString());
           }
         },
       );
@@ -1801,8 +1757,8 @@ class VendorCreatePhysicalProductViewState extends State<VendorCreatePhysicalPro
             onTap: () async {
               try {
                 await _openShippingSection();
-              } catch (e) {
-                log('Error: $e');
+              } catch (error) {
+                debugPrint(error.toString());
               }
             },
           ),

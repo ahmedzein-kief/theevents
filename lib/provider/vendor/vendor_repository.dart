@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:dio/dio.dart';
 import 'package:event_app/core/network/api_endpoints/vendor_api_end_point.dart';
 import 'package:event_app/data/vendor/data/network/dio/dio_base_api_services.dart';
@@ -53,9 +51,9 @@ class VendorRepository {
 
       // Map the response to the model
       return CommonDataResponse.fromJson(response);
-    } catch (e, stacktrace) {
+    } catch (e) {
       // Log the error with stacktrace
-      log('Error in fetching vendor products: $e', stackTrace: stacktrace);
+
       // Throw a custom exception
       throw Exception('Failed to fetch vendor products: $e');
     }
@@ -76,9 +74,9 @@ class VendorRepository {
 
       // Map the response to the model
       return VendorGetProductsModel.fromJson(response);
-    } catch (e, stacktrace) {
+    } catch (e) {
       // Log the error with stacktrace
-      log('Error in fetching vendor products: $e', stackTrace: stacktrace);
+
       // Throw a custom exception
       throw Exception('Failed to fetch vendor products: $e');
     }

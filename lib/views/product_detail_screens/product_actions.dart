@@ -216,7 +216,7 @@ class _ProductActionsState extends State<ProductActions> {
     } catch (e) {
       // Handle any errors
       if (mounted) {
-        _showErrorSnackbar('Failed to update wishlist. Please try again.'.tr);
+        _showErrorSnackbar(AppStrings.wishlistUpdateFailed.tr);
       }
     } finally {
       if (mounted) {

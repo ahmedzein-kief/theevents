@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/core/network/api_endpoints/vendor_api_end_point.dart';
 import 'package:event_app/core/services/shared_preferences_helper.dart';
@@ -82,14 +80,14 @@ class UserProvider with ChangeNotifier {
         notifyListeners();
 
         final errorMessage = response.data['message'] ?? 'Failed to become vendor';
-        AppUtils.showToast(response.data['message']);
-        debugPrint('Become vendor error: $errorMessage');
+        AppUtils.showToast(errorMessage);
+
         return false;
       }
     } catch (error) {
       _isLoading = false;
       notifyListeners();
-      debugPrint('Become vendor exception: $error');
+
       AppUtils.showToast('Become vendor exception: $error');
       return false;
     }
@@ -123,7 +121,6 @@ class UserProvider with ChangeNotifier {
   }
 
   Future<void> openPdfFromUrl(String url) async {
-    log('url is $url');
     final Uri uri = Uri.parse(url);
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);

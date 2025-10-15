@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:event_app/core/constants/app_strings.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/helper/mixins/media_query_mixin.dart';
@@ -56,8 +54,8 @@ class _CustomerReviewedViewState extends State<CustomerReviewedView> with MediaQ
       setState(() {});
       await provider.customerGetProductReviews(search: _searchController.text);
       setState(() {});
-    } catch (e) {
-      log('_onRefresh CustomerReviewedView error: $e');
+    } catch (error) {
+      debugPrint(error.toString());
     }
   }
 

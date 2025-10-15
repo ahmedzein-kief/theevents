@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/views/base_screens/base_app_bar.dart';
 import 'package:event_app/views/product_detail_screens/product_actions.dart';
@@ -137,8 +135,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 });
               }
             });
-          } catch (e) {
-            log('Error updating selected image: $e');
+          } catch (error) {
+            debugPrint(error.toString());
           }
         }
       };

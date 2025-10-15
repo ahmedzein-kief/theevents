@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
@@ -64,7 +63,6 @@ class OrderDataProvider with ChangeNotifier {
         AppUtils.showToast(AppStrings.noOrdersFound.tr);
       }
     } catch (e) {
-      log('Error in getOrders: ${e.toString()}');
       _orderHistoryModel = null;
       _completedOrderHistoryModel = null;
       _isLoading = false;
@@ -106,7 +104,6 @@ class OrderDataProvider with ChangeNotifier {
         AppUtils.showToast(AppStrings.noOrderDetailsFound.tr);
       }
     } catch (e) {
-      log('Error in getOrderDetails: ${e.toString()}');
       _orderDetailModel = null;
       _isLoading = false;
       notifyListeners();
@@ -189,7 +186,6 @@ class OrderDataProvider with ChangeNotifier {
       getOrderDetails(orderId);
       return CommonDataResponse.fromJson(response.data);
     } catch (e) {
-      log(e.toString());
       _isLoading = false;
       notifyListeners();
       return null;

@@ -1,6 +1,8 @@
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/provider/api_response_handler.dart';
 import 'package:flutter/material.dart';
 
+import '../../core/constants/app_strings.dart';
 import '../../models/dashboard/home_brands_types_items_models.dart';
 
 class FeaturedBrandsItemsProvider with ChangeNotifier {
@@ -45,7 +47,7 @@ class FeaturedBrandsItemsProvider with ChangeNotifier {
       isLoading = false;
       hasError = true;
       notifyListeners(); // Log the error for debugging
-      throw Exception('Failed to load data');
+      throw Exception(AppStrings.failedToLoadData.tr);
     }
   }
 }

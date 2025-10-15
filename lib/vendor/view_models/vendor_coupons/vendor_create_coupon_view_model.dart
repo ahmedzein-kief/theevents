@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:event_app/provider/vendor/vendor_repository.dart';
@@ -56,10 +55,7 @@ class VendorCreateCouponViewModel with ChangeNotifier {
       return true;
     } catch (error) {
       if (error is DioException) {
-        log('yes dio exception');
-      } else {
-        log('no dio exception');
-      }
+      } else {}
 
       setApiResponse = ApiResponse.error(error.toString());
       AppUtils.showToast(error.toString());

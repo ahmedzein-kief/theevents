@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:dio/dio.dart';
 
 import '../../../core/helper/enums/enums.dart';
@@ -52,7 +50,6 @@ class WalletDataSource {
         return null;
       }
     } catch (e) {
-      log('Deposit error: $e');
       rethrow; // Let the repository handle the error
     }
   }
@@ -83,7 +80,6 @@ class WalletDataSource {
       );
       return NotificationResponse.fromJson(response.data);
     } catch (e) {
-      log('Get notifications error: $e');
       rethrow;
     }
   }
@@ -96,7 +92,6 @@ class WalletDataSource {
         extra: {ApiConstants.requireAuthKey: true},
       );
     } catch (e) {
-      log('Mark notification as read error: $e');
       rethrow;
     }
   }
@@ -109,7 +104,6 @@ class WalletDataSource {
         extra: {ApiConstants.requireAuthKey: true},
       );
     } catch (e) {
-      log('Mark notification as unread error: $e');
       rethrow;
     }
   }
@@ -122,7 +116,6 @@ class WalletDataSource {
         extra: {ApiConstants.requireAuthKey: true},
       );
     } catch (e) {
-      log('Mark all notifications as read error: $e');
       rethrow;
     }
   }
@@ -134,7 +127,6 @@ class WalletDataSource {
         extra: {ApiConstants.requireAuthKey: true},
       );
     } catch (e) {
-      log('Delete notification error: $e');
       rethrow;
     }
   }
@@ -146,7 +138,6 @@ class WalletDataSource {
         extra: {ApiConstants.requireAuthKey: true},
       );
     } catch (e) {
-      log('Delete notification error: $e');
       rethrow;
     }
   }
@@ -159,7 +150,6 @@ class WalletDataSource {
       );
       return NotificationPreferences.fromJson(response.data);
     } catch (e) {
-      log('Get notification preferences error: $e');
       rethrow;
     }
   }
@@ -172,7 +162,6 @@ class WalletDataSource {
         extra: {ApiConstants.requireAuthKey: true},
       );
     } catch (e) {
-      log('Update notification preferences error: $e');
       rethrow;
     }
   }
@@ -188,7 +177,6 @@ class WalletDataSource {
         extra: {ApiConstants.requireAuthKey: true},
       );
     } catch (e) {
-      log('Update notification preference by type error: $e');
       rethrow;
     }
   }

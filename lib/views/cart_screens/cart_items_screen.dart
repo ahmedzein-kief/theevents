@@ -252,22 +252,7 @@ class _CartItemsScreensState extends State<CartItemsScreen> {
 
                   Container(
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primary,
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(8),
-                        // Radius for the top-left corner
-                        topRight: Radius.circular(
-                          8,
-                        ), // Radius for the top-right corner
-                      ),
-                      // boxShadow: const [
-                      //   BoxShadow(
-                      //     color: Colors.black,
-                      //     spreadRadius: 1,
-                      //     blurRadius: 5,
-                      //     offset: Offset(0, 3),
-                      //   ),
-                      // ],
+                      color: Theme.of(context).cardColor,
                     ),
                     child: Padding(
                       padding: EdgeInsets.only(

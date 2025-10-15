@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
@@ -101,7 +100,6 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
       final result = await PDFDownloader().saveFileInDownloadsUint(context, binaryData, filename);
 
       if (mounted && result != null) {
-        log('result $result');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(result),
@@ -111,7 +109,6 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
         );
       }
     } catch (e) {
-      log('Error downloading proof: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -313,7 +310,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                               await downloadProof();
                                             },
                                         ),
-                                        TextSpan(text: AppStrings.reuploadNote.tr),
+                                        TextSpan(text: AppStrings.reUploadNote.tr),
                                       ],
                                     ),
                                   )

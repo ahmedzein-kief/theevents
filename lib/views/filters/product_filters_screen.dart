@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:event_app/core/constants/app_strings.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/helper/functions/functions.dart';
@@ -313,8 +311,8 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
       if (colorString.startsWith('#')) {
         return Color(int.parse('0xFF${colorString.replaceAll('#', '')}'));
       }
-    } catch (e) {
-      log('Error parsing color string: $e');
+    } catch (error) {
+      debugPrint(error.toString());
     }
     return Colors.transparent; // Default to transparent color if parsing fails
   }

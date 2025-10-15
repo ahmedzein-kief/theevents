@@ -1,5 +1,6 @@
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/widgets/items_empty_view.dart';
+import 'package:event_app/core/widgets/loading_indicator.dart';
 import 'package:event_app/views/base_screens/base_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -152,12 +153,7 @@ class _FeaturedBrandsItemsScreenState extends State<FeaturedBrandsItemsScreen> {
               Consumer<FeaturedBrandsProvider>(
                 builder: (context, brandProvider, child) {
                   if (brandProvider.isLoading) {
-                    return const Center(
-                      child: CircularProgressIndicator(
-                        color: Colors.black,
-                        strokeWidth: 0.5,
-                      ),
-                    );
+                    return const LoadingIndicator();
                   }
                   final brandData = brandProvider.brandModel;
 
@@ -165,9 +161,7 @@ class _FeaturedBrandsItemsScreenState extends State<FeaturedBrandsItemsScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      CustomSearchBar(
-                        hintText: AppStrings.searchEvents.tr,
-                      ),
+                      CustomSearchBar(hintText: AppStrings.searchEvents.tr),
                       Expanded(
                         child: SingleChildScrollView(
                           controller: _scrollController,
@@ -210,80 +204,86 @@ class _FeaturedBrandsItemsScreenState extends State<FeaturedBrandsItemsScreen> {
   }
 
   Widget _buildTopBanner(brandData) {
-    return Stack(
-      children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(5),
-          child: PaddedNetworkBanner(
-            imageUrl: brandData?.coverImage ?? brandData?.coverImageForMobile ?? ApiConstants.placeholderImage,
-            fit: BoxFit.cover,
-            width: double.infinity,
-            padding: EdgeInsets.zero,
+    return SizedBox(
+      height: 160,
+      child: Stack(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(5),
+            child: PaddedNetworkBanner(
+              imageUrl: brandData?.coverImageForMobile ?? brandData?.coverImage ?? ApiConstants.placeholderImage,
+              fit: BoxFit.cover,
+              width: double.infinity,
+              padding: EdgeInsets.zero,
+            ),
           ),
-        ),
-        Positioned(
-          top: 16,
-          left: 16,
-          child: Column(
-            children: [
-              Container(
-                width: 55,
-                height: 55,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(6),
-                  border: Border.all(
-                    color: Colors.grey.shade300,
-                    width: 1,
-                  ),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(6),
-                  child: brandData?.image != null && brandData!.image.isNotEmpty
-                      ? PaddedNetworkBanner(
-                          imageUrl: brandData.image,
-                          fit: BoxFit.cover,
-                          width: 55,
-                          height: 55,
-                          padding: EdgeInsets.zero,
-                        )
-                      : Container(
-                          decoration: BoxDecoration(
-                            color: Colors.grey[100],
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: const Center(
-                            child: Icon(
-                              Icons.business,
-                              color: Colors.grey,
-                              size: 20,
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Padding(
+              padding: const EdgeInsets.only(left: 16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 50,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(
+                        color: Colors.grey.shade300,
+                        width: 1,
+                      ),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(6),
+                      child: brandData?.image != null && brandData!.image.isNotEmpty
+                          ? PaddedNetworkBanner(
+                              imageUrl: brandData.image,
+                              fit: BoxFit.cover,
+                              width: 50,
+                              height: 50,
+                              padding: EdgeInsets.zero,
+                            )
+                          : Container(
+                              decoration: BoxDecoration(
+                                color: Colors.grey[100],
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: const Center(
+                                child: Icon(
+                                  Icons.business,
+                                  color: Colors.grey,
+                                  size: 20,
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
-                ),
-              ),
-              const SizedBox(height: 4),
-              Container(
-                constraints: const BoxConstraints(
-                  maxWidth: 120,
-                  minWidth: 60,
-                ),
-                child: Text(
-                  brandData?.name ?? 'Brand Name',
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    ),
                   ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
+                  const SizedBox(height: 4),
+                  Container(
+                    constraints: const BoxConstraints(
+                      maxWidth: 120,
+                      minWidth: 60,
+                    ),
+                    child: Text(
+                      brandData?.name ?? 'Brand Name',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

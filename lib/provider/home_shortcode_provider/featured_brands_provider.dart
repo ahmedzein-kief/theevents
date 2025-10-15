@@ -1,9 +1,11 @@
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/models/dashboard/featured_top_brands_models/feature_brands_items.dart';
 import 'package:event_app/models/product_packages_models/product_filters_model.dart';
 import 'package:event_app/provider/api_response_handler.dart';
 import 'package:flutter/cupertino.dart';
 
+import '../../core/constants/app_strings.dart';
 import '../../models/dashboard/featured_top_brands_models/feature_top_brand_banner.dart';
 import '../../models/dashboard/featured_top_brands_models/featured_brand_products_models.dart';
 import '../../models/dashboard/featured_top_brands_models/featured_brands_items_models.dart';
@@ -129,7 +131,7 @@ class FeaturedBrandsProvider with ChangeNotifier {
           _brands.addAll(data.data.records);
         }
       } else {
-        _error = 'Failed to load data';
+        _error = AppStrings.failedToLoadData.tr;
       }
     } catch (e) {
       _error = 'Failed to load data: $e';
@@ -272,8 +274,7 @@ class FeaturedBrandsProvider with ChangeNotifier {
     if (page == 1) {
       _isMoreLoading = true;
       _isLoadingPackages = true;
-    } else {
-    }
+    } else {}
     notifyListeners();
 
     final url = '${ApiEndpoints.featuredBrandPackages}$slug?per-page=$perPage&page=$page&sort-by=$sortBy';

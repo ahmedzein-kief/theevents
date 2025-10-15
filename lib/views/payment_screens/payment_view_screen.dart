@@ -76,7 +76,6 @@ class PaymentViewState extends State<PaymentViewScreen> {
     _controller.setNavigationDelegate(
       NavigationDelegate(
         onPageStarted: (String url) {
-          log('onPageStarted url $url');
           if (mounted) {
             setState(() => _isLoading = true);
           }
@@ -106,12 +105,10 @@ class PaymentViewState extends State<PaymentViewScreen> {
           })();
         ''').catchError((e) => log('JS injection error: $e'));
         },
-        onProgress: (int progress) {
-          log('WebView loading progress: $progress%');
-        },
+        onProgress: (int progress) {},
         onWebResourceError: (WebResourceError error) {
           // Only handle critical errors
-          log('WebView error: ${error.description}');
+
           if (error.errorType == WebResourceErrorType.hostLookup || error.errorType == WebResourceErrorType.timeout) {
             if (!_hasNavigatedBack && mounted) {
               _handlePaymentResult(
@@ -127,12 +124,10 @@ class PaymentViewState extends State<PaymentViewScreen> {
           }
         },
         onNavigationRequest: (NavigationRequest request) {
-          log('Navigation to: ${request.url}');
           _checkPaymentResult(request.url);
           return NavigationDecision.navigate;
         },
         onHttpAuthRequest: (HttpAuthRequest request) {
-          log('HTTP Auth Request for: ${request.host}');
           // Let WebView handle auth normally
         },
       ),
@@ -140,7 +135,6 @@ class PaymentViewState extends State<PaymentViewScreen> {
 
     // Load URL
     _controller.loadRequest(Uri.parse(widget.checkoutUrl)).catchError((error) {
-      log('Error loading URL: $error');
       if (mounted && !_hasNavigatedBack) {
         _handlePaymentResult(
           widget.paymentType == null
@@ -176,9 +170,7 @@ class PaymentViewState extends State<PaymentViewScreen> {
             uri.queryParameters['order_id'] ??
             uri.queryParameters['orderid']; // Some gateways use different formats
 
-        if (orderId != null) {
-          log('Extracted order_id: $orderId from URL: $url');
-        }
+        if (orderId != null) {}
 
         // Check for error codes in URL parameters
         final error = uri.queryParameters['error'];
@@ -186,7 +178,6 @@ class PaymentViewState extends State<PaymentViewScreen> {
           errorMessage = error;
         }
       } catch (e) {
-        log('Error parsing URL for order_id: $e');
         errorMessage = 'URL parsing error: $e';
       }
     }
@@ -194,7 +185,6 @@ class PaymentViewState extends State<PaymentViewScreen> {
     // Check for success patterns
     for (final String pattern in successPatterns) {
       if (lowerUrl.contains(pattern)) {
-        log('Payment successful - found pattern: $pattern in URL: $url');
         _handlePaymentResult(
           widget.paymentType == null ? PaymentResult(isSuccess: true, orderId: orderId) : true,
         );
@@ -205,7 +195,6 @@ class PaymentViewState extends State<PaymentViewScreen> {
     // Check for failure patterns
     for (final String pattern in failurePatterns) {
       if (lowerUrl.contains(pattern)) {
-        log('Payment failed - found pattern: $pattern in URL: $url');
         _handlePaymentResult(
           widget.paymentType == null
               ? PaymentResult(
@@ -221,7 +210,6 @@ class PaymentViewState extends State<PaymentViewScreen> {
 
     // Additional success checks
     if (_checkAdditionalSuccessConditions(lowerUrl)) {
-      log('Payment successful - additional success conditions met for URL: $url');
       _handlePaymentResult(
         widget.paymentType == null ? PaymentResult(isSuccess: true, orderId: orderId) : true,
       );
@@ -230,7 +218,6 @@ class PaymentViewState extends State<PaymentViewScreen> {
 
     // Check for specific failure status codes
     if (_checkFailureConditions(lowerUrl)) {
-      log('Payment failed - failure conditions detected in URL: $url');
       _handlePaymentResult(
         widget.paymentType == null
             ? PaymentResult(
@@ -288,8 +275,8 @@ class PaymentViewState extends State<PaymentViewScreen> {
 
       // Then fetch from server to be sure
       await cartProvider.fetchCartData();
-    } catch (e) {
-      log('Error clearing cart: $e');
+    } catch (error) {
+      debugPrint(error.toString());
     }
   }
 
@@ -363,10 +350,10 @@ class PaymentViewState extends State<PaymentViewScreen> {
               Text(
                 AppStrings.paymentCancelWarning.tr,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
-                  color: Colors.black87,
+                  color: Theme.of(context).colorScheme.onPrimary,
                 ),
               ),
               const SizedBox(height: 32),

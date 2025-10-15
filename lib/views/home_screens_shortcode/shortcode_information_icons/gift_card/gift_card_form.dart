@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/styles/custom_text_styles.dart';
 import 'package:event_app/models/dashboard/information_icons_models/gift_card_models/checkout_payment_model.dart';
@@ -390,7 +388,6 @@ class _GiftCardFormState extends State<GiftCardForm> {
                                       }
                                       // If result is null, user cancelled - no action needed
                                     } else {
-                                      log('data?.checkoutUrl ${data?.checkoutUrl}');
                                       // Handle case where checkout URL is not available
                                       AppUtils.showToast(
                                         VendorAppStrings.paymentLinkError.tr,

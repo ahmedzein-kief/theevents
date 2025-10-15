@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:event_app/core/constants/vendor_app_strings.dart';
@@ -67,7 +66,7 @@ class _AuthorizedSignatoryInformationScreenState extends State<AuthorizedSignato
         _poaMoaController.text = widget.asiModel.poamoaFileName ?? '';
       }
     } catch (error) {
-      log('Error fetching country data: $error');
+      debugPrint(error.toString());
     }
   }
 

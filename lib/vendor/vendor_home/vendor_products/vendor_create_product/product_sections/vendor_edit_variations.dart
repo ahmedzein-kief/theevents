@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:event_app/core/helper/mixins/media_query_mixin.dart';
@@ -134,7 +133,6 @@ class _VendorEditVariationsState extends State<VendorEditVariations> with MediaQ
       setProcessing(false);
     } catch (e) {
       setProcessing(false);
-      log('Error: $e');
     }
   }
 
@@ -171,14 +169,7 @@ class _VendorEditVariationsState extends State<VendorEditVariations> with MediaQ
       variationPostDataModel.autoGenerateSku = _authGenerateSku ? '1' : '0';
 
       /// **** assign values to post data model start ****
-      void logFormData(FormData formData) {
-        for (final field in formData.fields) {
-          log('Field: ${field.key} = ${field.value}');
-        }
-        for (final file in formData.files) {
-          log('File: ${file.key} = ${file.value.filename}');
-        }
-      }
+      void logFormData(FormData formData) {}
 
       // Usage:
       final formData = variationPostDataModel.toVariationFormData();
@@ -186,9 +177,6 @@ class _VendorEditVariationsState extends State<VendorEditVariations> with MediaQ
 
       /// update variation
       if (widget.productVariationsID != null) {
-        log(
-          '********************** Inside Update variation *************************',
-        );
         if (!mounted) return;
         final updateProductVariationProvider = context.read<VendorCreateUpdateVariationViewModel>();
         final result = await updateProductVariationProvider.vendorUpdateProductVariation(
@@ -203,9 +191,6 @@ class _VendorEditVariationsState extends State<VendorEditVariations> with MediaQ
           context.read<VendorGetProductVariationsViewModel>().vendorGetProductVariations(productID: widget.productID);
         }
       } else {
-        log(
-          '********************** Inside Create variation *************************',
-        );
         if (!mounted) return;
         final createVariationProvider = context.read<VendorCreateUpdateVariationViewModel>();
         final result = await createVariationProvider.vendorCreateProductVariation(
@@ -219,8 +204,8 @@ class _VendorEditVariationsState extends State<VendorEditVariations> with MediaQ
           context.read<VendorGetProductVariationsViewModel>().vendorGetProductVariations(productID: widget.productID);
         }
       }
-    } catch (e) {
-      log('Error inside create update function: $e');
+    } catch (error) {
+      debugPrint(error.toString());
     }
   }
 
@@ -519,9 +504,7 @@ class _VendorEditVariationsState extends State<VendorEditVariations> with MediaQ
                       )
                       .toList(),
                   onChanged: (value) {
-                    log('value $value');
                     if (value is EditAttributeData) {
-                      log('selected attribute');
                       for (final item in listAttributes) {
                         for (final attr in item.attributes) {
                           if (attr.id == value.id) {
@@ -532,13 +515,6 @@ class _VendorEditVariationsState extends State<VendorEditVariations> with MediaQ
                         }
                       }
 
-                      for (final item in listAttributes) {
-                        for (final attr in item.attributes) {
-                          log(
-                            'Updated Attribute ID: ${attr.id}, isDefault: ${attr.isDefault}',
-                          );
-                        }
-                      }
                       setState(() {});
                     }
                   },
@@ -564,8 +540,8 @@ class _VendorEditVariationsState extends State<VendorEditVariations> with MediaQ
             onTap: () async {
               try {
                 await showOverviewDetails(overview: overview);
-              } catch (e) {
-                log('Error: $e');
+              } catch (error) {
+                debugPrint(error.toString());
               }
             },
           ),
@@ -680,8 +656,8 @@ class _VendorEditVariationsState extends State<VendorEditVariations> with MediaQ
             onTap: () async {
               try {
                 await _openShippingSection();
-              } catch (e) {
-                log('Error: $e');
+              } catch (error) {
+                debugPrint(error.toString());
               }
             },
           ),
@@ -794,15 +770,11 @@ class _VendorEditVariationsState extends State<VendorEditVariations> with MediaQ
     );
 
     if (images != null) {
-      final List<String> serverImages = images.where((e) => e.serverUrl.isNotEmpty).map((e) => e.serverUrl).toList();
-      log('Selected Digital Images: $serverImages');
+      images.where((e) => e.serverUrl.isNotEmpty).map((e) => e.serverUrl).toList();
     } else {}
 
     setState(() {
       selectedDigitalImages = images;
-      for (final e in selectedDigitalImages ?? []) {
-        log(e);
-      }
       _updateDigitalImageCount();
     });
   }
@@ -824,9 +796,6 @@ class _VendorEditVariationsState extends State<VendorEditVariations> with MediaQ
 
     setState(() {
       selectedDigitalLinks = links;
-      for (final e in selectedDigitalLinks ?? []) {
-        log(e.toString());
-      }
       _updateDigitalLinksCount();
     });
   }
@@ -842,8 +811,7 @@ class _VendorEditVariationsState extends State<VendorEditVariations> with MediaQ
     );
 
     if (images != null) {
-      final List<String> serverImages = images.where((e) => e.serverUrl.isNotEmpty).map((e) => e.serverUrl).toList();
-      log('Selected Server Images: $serverImages');
+      images.where((e) => e.serverUrl.isNotEmpty).map((e) => e.serverUrl).toList();
     } else {}
 
     setState(() {

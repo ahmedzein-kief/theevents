@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:event_app/core/constants/vendor_app_strings.dart';
@@ -42,7 +41,6 @@ class _UploadImagesScreenState extends State<UploadImagesScreen> {
         _selectedImages.where((file) => file.hasFile).toList(),
       );
       if (results.isNotEmpty) {
-        log('Result 1 ==> ${results.length} ');
         for (final element in results) {
           if (element != null) {
             final matchedImage = _selectedImages.firstWhere(
@@ -59,13 +57,10 @@ class _UploadImagesScreenState extends State<UploadImagesScreen> {
             }
           }
         }
-      } else {
-        log('Result 2 ==> $results');
-      }
+      } else {}
       setProcessing(false);
     } catch (e) {
       setProcessing(false);
-      log('Error: $e');
     }
   }
 
@@ -135,7 +130,6 @@ class _UploadImagesScreenState extends State<UploadImagesScreen> {
                     itemBuilder: (context, index) {
                       String fileName;
                       String fileExtension;
-                      log('has file ${_selectedImages[index].hasFile}');
 
                       if (!_selectedImages[index].hasFile) {
                         final Uri uri = Uri.parse(_selectedImages[index].serverFullUrl);

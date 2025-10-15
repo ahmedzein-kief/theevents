@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/styles/app_sizes.dart';
 import 'package:event_app/core/utils/app_utils.dart';
@@ -59,12 +57,11 @@ class _RelatedProductsSearchScreenState extends State<RelatedProductsSearchScree
     }
     try {
       setProcessing(true);
-      log(query);
+
       final result = await provider.productSearch(query, dataId);
 
       return result;
     } catch (e) {
-      log('Error: $e');
       return null;
     } finally {
       setProcessing(false);

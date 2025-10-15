@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
@@ -110,8 +109,8 @@ class _CustomerSubmitReviewViewState extends State<CustomerSubmitReviewView> wit
         }
         setState(() {});
       }
-    } catch (e) {
-      log('${AppStrings.failedToAddPhotos.tr} $e');
+    } catch (error) {
+      debugPrint(error.toString());
     }
   }
 
@@ -270,8 +269,8 @@ class _CustomerSubmitReviewViewState extends State<CustomerSubmitReviewView> wit
                                           ),
                                         );
                                       }
-                                    } catch (e) {
-                                      log('${AppStrings.errorSubmittingReview.tr} $e');
+                                    } catch (error) {
+                                      debugPrint(error.toString());
                                     }
                                   }
                                 },

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:event_app/core/constants/vendor_app_strings.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
@@ -91,7 +90,6 @@ class _VendorProductSeoViewState extends State<VendorProductSeoView> with MediaQ
       setProcessing(false);
     } catch (e) {
       setProcessing(false);
-      log('Error: $e');
     }
   }
 
@@ -372,8 +370,8 @@ class _VendorProductSeoViewState extends State<VendorProductSeoView> with MediaQ
           _filteredKeywords.clear();
         });
       }
-    } catch (e) {
-      log('Error: $e');
+    } catch (error) {
+      debugPrint(error.toString());
     }
   }
 
@@ -384,8 +382,8 @@ class _VendorProductSeoViewState extends State<VendorProductSeoView> with MediaQ
         _selectedKeywords.add(keyword);
         _filteredKeywords.remove(keyword);
       });
-    } catch (e) {
-      log('Error: $e');
+    } catch (error) {
+      debugPrint(error.toString());
     }
   }
 }

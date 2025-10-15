@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:dartz/dartz.dart';
 import 'package:event_app/core/constants/app_strings.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
@@ -58,7 +56,6 @@ class WalletRepositoryImpl implements WalletRepository {
       final response = await _walletDataSource.walletOverview();
       return Right(response);
     } catch (e) {
-      log('walletOverview error: $e');
       return Left(ErrorHandler(e).failure);
     }
   }
@@ -84,7 +81,6 @@ class WalletRepositoryImpl implements WalletRepository {
 
       return Right(response);
     } catch (e) {
-      log('getTransactions error: $e');
       return Left(ErrorHandler(e).failure);
     }
   }
@@ -115,7 +111,6 @@ class WalletRepositoryImpl implements WalletRepository {
       final response = await _walletDataSource.getExpiringLots();
       return Right(response);
     } catch (e) {
-      log('getExpiringLots error: $e');
       return Left(ErrorHandler(e).failure);
     }
   }
@@ -126,7 +121,6 @@ class WalletRepositoryImpl implements WalletRepository {
       final response = await _walletDataSource.getNotifications(page: page, perPage: perPage);
       return Right(response);
     } catch (e) {
-      log('getNotifications error: $e');
       return Left(ErrorHandler(e).failure);
     }
   }
@@ -137,7 +131,6 @@ class WalletRepositoryImpl implements WalletRepository {
       await _walletDataSource.markNotificationAsRead(notificationId);
       return const Right(null);
     } catch (e) {
-      log('markNotificationAsRead error: $e');
       return Left(ErrorHandler(e).failure);
     }
   }
@@ -148,7 +141,6 @@ class WalletRepositoryImpl implements WalletRepository {
       await _walletDataSource.markNotificationAsUnread(notificationId);
       return const Right(null);
     } catch (e) {
-      log('markNotificationAsUnread error: $e');
       return Left(ErrorHandler(e).failure);
     }
   }
@@ -159,7 +151,6 @@ class WalletRepositoryImpl implements WalletRepository {
       await _walletDataSource.markAllNotificationsAsRead();
       return const Right(null);
     } catch (e) {
-      log('markAllNotificationsAsRead error: $e');
       return Left(ErrorHandler(e).failure);
     }
   }
@@ -170,7 +161,6 @@ class WalletRepositoryImpl implements WalletRepository {
       await _walletDataSource.deleteNotification(notificationId);
       return const Right(null);
     } catch (e) {
-      log('deleteNotification error: $e');
       return Left(ErrorHandler(e).failure);
     }
   }
@@ -181,7 +171,6 @@ class WalletRepositoryImpl implements WalletRepository {
       await _walletDataSource.deleteAllNotification();
       return const Right(null);
     } catch (e) {
-      log('deleteAllNotification error: $e');
       return Left(ErrorHandler(e).failure);
     }
   }
@@ -192,7 +181,6 @@ class WalletRepositoryImpl implements WalletRepository {
       final response = await _walletDataSource.getNotificationPreferences();
       return Right(response);
     } catch (e) {
-      log('getNotificationPreferences error: $e');
       return Left(ErrorHandler(e).failure);
     }
   }
@@ -203,7 +191,6 @@ class WalletRepositoryImpl implements WalletRepository {
       await _walletDataSource.updateNotificationPreferences(preferences);
       return const Right(null);
     } catch (e) {
-      log('updateNotificationPreferences error: $e');
       return Left(ErrorHandler(e).failure);
     }
   }
@@ -217,7 +204,6 @@ class WalletRepositoryImpl implements WalletRepository {
       await _walletDataSource.updateNotificationPreferenceByType(type, preference);
       return const Right(null);
     } catch (e) {
-      log('updateNotificationPreferenceByType error: $e');
       return Left(ErrorHandler(e).failure);
     }
   }

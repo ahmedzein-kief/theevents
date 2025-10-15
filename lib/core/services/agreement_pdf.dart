@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -14,8 +13,7 @@ import '../../provider/vendor/vendor_sign_up_provider.dart';
 Future<void> generateAgreementPdf(Map<String, dynamic> vendorData) async {
   try {
     // 1. Load the existing PDF template from assets
-    final templateBytes =
-        await rootBundle.load('assets/corrected_agreement1.pdf');
+    final templateBytes = await rootBundle.load('assets/corrected_agreement1.pdf');
     final Uint8List templateData = templateBytes.buffer.asUint8List();
 
     // 2. Load the PDF document
@@ -28,7 +26,10 @@ Future<void> generateAgreementPdf(Map<String, dynamic> vendorData) async {
     if (form.fields.count > 0) {
       // Fill form fields by name
       _fillFormField(
-          form, 'company_name', vendorData['company_display_name'] ?? '',);
+        form,
+        'company_name',
+        vendorData['company_display_name'] ?? '',
+      );
       _fillFormField(form, 'company_type', vendorData['company_type'] ?? '');
       _fillFormField(form, 'company_email', vendorData['company_email'] ?? '');
 
@@ -49,12 +50,9 @@ Future<void> generateAgreementPdf(Map<String, dynamic> vendorData) async {
     final file = File(filePath);
     await file.writeAsBytes(bytes);
 
-    log('File saved at: $filePath');
-
     // 7. Open file
     await OpenFile.open(filePath);
   } catch (e) {
-    log('Error generating PDF: $e');
     rethrow;
   }
 }
@@ -72,7 +70,7 @@ void _fillFormField(PdfForm form, String fieldName, String value) {
       }
     }
   } catch (e) {
-    log('Field $fieldName not found or error filling: $e');
+    debugPrint(e.toString());
   }
 }
 
@@ -115,10 +113,8 @@ void _addTextOverlay(PdfDocument document, Map<String, dynamic> vendorData) {
 
   // Company Mobile Number
   String mobileNumber = '';
-  if (vendorData['company_phone_code'] != null &&
-      vendorData['company_phone_number'] != null) {
-    mobileNumber =
-        '+${vendorData['company_phone_code']} ${vendorData['company_phone_number']}';
+  if (vendorData['company_phone_code'] != null && vendorData['company_phone_number'] != null) {
+    mobileNumber = '+${vendorData['company_phone_code']} ${vendorData['company_phone_number']}';
   }
   graphics.drawString(
     mobileNumber,
@@ -262,8 +258,6 @@ void _addTextOverlay(PdfDocument document, Map<String, dynamic> vendorData) {
     font,
     bounds: const Rect.fromLTWH(135, 653, 200, 15),
   );
-
-  log('Text overlay added to first page');
 }
 
 Future<void> previewAgreementAndGeneratePdf(BuildContext context) async {

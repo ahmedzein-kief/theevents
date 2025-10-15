@@ -1,7 +1,9 @@
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/provider/api_response_handler.dart';
 import 'package:flutter/material.dart';
 
+import '../../core/constants/app_strings.dart';
 import '../../data/repository/featured_category_repository.dart';
 import '../../models/dashboard/feature_categories_model/feature_category_banner_model.dart';
 import '../../models/dashboard/feature_categories_model/feature_category_view_all_models.dart';
@@ -39,7 +41,7 @@ class FeaturedCategoriesProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         _gifts = FeaturedCategoriesModels.fromJson(response.data);
       } else {
-        _errorMessage = 'Failed to load data';
+        _errorMessage = AppStrings.failedToLoadData.tr;
       }
     } catch (error) {
       _errorMessage = 'Please Turn on Device Internet';

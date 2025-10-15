@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/helper/mixins/media_query_mixin.dart';
@@ -57,8 +56,8 @@ class _VendorOrdersViewState extends State<VendorOrdersView> with MediaQueryMixi
       setState(() {}); // ✅ Force UI update immediately after clearing
       await provider.vendorGetOrders(search: _searchController.text);
       setState(() {});
-    } catch (e) {
-      log(e.toString());
+    } catch (error) {
+      debugPrint(error.toString());
     }
   }
 

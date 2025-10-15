@@ -84,7 +84,6 @@ class _UserProfileLoginScreenState extends State<UserProfileLoginScreen> {
         _fetchUserData(),
       ]);
     } catch (e) {
-      debugPrint('Error refreshing data: $e');
       _showErrorSnackBar('Failed to refresh profile data');
     } finally {
       if (mounted) setState(() {});
@@ -96,8 +95,8 @@ class _UserProfileLoginScreenState extends State<UserProfileLoginScreen> {
     try {
       final provider = _userProvider ?? Provider.of<UserProvider>(context, listen: false);
       await provider.fetchUserData();
-    } catch (e) {
-      debugPrint('Error fetching user data: $e');
+    } catch (error) {
+      debugPrint(error.toString());
     }
   }
 
@@ -116,7 +115,6 @@ class _UserProfileLoginScreenState extends State<UserProfileLoginScreen> {
         await _uploadProfilePicture();
       }
     } catch (e) {
-      debugPrint('Error selecting image: $e');
       _showErrorSnackBar('Failed to select image');
     }
   }
@@ -141,7 +139,6 @@ class _UserProfileLoginScreenState extends State<UserProfileLoginScreen> {
         }
       }
     } catch (e) {
-      debugPrint('Upload error: $e');
       _showErrorSnackBar('Failed to upload profile picture');
     } finally {
       if (mounted) setState(() {});
@@ -253,8 +250,8 @@ class _UserProfileLoginScreenState extends State<UserProfileLoginScreen> {
       if (success && mounted) {
         _navigateTo(const VendorStepperScreen());
       }
-    } catch (e) {
-      debugPrint('Error becoming vendor: $e');
+    } catch (error) {
+      debugPrint(error.toString());
     } finally {
       setState(() => _isConvertingToVendor = false);
     }
@@ -300,6 +297,7 @@ class _UserProfileLoginScreenState extends State<UserProfileLoginScreen> {
               children: [
                 RefreshIndicator(
                   onRefresh: _onRefresh,
+                  color: Theme.of(context).colorScheme.onPrimary,
                   child: SingleChildScrollView(
                     physics: const AlwaysScrollableScrollPhysics(),
                     child: _buildMainContent(screenSize, userProvider.user),
@@ -731,7 +729,6 @@ class _UserProfileLoginScreenState extends State<UserProfileLoginScreen> {
 
       await _onRefresh();
     } catch (e) {
-      debugPrint('Logout error: $e');
       _showErrorSnackBar('Failed to logout. Please try again.');
     }
   }

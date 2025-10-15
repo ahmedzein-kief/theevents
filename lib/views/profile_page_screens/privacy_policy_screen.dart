@@ -2,7 +2,7 @@
 // import 'package:flutter/material.dart';
 // import 'package:flutter_svg/svg.dart';
 // import 'dart:convert';
-// import 'dart:developer';
+//
 // import 'package:http/http.dart' as http;
 // import 'package:html/parser.dart' as html_parser;
 // import 'package:provider/provider.dart';
@@ -174,8 +174,6 @@
 //   }
 // }
 
-import 'dart:developer';
-
 import 'package:dio/dio.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
@@ -320,11 +318,9 @@ class PrivacyPolicyProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         final responseBody = response.data;
         _privacyPolicyData = PrivacyPolicyModel.fromJson(responseBody['data']);
-      } else {
-        log('Failed to load data');
-      }
-    } catch (e) {
-      log('Error fetching data: $e');
+      } else {}
+    } catch (error) {
+      debugPrint(error.toString());
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -356,7 +352,7 @@ class PrivacyPolicyProvider with ChangeNotifier {
 //
 //         extractContentFromHtml(_privacyPolicyData?.content ?? '');
 //       } else {
-//         log('Failed to load data');
+//         log(AppStrings.failedToLoadData.tr);
 //       }
 //     } catch (e) {
 //       log('Error fetching data: $e');

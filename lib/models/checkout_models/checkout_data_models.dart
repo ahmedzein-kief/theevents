@@ -1,4 +1,4 @@
-import 'dart:developer';
+import 'package:flutter/foundation.dart';
 
 Map<String, dynamic> _parseShipping(data) {
   if (data == null || data is List) {
@@ -253,8 +253,8 @@ class SessionCheckoutData {
           }
         }
       }
-    } catch (e) {
-      log('Error extracting coupon from marketplace: $e');
+    } catch (error) {
+      debugPrint(error.toString());
     }
 
     return null;

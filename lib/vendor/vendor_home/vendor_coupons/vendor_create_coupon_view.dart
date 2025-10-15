@@ -441,7 +441,7 @@ class _VendorCreateCouponViewState extends State<VendorCreateCouponView> with Me
                         create: (context) => VendorCreateCouponViewModel(),
                         child: Consumer<VendorCreateCouponViewModel>(
                           builder: (context, provider, _) => CustomAppButton(
-                            buttonText: 'Save',
+                            buttonText: AppStrings.save.tr,
                             mainAxisSize: MainAxisSize.min,
                             borderRadius: kSmallButtonRadius,
                             buttonColor: AppColors.lightCoral,
@@ -484,7 +484,7 @@ class _VendorCreateCouponViewState extends State<VendorCreateCouponView> with Me
                       ),
                       kSmallSpace,
                       CustomAppButton(
-                        buttonText: 'Cancel',
+                        buttonText: AppStrings.cancel.tr,
                         textStyle: CouponViewUtils.couponLabelTextStyle()
                             .copyWith(color: Theme.of(context).colorScheme.onPrimary),
                         mainAxisSize: MainAxisSize.min,

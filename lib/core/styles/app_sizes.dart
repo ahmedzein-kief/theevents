@@ -76,7 +76,7 @@ SizedBox kCancelButton({
         buttonColor: Colors.transparent,
         borderColor: Theme.of(context).colorScheme.onPrimary,
         borderRadius: borderRadius,
-        // textStyle: const TextStyle(color: Colors.black),
+        textStyle: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
         onTap: () {
           Navigator.pop(context);
         },

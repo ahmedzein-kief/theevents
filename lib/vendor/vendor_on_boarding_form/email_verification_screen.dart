@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:event_app/core/constants/vendor_app_strings.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/services/shared_preferences_helper.dart';
@@ -137,11 +135,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                                       isVerifyLoading = false;
                                     });
                                     if (resultVerified != null) {
-                                      log('resultVerified != null ${resultVerified.isVerified}', name: 'VENDOR');
-
                                       if (resultVerified.isVerified == true) {
-                                        log('resultVerified.isVerified ${resultVerified.isVerified}', name: 'VENDOR');
-
                                         AppUtils.showToast(VendorAppStrings.accountVerified.tr);
 
                                         // Keep this for backward compatibility if needed

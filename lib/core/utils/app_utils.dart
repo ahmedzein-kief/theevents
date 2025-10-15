@@ -93,7 +93,7 @@ class AppUtils {
     required BuildContext context,
   }) =>
       RefreshIndicator(
-        color: Theme.of(context).colorScheme.primary,
+        color: Theme.of(context).colorScheme.onPrimary,
         backgroundColor: Theme.of(context).colorScheme.secondary,
         onRefresh: onRefresh,
         child: child,

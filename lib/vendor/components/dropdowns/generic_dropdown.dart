@@ -164,7 +164,7 @@ class _GenericDropdownState<T> extends State<GenericDropdown<T>> with MediaQuery
           useSafeArea: true,
           width: null,
           maxHeight: screenHeight / 1.5,
-          padding: const EdgeInsets.only(left: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 10),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(15),

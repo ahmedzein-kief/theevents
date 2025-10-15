@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:equatable/equatable.dart';
 
 enum NotificationType { redeem, giftCardRedeem, purchase, deposit, recharge, refundCredit, adminAdjustment }
@@ -74,7 +72,7 @@ class NotificationModel extends Equatable {
       );
     } catch (e) {
       // Log the error and return a default notification
-      log('Error parsing NotificationModel: $e');
+
       return NotificationModel(
         id: json['id']?.toString() ?? DateTime.now().millisecondsSinceEpoch.toString(),
         title: 'Error parsing notification',
@@ -330,7 +328,6 @@ class NotificationData extends Equatable {
         timestamp: json['timestamp'] != null ? _parseDateTime(json['timestamp']) : null,
       );
     } catch (e) {
-      log('Error parsing NotificationData: $e');
       return const NotificationData();
     }
   }
@@ -344,7 +341,6 @@ class NotificationData extends Equatable {
       try {
         return DateTime.parse(dateValue);
       } catch (e) {
-        log('Error parsing DateTime from string: $dateValue');
         return null;
       }
     }

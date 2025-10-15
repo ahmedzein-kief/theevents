@@ -1,4 +1,4 @@
-import 'dart:developer';
+import 'package:flutter/foundation.dart';
 
 class CartModel {
   CartModel({required this.error, required this.data});
@@ -42,8 +42,8 @@ class Data {
         final contentMap = json['content'] as Map<String, dynamic>;
         content = contentMap.map((key, value) => MapEntry(key, CartItem.fromJson(value)));
       } else {}
-    } catch (e) {
-      log(e.toString());
+    } catch (error) {
+      debugPrint(error.toString());
     }
 
     List<Product> products = [];
@@ -53,8 +53,8 @@ class Data {
         final productsList = json['products'] as List<dynamic>;
         products = productsList.map((i) => Product.fromJson(i)).toList();
       } else {}
-    } catch (e) {
-      log(e.toString());
+    } catch (error) {
+      debugPrint(error.toString());
     }
 
     return Data(

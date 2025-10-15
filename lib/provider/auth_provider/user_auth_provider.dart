@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:event_app/core/services/image_picker.dart';
 import 'package:event_app/core/widgets/bottom_navigation_bar.dart';
@@ -74,7 +73,6 @@ class AuthProvider with ChangeNotifier {
         }
         return userLoginModel;
       } else {
-        log('Login response: ${response.data}');
         final jsonData = response.data;
         final UserLoginModel userLoginModel = UserLoginModel.fromJson(jsonData);
         _isLoading = false;
@@ -85,7 +83,6 @@ class AuthProvider with ChangeNotifier {
         return userLoginModel;
       }
     } catch (exception) {
-      log('Login exception  $exception');
       _isLoading = false;
       notifyListeners();
       if (context.mounted) {

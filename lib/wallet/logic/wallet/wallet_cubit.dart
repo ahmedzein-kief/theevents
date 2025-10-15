@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:event_app/wallet/logic/wallet/wallet_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -43,7 +41,6 @@ class WalletCubit extends Cubit<WalletState> {
 
       result.fold(
         (failure) {
-          log('Wallet refresh failed: ${failure.message}');
           // Restore current wallet on failure
           walletModel = currentWallet;
           emit(WalletLoaded(currentWallet));
@@ -54,7 +51,6 @@ class WalletCubit extends Cubit<WalletState> {
         },
       );
     } catch (e) {
-      log('Wallet refresh exception: $e');
       walletModel = currentWallet;
       emit(WalletLoaded(currentWallet));
     }

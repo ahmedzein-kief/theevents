@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
@@ -529,7 +528,6 @@ class VendorSignUpProvider with ChangeNotifier {
       }
     } catch (e) {
       if (e is DioException) {
-        log('Error ${e.response?.data}');
         AppUtils.showToast(_errorMessage(e.response));
       } else {}
       _isLoading = false;
@@ -552,7 +550,6 @@ class VendorSignUpProvider with ChangeNotifier {
         throw Exception('Failed to Vendor types');
       }
     } catch (e) {
-      debugPrint('EXCEPTION :: ${e.toString()}');
       return null;
     }
   }
@@ -568,7 +565,6 @@ class VendorSignUpProvider with ChangeNotifier {
       }
       return const VendorPermissions();
     } catch (e) {
-      debugPrint('EXCEPTION :: ${e.toString()}');
       return const VendorPermissions();
     }
   }
@@ -598,7 +594,6 @@ class VendorSignUpProvider with ChangeNotifier {
         return null;
       }
     } catch (e) {
-      debugPrint('EXCEPTION :: ${e.toString()}');
       if (e is DioException) {
         AppUtils.showToast(_errorMessage(e.response));
       } else {}

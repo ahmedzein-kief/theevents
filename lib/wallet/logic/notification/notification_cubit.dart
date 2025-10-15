@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../data/model/notification_model.dart';
@@ -294,7 +292,6 @@ class NotificationsCubit extends Cubit<NotificationsState> {
   }
 
   Future<void> deleteAllNotification() async {
-    log('deleteAllNotification');
     final currentState = state;
     if (currentState is NotificationsLoaded) {
       // Store the current state for potential revert

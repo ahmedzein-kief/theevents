@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/models/dashboard/information_icons_models/new_products_models.dart';
 import 'package:event_app/models/product_packages_models/product_filters_model.dart';
@@ -37,7 +35,6 @@ class NewProductsProvider extends ChangeNotifier {
         _errorMessage = '';
       }
     } catch (error) {
-      log(error.toString());
       _errorMessage = error.toString();
     } finally {
       // _isLoading = false;
@@ -105,8 +102,6 @@ class NewProductsProvider extends ChangeNotifier {
     final baseUrl = '${ApiEndpoints.newProducts}?per-page=$perPage&page=$page&sort-by=$sortBy';
     final url = filtersQuery.isNotEmpty ? '$baseUrl&$filtersQuery&allcategories=1' : baseUrl;
 
-    log('URL $url');
-
     try {
       final response = await _apiResponseHandler.getRequest(url);
 
@@ -126,7 +121,7 @@ class NewProductsProvider extends ChangeNotifier {
         }
       } else {}
     } catch (error) {
-      log(error.toString());
+      debugPrint(error.toString());
     }
 
     _isLoading = false;

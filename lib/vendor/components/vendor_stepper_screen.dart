@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/models/vendor_models/response_models/meta_data_response.dart';
 import 'package:event_app/provider/vendor/vendor_sign_up_provider.dart';
@@ -108,9 +106,7 @@ class _VendorStepperScreenState extends State<VendorStepperScreen> {
         final metaResponse = await getAllMetaData();
         if (metaResponse != null && metaResponse.data['step'] != null) {
           determinedStep = int.tryParse(metaResponse.data['step'].toString()) ?? 1;
-        } else {
-          log('No step found, defaulting to step 1', name: 'VENDOR');
-        }
+        } else {}
       }
 
       SecurePreferencesUtil.saveServerStep(determinedStep);

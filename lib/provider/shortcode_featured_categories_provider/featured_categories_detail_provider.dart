@@ -1,5 +1,5 @@
-import 'dart:developer';
-
+import 'package:event_app/core/constants/app_strings.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/models/product_packages_models/product_filters_model.dart';
 import 'package:event_app/provider/api_response_handler.dart';
@@ -34,7 +34,7 @@ class FeaturedCategoriesDetailProvider with ChangeNotifier {
         final data = response.data;
         _productCategoryBanner = ProductCategoryBanner.fromJson(data);
       } else {
-        throw Exception('Failed to load data');
+        throw Exception(AppStrings.failedToLoadData.tr);
       }
     } finally {
       _isLoading = false;
@@ -153,12 +153,8 @@ class FeaturedCategoriesDetailProvider with ChangeNotifier {
 
     final url = '${ApiEndpoints.categoryPackages}$slug?per-page=$perPage&page=$page&sort-by=$sortBy';
 
-    log(url);
-
     try {
       final response = await _apiResponseHandler.getRequest(url);
-
-      log(response.statusCode);
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonResponse = response.data;
@@ -179,7 +175,6 @@ class FeaturedCategoriesDetailProvider with ChangeNotifier {
         throw Exception('Failed to load products');
       }
     } catch (error) {
-      log(error.toString());
       throw Exception('Failed to load products: $error');
     } finally {
       _isLoadingPackages = false;

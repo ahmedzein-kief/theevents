@@ -40,7 +40,6 @@ class CustomSnackbar {
   ) {
     // First check if context is still mounted and valid
     if (!_isContextValid(context)) {
-      debugPrint('CustomSnackbar: Context is not valid, skipping snackbar');
       return;
     }
 
@@ -49,7 +48,6 @@ class CustomSnackbar {
       final OverlayState? overlayState = _getOverlayStateSafely(context);
 
       if (overlayState == null) {
-        debugPrint('CustomSnackbar: Could not find valid OverlayState');
         return;
       }
 
@@ -65,7 +63,6 @@ class CustomSnackbar {
       );
     } catch (e) {
       // Log the error but don't crash the app
-      debugPrint('CustomSnackbar error: $e');
     }
   }
 
@@ -84,7 +81,6 @@ class CustomSnackbar {
       // If maybeOf fails, try with rootOverlay
       return Overlay.maybeOf(context, rootOverlay: true);
     } catch (e) {
-      debugPrint('Error getting OverlayState: $e');
       return null;
     }
   }
@@ -105,7 +101,6 @@ class CustomSnackbar {
 
       return true;
     } catch (e) {
-      debugPrint('Context validation failed: $e');
       return false;
     }
   }
@@ -200,7 +195,7 @@ class CustomSnackbar {
         displayDuration: displayDuration ?? const Duration(seconds: 2),
       );
     } catch (e) {
-      debugPrint('Error showing snackbar with overlay: $e');
+      debugPrint(e.toString());
     }
   }
 

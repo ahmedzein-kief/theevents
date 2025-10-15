@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
@@ -124,7 +123,6 @@ class CartProvider with ChangeNotifier {
         return AddToCartResult(success: false, message: 'Request cancelled');
       }
 
-      log('addToCart error ${e.toString()}');
       _addToCartResponse = null;
       return AddToCartResult(success: false, message: 'An error occurred. Please try again.');
     } finally {
@@ -170,7 +168,6 @@ class CartProvider with ChangeNotifier {
         return CartOperationResult(success: false, message: 'Request cancelled');
       }
 
-      log('deleteCartListItem error ${e.toString()}');
       return CartOperationResult(success: false, message: 'An error occurred. Please try again.');
     } finally {
       _deletingCartItem = false;
@@ -214,7 +211,6 @@ class CartProvider with ChangeNotifier {
         }
       }
 
-      log('Error in fetchCartData: ${e.toString()}');
       AppUtils.showToast(AppStrings.failedToLoadCartData.tr);
     } finally {
       _cartLoading = false;
@@ -257,7 +253,6 @@ class CartProvider with ChangeNotifier {
         return null;
       }
 
-      log('fetchCheckoutData error ${e.toString()}');
       AppUtils.showToast(AppStrings.anErrorOccurredDuringCheckout.tr);
     } finally {
       _checkoutLoading = false;
@@ -303,7 +298,6 @@ class CartProvider with ChangeNotifier {
         return CartOperationResult(success: false, message: AppStrings.requestCancelled.tr);
       }
 
-      log('updateCart error ${e.toString()}');
       return CartOperationResult(success: false, message: AppStrings.anErrorOccurredWhileUpdatingCart.tr);
     } finally {
       notifyListeners();

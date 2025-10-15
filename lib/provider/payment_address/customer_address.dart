@@ -223,7 +223,7 @@ class CustomerAddressProvider with ChangeNotifier {
         _errorMessage = null;
         return customerAddressModels;
       } else {
-        _errorMessage = 'Failed to load addresses';
+        _errorMessage = AppStrings.failedToLoadAddresses.tr;
         return null;
       }
     } catch (error) {

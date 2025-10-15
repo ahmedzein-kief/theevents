@@ -20,7 +20,7 @@ class WalletDrawerFooter extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SvgPicture.asset(
-            isDark ? AppAssets.eventsDark : AppAssets.events,
+            isDark ? AppAssets.eventsDarkLogo : AppAssets.eventsLogo,
             height: 50,
             width: 50,
           ),

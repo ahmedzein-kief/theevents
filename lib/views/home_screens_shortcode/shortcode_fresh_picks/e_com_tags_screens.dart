@@ -101,16 +101,13 @@ class _EComTagsScreensState extends State<EComTagsScreens> {
                               right: screenWidth * 0.02,
                               top: screenHeight * 0.02,
                             ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(5),
-                              child: PaddedNetworkBanner(
-                                imageUrl: (data?.coverImage?.isNotEmpty ?? false)
-                                    ? data!.coverImage!
-                                    : ApiConstants.placeholderImage,
-                                fit: BoxFit.cover,
-                                width: screenWidth,
-                                padding: EdgeInsets.zero,
-                              ),
+                            child: PaddedNetworkBanner(
+                              imageUrl: (data?.coverImageForMobile?.isNotEmpty ?? false)
+                                  ? data!.coverImageForMobile!
+                                  : ApiConstants.placeholderImage,
+                              fit: BoxFit.cover,
+                              width: screenWidth,
+                              padding: EdgeInsets.zero,
                             ),
                           ),
 

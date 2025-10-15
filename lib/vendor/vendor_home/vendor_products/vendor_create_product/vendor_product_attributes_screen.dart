@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:event_app/core/constants/app_strings.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/utils/app_utils.dart';
@@ -65,7 +63,6 @@ class _VendorProductAttributeScreenState extends State<VendorProductAttributesSc
       setState(() {});
     } catch (e) {
       setProcessing(false);
-      log('${VendorAppStrings.errorFetchingProducts.tr}: $e');
     }
   }
 
@@ -207,7 +204,7 @@ class _VendorProductAttributeScreenState extends State<VendorProductAttributesSc
                 child: Column(
                   children: [
                     Text(
-                      'Adding new attributes helps the product to have many options, such as size or color.',
+                      VendorAppStrings.addingNewAttributesInfo.tr,
                       style: vendorDescription(),
                     ),
                     Expanded(
@@ -236,8 +233,6 @@ class _VendorProductAttributeScreenState extends State<VendorProductAttributesSc
                               selectedSet.attributes.map((attr) => attr.title.toString()).toList();
                           remainingNames.remove(selectedAttribute);
                           final dropDownList = [selectedAttribute] + remainingNames;
-
-                          log('dropDownList ${dropDownList.length}');
 
                           return Card(
                             elevation: 3,

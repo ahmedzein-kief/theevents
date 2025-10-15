@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -112,7 +110,7 @@ class _AddressFormWidgetState extends State<AddressFormWidget> {
     try {
       countryModel = await fetchCountries(context);
     } catch (error) {
-      log('Error fetching countries: $error');
+      debugPrint(error.toString());
     }
   }
 
@@ -237,12 +235,12 @@ class _AddressFormWidgetState extends State<AddressFormWidget> {
                     selectedCity = foundCity;
                   }
                 } catch (error) {
-                  log('Error fetching cities for existing address: $error');
+                  debugPrint(error.toString());
                 }
               }
             }
           } catch (error) {
-            log('Error fetching states for existing address: $error');
+            debugPrint(error.toString());
           }
         }
       }
@@ -269,7 +267,6 @@ class _AddressFormWidgetState extends State<AddressFormWidget> {
         _stateLoader = false;
       });
     } catch (error) {
-      log('Error fetching states: $error');
       setState(() {
         _stateLoader = false;
       });
@@ -293,7 +290,6 @@ class _AddressFormWidgetState extends State<AddressFormWidget> {
         _cityLoader = false;
       });
     } catch (error) {
-      log('Error fetching cities: $error');
       setState(() {
         _cityLoader = false;
       });
@@ -334,7 +330,7 @@ class _AddressFormWidgetState extends State<AddressFormWidget> {
         widget.onAddressSaved!();
       }
     } catch (error) {
-      log('Error saving address: $error');
+      debugPrint(error.toString());
     }
   }
 
@@ -354,7 +350,6 @@ class _AddressFormWidgetState extends State<AddressFormWidget> {
       }
       return response;
     } catch (error) {
-      log('Error updating address: $error');
       return false;
     }
   }

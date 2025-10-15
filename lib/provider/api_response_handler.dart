@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
@@ -187,8 +186,7 @@ class ApiResponseHandler {
       );
     } catch (e) {
       if (e is DioException) {
-        final errorDetails = e.response?.data;
-        log(errorDetails.toString());
+        rethrow;
       }
       throw Exception('Dio request failed: $e');
     }

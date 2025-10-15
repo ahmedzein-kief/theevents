@@ -82,8 +82,8 @@ class _HomeScreenViewState extends State<HomeScreen> {
 
       try {
         await _refreshHomePage();
-      } catch (e) {
-        debugPrint('Error refetching home page data: $e');
+      } catch (error) {
+        debugPrint(error.toString());
       } finally {
         if (mounted) {
           setState(() => _isRefreshing = false);

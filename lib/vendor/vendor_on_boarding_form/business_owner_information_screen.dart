@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:event_app/core/constants/vendor_app_strings.dart';
@@ -68,7 +67,7 @@ class _BusinessOwnerInformationScreenState extends State<BusinessOwnerInformatio
         });
       }
     } catch (error) {
-      log(error.toString());
+      debugPrint(error.toString());
     }
     return;
   }

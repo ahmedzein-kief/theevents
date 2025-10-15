@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/helper/mixins/media_query_mixin.dart';
 import 'package:event_app/core/helper/validators/validator.dart';
@@ -112,7 +110,6 @@ class _VendorCreateUpdateWithdrawalViewState extends State<VendorCreateUpdateWit
       setProcessing(false);
     } catch (e) {
       setProcessing(false);
-      log('Error: $e');
     }
   }
 
@@ -545,7 +542,6 @@ class _VendorCreateUpdateWithdrawalViewState extends State<VendorCreateUpdateWit
                           withdrawalsProvider.vendorWithdrawals();
                         }
                       } catch (e) {
-                        log('Error: $e');
                         setProcessing(false);
                       }
                       setProcessing(false);

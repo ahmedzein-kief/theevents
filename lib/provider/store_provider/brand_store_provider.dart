@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/provider/api_response_handler.dart';
 import 'package:flutter/cupertino.dart';
@@ -86,7 +84,7 @@ class StoreProvider with ChangeNotifier {
     // final url = 'https://apistaging.theevents.ae/api/v1/stores/$slug';
     const urlApi = ApiEndpoints.brandStore;
     final url = '$urlApi$slug';
-    log(url);
+
     isLoading = true;
     notifyListeners();
 

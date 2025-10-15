@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
@@ -32,7 +31,6 @@ class ApiInterceptor implements Interceptor {
       final accessToken = await SecurePreferencesUtil.getToken();
 
       if (accessToken == null || accessToken.isEmpty) {
-        log('ApiInterceptor onRequest path => ${options.path}');
         // No token available, navigate to auth screen
         _navigateToAuthScreen(options);
         return handler.reject(
@@ -55,7 +53,6 @@ class ApiInterceptor implements Interceptor {
     DioException error,
     ErrorInterceptorHandler handler,
   ) async {
-    log('ApiInterceptor onError path => ${error.requestOptions.path}');
     // Handle 401 Unauthorized responses
     if (error.response?.statusCode == 401) {
       // Token is invalid or expired

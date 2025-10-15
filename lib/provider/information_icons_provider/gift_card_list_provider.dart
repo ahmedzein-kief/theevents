@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:dio/dio.dart';
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/provider/api_response_handler.dart';
@@ -82,7 +80,6 @@ class GiftCardListProvider with ChangeNotifier {
         _error = 'Failed to load gift cards';
       }
     } catch (e) {
-      log('Error loading gift cards: $e');
       if (e is DioException) {
         // Handle "No record found!" as empty state, not an error
         if (e.response?.statusCode == 422 &&

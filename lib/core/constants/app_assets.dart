@@ -12,7 +12,6 @@ class AppAssets {
   static const String firstRightIconPath = '$baseAssetsPath/notify.svg';
   static const String secondRightIconPath = '$baseAssetsPath/bottomLike.svg';
   static const String thirdRightIconPath = '$baseAssetsPath/bottomCart.svg';
-  static const String appLogo = '$baseAssetsPath/applogo.svg';
   static const String itemAddToCart = '$baseAssetsPath/addToCart.svg';
   static const String outOfStock = '$baseAssetsPath/out_of_stock.svg';
   static const String privacyPolicyIcon = '$baseAssetsPath/policy.svg';
@@ -26,9 +25,8 @@ class AppAssets {
   static const String account = '$baseNavIconsPath/acc.svg';
   static const String brands = '$baseNavIconsPath/bra.svg';
   static const String categories = '$baseNavIconsPath/cat.svg';
-  static const String logo = '$baseNavIconsPath/logo.svg';
-  static const String events = '$baseNavIconsPath/events.svg';
-  static const String eventsDark = '$baseNavIconsPath/events_dark.svg';
+  static const String eventsLogo = '$baseNavIconsPath/events.svg';
+  static const String eventsDarkLogo = '$baseNavIconsPath/events_dark.svg';
   static const String celebrities = '$baseNavIconsPath/cele.svg';
   static const String aboutBanner = '$baseAssetsPath/about_banner.png';
   static const dirham = '$baseAssetsPath/dirham.svg';

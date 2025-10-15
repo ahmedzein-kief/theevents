@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/views/base_screens/base_app_bar.dart';
 import 'package:event_app/views/filters/product_filters_screen.dart';
@@ -73,7 +71,7 @@ class _FeaturedCategoriesViewallInnerState extends State<FeaturedCategoriesViewA
         listen: false,
       ).fetchFeaturedCategoryBanner(slug: widget.data.slug, context);
     } catch (error) {
-      log('Error fetching banner data: $error');
+      debugPrint(error.toString());
     }
   }
 

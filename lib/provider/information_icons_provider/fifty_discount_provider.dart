@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/models/product_packages_models/product_filters_model.dart';
 import 'package:event_app/provider/api_response_handler.dart';
@@ -121,7 +119,7 @@ class FiftyPercentDiscountProvider extends ChangeNotifier {
         }
       } else {}
     } catch (error) {
-      log(error.toString());
+      debugPrint(error.toString());
     }
     _isLoadingProducts = false;
     // _isLoading = false;
@@ -165,7 +163,7 @@ class FiftyPercentDiscountProvider extends ChangeNotifier {
         }
       } else {}
     } catch (error) {
-      log(error.toString());
+      debugPrint(error.toString());
     }
     _isLoading = false;
     _isMoreLoading = false;

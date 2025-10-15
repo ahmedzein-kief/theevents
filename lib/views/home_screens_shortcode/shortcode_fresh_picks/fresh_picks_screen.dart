@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:flutter/cupertino.dart';
@@ -43,9 +42,7 @@ class _FreshPicksViewState extends State<FreshPicksScreen> {
     try {
       await callback();
     } catch (e) {
-      if (mounted) {
-        log('Async operation error: $e');
-      }
+      if (mounted) {}
     }
   }
 

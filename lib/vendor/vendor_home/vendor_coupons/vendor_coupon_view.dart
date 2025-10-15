@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/helper/mixins/media_query_mixin.dart';
 import 'package:event_app/core/styles/app_sizes.dart';
@@ -55,8 +53,8 @@ class _VendorCouponViewState extends State<VendorCouponView> with MediaQueryMixi
       setState(() {});
       await provider.vendorGetCoupons(search: _searchController.text);
       setState(() {});
-    } catch (e) {
-      log(e.toString());
+    } catch (error) {
+      debugPrint(error.toString());
     }
   }
 

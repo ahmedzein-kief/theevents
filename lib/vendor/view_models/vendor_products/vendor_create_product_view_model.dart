@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:dio/dio.dart';
 import 'package:event_app/core/services/shared_preferences_helper.dart';
 import 'package:event_app/core/utils/app_utils.dart';
@@ -278,7 +276,6 @@ class VendorCreateProductViewModel with ChangeNotifier {
       setLoading(false);
       return response;
     } catch (error) {
-      log('productSearch error: $error');
       setProductSearchApiResponse = ApiResponse.error(error.toString());
       setLoading(false);
       return null;
@@ -397,7 +394,6 @@ class VendorCreateProductViewModel with ChangeNotifier {
       setLoading(false);
       return true;
     } catch (error) {
-      log(error.toString());
       _vendorProductViewApiResponse = ApiResponse.error(error.toString());
       AppUtils.showToast(error.toString());
       setLoading(false);
@@ -437,7 +433,6 @@ class VendorCreateProductViewModel with ChangeNotifier {
       setLoading(false);
       return true;
     } catch (error) {
-      log(error.toString());
       _vendorProductViewApiResponse = ApiResponse.error(error.toString());
       AppUtils.showToast(error.toString());
       setLoading(false);
@@ -465,7 +460,6 @@ class VendorCreateProductViewModel with ChangeNotifier {
       setLoading(false);
       return true;
     } catch (error) {
-      log(error.toString());
       _vendorProductViewApiResponse = ApiResponse.error(error.toString());
       AppUtils.showToast(error.toString());
       setLoading(false);
@@ -553,11 +547,6 @@ class VendorCreateProductViewModel with ChangeNotifier {
         'added_attribute_sets[]': attributeSets,
         'added_attributes[]': attributeValues,
       });
-
-      // Print FormData
-      for (final field in data.fields) {
-        log('test ==> ${field.key}: ${field.value}');
-      }
 
       final CommonPostRequestModel response = await _myRepo.addAttributeToExistingProduct(
         headers: headers,

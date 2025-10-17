@@ -43,9 +43,7 @@ class FeaturedContentWrapper extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            CustomSearchBar(
-              hintText: AppStrings.searchEvents.tr,
-            ),
+            CustomSearchBar(hintText: AppStrings.searchEvents.tr),
             Expanded(
               child: SingleChildScrollView(
                 controller: scrollController,

@@ -231,9 +231,7 @@ class _EventBrandScreenState extends State<EventBrandScreen> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     mainAxisSize: MainAxisSize.max,
                     children: [
-                      const CustomSearchBar(
-                        hintText: 'Search Events',
-                      ),
+                      CustomSearchBar(hintText: AppStrings.searchEvents.tr),
                       Expanded(
                         child: SingleChildScrollView(
                           controller: _scrollController,
@@ -250,9 +248,9 @@ class _EventBrandScreenState extends State<EventBrandScreen> {
                                 ClipRRect(
                                   borderRadius: BorderRadius.circular(5),
                                   child: PaddedNetworkBanner(
-                                    imageUrl: (event?.coverImage?.isNotEmpty ?? false)
-                                        ? event!.coverImage!
-                                        : ApiConstants.placeholderImage,
+                                    imageUrl: event?.coverImageForMobile ??
+                                        event?.coverImage ??
+                                        ApiConstants.placeholderImage,
                                     height: 160,
                                     fit: BoxFit.cover,
                                     width: double.infinity,

@@ -32,6 +32,7 @@ class Data {
     this.coverImage,
     required this.items,
     this.website,
+    this.coverImageForMobile,
     required this.isFeatured,
     required this.seoMeta,
   });
@@ -44,6 +45,7 @@ class Data {
         image: json['image'],
         thumb: json['thumb'],
         coverImage: json['cover_image'],
+        coverImageForMobile: json['cover_image_for_mobile'],
         items: json['items'],
         website: json['website'],
         isFeatured: json['is_featured'],
@@ -57,6 +59,7 @@ class Data {
   String? image;
   String? thumb;
   String? coverImage;
+  final String? coverImageForMobile;
   int items;
   String? website;
   int isFeatured;

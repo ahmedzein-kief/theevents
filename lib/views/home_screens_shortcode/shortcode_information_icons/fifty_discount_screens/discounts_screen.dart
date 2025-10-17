@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/constants/app_strings.dart';
+import '../../../../core/network/api_endpoints/api_contsants.dart';
 import '../../../../core/widgets/custom_app_views/search_bar.dart';
 import '../../../../provider/cart_item_provider/cart_item_provider.dart';
 import '../../../../provider/information_icons_provider/fifty_discount_provider.dart';
@@ -179,7 +180,9 @@ class _DiscountScreenState extends State<DiscountScreen> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               DiscountBannerSection(
-                                coverImage: data?.coverImage,
+                                coverImage: data?.coverImageForMobile ??
+                                    data?.coverImageForMobile ??
+                                    ApiConstants.placeholderImage,
                                 name: data?.name,
                               ),
                               DiscountTabBar(

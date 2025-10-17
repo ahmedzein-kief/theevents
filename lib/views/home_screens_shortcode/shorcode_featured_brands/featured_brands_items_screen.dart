@@ -13,6 +13,7 @@ import '../../../core/utils/app_utils.dart';
 import '../../../core/widgets/custom_app_views/search_bar.dart';
 import '../../../core/widgets/custom_items_views/product_card.dart';
 import '../../../core/widgets/padded_network_banner.dart';
+import '../../../models/dashboard/featured_top_brands_models/featured_brands_items_models.dart';
 import '../../../provider/cart_item_provider/cart_item_provider.dart';
 import '../../../provider/home_shortcode_provider/featured_brands_provider.dart';
 import '../../../provider/shortcode_fresh_picks_provider/fresh_picks_provider.dart';
@@ -203,7 +204,7 @@ class _FeaturedBrandsItemsScreenState extends State<FeaturedBrandsItemsScreen> {
     );
   }
 
-  Widget _buildTopBanner(brandData) {
+  Widget _buildTopBanner(FeaturedBrand? brandData) {
     return SizedBox(
       height: 160,
       child: Stack(

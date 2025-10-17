@@ -1,3 +1,5 @@
+import 'package:event_app/core/constants/app_strings.dart';
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
@@ -63,7 +65,7 @@ class _CustomPackagesViewState extends State<CustomPackagesView> {
       final CustomToast customToast = CustomToast(context);
       customToast.showToast(
         context: context,
-        textHint: 'Please Log-In to add items to Your Cart.',
+        textHint: AppStrings.pleaseLogInToCart.tr,
         onDismiss: () {
           customToast.removeToast(); // Dismiss the toast when the button is tapped
         },
@@ -98,7 +100,7 @@ class _CustomPackagesViewState extends State<CustomPackagesView> {
       final CustomToast customToast = CustomToast(context);
       customToast.showToast(
         context: context,
-        textHint: 'Please Log-In to add items to Your WishList.',
+        textHint: AppStrings.pleaseLogInToWishList.tr,
         onDismiss: () {
           customToast.removeToast(); // Dismiss the toast when the button is tapped
         },
@@ -170,7 +172,7 @@ class _CustomPackagesViewState extends State<CustomPackagesView> {
                           child: Align(
                             alignment: Alignment.center,
                             child: Text(
-                              'Add To Cart',
+                              AppStrings.addToCart.tr,
                               maxLines: 1,
                               style: GoogleFonts.inter(
                                 color: Colors.white,

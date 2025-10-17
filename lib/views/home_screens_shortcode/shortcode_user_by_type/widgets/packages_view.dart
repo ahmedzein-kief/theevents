@@ -76,9 +76,9 @@ class _PackagesViewState extends State<PackagesView> {
                     borderRadius: BorderRadius.circular(5),
                   ),
                   height: 50,
-                  child: const Align(
+                  child: Align(
                     alignment: Alignment.center,
-                    child: Text('No records found!'),
+                    child: Text(AppStrings.noRecord.tr),
                   ),
                 ),
               );
@@ -210,14 +210,8 @@ class _PackagesViewState extends State<PackagesView> {
                               AppColors.packagesBackgroundS.withAlpha((0.09 * 255).toInt()),
                             ];
 
-                            final freshPicksProvider = Provider.of<FreshPicksProvider>(
-                              context,
-                              listen: false,
-                            );
-                            final wishlistProvider = Provider.of<WishlistProvider>(
-                              context,
-                              listen: false,
-                            );
+                            final freshPicksProvider = Provider.of<FreshPicksProvider>(context, listen: false);
+                            final wishlistProvider = Provider.of<WishlistProvider>(context, listen: false);
 
                             return GestureDetector(
                               onTap: () async {
@@ -250,16 +244,10 @@ class _PackagesViewState extends State<PackagesView> {
 
                                   if (isInWishlist) {
                                     // Remove from wishlist
-                                    await wishlistProvider.deleteWishlistItem(
-                                      product.id,
-                                      context,
-                                    );
+                                    await wishlistProvider.deleteWishlistItem(product.id, context);
                                   } else {
                                     // Add to wishlist
-                                    await freshPicksProvider.handleHeartTap(
-                                      context,
-                                      product.id,
-                                    );
+                                    await freshPicksProvider.handleHeartTap(context, product.id);
                                   }
 
                                   // Refresh wishlist after action

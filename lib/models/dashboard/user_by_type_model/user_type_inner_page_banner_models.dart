@@ -19,6 +19,7 @@ class UserData {
     required this.avatar,
     required this.avatarThumb,
     required this.coverImage,
+    this.coverImageForMobile,
     required this.storeId,
     required this.storeName,
     required this.storeSlug,
@@ -40,6 +41,7 @@ class UserData {
         avatar: json['avatar'],
         avatarThumb: json['avatar_thumb'],
         coverImage: json['cover_image'],
+        coverImageForMobile: json['cover_image_for_mobile'],
         storeId: json['store_id'],
         storeName: json['store_name'],
         storeSlug: json['store_slug'],
@@ -59,6 +61,7 @@ class UserData {
   final String avatar;
   final String avatarThumb;
   final String coverImage;
+  final String? coverImageForMobile;
   final int storeId;
   final String storeName;
   final String storeSlug;

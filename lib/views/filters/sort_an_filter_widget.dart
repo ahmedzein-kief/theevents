@@ -132,7 +132,7 @@ class _SortAndFilterWidgetState extends State<SortAndFilterWidget> {
             onTap: widget.onFilterPressed,
             borderRadius: BorderRadius.circular(8),
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
                 border: Border.all(color: Colors.grey.shade300),
                 borderRadius: BorderRadius.circular(8),
@@ -151,12 +151,13 @@ class _SortAndFilterWidgetState extends State<SortAndFilterWidget> {
           const SizedBox.shrink(),
         DropdownButtonHideUnderline(
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
             decoration: BoxDecoration(
               border: Border.all(color: Colors.grey.shade300),
               borderRadius: BorderRadius.circular(8),
             ),
             child: DropdownButton<String>(
+              isDense: true,
               value: _selectedSortBy,
               icon: const Icon(Icons.keyboard_arrow_down_rounded, size: 18),
               onChanged: (String? newValue) {

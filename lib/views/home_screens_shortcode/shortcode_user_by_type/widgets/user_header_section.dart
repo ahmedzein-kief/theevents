@@ -3,15 +3,16 @@ import 'package:flutter/material.dart';
 import '../../../../core/network/api_endpoints/api_contsants.dart';
 import '../../../../core/styles/custom_text_styles.dart';
 import '../../../../core/widgets/padded_network_banner.dart';
+import '../../../../models/dashboard/user_by_type_model/user_type_inner_page_banner_models.dart';
 
 class UserHeaderSection extends StatelessWidget {
-  final dynamic userData;
+  final UserData? userData;
   final double screenHeight;
   final double screenWidth;
 
   const UserHeaderSection({
     super.key,
-    required this.userData,
+    this.userData,
     required this.screenHeight,
     required this.screenWidth,
   });
@@ -51,7 +52,7 @@ class UserHeaderSection extends StatelessWidget {
                     topLeft: Radius.circular(8),
                   ),
                   child: PaddedNetworkBanner(
-                    imageUrl: userData?.coverImage ?? ApiConstants.placeholderImage,
+                    imageUrl: userData?.coverImageForMobile ?? userData?.coverImage ?? ApiConstants.placeholderImage,
                     height: screenHeight * 0.17,
                     width: double.infinity,
                     fit: BoxFit.cover,

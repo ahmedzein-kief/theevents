@@ -167,7 +167,7 @@ class _NewProductPageScreenState extends State<NewProductPageScreen> {
                                   ClipRRect(
                                     borderRadius: BorderRadius.circular(5),
                                     child: PaddedNetworkBanner(
-                                      imageUrl: product.coverImage,
+                                      imageUrl: product.coverImageForMobile ?? product.coverImage,
                                       height: 160,
                                       fit: BoxFit.cover,
                                       padding: EdgeInsets.zero,
@@ -335,7 +335,7 @@ class _NewProductPageScreenState extends State<NewProductPageScreen> {
                       ],
                     );
                   } else {
-                    return const Center(child: Text('No data available'));
+                    return Center(child: Text(AppStrings.noDataAvailable.tr));
                   }
                 },
               ),

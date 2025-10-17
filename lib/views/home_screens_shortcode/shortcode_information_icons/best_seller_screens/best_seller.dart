@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/constants/app_strings.dart';
+import '../../../../core/network/api_endpoints/api_contsants.dart';
 import '../../../../core/styles/app_colors.dart';
 import '../../../../core/styles/custom_text_styles.dart';
 import '../../../../core/utils/app_utils.dart';
@@ -187,7 +188,9 @@ class _BestSellerScreenState extends State<BestSellerScreen> {
                                   ClipRRect(
                                     borderRadius: BorderRadius.circular(5),
                                     child: PaddedNetworkBanner(
-                                      imageUrl: collection.coverImage,
+                                      imageUrl: collection?.coverImageForMobile ??
+                                          collection?.coverImage ??
+                                          ApiConstants.placeholderImage,
                                       height: 160,
                                       fit: BoxFit.cover,
                                       width: screenWidth,
@@ -203,7 +206,7 @@ class _BestSellerScreenState extends State<BestSellerScreen> {
                                       Padding(
                                         padding: const EdgeInsets.only(top: 10),
                                         child: Text(
-                                          collection.name,
+                                          collection?.name,
                                           style: boldHomeTextStyle(),
                                         ),
                                       ),

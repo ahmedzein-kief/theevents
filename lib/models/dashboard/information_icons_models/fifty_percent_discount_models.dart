@@ -9,8 +9,7 @@ class HalfDiscountModels {
     this.message,
   });
 
-  factory HalfDiscountModels.fromJson(Map<String, dynamic> json) =>
-      HalfDiscountModels(
+  factory HalfDiscountModels.fromJson(Map<String, dynamic> json) => HalfDiscountModels(
         error: json['error'] ?? false,
         data: json['data'] != null ? Data.fromJson(json['data']) : null,
         message: json['message'] as String?,
@@ -29,6 +28,7 @@ class Data {
     required this.image,
     required this.thumb,
     required this.coverImage,
+    this.coverImageForMobile,
     required this.items,
     this.website,
     required this.isFeatured,
@@ -43,12 +43,11 @@ class Data {
         image: json['image'] ?? '',
         thumb: json['thumb'] ?? '',
         coverImage: json['cover_image'] ?? '',
+        coverImageForMobile: json['cover_image_for_mobile'],
         items: json['items'] ?? 0,
         website: json['website'] as String?,
         isFeatured: json['is_featured'] ?? 0,
-        seoMeta: json['seo_meta'] != null
-            ? SeoMeta.fromJson(json['seo_meta'])
-            : null,
+        seoMeta: json['seo_meta'] != null ? SeoMeta.fromJson(json['seo_meta']) : null,
       );
   final int id;
   final String name;
@@ -57,6 +56,7 @@ class Data {
   final String image;
   final String thumb;
   final String coverImage;
+  final String? coverImageForMobile;
   final int items;
   final String? website;
   final int isFeatured;
@@ -90,10 +90,10 @@ class HalfDiscountProductsModels {
 
   HalfDiscountProductsModels.fromJson(Map<String, dynamic> json) {
     error = json['error'];
-    data =
-        json['data'] != null ? HalfDiscountData.fromJson(json['data']) : null;
+    data = json['data'] != null ? HalfDiscountData.fromJson(json['data']) : null;
     message = json['message'];
   }
+
   bool? error;
   HalfDiscountData? data;
   String? message;
@@ -122,16 +122,11 @@ class HalfDiscountData {
       parent = [];
     }
 
-    pagination = json['pagination'] != null
-        ? Pagination.fromJson(json['pagination'])
-        : null;
-    records = json['records'] != null
-        ? List<Records>.from(json['records'].map((v) => Records.fromJson(v)))
-        : null;
-    filters = json['filters'] != null
-        ? ProductFiltersModel.fromJson(json['filters'])
-        : null;
+    pagination = json['pagination'] != null ? Pagination.fromJson(json['pagination']) : null;
+    records = json['records'] != null ? List<Records>.from(json['records'].map((v) => Records.fromJson(v))) : null;
+    filters = json['filters'] != null ? ProductFiltersModel.fromJson(json['filters']) : null;
   }
+
   List<dynamic>? parent;
   Pagination? pagination;
   List<Records>? records;
@@ -166,6 +161,7 @@ class Pagination {
       perPage = json['per_page'] as int?;
     }
   }
+
   int? total;
   int? lastPage;
   int? currentPage;
@@ -221,6 +217,7 @@ class Records {
     brand = json['brand'] != null ? Store.fromJson(json['brand']) : null;
     labels = json['labels']?.map((v) => v).toList();
   }
+
   dynamic id;
   String? name;
   String? slug;
@@ -279,6 +276,7 @@ class Review {
     average = json['average'];
     reviewsCount = _toInt(json['reviews_count']);
   }
+
   dynamic average;
   dynamic reviewsCount;
 
@@ -310,6 +308,7 @@ class Prices {
     discountPercentage = _toInt(json['discount_percentage']);
     hasDiscount = json['has_discount'];
   }
+
   int? price;
   dynamic priceWithTaxes;
   int? frontSalePrice;
@@ -355,6 +354,7 @@ class Store {
     reviewsCount = _toInt(json['reviews_count']);
     enabled = json['enabled'];
   }
+
   int? id;
   String? name;
   String? slug;
@@ -386,17 +386,21 @@ class Filters {
   Filters.fromJson(Map<String, dynamic> json) {
     if (json['categories'] != null) {
       categories = List<Categories>.from(
-          json['categories'].map((v) => Categories.fromJson(v)),);
+        json['categories'].map((v) => Categories.fromJson(v)),
+      );
     }
     if (json['tags'] != null) {
       tags = List<Categories>.from(
-          json['tags'].map((v) => Categories.fromJson(v)),);
+        json['tags'].map((v) => Categories.fromJson(v)),
+      );
     }
     if (json['brands'] != null) {
       brands = List<Categories>.from(
-          json['brands'].map((v) => Categories.fromJson(v)),);
+        json['brands'].map((v) => Categories.fromJson(v)),
+      );
     }
   }
+
   List<Categories>? categories;
   List<Categories>? tags;
   List<Categories>? brands;
@@ -426,6 +430,7 @@ class Categories {
     image = json['image'];
     banner = json['banner'];
   }
+
   int? id;
   String? name;
   String? slug;

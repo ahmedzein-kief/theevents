@@ -5,6 +5,7 @@ import 'app_strings.dart';
 final Map<String, Map<String, String>> appTranslations = {
   // English
   'en': {
+    'noShippingMethodAvailable': 'No shipping method available',
     'addingNewAttributesHelps': 'Adding new attributes helps the product to have many options, such as size or color.',
     'digitalLinks': 'Digital Links',
     'fileName': 'File Name',
@@ -914,6 +915,7 @@ final Map<String, Map<String, String>> appTranslations = {
   },
   // Arabic
   'ar': {
+    'noShippingMethodAvailable': 'لا توجد طريقة شحن متاحة',
     'addingNewAttributesHelps': 'إضافة سمات جديدة تساعد المنتج على الحصول على العديد من الخيارات مثل الحجم أو اللون.',
     'digitalLinks': 'روابط رقمية',
     'fileName': 'اسم الملف',
@@ -1817,6 +1819,7 @@ final Map<String, Map<String, String>> appTranslations = {
   },
   // Russian
   'ru': {
+    'noShippingMethodAvailable': 'Нет доступных способов доставки',
     'addingNewAttributesHelps':
         'Добавление новых атрибутов помогает продукту иметь больше вариантов, таких как размер или цвет.',
     'digitalLinks': 'Цифровые ссылки',
@@ -2511,6 +2514,7 @@ final Map<String, Map<String, String>> appTranslations = {
   },
   // Chinese
   'zh': {
+    'noShippingMethodAvailable': '没有可用的运输方式',
     'addingNewAttributesHelps': '添加新属性可帮助产品拥有更多选项，例如尺寸或颜色。',
     'digitalLinks': '数字链接',
     'fileName': '文件名',
@@ -3105,6 +3109,7 @@ final Map<String, Map<String, String>> appTranslations = {
 
 // Hindi
   'hi': {
+    'noShippingMethodAvailable': 'कोई शिपिंग विधि उपलब्ध नहीं है',
     'addingNewAttributesHelps': 'नए गुण जोड़ने से उत्पाद को आकार या रंग जैसे कई विकल्प मिलते हैं।',
     'digitalLinks': 'डिजिटल लिंक',
     'fileName': 'फ़ाइल नाम',
@@ -3719,6 +3724,7 @@ final Map<String, Map<String, String>> appTranslations = {
   },
   // Urdu
   'ur': {
+    'noShippingMethodAvailable': 'کوئی شپنگ طریقہ دستیاب نہیں ہے',
     'addingNewAttributesHelps': 'نئی خصوصیات شامل کرنے سے پروڈکٹ کو کئی اختیارات ملتے ہیں جیسے سائز یا رنگ۔',
     'digitalLinks': 'ڈیجیٹل لنکس',
     'fileName': 'فائل کا نام',

@@ -3,6 +3,7 @@ import 'dart:async';
 
 import 'package:event_app/core/constants/app_assets.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
+import 'package:event_app/core/widgets/loading_indicator.dart';
 import 'package:event_app/views/base_screens/user_profile_login.dart';
 import 'package:event_app/views/home_screens_shortcode/shortcode_user_by_type/user_by_types_items_screen.dart';
 import 'package:flutter/material.dart';
@@ -361,9 +362,7 @@ class _HomeScreenState extends State<BaseHomeScreen> {
               child: IgnorePointer(
                 child: Container(
                   color: Colors.black.withAlpha((0.1 * 255).toInt()),
-                  child: const Center(
-                    child: CircularProgressIndicator(),
-                  ),
+                  child: const LoadingIndicator(),
                 ),
               ),
             ),

@@ -104,7 +104,7 @@ class _ShippingMethodViewScreenState extends State<ShippingMethodViewScreen> {
                     ? Padding(
                         padding: const EdgeInsets.all(20.0),
                         child: Text(
-                          'No shipping methods available',
+                          AppStrings.noShippingMethodAvailable.tr,
                           style: shippingMethod(context),
                           textAlign: TextAlign.center,
                         ),

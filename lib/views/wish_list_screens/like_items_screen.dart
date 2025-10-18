@@ -462,23 +462,4 @@ class _WishListScreenState extends State<WishListScreen> {
       ),
     );
   }
-
-  void showLoadingDialog(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) => Center(
-        child: CircularProgressIndicator(
-          color: isDarkMode ? Colors.white : Colors.black,
-          strokeWidth: 0.5,
-        ),
-      ),
-    );
-  }
-
-  void hideLoadingDialog(BuildContext context) {
-    Navigator.of(context, rootNavigator: true).pop();
-  }
 }

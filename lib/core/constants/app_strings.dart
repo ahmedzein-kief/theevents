@@ -598,4 +598,5 @@ class AppStrings {
   static const String pleaseLoginWishlist = 'pleaseLoginWishlist';
   static const String wishlistUpdateFailed = 'wishlistUpdateFailed';
   static const String unknownError = 'unknownError';
+  static const String noShippingMethodAvailable = 'noShippingMethodAvailable';
 }

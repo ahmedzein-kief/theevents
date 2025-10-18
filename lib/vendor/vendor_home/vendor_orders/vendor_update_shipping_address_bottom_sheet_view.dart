@@ -1,3 +1,4 @@
+import 'package:event_app/core/constants/app_strings.dart';
 import 'package:event_app/core/constants/vendor_app_strings.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/helper/validators/validator.dart';
@@ -314,7 +315,7 @@ class _VendorUpdateShippingAddressBottomSheetViewState extends State<VendorUpdat
       suffixIcon: const Icon(Icons.arrow_drop_down_outlined),
       formFieldValidator: (value) {
         if (value == null || value.isEmpty) {
-          return 'Please select country.';
+          return AppStrings.pleaseSelectCountry.tr;
         }
         return null;
       },
@@ -353,7 +354,7 @@ class _VendorUpdateShippingAddressBottomSheetViewState extends State<VendorUpdat
       isEditable: false,
       formFieldValidator: (value) {
         if (value == null || value.isEmpty) {
-          return 'State is required.';
+          return AppStrings.stateIsRequired.tr;
         }
         return null;
       },
@@ -402,7 +403,7 @@ class _VendorUpdateShippingAddressBottomSheetViewState extends State<VendorUpdat
       isEditable: false,
       formFieldValidator: (value) {
         if (value == null || value.isEmpty) {
-          return 'City cannot be empty.';
+          return AppStrings.cityCannotBeEmpty.tr;
         }
         return null;
       },
@@ -457,11 +458,11 @@ class _VendorUpdateShippingAddressBottomSheetViewState extends State<VendorUpdat
                   children: [
                     // Name Field
                     CustomFieldProfileScreen(
-                      hintText: 'Enter your name',
+                      hintText: AppStrings.enterYourName.tr,
                       controller: _nameController,
                       focusNode: _nameFocusNode,
                       nextFocusNode: _phoneFocusNode,
-                      labelText: 'Enter Name',
+                      labelText: AppStrings.enterName.tr,
                       formFieldValidator: Validator.name,
                     ),
 
@@ -469,10 +470,10 @@ class _VendorUpdateShippingAddressBottomSheetViewState extends State<VendorUpdat
 
                     // Phone Field
                     CustomFieldProfileScreen(
-                      hintText: 'Enter phone Number',
+                      hintText: AppStrings.enterPhoneNumber.tr,
                       controller: _phoneController,
                       focusNode: _phoneFocusNode,
-                      labelText: 'Phone',
+                      labelText: AppStrings.phone.tr,
                       nextFocusNode: _emailFocusNode,
                       keyboardType: TextInputType.number,
                       formFieldValidator: Validator.phone,
@@ -482,10 +483,10 @@ class _VendorUpdateShippingAddressBottomSheetViewState extends State<VendorUpdat
 
                     // Email Field
                     CustomFieldProfileScreen(
-                      hintText: 'Enter Email address',
+                      hintText: AppStrings.enterEmailAddress.tr,
                       controller: _emailController,
                       focusNode: _emailFocusNode,
-                      labelText: 'Email',
+                      labelText: AppStrings.email.tr,
                       keyboardType: TextInputType.emailAddress,
                       nextFocusNode: _addressFocusNode,
                       formFieldValidator: Validator.emailOptional,
@@ -503,7 +504,7 @@ class _VendorUpdateShippingAddressBottomSheetViewState extends State<VendorUpdat
                       nextFocusNode: _countryFocusNode,
                       formFieldValidator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Address cannot be empty.';
+                          return AppStrings.addressCannotBeEmpty.tr;
                         }
                         return null;
                       },

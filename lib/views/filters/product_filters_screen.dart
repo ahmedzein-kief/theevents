@@ -208,17 +208,32 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                                         decoration: BoxDecoration(
                                           color: color,
                                           borderRadius: BorderRadius.circular(4),
+                                          border: Border.all(
+                                            color: Theme.of(context).colorScheme.outline.withAlpha((0.3 * 255).toInt()),
+                                            width: 1,
+                                          ),
                                         ),
                                       ),
                                     Text(
                                       value,
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontSize: 14,
+                                        color: Theme.of(context).colorScheme.onSurface,
                                       ),
                                     ),
                                   ],
                                 ),
                                 value: isSelected,
+                                fillColor: WidgetStateProperty.resolveWith((states) {
+                                  return Theme.of(context).colorScheme.primary;
+                                }),
+                                checkColor: Theme.of(context).colorScheme.onPrimary,
+                                side: WidgetStateBorderSide.resolveWith((states) {
+                                  return BorderSide(
+                                    color: Theme.of(context).colorScheme.outline,
+                                    width: 2,
+                                  );
+                                }),
                                 onChanged: (bool? value) {
                                   setState(() {
                                     if (value == true) {

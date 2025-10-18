@@ -60,7 +60,7 @@ class StatePickerDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => AlertDialog(
-        title: const Text('Select State'),
+        title: Text(AppStrings.selectState.tr),
         content: SizedBox(
           width: double.maxFinite,
           child: ListView.builder(
@@ -70,7 +70,7 @@ class StatePickerDialog extends StatelessWidget {
               final state = stateList[index];
               return ListTile(
                 title: Text(
-                  state.name ?? 'Unknown State',
+                  state.name ?? AppStrings.unknownState.tr,
                   style: TextStyle(
                     color: state.id == currentSelection?.id ? Colors.blue : Theme.of(context).colorScheme.onPrimary,
                   ),
@@ -100,7 +100,7 @@ class CityPickerDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => AlertDialog(
-        title: const Text('Select City'),
+        title: Text(AppStrings.selectCity.tr),
         content: SizedBox(
           width: double.maxFinite,
           child: ListView.builder(
@@ -110,7 +110,7 @@ class CityPickerDialog extends StatelessWidget {
               final city = cityList[index];
               return ListTile(
                 title: Text(
-                  city.name ?? 'Unknown City',
+                  city.name ?? AppStrings.unknownCity.tr,
                   style: TextStyle(
                     color: city.id == currentSelection?.id ? Colors.green : Theme.of(context).colorScheme.onPrimary,
                   ),

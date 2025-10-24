@@ -806,7 +806,15 @@ class VendorSignUpProvider with ChangeNotifier {
       final dynamic errorData = response.data;
       if (errorData is Map<String, dynamic>) {
         errors = errorData['errors'] ?? errorData['data'];
-        error = errorData['error'] as String?;
+
+        // Fix: Handle both boolean and string types for 'error'
+        final errorValue = errorData['error'];
+        if (errorValue is String) {
+          error = errorValue;
+        } else if (errorValue is bool && errorValue) {
+          error = 'An error occurred';
+        }
+
         message = errorData['message'] as String?;
       }
     }

@@ -64,9 +64,11 @@ class WalletRepositoryImpl implements WalletRepository {
   Future<Either<Failure, DepositModel>> deposit(DepositMethodType method, {double? amount, String? couponCode}) async {
     try {
       final response = await _walletDataSource.deposit(method, amount: amount, couponCode: couponCode);
+
       if (response == null) {
         return Left(Failure(ResponseCode.NOT_FOUND, 'Invalid deposit method'));
       }
+
       return Right(response);
     } catch (e) {
       return Left(ErrorHandler(e).failure);

@@ -30,19 +30,6 @@ class PaymentButtons extends StatefulWidget {
     required this.onNext,
   });
 
-  static const String defaultApplePayConfigString = '''
-{
-    "provider": "apple_pay",
-    "data": {
-      "merchantIdentifier": "merchant.com.logicalyinfotech.events",
-      "displayName": "TheEvents",
-      "merchantCapabilities": ["3DS", "debit", "credit"],
-      "supportedNetworks": ["amex", "visa", "discover", "masterCard"],
-      "countryCode": "AE",
-      "currencyCode": "AED"
-    }
-  }''';
-
   @override
   State<PaymentButtons> createState() => _PaymentButtonsState();
 }
@@ -130,6 +117,19 @@ class _PaymentButtonsState extends State<PaymentButtons> {
     }
   }
 
+  static const String defaultApplePayConfigString = '''
+{
+    "provider": "apple_pay",
+    "data": {
+      "merchantIdentifier": "merchant.com.logicalyinfotech.events",
+      "displayName": "TheEvents",
+      "merchantCapabilities": ["3DS", "debit", "credit"],
+      "supportedNetworks": ["amex", "visa", "discover", "masterCard"],
+      "countryCode": "AE",
+      "currencyCode": "AED"
+    }
+  }''';
+
   @override
   Widget build(BuildContext context) {
     final bool isApplePaySelected = widget.paymentMethod['payment_method'] == 'apple_pay';
@@ -157,8 +157,8 @@ class _PaymentButtonsState extends State<PaymentButtons> {
             //         paymentItems: _buildPaymentItems(widget.provider),
             //         style: ApplePayButtonStyle.whiteOutline,
             //         type: ApplePayButtonType.buy,
-            //         onPaymentResult: (paymentResult) =>
-            //             onApplePayResult(paymentResult, widget.provider.checkoutData, widget.paymentMethod, widget.isNewAddress),
+            //         onPaymentResult: (paymentResult) => onApplePayResult(
+            //             paymentResult, widget.provider.checkoutData, widget.paymentMethod, widget.isNewAddress),
             //         loadingIndicator: const Center(
             //           child: CircularProgressIndicator(),
             //         ),

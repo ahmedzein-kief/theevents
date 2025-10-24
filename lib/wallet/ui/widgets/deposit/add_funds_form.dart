@@ -48,7 +48,7 @@ class AddFundsForm extends StatelessWidget {
             boxShadow: [
               BoxShadow(
                 color:
-                    isDark ? Colors.black.withAlpha((0.3 * 255).toInt()) : Colors.black.withAlpha((0.05 * 255).toInt()),
+                isDark ? Colors.black.withAlpha((0.3 * 255).toInt()) : Colors.black.withAlpha((0.05 * 255).toInt()),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
@@ -86,11 +86,12 @@ class AddFundsForm extends StatelessWidget {
                   ),
                 ],
                 const SizedBox(height: 32),
-                ContinueButton(isProcessing: state.isProcessing),
-              ] else if (state.hasError) ...[
-                // Show retry button if no methods loaded due to error
-                _buildRetryButton(context),
-              ],
+                ContinueButton(isProcessing: state.isProcessing, selectedMethod: state.selectedMethod),
+              ] else
+                if (state.hasError) ...[
+                  // Show retry button if no methods loaded due to error
+                  _buildRetryButton(context),
+                ],
             ],
           ),
         ),

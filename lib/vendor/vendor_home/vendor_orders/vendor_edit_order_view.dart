@@ -9,7 +9,7 @@ import 'package:event_app/core/styles/app_sizes.dart';
 import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/core/widgets/custom_auth_views/app_custom_button.dart';
 import 'package:event_app/data/vendor/data/response/apis_status.dart';
-import 'package:event_app/provider/payment_address/customer_address.dart';
+import 'package:event_app/provider/payment_address/customer_address_provider.dart';
 import 'package:event_app/vendor/components/app_bars/vendor_common_app_bar.dart';
 import 'package:event_app/vendor/components/buttons/custom_icon_button_with_text.dart';
 import 'package:event_app/vendor/components/data_tables/custom_data_tables.dart';

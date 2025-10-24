@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../provider/payment_address/customer_address.dart';
+import '../../provider/payment_address/customer_address_provider.dart';
 import 'address_form_widget.dart';
 
 class AddressFormBottomSheet {

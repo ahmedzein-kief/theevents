@@ -92,6 +92,7 @@ class _PaymentMethodsState extends State<PaymentMethods> {
     }
   }
 
+// TODO(Apple Pay): Implement when Apple Pay is enabled
   Widget _buildApplePayOption(bool isSelected, bool isDarkMode) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
@@ -112,79 +113,73 @@ class _PaymentMethodsState extends State<PaymentMethods> {
               ]
             : null,
       ),
-      child: RadioListTile<String>(
-        activeColor: Colors.blue,
-        value: 'apple_pay',
-        groupValue: selectedOption,
-        onChanged: (value) {
-          setState(() {
-            selectedOption = value;
-          });
+      child: ListTile(
+        onTap: () {
+          setState(() => selectedOption = 'apple_pay');
           widget.onSelectionChanged?.call({
             'payment_method': 'apple_pay',
             'sub_option_key': 'payment_type',
             'sub_option_value': 'apple_pay',
           });
         },
-        title: Row(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(4),
-              child: Image.asset(
-                'assets/apple_pay_logo.png',
-                color: Theme.of(context).colorScheme.onPrimary,
+        leading: ClipRRect(
+          borderRadius: BorderRadius.circular(4),
+          child: Image.asset(
+            'assets/apple_pay_logo.png',
+            color: Theme.of(context).colorScheme.onPrimary,
+            width: 32,
+            height: 32,
+            fit: BoxFit.contain,
+            errorBuilder: (context, error, stackTrace) {
+              return Container(
                 width: 32,
                 height: 32,
-                fit: BoxFit.contain,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    width: 32,
-                    height: 32,
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade200,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: const Icon(
-                      Icons.apple,
-                      size: 20,
-                      color: Colors.grey,
-                    ),
-                  );
-                },
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade200,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: const Icon(
+                  Icons.apple,
+                  size: 20,
+                  color: Colors.grey,
+                ),
+              );
+            },
+          ),
+        ),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              AppStrings.applePay.tr,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                color: isSelected ? Colors.blue : null,
               ),
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    AppStrings.applePay.tr,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                      color: isSelected ? Colors.blue : null,
-                    ),
-                  ),
-                  Text(
-                    AppStrings.applePaySubtitle.tr,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey[600],
-                      fontWeight: FontWeight.normal,
-                    ),
-                  ),
-                ],
+            Text(
+              AppStrings.applePaySubtitle.tr,
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.grey[600],
               ),
             ),
           ],
+        ),
+        trailing: const Radio<String>(
+          value: 'apple_pay',
+          activeColor: Colors.blue,
         ),
       ),
     );
   }
 
-  Widget _buildPaymentOption(Map<String, dynamic> item, bool isSelected, bool isDarkMode) {
+  Widget _buildPaymentOption(
+    Map<String, dynamic> item,
+    bool isSelected,
+    bool isDarkMode,
+  ) {
     final isTabby = item['optionValue'] == 'tabby';
     final isDisabled = isTabby && _isAmountBelowTabbyMinimum();
 
@@ -209,81 +204,67 @@ class _PaymentMethodsState extends State<PaymentMethods> {
               ]
             : null,
       ),
-      child: RadioListTile<String>(
-        activeColor: Colors.blue,
-        value: item['optionValue'],
-        groupValue: selectedOption,
-        onChanged: isDisabled
+      child: ListTile(
+        onTap: isDisabled
             ? null
-            : (value) {
+            : () {
                 setState(() {
-                  selectedOption = value;
+                  selectedOption = item['optionValue'];
                 });
-
                 widget.onSelectionChanged?.call(updatePaymentMethod(
                   item['method'],
                   item['optionKey'],
-                  value ?? '',
+                  item['optionValue'],
                 ));
               },
-        title: Row(
-          children: [
-            Opacity(
-              opacity: isDisabled ? 0.5 : 1.0,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(4),
-                child: PaddedNetworkBanner(
-                  imageUrl: item['image'],
-                  width: 32,
-                  height: 32,
-                  fit: BoxFit.contain,
-                  padding: EdgeInsets.zero,
-                  borderRadius: 0,
-                ),
-              ),
+        leading: Opacity(
+          opacity: isDisabled ? 0.5 : 1.0,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: PaddedNetworkBanner(
+              imageUrl: item['image'],
+              width: 32,
+              height: 32,
+              fit: BoxFit.contain,
+              padding: EdgeInsets.zero,
+              borderRadius: 0,
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
+          ),
+        ),
+        title: Text(
+          (item['label'] as String).tr,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+            color: isDisabled ? Colors.grey : (isSelected ? Colors.blue : null),
+          ),
+        ),
+        subtitle: isDisabled
+            ? Row(
                 children: [
-                  Text(
-                    (item['label'] as String).tr,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                      color: isDisabled ? Colors.grey : (isSelected ? Colors.blue : null),
+                  Expanded(
+                    child: Text(
+                      'Minimum amount required:',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.red[600],
+                      ),
                     ),
                   ),
-                  if (isDisabled)
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            'Minimum amount required:',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.red[600],
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ),
-                        PriceRow(
-                          price: '25',
-                          currencyColor: Colors.red[600],
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: Colors.red[600],
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ],
+                  PriceRow(
+                    price: '25',
+                    currencyColor: Colors.red[600],
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: Colors.red[600],
                     ),
+                  ),
                 ],
-              ),
-            ),
-          ],
+              )
+            : null,
+        trailing: Radio<String>(
+          value: item['optionValue'],
+          activeColor: Colors.blue,
         ),
       ),
     );
@@ -399,25 +380,31 @@ class _PaymentMethodsState extends State<PaymentMethods> {
         // Set default selection after options are available
         _setDefaultSelection(availableOptions);
 
-        return Column(
-          children: [
-            /// TODO(Apple Pay): Add Apple Pay Option
-            // Apple Pay option (if available)
-            // if (shouldShowApplePay) _buildApplePayOption(selectedOption == 'apple_pay', isDarkMode),
+        return RadioGroup<String>(
+          groupValue: selectedOption,
+          onChanged: (value) {
+            setState(() => selectedOption = value);
+          },
+          child: Column(
+            children: [
+              /// TODO(Apple Pay): Add Apple Pay Option
+              // Apple Pay option (if available)
+              // if (shouldShowApplePay) _buildApplePayOption(selectedOption == 'apple_pay', isDarkMode),
 
-            // Other payment methods
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: filteredOptions.length,
-              itemBuilder: (context, index) {
-                final item = filteredOptions[index];
-                final isSelected = selectedOption == item['optionValue'];
+              // Other payment methods
+              ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: filteredOptions.length,
+                itemBuilder: (context, index) {
+                  final item = filteredOptions[index];
+                  final isSelected = selectedOption == item['optionValue'];
 
-                return _buildPaymentOption(item, isSelected, isDarkMode);
-              },
-            ),
-          ],
+                  return _buildPaymentOption(item, isSelected, isDarkMode);
+                },
+              ),
+            ],
+          ),
         );
       },
     );

@@ -586,45 +586,40 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                                         }
                                       },
                                     ),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Radio<String>(
-                                              value: 'home',
-                                              groupValue: selectedHomeShopOption,
-                                              activeColor: AppColors.peachyPink,
-                                              onChanged: (value) {
-                                                setState(() {
-                                                  ciModel.addressType = value;
-                                                  selectedHomeShopOption = value!;
-                                                });
-                                              },
-                                            ),
-                                            Text(VendorAppStrings.home.tr),
-                                          ],
-                                        ),
-                                        const SizedBox(
-                                          width: 20,
-                                        ), // Space between buttons
-                                        Row(
-                                          children: [
-                                            Radio<String>(
-                                              value: 'shop',
-                                              groupValue: selectedHomeShopOption,
-                                              activeColor: AppColors.peachyPink,
-                                              onChanged: (value) {
-                                                setState(() {
-                                                  ciModel.addressType = value;
-                                                  selectedHomeShopOption = value!;
-                                                });
-                                              },
-                                            ),
-                                            Text(VendorAppStrings.shop.tr),
-                                          ],
-                                        ),
-                                      ],
+                                    RadioGroup<String>(
+                                      groupValue: selectedHomeShopOption,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          ciModel.addressType = value;
+                                          selectedHomeShopOption = value!;
+                                        });
+                                      },
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              const Radio<String>(
+                                                value: 'home',
+                                                activeColor: AppColors.peachyPink,
+                                              ),
+                                              Text(VendorAppStrings.home.tr),
+                                            ],
+                                          ),
+                                          const SizedBox(
+                                            width: 20,
+                                          ), // Space between buttons
+                                          Row(
+                                            children: [
+                                              const Radio<String>(
+                                                value: 'shop',
+                                                activeColor: AppColors.peachyPink,
+                                              ),
+                                              Text(VendorAppStrings.shop.tr),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ],
                                 ),

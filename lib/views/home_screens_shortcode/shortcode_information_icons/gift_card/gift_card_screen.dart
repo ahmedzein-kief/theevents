@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import '../../../../core/styles/custom_text_styles.dart';
 import '../../../../core/widgets/custom_app_views/search_bar.dart';
 import '../../../../provider/information_icons_provider/gift_card_provider.dart';
+import '../../../../provider/payment_address/customer_address_provider.dart';
 
 class GiftCardScreen extends StatefulWidget {
   const GiftCardScreen({super.key});
@@ -23,12 +24,17 @@ class _GiftCardInnerScreenState extends State<GiftCardScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       fetchGiftCardPage();
+      fetchDataOfCustomer();
     });
   }
 
   Future<void> fetchGiftCardPage() async {
     final provider = Provider.of<GiftCardInnerProvider>(context, listen: false);
     provider.createGiftCardPage(context);
+  }
+
+  Future<void> fetchDataOfCustomer() async {
+    context.read<CustomerAddressProvider>().fetchCustomerAddresses();
   }
 
   @override
@@ -75,8 +81,9 @@ class _GiftCardInnerScreenState extends State<GiftCardScreen> {
                     child: SingleChildScrollView(
                       child: Padding(
                         padding: EdgeInsets.symmetric(
-                            horizontal: screenWidth * 0.04,
-                            vertical: screenHeight * 0.02,),
+                          horizontal: screenWidth * 0.04,
+                          vertical: screenHeight * 0.02,
+                        ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
@@ -89,8 +96,7 @@ class _GiftCardInnerScreenState extends State<GiftCardScreen> {
                             Padding(
                               padding: const EdgeInsets.only(top: 20),
                               child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   // Text(title, style: boldHomeTextStyle()),
                                   Text(data.name, style: boldHomeTextStyle()),

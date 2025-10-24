@@ -5,14 +5,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../core/helper/functions/functions.dart';
+import '../../../data/model/deposit_method.dart';
 import '../../../logic/deposit/deposit_cubit.dart';
 
 class ContinueButton extends StatelessWidget {
   final bool isProcessing;
+  final DepositMethodType? selectedMethod;
 
   const ContinueButton({
     super.key,
     required this.isProcessing,
+    this.selectedMethod,
   });
 
   @override
@@ -27,6 +31,11 @@ class ContinueButton extends StatelessWidget {
         onPressed: isProcessing
             ? null
             : () {
+                if (selectedMethod == DepositMethodType.creditCard) {
+                  final hasAddress = checkUserHasAddress(context);
+                  if (!hasAddress) return;
+                }
+
                 context.read<DepositCubit>().processDeposit();
               },
         style: ElevatedButton.styleFrom(

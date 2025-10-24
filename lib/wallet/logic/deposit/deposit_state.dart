@@ -3,13 +3,7 @@ import 'package:equatable/equatable.dart';
 import '../../data/model/deposit_method.dart';
 import '../../data/model/deposit_model.dart';
 
-enum DepositStatus {
-  initial,
-  loading,
-  loaded,
-  processing,
-  success,
-}
+enum DepositStatus { initial, loading, loaded, processing, success }
 
 class DepositState extends Equatable {
   final DepositStatus status;
@@ -102,7 +96,11 @@ class DepositState extends Equatable {
 
   DepositState toProcessing() => copyWith(status: DepositStatus.processing, clearError: true);
 
-  DepositState toError(String message) => copyWith(errorMessage: message);
+  DepositState toError(String message) => copyWith(
+        errorMessage: message,
+        status: DepositStatus.loaded,
+        clearSuccess: true,
+      );
 
   // Add this method to reset back to loaded state
   DepositState resetToLoaded() => copyWith(

@@ -24,8 +24,8 @@ import 'package:event_app/provider/login_profile_provider/change_password.dart';
 import 'package:event_app/provider/login_profile_provider/profile_update.dart';
 import 'package:event_app/provider/orders_provider/order_data_provider.dart';
 import 'package:event_app/provider/payment_address/create_address_provider.dart';
-import 'package:event_app/provider/payment_address/customer_address.dart';
-import 'package:event_app/provider/payment_address/customer_edit.dart';
+import 'package:event_app/provider/payment_address/customer_address_provider.dart';
+import 'package:event_app/provider/payment_address/update_address_provider.dart';
 import 'package:event_app/provider/product_package_provider/packages_provider.dart';
 import 'package:event_app/provider/product_package_provider/product_details_provider.dart';
 import 'package:event_app/provider/product_package_provider/product_provider.dart';
@@ -128,7 +128,7 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider(create: (_) => CreateGiftCardProvider()),
           ChangeNotifierProvider(create: (_) => UserProvider()),
           ChangeNotifierProvider(create: (_) => CustomerAddressProvider()),
-          ChangeNotifierProvider(create: (_) => CustomerAddress()),
+          ChangeNotifierProvider(create: (_) => UpdateAddressProvider()),
           ChangeNotifierProvider(create: (_) => UserOrderProvider()),
           ChangeNotifierProvider(create: (_) => CheckoutProvider()),
           ChangeNotifierProvider(

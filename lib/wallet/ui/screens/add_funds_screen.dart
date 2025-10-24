@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/constants/app_strings.dart';
 import '../../../core/utils/app_utils.dart';
+import '../../../provider/payment_address/customer_address_provider.dart';
 import '../../logic/deposit/deposit_cubit.dart';
 import '../../logic/deposit/deposit_state.dart';
 import '../../logic/wallet/wallet_cubit.dart';
@@ -30,6 +31,13 @@ class _AddFundsScreenState extends State<AddFundsScreen> {
   void initState() {
     super.initState();
     context.read<DepositCubit>().loadDepositMethods();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      fetchDataOfCustomer();
+    });
+  }
+
+  Future<void> fetchDataOfCustomer() async {
+    context.read<CustomerAddressProvider>().fetchCustomerAddresses();
   }
 
   @override

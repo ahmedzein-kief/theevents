@@ -57,7 +57,7 @@ dependencies:
   signature: ^6.0.0
   flutter_quill: ^11.4.1
   vsc_quill_delta_to_html: ^1.0.5
-  getwidget: ^6.0.0
+  getwidget: ^7.0.0
   modal_progress_hud_nsn: ^0.5.1
   syncfusion_flutter_datagrid: ^30.1.37
   dropdown_button2: ^2.3.9

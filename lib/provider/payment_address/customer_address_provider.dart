@@ -194,8 +194,7 @@ class CustomerAddressProvider with ChangeNotifier {
 
   String? get errorMessage => _errorMessage;
 
-  Future<CustomerAddressModels?> fetchCustomerAddresses(
-    BuildContext context, {
+  Future<CustomerAddressModels?> fetchCustomerAddresses({
     int perPage = 12,
     page = 1,
   }) async {

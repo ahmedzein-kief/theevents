@@ -8,9 +8,9 @@ import '../../../core/services/shared_preferences_helper.dart';
 import '../../../core/widgets/custom_profile_views/custom_text_field_view.dart';
 import '../../../models/wishlist_models/states_cities_models.dart';
 import '../../../provider/payment_address/create_address_provider.dart';
-import '../../../provider/payment_address/customer_address.dart';
+import '../../../provider/payment_address/customer_address_provider.dart';
 import '../../provider/payment_address/country_picks_provider.dart';
-import '../../provider/payment_address/customer_edit.dart';
+import '../../provider/payment_address/update_address_provider.dart';
 import '../../views/country_picker/country_pick_screen.dart';
 import '../network/api_status/api_status.dart';
 import 'custom_items_views/custom_add_to_cart_button.dart';
@@ -343,8 +343,8 @@ class _AddressFormWidgetState extends State<AddressFormWidget> {
     if (!mounted) return false;
 
     try {
-      final response =
-          await Provider.of<CustomerAddress>(context, listen: false).updateAddress(address, token, addressId, context);
+      final response = await Provider.of<UpdateAddressProvider>(context, listen: false)
+          .updateAddress(address, token, addressId, context);
       if (response && mounted && widget.onAddressSaved != null) {
         widget.onAddressSaved!();
       }

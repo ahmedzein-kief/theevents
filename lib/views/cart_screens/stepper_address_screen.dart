@@ -11,7 +11,7 @@ import '../../core/widgets/address_form_bottom_sheet.dart';
 import '../../core/widgets/custom_auth_views/app_custom_button.dart';
 import '../../core/widgets/price_row.dart';
 import '../../provider/checkout_provider/submit_checkout_information.dart';
-import '../../provider/payment_address/customer_address.dart';
+import '../../provider/payment_address/customer_address_provider.dart';
 
 class StepperAddressScreen extends StatefulWidget {
   const StepperAddressScreen({
@@ -46,7 +46,6 @@ class _StepperAddressScreenState extends State<StepperAddressScreen> {
     try {
       final provider = Provider.of<CustomerAddressProvider>(context, listen: false);
       final result = await provider.fetchCustomerAddresses(
-        context,
         perPage: 12,
         page: _currentPage,
       );

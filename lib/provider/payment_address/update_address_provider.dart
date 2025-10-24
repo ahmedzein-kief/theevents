@@ -8,9 +8,9 @@ import 'package:provider/provider.dart';
 
 import '../../core/utils/app_utils.dart';
 import 'create_address_provider.dart';
-import 'customer_address.dart';
+import 'customer_address_provider.dart';
 
-class CustomerAddress extends ChangeNotifier {
+class UpdateAddressProvider extends ChangeNotifier {
   final ApiResponseHandler _apiResponseHandler = ApiResponseHandler();
 
   Future<bool> updateAddress(
@@ -38,7 +38,7 @@ class CustomerAddress extends ChangeNotifier {
       if (context.mounted) {
         // Check if context is still valid
         final reFetchUserData = Provider.of<CustomerAddressProvider>(context, listen: false);
-        await reFetchUserData.fetchCustomerAddresses(context);
+        await reFetchUserData.fetchCustomerAddresses();
         notifyListeners();
       }
       return true;

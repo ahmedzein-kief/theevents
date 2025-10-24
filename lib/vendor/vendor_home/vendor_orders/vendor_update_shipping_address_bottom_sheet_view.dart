@@ -7,7 +7,7 @@ import 'package:event_app/core/widgets/custom_items_views/custom_add_to_cart_but
 import 'package:event_app/core/widgets/custom_profile_views/custom_text_field_view.dart';
 import 'package:event_app/provider/payment_address/country_picks_provider.dart';
 import 'package:event_app/provider/payment_address/create_address_provider.dart';
-import 'package:event_app/provider/payment_address/customer_address.dart';
+import 'package:event_app/provider/payment_address/customer_address_provider.dart';
 import 'package:event_app/vendor/view_models/vendor_orders/vendor_get_order_details_view_model.dart';
 import 'package:event_app/vendor/view_models/vendor_orders/vendor_update_shipping_address_view_model.dart';
 import 'package:flutter/material.dart';

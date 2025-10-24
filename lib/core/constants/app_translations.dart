@@ -5,6 +5,7 @@ import 'app_strings.dart';
 final Map<String, Map<String, String>> appTranslations = {
   // English
   'en': {
+    'youMustAddAddressFirstToContinue': 'You must add an address first to continue',
     'noShippingMethodAvailable': 'No shipping method available',
     'addingNewAttributesHelps': 'Adding new attributes helps the product to have many options, such as size or color.',
     'digitalLinks': 'Digital Links',
@@ -915,6 +916,7 @@ final Map<String, Map<String, String>> appTranslations = {
   },
   // Arabic
   'ar': {
+    'youMustAddAddressFirstToContinue': 'يجب إضافة عنوان أولاً للمتابعة',
     'noShippingMethodAvailable': 'لا توجد طريقة شحن متاحة',
     'addingNewAttributesHelps': 'إضافة سمات جديدة تساعد المنتج على الحصول على العديد من الخيارات مثل الحجم أو اللون.',
     'digitalLinks': 'روابط رقمية',
@@ -1819,6 +1821,7 @@ final Map<String, Map<String, String>> appTranslations = {
   },
   // Russian
   'ru': {
+    'youMustAddAddressFirstToContinue': 'Сначала добавьте адрес, чтобы продолжить',
     'noShippingMethodAvailable': 'Нет доступных способов доставки',
     'addingNewAttributesHelps':
         'Добавление новых атрибутов помогает продукту иметь больше вариантов, таких как размер или цвет.',
@@ -2514,6 +2517,7 @@ final Map<String, Map<String, String>> appTranslations = {
   },
   // Chinese
   'zh': {
+    'youMustAddAddressFirstToContinue': '您必须先添加地址才能继续',
     'noShippingMethodAvailable': '没有可用的运输方式',
     'addingNewAttributesHelps': '添加新属性可帮助产品拥有更多选项，例如尺寸或颜色。',
     'digitalLinks': '数字链接',
@@ -3109,6 +3113,7 @@ final Map<String, Map<String, String>> appTranslations = {
 
 // Hindi
   'hi': {
+    'youMustAddAddressFirstToContinue': 'जारी रखने के लिए आपको पहले पता जोड़ना होगा',
     'noShippingMethodAvailable': 'कोई शिपिंग विधि उपलब्ध नहीं है',
     'addingNewAttributesHelps': 'नए गुण जोड़ने से उत्पाद को आकार या रंग जैसे कई विकल्प मिलते हैं।',
     'digitalLinks': 'डिजिटल लिंक',
@@ -3724,6 +3729,7 @@ final Map<String, Map<String, String>> appTranslations = {
   },
   // Urdu
   'ur': {
+    'youMustAddAddressFirstToContinue': 'جاری رکھنے کے لیے پہلے پتہ شامل کرنا ضروری ہے',
     'noShippingMethodAvailable': 'کوئی شپنگ طریقہ دستیاب نہیں ہے',
     'addingNewAttributesHelps': 'نئی خصوصیات شامل کرنے سے پروڈکٹ کو کئی اختیارات ملتے ہیں جیسے سائز یا رنگ۔',
     'digitalLinks': 'ڈیجیٹل لنکس',

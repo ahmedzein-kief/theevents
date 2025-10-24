@@ -74,7 +74,7 @@ class NotificationTypeTile extends StatelessWidget {
         ),
         Switch(
           value: preference.enabled,
-          activeColor: Colors.white,
+          activeThumbColor: Colors.white,
           activeTrackColor: AppColors.peachyPink.withAlpha((0.8 * 255).toInt()),
           onChanged: (value) => _toggleNotificationType(context, value),
         ),

@@ -361,7 +361,7 @@ class _CartItemsScreensState extends State<CartItemsScreen> {
                                         builder: (builder) {
                                           return StepperScreen(
                                             trackedStartCheckout: checkoutToken,
-                                            amount: provider.cartResponse?.data.finalTotal.toString() ?? '',
+                                            amount: provider.cartResponse?.data.finalTotal.toStringAsFixed(2) ?? '',
                                             isNewAddress: false,
                                           );
                                         },

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/utils/notification_style_helper.dart';
 import '../../../data/model/notification_model.dart';
 
 class NotificationIcon extends StatelessWidget {
@@ -15,11 +14,14 @@ class NotificationIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(8),
-      child: Image.asset(
-        NotificationStyleHelper.getIconAsset(notification.type),
-        height: 12,
-        width: 12,
+      child: Text(
+        notification.icon ?? '💳',
       ),
+      // child: Image.asset(
+      //   NotificationStyleHelper.getIconAsset(notification.type),
+      //   height: 12,
+      //   width: 12,
+      // ),
     );
   }
 }

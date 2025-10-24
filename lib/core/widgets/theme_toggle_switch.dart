@@ -17,7 +17,7 @@ class ThemeToggleSwitch extends StatelessWidget {
       title: Text(AppStrings.darkMode.tr),
       value: !themeNotifier.isLightTheme,
       onChanged: (value) => themeNotifier.toggleTheme(),
-      activeColor: isDarkMode ? Colors.white : null,
+      activeThumbColor: isDarkMode ? Colors.white : null,
       activeTrackColor: isDarkMode ? Colors.green : null,
     );
   }

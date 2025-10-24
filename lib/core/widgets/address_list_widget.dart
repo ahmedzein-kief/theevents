@@ -7,7 +7,7 @@ import '../../../core/constants/app_strings.dart';
 import '../../../core/helper/extensions/app_localizations_extension.dart';
 import '../../../core/styles/app_colors.dart';
 import '../../../core/styles/custom_text_styles.dart';
-import '../../../provider/payment_address/customer_address.dart';
+import '../../../provider/payment_address/customer_address_provider.dart';
 import '../../../vendor/components/dialogs/delete_item_alert_dialog.dart';
 
 class AddressListWidget extends StatelessWidget {

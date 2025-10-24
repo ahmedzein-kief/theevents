@@ -1,4 +1,5 @@
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
+import 'package:event_app/core/helper/functions/functions.dart';
 import 'package:event_app/core/styles/custom_text_styles.dart';
 import 'package:event_app/models/dashboard/information_icons_models/gift_card_models/checkout_payment_model.dart';
 import 'package:event_app/provider/information_icons_provider/gift_card_provider.dart';
@@ -356,6 +357,10 @@ class _GiftCardFormState extends State<GiftCardForm> {
                                     );
                                     return;
                                   }
+                                  final hasAddress = checkUserHasAddress(context);
+
+                                  if (!hasAddress) return;
+
                                   if (_formKey.currentState?.validate() ?? false) {
                                     final response = await createGiftCard();
                                     final data = response?.data;

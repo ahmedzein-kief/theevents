@@ -1,8 +1,10 @@
 import 'package:dio/dio.dart';
+import 'package:event_app/core/network/failure.dart';
 
 import '../../../core/helper/enums/enums.dart';
 import '../../../core/network/api_endpoints/api_contsants.dart';
 import '../../../core/network/api_endpoints/api_end_point.dart';
+import '../../../core/network/error_handler.dart';
 import '../../../provider/api_response_handler.dart';
 import '../model/deposit_method.dart';
 import '../model/deposit_model.dart';
@@ -33,7 +35,12 @@ class WalletDataSource {
           body: {'code': couponCode},
           extra: {ApiConstants.requireAuthKey: true},
         );
-        return DepositModel.fromJson(response.data);
+        final depositModel = DepositModel.fromJson(response.data);
+
+        if (depositModel.isSuccess == false) {
+          throw Failure(ResponseCode.NOT_FOUND, depositModel.message ?? 'Deposit failed');
+        }
+        return depositModel;
       } else if (method == DepositMethodType.creditCard) {
         final formData = FormData.fromMap({
           'payment_method': 'telr',

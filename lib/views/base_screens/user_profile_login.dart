@@ -16,8 +16,8 @@ import 'package:event_app/provider/auth_provider/user_auth_provider.dart';
 import 'package:event_app/provider/customer/account_view_models/customer_upload_profile_pic_view_model.dart';
 import 'package:event_app/vendor/components/vendor_stepper_screen.dart';
 import 'package:event_app/vendor/vendor_home/vendor_drawer_screen.dart';
+import 'package:event_app/views/base_screens/profile_screens/create_address_screen.dart';
 import 'package:event_app/views/base_screens/profile_screens/profiel_change_password.dart';
-import 'package:event_app/views/base_screens/profile_screens/profile_address_screen.dart';
 import 'package:event_app/views/base_screens/profile_screens/profile_review_screen.dart';
 import 'package:event_app/views/base_screens/profile_screens/profile_update_screen.dart';
 import 'package:event_app/views/home_screens_shortcode/shortcode_information_icons/order_pages_screens/order_page.dart';
@@ -504,7 +504,7 @@ class _UserProfileLoginScreenState extends State<UserProfileLoginScreen> {
         routeName: AppRoutes.wallet,
         arguments: const {'title': 'Wallet'},
       ),
-      _buildProfileItem('assets/Address.svg', AppStrings.address.tr, () => _navigateTo(const ProfileAddressScreen())),
+      _buildProfileItem('assets/Address.svg', AppStrings.address.tr, () => _navigateTo(const CreateAddressScreen())),
       _buildProfileItem(
           'assets/change_password.svg', AppStrings.changePassword.tr, () => _navigateTo(ChangePasswordScreen())),
       _buildProfileItem(

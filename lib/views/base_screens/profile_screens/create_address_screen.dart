@@ -8,16 +8,16 @@ import '../../../core/widgets/address_form_bottom_sheet.dart';
 import '../../../core/widgets/address_list_widget.dart';
 import '../../../core/widgets/custom_auth_views/app_custom_button.dart';
 import '../../../core/widgets/custom_profile_views/custom_back_appbar_view.dart';
-import '../../../provider/payment_address/customer_address.dart';
+import '../../../provider/payment_address/customer_address_provider.dart';
 
-class ProfileAddressScreen extends StatefulWidget {
-  const ProfileAddressScreen({super.key});
+class CreateAddressScreen extends StatefulWidget {
+  const CreateAddressScreen({super.key});
 
   @override
-  State<ProfileAddressScreen> createState() => _ProfileAddressScreenState();
+  State<CreateAddressScreen> createState() => _CreateAddressScreenState();
 }
 
-class _ProfileAddressScreenState extends State<ProfileAddressScreen> {
+class _CreateAddressScreenState extends State<CreateAddressScreen> {
   int _currentPage = 1;
   bool _isFetchingMore = false;
   final ScrollController _scrollController = ScrollController();
@@ -25,18 +25,18 @@ class _ProfileAddressScreenState extends State<ProfileAddressScreen> {
   @override
   void initState() {
     super.initState();
-    _initializeData();
+    _scrollController.addListener(_onScroll);
+
+    // Defer the fetch until after the first frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _fetchCustomerAddresses();
+    });
   }
 
   @override
   void dispose() {
     _scrollController.dispose();
     super.dispose();
-  }
-
-  void _initializeData() {
-    _fetchCustomerAddresses();
-    _scrollController.addListener(_onScroll);
   }
 
   Future<void> _fetchCustomerAddresses() async {
@@ -49,7 +49,6 @@ class _ProfileAddressScreenState extends State<ProfileAddressScreen> {
 
       final provider = Provider.of<CustomerAddressProvider>(context, listen: false);
       await provider.fetchCustomerAddresses(
-        context,
         perPage: 12,
         page: _currentPage,
       );

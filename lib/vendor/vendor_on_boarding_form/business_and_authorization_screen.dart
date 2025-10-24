@@ -105,41 +105,37 @@ class _BusinessAndAuthorizationScreenState extends State<BusinessAndAuthorizatio
                     children: [
                       Column(
                         children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: RadioListTile<int>(
-                                  activeColor: Theme.of(context).colorScheme.onPrimary,
-                                  title: Text(
-                                    VendorAppStrings.areYouBusinessOwner.tr,
-                                    style: vendorBusinessInfo(),
+                          RadioGroup<int>(
+                            groupValue: _radioValue,
+                            onChanged: (int? value) {
+                              setState(() {
+                                _radioValue = value ?? 0;
+                              });
+                            },
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: RadioListTile<int>(
+                                    activeColor: Theme.of(context).colorScheme.onPrimary,
+                                    title: Text(
+                                      VendorAppStrings.areYouBusinessOwner.tr,
+                                      style: vendorBusinessInfo(),
+                                    ),
+                                    value: 0,
                                   ),
-                                  value: 0,
-                                  groupValue: _radioValue,
-                                  onChanged: (int? value) {
-                                    setState(() {
-                                      _radioValue = value ?? 0;
-                                    });
-                                  },
                                 ),
-                              ),
-                              Expanded(
-                                child: RadioListTile<int>(
-                                  title: Text(
-                                    VendorAppStrings.areYouAuthorizedSignatory.tr,
-                                    style: vendorBusinessInfo(),
+                                Expanded(
+                                  child: RadioListTile<int>(
+                                    title: Text(
+                                      VendorAppStrings.areYouAuthorizedSignatory.tr,
+                                      style: vendorBusinessInfo(),
+                                    ),
+                                    activeColor: Theme.of(context).colorScheme.onPrimary,
+                                    value: 1,
                                   ),
-                                  activeColor: Theme.of(context).colorScheme.onPrimary,
-                                  value: 1,
-                                  groupValue: _radioValue,
-                                  onChanged: (int? value) {
-                                    setState(() {
-                                      _radioValue = value ?? 1;
-                                    });
-                                  },
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                           Padding(
                             padding: const EdgeInsets.only(bottom: 30),

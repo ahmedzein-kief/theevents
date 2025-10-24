@@ -599,4 +599,5 @@ class AppStrings {
   static const String wishlistUpdateFailed = 'wishlistUpdateFailed';
   static const String unknownError = 'unknownError';
   static const String noShippingMethodAvailable = 'noShippingMethodAvailable';
+  static const String youMustAddAddressFirstToContinue = 'youMustAddAddressFirstToContinue';
 }

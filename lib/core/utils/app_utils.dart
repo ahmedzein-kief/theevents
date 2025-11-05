@@ -320,13 +320,24 @@ class AppUtils {
     }
   }
 
-  // Static method to format the timestamp
+// Static method to format the timestamp
   static String formatTimestamp(String timestamp) {
-    // Parse the timestamp string into a DateTime object
-    final DateTime dateTime = DateTime.parse(timestamp);
+    // Handle null, empty, or invalid strings
+    if (timestamp.isEmpty || timestamp.trim().isEmpty) {
+      return '--';
+    }
 
-    // Format the DateTime object into a readable string (e.g., "Jan 30, 2025 8:04")
-    return DateFormat('MMM dd, yyyy HH:mm').format(dateTime);
+    try {
+      // Parse the timestamp string into a DateTime object
+      final DateTime dateTime = DateTime.parse(timestamp);
+
+      // Format the DateTime object into a readable string (e.g., "Jan 30, 2025 8:04")
+      return DateFormat('MMM dd, yyyy HH:mm').format(dateTime);
+    } catch (e) {
+      // Log the error for debugging
+      debugPrint('Error parsing timestamp "$timestamp": $e');
+      return '--';
+    }
   }
 
   /// searching for component

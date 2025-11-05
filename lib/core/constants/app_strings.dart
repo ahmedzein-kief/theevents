@@ -59,7 +59,7 @@ class AppStrings {
   static const String agreementAccept = 'I hereby agree to the terms and conditions of this agreement.';
   static const String registrationDone = 'Your vendor registration has been successfully completed';
   static const String paymentDone =
-      'Our team is reviewing your documents. You\'ll get a notification about your vendor approval status soon. Once approved, we\'ll email you the contract for your signature';
+      'Our team is reviewing your documents. You\'ll get a notification about your vendor approval status soon.';
   static const String paymentThanks =
       'Thank you for choosing to partner with us. We look forward to a successful collaboration';
 
@@ -495,6 +495,7 @@ class AppStrings {
   static const String giftsByOccasion = 'Gifts by occasion';
   static const String darkMode = 'Dark Mode';
   static const String vendorAccountUnderReview = 'Your vendor account is under review and waiting for approval.';
+  static const String vendorSubscriptionExpired = 'vendorSubscriptionExpired';
 
   static const String paymentSuccessful = 'payment_successful';
   static const String paymentFailed = 'payment_failed';
@@ -600,4 +601,7 @@ class AppStrings {
   static const String unknownError = 'unknownError';
   static const String noShippingMethodAvailable = 'noShippingMethodAvailable';
   static const String youMustAddAddressFirstToContinue = 'youMustAddAddressFirstToContinue';
+  static const String vendorSubscriptionOneYear = 'Vendor Subscription (1 Year)';
+  static const String vendorSubscriptionDescription = 'This is a one time fee for vendor registration.';
+  static const String walletApplicable = 'walletApplicable';
 }

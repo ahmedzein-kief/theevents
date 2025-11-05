@@ -16,7 +16,6 @@ class ApiEndpoints {
 
   //   Urls Of Api Endpoints  new one
   static const String shortCode = '${baseUrl}pages/home';
-
   static const String searchBarSuggestion = '${baseUrl}search-bar';
   static const String homeSlider = '${baseUrl}simple-slider';
   static const String categoryViewAllBanner = '${baseUrl}pages/categories';
@@ -146,6 +145,8 @@ class ApiEndpoints {
   static const String notificationDeleteAll = '${wallet}notification';
   static const String notificationPreferences = '${wallet}notification-preferences';
   static const String notificationPreferencesByType = '${wallet}notification-preferences/{type}';
+
+  static const String releaseFrozenAmount = '${wallet}release-frozen-amount';
 
   static const String becomeVendor = '${baseUrl}become-vendor';
 }

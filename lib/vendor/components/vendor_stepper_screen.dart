@@ -48,8 +48,9 @@ class _VendorStepperScreenState extends State<VendorStepperScreen> {
 
     final token = await SecurePreferencesUtil.getToken();
 
+    if (!mounted) return;
+
     if (token == null || token.isEmpty) {
-      if (!mounted) return;
       setState(() {
         activeStep = 0;
         isInitializing = false;
@@ -57,13 +58,11 @@ class _VendorStepperScreenState extends State<VendorStepperScreen> {
       return;
     }
 
-    if (!mounted) return;
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     var user = userProvider.user;
 
     // If user is null, fetch user data
     if (user == null) {
-      if (!mounted) return;
       final vendorProvider = Provider.of<VendorSignUpProvider>(context, listen: false);
       final userData = await vendorProvider.fetchUserData(context);
 
@@ -71,7 +70,6 @@ class _VendorStepperScreenState extends State<VendorStepperScreen> {
         userProvider.setUser(userData);
         user = userData;
       } else {
-        if (!mounted) return;
         setState(() {
           activeStep = 0;
           isInitializing = false;

@@ -54,6 +54,7 @@ class CheckoutData {
   final bool isAvailableAddress;
   final int sessionAddressId;
   final List<dynamic> discounts;
+  final double? walletApplicable;
 
   CheckoutData({
     required this.token,
@@ -74,6 +75,7 @@ class CheckoutData {
     required this.isAvailableAddress,
     required this.sessionAddressId,
     required this.discounts,
+    this.walletApplicable,
   });
 
   factory CheckoutData.fromJson(Map<String, dynamic> json) {
@@ -96,6 +98,7 @@ class CheckoutData {
       isAvailableAddress: json['isAvailableAddress'] ?? false,
       sessionAddressId: json['sessionAddressId'] ?? 0,
       discounts: json['discounts'] ?? [],
+      walletApplicable: (json['wallet_applicable'] ?? 0).toDouble(),
     );
   }
 

@@ -34,7 +34,7 @@ class PaymentViewScreen extends StatefulWidget {
   });
 
   final String checkoutUrl;
-  final String? paymentType; // 'subscription', 'gift_card', or null for regular payments
+  final String? paymentType; // 'subscription', 'gift_card', 'wallet', or null for regular payments
 
   @override
   State<PaymentViewScreen> createState() => PaymentViewState();
@@ -124,6 +124,7 @@ class PaymentViewState extends State<PaymentViewScreen> {
           }
         },
         onNavigationRequest: (NavigationRequest request) {
+          log(request.url, name: 'onNavigationRequest');
           _checkPaymentResult(request.url);
           return NavigationDecision.navigate;
         },

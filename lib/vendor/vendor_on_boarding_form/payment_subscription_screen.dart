@@ -128,7 +128,7 @@ class _PaymentScreenState extends State<PaymentSubscriptionScreen> {
                                         top: screenHeight * 0.03,
                                       ),
                                       child: Text(
-                                        subscriptionResponse?.data.heading ?? '',
+                                        subscriptionResponse?.data.heading.tr ?? '',
                                         style: loginHeading(),
                                       ),
                                     ),
@@ -137,7 +137,7 @@ class _PaymentScreenState extends State<PaymentSubscriptionScreen> {
                                         vertical: screenHeight * 0.03,
                                       ),
                                       child: Text(
-                                        subscriptionResponse?.data.subHeading ?? '',
+                                        subscriptionResponse?.data.subHeading.tr ?? '',
                                         style: vendorDescriptionAgreement(),
                                         softWrap: true,
                                         textAlign: TextAlign.center,

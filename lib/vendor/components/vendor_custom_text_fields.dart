@@ -6,7 +6,7 @@ class VendorCustomTextFields extends StatefulWidget {
   const VendorCustomTextFields({
     super.key,
     this.prefixIconColor,
-    this.borderSideColor,
+    this.borderSide,
     this.suffixIconColor,
     required this.labelText,
     required this.textStar,
@@ -48,7 +48,7 @@ class VendorCustomTextFields extends StatefulWidget {
   final bool isEditable;
   final Color? suffixIconColor;
   final Color? prefixIconColor;
-  final BorderSide? borderSideColor;
+  final BorderSide? borderSide;
   final String? Function(String?)? validator;
   final Function(String?)? onValueChanged;
 
@@ -90,6 +90,7 @@ class _VendorCustomTextFieldsState extends State<VendorCustomTextFields> {
               ),
             ),
             TextFormField(
+              onTap: widget.onIconPressed,
               readOnly: !widget.isEditable,
               controller: widget.controller,
               keyboardType: widget.keyboardType,
@@ -110,23 +111,15 @@ class _VendorCustomTextFieldsState extends State<VendorCustomTextFields> {
                 hintStyle: const TextStyle(color: Colors.grey),
                 prefixIcon: (widget.prefixIcon != null || widget.prefixText != null)
                     ? Container(
-                        padding: const EdgeInsets.only(left: 10),
-                        margin: const EdgeInsets.only(
-                          left: 1,
-                          top: 1,
-                          bottom: 1,
-                          right: 8,
-                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        margin: const EdgeInsets.symmetric(horizontal: 4),
                         decoration: BoxDecoration(
-                          color: widget.isPrefixFilled && widget.prefixContainerColor != null
-                              ? widget.prefixContainerColor
-                              : Colors.transparent,
-                          borderRadius: const BorderRadius.only(
-                            bottomLeft: Radius.circular(7),
-                            topLeft: Radius.circular(7),
+                          borderRadius: const BorderRadiusDirectional.only(
+                            bottomEnd: Radius.circular(8),
+                            topEnd: Radius.circular(8),
                           ),
-                          border: Border(
-                            right: widget.borderSideColor ?? BorderSide.none,
+                          border: BorderDirectional(
+                            end: widget.borderSide ?? BorderSide.none,
                           ),
                         ),
                         child: Row(
@@ -135,31 +128,11 @@ class _VendorCustomTextFieldsState extends State<VendorCustomTextFields> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             if (widget.prefixText != null)
-                              Padding(
-                                padding: const EdgeInsets.only(left: 10),
-                                child: Text(
-                                  widget.prefixText!,
-                                  style: const TextStyle(color: Colors.grey),
-                                ),
+                              Text(
+                                widget.prefixText!,
+                                style: const TextStyle(color: Colors.grey),
                               ),
-                            if (widget.prefixIcon != null)
-                              Padding(
-                                padding: const EdgeInsets.only(right: 4, left: 5),
-                                child: IconButton(
-                                  icon: Icon(
-                                    widget.prefixIcon,
-                                    color: widget.prefixIconColor ?? Colors.grey,
-                                  ),
-                                  onPressed: widget.onIconPressed,
-                                ),
-                              ),
-                            if (widget.prefixIcon != null && widget.prefixText != null)
-                              Container(
-                                color: Colors.grey,
-                                width: 0.5,
-                                height: 45,
-                              ),
-                            const SizedBox(width: 10),
+                            if (widget.prefixIcon != null) Icon(widget.prefixIcon, color: Colors.grey),
                           ],
                         ),
                       )
@@ -193,18 +166,15 @@ class _VendorCustomTextFieldsState extends State<VendorCustomTextFields> {
                 ),
                 errorStyle: GoogleFonts.inter(height: 0, color: Colors.red),
                 contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16.0,
+                  horizontal: 8.0,
                   vertical: 12.0,
                 ),
                 suffixIcon: widget.suffixWidget ??
                     (widget.suffixIcon != null
-                        ? IconButton(
-                            icon: Icon(
-                              widget.suffixIcon,
-                              color: widget.suffixIconColor ?? Colors.grey,
-                              size: 18,
-                            ),
-                            onPressed: widget.onIconPressed,
+                        ? Icon(
+                            widget.suffixIcon,
+                            color: widget.suffixIconColor ?? Colors.grey,
+                            size: 18,
                           )
                         : null),
               ),

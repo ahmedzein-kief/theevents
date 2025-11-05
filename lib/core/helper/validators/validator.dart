@@ -1,3 +1,4 @@
+import 'package:event_app/core/constants/app_strings.dart';
 import 'package:event_app/core/constants/vendor_app_strings.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/network/api_endpoints/vendor_api_end_point.dart';
@@ -6,13 +7,13 @@ class Validator {
   /// ======= EMAIL VALIDATION =================================================
   static String? email(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Email Cannot be empty';
+      return 'valEmailEmpty'.tr;
     }
     const String pattern = r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$';
 
     final RegExp regExp = RegExp(pattern);
     if (!regExp.hasMatch(value)) {
-      return 'Enter a valid email address.';
+      return 'valEmailInvalid'.tr;
     }
     return null;
   }
@@ -25,20 +26,20 @@ class Validator {
 
     final RegExp regExp = RegExp(pattern);
     if (!regExp.hasMatch(value)) {
-      return 'Enter a valid email address.';
+      return 'valEmailInvalid'.tr;
     }
     return null;
   }
 
   static String? isValidUrl(String value) {
     if (value.isEmpty) {
-      return 'This is a required field'; // Ensure it's not empty
+      return 'valRequiredField'.tr; // Ensure it's not empty
     }
 
     final Uri? uri = Uri.tryParse(value);
     final bool isValid = uri != null && uri.hasScheme && (uri.scheme == 'http' || uri.scheme == 'https');
 
-    return isValid ? null : 'Please enter a valid link';
+    return isValid ? null : 'valUrlInvalid'.tr;
   }
 
   static String? vendorEmail(String? value) {
@@ -58,67 +59,67 @@ class Validator {
 
   static String? phone(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Phone number Cannot be empty';
+      return 'valPhoneEmpty'.tr;
     }
     if (value.length < 9) {
-      return 'Phone Number should be 9 digits long';
+      return 'valPhone9Digits'.tr;
     }
     const String pattern = r'^\d+$';
     final RegExp regExp = RegExp(pattern);
     if (!regExp.hasMatch(value)) {
-      return 'Phone number should contain only numbers.';
+      return 'valPhoneDigitsOnly'.tr;
     }
     return null;
   }
 
   static String? companyMobile(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Company mobile number is required';
+      return 'valCompanyMobileRequired'.tr;
     }
     if (value.length > 9 || value.length < 9) {
-      return 'Company mobile number should be 9 digits long';
+      return 'valCompanyMobile9Digits'.tr;
     }
     const String pattern = r'^\d+$';
     final RegExp regExp = RegExp(pattern);
     if (!regExp.hasMatch(value)) {
-      return 'Company mobile number should contain only numbers.';
+      return 'valCompanyMobileDigitsOnly'.tr;
     }
     return null;
   }
 
   static String? companyLandline(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Phone number (Landline) is required';
+      return 'valLandlineRequired'.tr;
     }
     if (value.length > 8 || value.length < 8) {
-      return 'Phone number (Landline) should be 8 digits long';
+      return 'valLandline8Digits'.tr;
     }
     const String pattern = r'^\d+$';
     final RegExp regExp = RegExp(pattern);
     if (!regExp.hasMatch(value)) {
-      return 'Phone number (Landline) should contain only numbers.';
+      return 'valLandlineDigitsOnly'.tr;
     }
     return null;
   }
 
   static String? businessInfoPhone(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Phone is required';
+      return 'valPhoneRequired'.tr;
     }
     if (value.length > 9 || value.length < 9) {
-      return 'Phone number should be 9 digits long';
+      return 'valPhone9Digits'.tr;
     }
     const String pattern = r'^\d+$';
     final RegExp regExp = RegExp(pattern);
     if (!regExp.hasMatch(value)) {
-      return 'Phone number should contain only numbers.';
+      return 'valPhoneDigitsOnly'.tr;
     }
     return null;
   }
 
   static String? gender(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Please select gender';
+      return 'valGenderRequired'.tr;
     }
     return null;
   }
@@ -127,72 +128,72 @@ class Validator {
 
   static String? name(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Name cannot be empty';
+      return 'valNameEmpty'.tr;
     }
     if (value.length > 25) {
-      return 'Name cannot be more than 25 characters';
+      return 'valNameMax25'.tr;
     }
     return null;
   }
 
   static String? productName(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Name cannot be empty';
+      return 'valNameEmpty'.tr;
     }
     return null;
   }
 
   static String? vendorName(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Name is required';
+      return 'valNameRequired'.tr;
     }
     if (value.length > 25) {
-      return 'Name cannot be more than 25 characters';
+      return 'valNameMax25'.tr;
     }
     return null;
   }
 
   static String? bankName(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Bank name is required';
+      return 'valBankNameRequired'.tr;
     }
     return null;
   }
 
   static String? accountName(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Account name is required';
+      return 'valAccountNameRequired'.tr;
     }
     return null;
   }
 
   static String? accountNumber(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Account number is required';
+      return 'valAccountNumberRequired'.tr;
     }
     return null;
   }
 
   static String? region(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Please select region';
+      return 'valRegionRequired'.tr;
     }
     return null;
   }
 
   static String? country(value) {
     if (value == null || value.isEmpty) {
-      return 'Please select country';
+      return 'valCountryRequired'.tr;
     }
     return null;
   }
 
   static String? emiratesIdNumber(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Emirates ID number is required';
+      return 'valEidRequired'.tr;
     }
     if (value.length < 15 || value.length > 15) {
-      return 'Emirates ID number must be of 15 digits long.';
+      return 'valEid15Digits'.tr;
     }
 
     return null;
@@ -200,66 +201,66 @@ class Validator {
 
   static String? companyCategoryType(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Company category type is required';
+      return 'valCompanyCategoryRequired'.tr;
     }
     return null;
   }
 
   static String? emiratesIdNumberDate(String? value) {
     if (value == null || value.isEmpty) {
-      return "EID number's expiry date is required";
+      return 'valEidExpiryRequired'.tr;
     }
     return null;
   }
 
   static String? tradingNumber(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Trading number is required';
+      return 'valTradingNumberRequired'.tr;
     }
 
     if (value.length < 10 || value.length > 15) {
-      return 'Trading License number must be between 10 and 15 characters long.';
+      return 'valTradingNumberLength'.tr;
     }
     return null;
   }
 
   static String? tradeLicenseNumberExpiryDate(String? value) {
     if (value == null || value.isEmpty) {
-      return "Trade License number's expiry date is required";
+      return 'valTradeLicenseExpiryRequired'.tr;
     }
     return null;
   }
 
   static String? fieldRequired(String? value) {
     if (value == null || value.isEmpty) {
-      return 'This field is required';
+      return 'valRequiredField'.tr;
     }
     return null;
   }
 
   static String? companyAddress(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Company address is required';
+      return 'valCompanyAddressRequired'.tr;
     }
     return null;
   }
 
   static String? companyName(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Company name is required';
+      return 'valCompanyNameRequired'.tr;
     }
     if (value.length > 50) {
-      return 'Company name cannot be more than 50 characters';
+      return 'valCompanyNameMax50'.tr;
     }
     return null;
   }
 
   static String? companySlug(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Company slug is required';
+      return 'valCompanySlugRequired'.tr;
     }
     if (value.length > 22) {
-      return 'Company slug cannot be more than 20 characters';
+      return 'valCompanySlugMax20'.tr;
     }
     return null;
   }
@@ -268,14 +269,14 @@ class Validator {
 
   static String? zipCode(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Zip code cannot be empty';
+      return 'valZipEmpty'.tr;
     } else if (value.length < 5) {
-      return 'Zip Code must be 5 digits long.';
+      return 'valZip5Digits'.tr;
     }
     const String pattern = r'^\d+$';
     final RegExp regExp = RegExp(pattern);
     if (!regExp.hasMatch(value)) {
-      return 'Zip Code should contain only numbers.';
+      return 'valZipDigitsOnly'.tr;
     }
     return null;
   }
@@ -284,12 +285,12 @@ class Validator {
     if (value == null || value.isEmpty) {
       return null;
     } else if (value.length < 5) {
-      return 'Zip Code must be 5 digits long.';
+      return 'valZip5Digits'.tr;
     }
     const String pattern = r'^\d+$';
     final RegExp regExp = RegExp(pattern);
     if (!regExp.hasMatch(value)) {
-      return 'Zip Code should contain only numbers.';
+      return 'valZipDigitsOnly'.tr;
     }
     return null;
   }
@@ -298,10 +299,10 @@ class Validator {
 
   static String? signUpPasswordValidation(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Password cannot be empty.';
+      return 'valPasswordEmpty'.tr;
     }
     if (value.length < 9) {
-      return 'Password should be at least 9 characters long.';
+      return 'valPasswordMin9'.tr;
     }
 
     // Regex pattern for the password policy
@@ -309,7 +310,7 @@ class Validator {
     final RegExp regExp = RegExp(pattern);
 
     if (!regExp.hasMatch(value)) {
-      return 'Password must include at least one uppercase letter, one lowercase letter, one digit, and one special character.';
+      return 'valPasswordPolicyFull'.tr;
     }
 
     return null; // Valid password
@@ -317,15 +318,15 @@ class Validator {
 
   static String? vendorPasswordValidation(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Password is required';
+      return AppStrings.passRequired.tr;
     }
     if (value.length < 6) {
-      return 'Password should be at least 9 characters long';
+      return 'valVendorPasswordMin9'.tr;
     }
     const String pattern = r'^(?=.*[a-z])(?=.*[A-Z]).{6,}$';
     final RegExp regExp = RegExp(pattern);
     if (!regExp.hasMatch(value)) {
-      return 'Password must contain at least one uppercase and one lowercase letter.';
+      return 'valVendorPasswordCaseReq'.tr;
     }
     return null;
   }
@@ -333,7 +334,7 @@ class Validator {
   ///  =================  GIFT CARD NAME =================================================================
   static String? nameGiftCard(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Name cannot be empty';
+      return AppStrings.nameCannotBeEmpty.tr;
     }
     if (value.length > 16) {
       return 'Name cannot be more than 16 characters';
@@ -343,7 +344,7 @@ class Validator {
 
   static String? emailGiftCard(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Email Cannot be empty';
+      return AppStrings.emailCannotBeEmpty.tr;
     }
     const String pattern = r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$';
 
@@ -357,7 +358,7 @@ class Validator {
   /// Field cannot be empty
   static String? fieldCannotBeEmpty(value) {
     if (value == null || value.isEmpty) {
-      return 'This Field cannot be empty.';
+      return 'valFieldRequiredAlt'.tr;
     }
     return null;
   }
@@ -365,18 +366,18 @@ class Validator {
   /// Field cannot be empty
   static String? validationPaypalID(String? value) {
     if (value == null || value.isEmpty) {
-      return 'This field cannot be empty.';
+      return 'valRequiredField'.tr;
     }
 
     if (value.length > 120) {
-      return 'PayPal ID must not be greater than 120 characters.';
+      return 'valPaypalIdMax120'.tr;
     }
 
     // PayPal email regex validation
     final RegExp paypalEmailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
 
     if (!paypalEmailRegex.hasMatch(value)) {
-      return 'Enter a valid PayPal email ID.';
+      return 'valPaypalEmailInvalid'.tr;
     }
     return null;
   }
@@ -384,11 +385,11 @@ class Validator {
   /// Field cannot be empty
   static String? validationBankIFSC(String? value) {
     if (value == null || value.isEmpty) {
-      return 'This field cannot be empty.';
+      return 'valRequiredField'.tr;
     }
 
     if (value.length > 120) {
-      return 'Bank code/IFSC must not be greater than 120 characters.';
+      return 'valIFSCMax120'.tr;
     }
 
     return null;
@@ -397,11 +398,11 @@ class Validator {
   /// Field cannot be empty
   static String? validationAccountNumber(String? value) {
     if (value == null || value.isEmpty) {
-      return 'This field cannot be empty.';
+      return 'valRequiredField'.tr;
     }
 
     if (value.length > 120) {
-      return 'Account number must not be greater than 120 characters.';
+      return 'valAccountNumberMax120'.tr;
     }
 
     return null;
@@ -410,10 +411,10 @@ class Validator {
   /// coupons must be greater than or equal to 1
   static String? validateNumberOfCoupons(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Number of coupons must be greater than or equal to 1';
+      return 'valCouponsNumMin1'.tr;
     }
     if ((int.tryParse(value) ?? 0) < 1) {
-      return 'Number of coupons must be greater than or equal to 1'; // Error message for invalid or too small value
+      return 'valCouponsNumMin1'.tr; // Error message for invalid or too small value
     }
     return null;
   }
@@ -421,13 +422,13 @@ class Validator {
   /// coupons must be greater than or equal to 1
   static String? validateDiscountOfCoupons(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Discount must be greater than or equal to 1';
+      return 'valDiscountMin1'.tr;
     }
 
     final double? discount = double.tryParse(value);
 
     if (discount == null || discount < 1) {
-      return 'Discount must be greater than or equal to 1'; // Error message for invalid or too small value
+      return 'valDiscountMin1'.tr; // Error message for invalid or too small value
     }
 
     return null;
@@ -436,11 +437,11 @@ class Validator {
   /// coupons must be greater than or equal to 1
   static String? validatePermalink(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Product permanent link is required.';
+      return 'valPermalinkRequired'.tr;
     }
 
     if (value.trim() == VendorApiEndpoints.vendorProductBaseUrl) {
-      return 'Please generate unique permanent link.';
+      return 'valPermalinkUnique'.tr;
     }
 
     return null;
@@ -459,10 +460,10 @@ class Validator {
 
       // If start date is greater than end date, return an error
       if (start.isAfter(end)) {
-        return 'Start date cannot be after end date.';
+        return 'valStartDateAfterEnd'.tr;
       }
     } catch (e) {
-      return 'Invalid date format.';
+      return 'valInvalidDateFormat'.tr;
     }
 
     return null; // No error
@@ -477,13 +478,13 @@ class Validator {
 
   static String? addressValidator(String? value) {
     if (value == null || value.trim().isEmpty) {
-      return 'Address field is required.';
+      return 'valAddressRequired'.tr;
     }
     if (value.length < 5) {
-      return 'Address must be at least 5 characters long.';
+      return 'valAddressMin5'.tr;
     }
     if (value.length > 100) {
-      return 'Address must not exceed 100 characters.';
+      return 'valAddressMax100'.tr;
     }
 
     return null; // Valid address
@@ -491,23 +492,23 @@ class Validator {
 
   static String? cityValidator(String? value) {
     if (value == null || value.trim().isEmpty) {
-      return 'City field is required.';
+      return 'valCityRequired'.tr;
     }
     if (value.length < 2) {
-      return 'City name must be at least 2 characters long.';
+      return 'valCityMin2'.tr;
     }
     if (value.length > 50) {
-      return 'City name must not exceed 50 characters.';
+      return 'valCityMax50'.tr;
     }
     if (!RegExp(r'^[a-zA-Z\s-]+$').hasMatch(value)) {
-      return 'City name can only contain letters, spaces, and hyphens.';
+      return 'valCityChars'.tr;
     }
     return null; // Valid city name
   }
 
   static String? ibanNumber(String? value) {
     if (value == null || value.trim().isEmpty) {
-      return 'IBAN number is required';
+      return 'valIbanRequired'.tr;
     }
 
     // Remove spaces
@@ -515,12 +516,12 @@ class Validator {
 
     // Basic length check
     if (iban.length < 15 || iban.length > 34) {
-      return 'Invalid IBAN length';
+      return 'valIbanLength'.tr;
     }
 
     // Must start with 2 letters (country code)
     if (!RegExp(r'^[A-Z]{2}[0-9A-Z]+$').hasMatch(iban)) {
-      return 'Invalid IBAN format';
+      return 'valIbanFormat'.tr;
     }
 
     return null; // ✅ valid

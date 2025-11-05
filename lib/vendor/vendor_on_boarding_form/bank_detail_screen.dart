@@ -213,11 +213,11 @@ class _BankDetailScreenState extends State<BankDetailScreen> {
                                       isPrefixFilled: true,
                                       prefixIcon: Icons.upload_outlined,
                                       prefixContainerColor: Colors.grey.shade300,
-                                      borderSideColor: const BorderSide(
+                                      borderSide: const BorderSide(
                                         color: Colors.grey,
                                         width: 0.5,
                                       ),
-                                      prefixIconColor: Colors.black,
+                                      prefixIconColor: Theme.of(context).colorScheme.onPrimary,
                                       nextFocusNode: _bankLetterFocusNode,
                                       validator: Validator.fieldRequired,
                                       onIconPressed: () async {

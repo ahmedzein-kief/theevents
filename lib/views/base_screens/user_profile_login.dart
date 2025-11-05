@@ -53,12 +53,14 @@ class _UserProfileLoginScreenState extends State<UserProfileLoginScreen> {
   // Computed properties instead of stored state
   bool get _isVendor => _userProvider?.user?.isVendor == 1;
 
-  bool get _isPaid => _userProvider?.user?.step == 6;
-
   bool get _isVendorApprovedVerified {
     final user = _userProvider?.user;
     return user?.isVerified == true && user?.isApproved == true;
   }
+
+  bool get _isPaid => _userProvider?.user?.isPaid == true;
+
+  bool get _isExpired => _userProvider?.user?.isExpired == true;
 
   String get _avatarImage => _userProvider?.user?.avatar ?? '';
 
@@ -70,8 +72,9 @@ class _UserProfileLoginScreenState extends State<UserProfileLoginScreen> {
 
   /// Initialize the widget with cached providers
   Future<void> _initialize() async {
-    _userProvider = Provider.of<UserProvider>(context, listen: false);
+    // _userProvider = Provider.of<UserProvider>(context, listen: false)..checkSubscription();
     _authProvider = Provider.of<AuthProvider>(context, listen: false);
+
     await _onRefresh();
   }
 
@@ -80,9 +83,7 @@ class _UserProfileLoginScreenState extends State<UserProfileLoginScreen> {
     if (!mounted) return;
 
     try {
-      await Future.wait([
-        _fetchUserData(),
-      ]);
+      await _fetchUserData();
     } catch (e) {
       _showErrorSnackBar('Failed to refresh profile data');
     } finally {
@@ -565,6 +566,9 @@ class _UserProfileLoginScreenState extends State<UserProfileLoginScreen> {
     if (!_isVendor) {
       // Not a vendor yet - show confirmation dialog
       _showBecomeVendorDialog();
+    } else if (_isExpired && _isPaid) {
+      // Vendor but under review
+      AppUtils.showToast(AppStrings.vendorSubscriptionExpired.tr, long: true);
     } else if (_isPaid && !_isVendorApprovedVerified) {
       // Vendor but under review
       AppUtils.showToast(AppStrings.vendorAccountUnderReview.tr, long: true);

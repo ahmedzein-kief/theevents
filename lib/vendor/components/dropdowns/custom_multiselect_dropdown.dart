@@ -35,17 +35,26 @@ class CustomMultiselectDropdown extends StatelessWidget {
           suffixIcon: const Icon(Icons.keyboard_arrow_down_outlined),
         ),
         dropdownItemDecoration: const DropdownItemDecoration(
-          // selectedBackgroundColor: AppColors.lightCoral,
+          selectedBackgroundColor: AppColors.peachyPink,
           selectedIcon: Icon(
             CupertinoIcons.checkmark_alt,
             // color: Colors.white,
           ),
-          // selectedTextColor: Colors.white,
+          selectedTextColor: Colors.black,
         ),
         chipDecoration: ChipDecoration(
-          // backgroundColor: AppColors.lightCoral,
+          backgroundColor: AppColors.peachyPink,
           borderRadius: BorderRadius.circular(3),
-          // labelStyle: const TextStyle(color: Colors.white, fontSize: 15),
+          labelStyle: const TextStyle(
+            color: Colors.black, // This controls the text color of selected items
+            fontSize: 15,
+            fontWeight: FontWeight.w500, // Optional
+          ),
+          deleteIcon: const Icon(
+            Icons.close,
+            color: Colors.black,
+            size: 14,
+          ),
         ),
         searchDecoration: SearchFieldDecoration(
           border: InputBordersHub.getOutlinedInputBorder(

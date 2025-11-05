@@ -32,7 +32,7 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace = "com.logicalyinfotech.events"
-    compileSdk 35
+    compileSdk 36
     ndkVersion = '28.0.12433566 rc1'
 
     compileOptions {

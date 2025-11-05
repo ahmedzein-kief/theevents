@@ -101,7 +101,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView> with MediaQue
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: const VendorCommonAppBar(title: 'Orders'),
+        appBar: VendorCommonAppBar(title: AppStrings.orders.tr),
         body: AppUtils.modelProgressHud(
           context: context,
           processing: _isProcessing,
@@ -146,7 +146,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView> with MediaQue
           children: [
             /// Mention the order number
             Text(
-              "Edit Order${orderData?.code.toString() ?? '--'}",
+              "${VendorAppStrings.editOrder.tr} ${orderData?.code.toString() ?? '--'}",
               textAlign: TextAlign.start,
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
@@ -196,9 +196,9 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView> with MediaQue
                   child: RichText(
                     text: TextSpan(
                       children: [
-                        const TextSpan(
-                          text: 'Order Information ',
-                          style: TextStyle(color: Colors.black),
+                        TextSpan(
+                          text: '${VendorAppStrings.orderInformation.tr} ',
+                          style: const TextStyle(color: Colors.black),
                         ),
                         TextSpan(
                           text: orderData?.code.toString() ?? '--',
@@ -406,13 +406,13 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView> with MediaQue
             children: [
               TableRow(
                 children: [
-                  _buildCell(text: 'Sub Amount', isEndAligned: true),
+                  _buildCell(text: VendorAppStrings.subAmount.tr, isEndAligned: true),
                   _buildCell(text: orderData?.subTotalFormat?.toString()),
                 ],
               ),
               TableRow(
                 children: [
-                  _buildCell(text: 'Discount', isEndAligned: true),
+                  _buildCell(text: VendorAppStrings.discount.tr, isEndAligned: true),
                   _buildCell(text: orderData?.discountAmountFormat?.toString()),
                 ],
               ),
@@ -442,13 +442,13 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView> with MediaQue
               ),
               TableRow(
                 children: [
-                  _buildCell(text: 'Tax', isEndAligned: true),
+                  _buildCell(text: VendorAppStrings.tax.tr, isEndAligned: true),
                   _buildCell(text: orderData?.taxAmountFormat),
                 ],
               ),
               TableRow(
                 children: [
-                  _buildCell(text: 'Total Amount', isEndAligned: true),
+                  _buildCell(text: VendorAppStrings.totalAmount.tr, isEndAligned: true),
                   _buildCell(text: orderData?.amountFormat?.toString()),
                 ],
               ),
@@ -462,7 +462,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView> with MediaQue
                 ),
                 children: [
                   _buildCell(
-                    text: 'Paid Amount',
+                    text: VendorAppStrings.paidAmount.tr,
                     isEndAligned: true,
                     isBold: true,
                   ),
@@ -488,7 +488,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView> with MediaQue
               children: [
                 Consumer<VendorGenerateOrderInvoiceViewModel>(
                   builder: (context, generateInvoiceProvider, _) => CustomIconButtonWithText(
-                    text: 'Download Invoice',
+                    text: VendorAppStrings.downloadInvoice.tr,
                     icon: const Icon(
                       CupertinoIcons.down_arrow,
                       size: 12,
@@ -527,7 +527,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView> with MediaQue
                   create: (context) => VendorUpdateOrderViewModel(),
                   child: Consumer<VendorUpdateOrderViewModel>(
                     builder: (context, vendorUpdateOrderProvider, _) => CustomAppButton(
-                      buttonText: 'Save',
+                      buttonText: VendorAppStrings.saveLower.tr,
                       textStyle: const TextStyle(color: Colors.black),
                       borderColor: AppColors.stoneGray,
                       borderRadius: kSmallButtonRadius,
@@ -641,8 +641,8 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView> with MediaQue
                 kSmallSpace,
 
                 /// header
-                const StatusLabel(
-                  label: 'DELIVERY',
+                StatusLabel(
+                  label: VendorAppStrings.delivery.tr,
                   icon: CupertinoIcons.checkmark_alt,
                   iconColor: AppColors.success, // Pass the color you need
                 ),
@@ -650,7 +650,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView> with MediaQue
 
                 /// shipping id
                 Text(
-                  'SHIPPING',
+                  VendorAppStrings.shippingUp.tr,
                   style: dataColumnTextStyle(),
                 ),
                 kExtraSmallSpace,
@@ -666,7 +666,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView> with MediaQue
 
                 /// status
                 Text(
-                  'STATUS',
+                  VendorAppStrings.statusUp.tr,
                   style: dataColumnTextStyle(),
                 ),
                 kExtraSmallSpace,
@@ -681,7 +681,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView> with MediaQue
 
                 /// Shipping method
                 Text(
-                  'SHIPPING METHOD',
+                  VendorAppStrings.shippingMethodUp.tr,
                   style: dataColumnTextStyle(),
                 ),
                 kExtraSmallSpace,
@@ -691,7 +691,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView> with MediaQue
 
                 /// weight
                 Text(
-                  'WEIGHT (G)',
+                  VendorAppStrings.weightUp.tr,
                   style: dataColumnTextStyle(),
                 ),
                 kExtraSmallSpace,
@@ -701,7 +701,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView> with MediaQue
 
                 /// last update
                 Text(
-                  'LAST UPDATE',
+                  VendorAppStrings.lastUpdate.tr,
                   style: dataColumnTextStyle(),
                 ),
                 kExtraSmallSpace,
@@ -730,7 +730,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView> with MediaQue
               child: Row(
                 children: [
                   CustomIconButtonWithText(
-                    text: 'Update Shipping Status',
+                    text: VendorAppStrings.updateShippingStatusFull.tr,
                     icon: const Icon(
                       Icons.local_shipping_outlined
 
@@ -759,7 +759,7 @@ class _VendorEditOrderViewState extends State<VendorEditOrderView> with MediaQue
                               ),
                             ),
                             child: Text(
-                              VendorAppStrings.updateShippingStatus.tr,
+                              VendorAppStrings.updateShippingStatusFull.tr,
                               style: detailsTitleStyle.copyWith(fontSize: 16),
                             ),
                           ),

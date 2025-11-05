@@ -47,6 +47,7 @@ class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   final Color? backgroundColor;
   final double appBarHeight;
   final String? leftText;
+
   final Widget? customBackIcon;
   final int cartItemCount;
   final int wishlistItemCount;
@@ -121,9 +122,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
                     if (widget.showSearchBar)
                       Expanded(
                         child: Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: screenWidth * 0.02,
-                          ),
+                          padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.02),
                           child: CustomSearchBar(
                             controller: widget.searchController,
                             hintText: widget.searchHintText,

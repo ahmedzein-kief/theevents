@@ -93,6 +93,42 @@ class UserProvider with ChangeNotifier {
     }
   }
 
+  // CheckSubscriptionModel? _checkSubscriptionModel;
+  //
+  // CheckSubscriptionModel? get checkSubscriptionModel => _checkSubscriptionModel;
+
+  // Future<void> checkSubscription() async {
+  //   _isLoading = true;
+  //   notifyListeners();
+  //
+  //   const url = VendorApiEndpoints.checkSubscription;
+  //
+  //   try {
+  //     final response = await _apiResponseHandler.getDioRequest(
+  //       url,
+  //       extra: {ApiConstants.requireAuthKey: true},
+  //     );
+  //
+  //     if (response.statusCode == 200) {
+  //       _isLoading = false;
+  //       final data = response.data;
+  //       notifyListeners();
+  //
+  //       _checkSubscriptionModel = CheckSubscriptionModel.fromJson(data);
+  //     } else {
+  //       _isLoading = false;
+  //       _checkSubscriptionModel = null;
+  //
+  //       notifyListeners();
+  //     }
+  //   } catch (error) {
+  //     _isLoading = false;
+  //     _checkSubscriptionModel = null;
+  //
+  //     notifyListeners();
+  //   }
+  // }
+
   Future<void> downloadAgreement(BuildContext context, int vendorId) async {
     _isLoading = true;
     notifyListeners();
@@ -190,3 +226,21 @@ class UserProvider with ChangeNotifier {
 //   }
 // }
 }
+
+// class CheckSubscriptionModel {
+//   final bool isPaid;
+//   final bool isValid;
+//   final String message;
+//
+//   CheckSubscriptionModel({required this.isValid, required this.message, required this.isPaid});
+//
+//   factory CheckSubscriptionModel.fromJson(Map<String, dynamic> json) {
+//     return CheckSubscriptionModel(
+//       isPaid: json['data']['is_paid'] as bool,
+//       isValid: json['data']['is_valid'] as bool,
+//       message: json['message'] as String,
+//     );
+//   }
+//
+//   bool get isPaidAndValid => isPaid && isValid;
+// }

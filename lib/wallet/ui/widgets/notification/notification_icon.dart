@@ -14,9 +14,7 @@ class NotificationIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(8),
-      child: Text(
-        notification.icon ?? '💳',
-      ),
+      child: Text(notification.icon ?? '💳'),
       // child: Image.asset(
       //   NotificationStyleHelper.getIconAsset(notification.type),
       //   height: 12,

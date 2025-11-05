@@ -75,7 +75,7 @@ class _GiftCardInnerScreenState extends State<GiftCardScreen> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   CustomSearchBar(
-                    hintText: 'Search ${data.name}',
+                    hintText: data.name,
                   ),
                   Expanded(
                     child: SingleChildScrollView(

@@ -7,6 +7,7 @@ import 'package:event_app/core/helper/validators/validator.dart';
 import 'package:event_app/core/services/shared_preferences_helper.dart';
 import 'package:event_app/models/vendor_models/post_models/company_info_post_data.dart';
 import 'package:event_app/models/vendor_models/response_models/company_info_response.dart';
+import 'package:event_app/models/wishlist_models/states_cities_models.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
@@ -67,6 +68,10 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
 
   CountryModels? countryModel;
   String countryCode = '';
+  int? selectedCountryId;
+  StateModels? stateModel;
+  StateRecord? selectedState;
+  bool _stateLoader = false;
   List<Map<String, dynamic>>? vendorTypes;
 
   Future<void> fetchCountryData() async {
@@ -92,17 +97,22 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
       /**
        * Parsing company information data
        */
+
+      if (vendorTypes != null && vendorTypes!.isNotEmpty) {
+        final categoryType = vendorTypes!.firstWhere(
+          (element) => element['name'] == response.data['company_type'],
+          orElse: () => vendorTypes!.first,
+        );
+        _companyCategoryController.text = categoryType['name'];
+        ciModel.companyType = categoryType['id'];
+      }
       ciModel.companyName = _companyNameController.text = response.data['company_name'] ?? '';
-      ciModel.companyType = _companyCategoryController.text = response.data['company_type'] ?? '';
       ciModel.companyEmail = _companyEmailController.text = response.data['company_email'] ?? '';
       ciModel.companyPhoneNumber = _companyNumberController.text = response.data['company_phone_number'] ?? '';
       ciModel.tradingLicenseNumber = _tlnController.text = response.data['trading_license_number'] ?? '';
       ciModel.companyAddress = _addressController.text = response.data['company_address'] ?? '';
       ciModel.addressType = selectedHomeShopOption = response.data['address_type'] ?? 'home';
       ciModel.mobileNumber = _mobileNumberController.text = response.data['mobile_number'] ?? '';
-      ciModel.companyRegion = _regionController.text = response.data['company_region'] ?? '';
-      ciModel.companyCountry =
-          _countryController.text = findCountryNameUsingCode(response.data['company_country'] ?? '');
       ciModel.tradingLicenseExpiryDate =
           _tradeLicenseNumberExpiryController.text = response.data['trading_license_expiry'] ?? '';
       ciModel.companyLogoFileName = _companyLogoController.text = response.data['company_logo_name'] ?? '';
@@ -113,30 +123,75 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
       ciModel.nocPoaFileServerPath = response.data['noc_file_path'] ?? '';
       ciModel.vatFileName = _vatCertificateController.text = response.data['vat_file_name'] ?? '';
       ciModel.vatFileServerPath = response.data['vat_file_path'] ?? '';
+
+      // Setup existing country and region data
+      final countryData = response.data['company_country'] ?? '';
+      ciModel.companyRegion = response.data['company_region'] ?? '';
+
+      await _setupExistingData(countryData, ciModel.companyRegion);
     }
   }
 
-  String findCountryNameUsingCode(String code) {
-    if (code.isEmpty) return '';
-
-    final countries = countryModel?.data?.list ?? [];
-
-    if (code.length > 3) {
-      final matchedCountry = countries.firstWhere(
-        (c) => c.name == code,
-        orElse: () => CountryList(code: '', name: ''),
+  Future<void> _setupExistingData(String countryData, String? regionData) async {
+    if (countryData.isNotEmpty) {
+      // Find country by name or code
+      final CountryList? countryRecord = countryModel?.data?.list?.firstWhere(
+        (element) => element.name == countryData || element.code == countryData,
+        orElse: () => countryModel!.data!.list!.first,
       );
 
-      countryCode = matchedCountry.code ?? '';
-      return code; // because input was already the country name
-    } else {
-      final matchedCountry = countries.firstWhere(
-        (c) => c.code == code,
-        orElse: () => CountryList(code: '', name: ''),
-      );
+      if (countryRecord != null) {
+        selectedCountryId = countryRecord.id;
+        countryCode = countryRecord.code ?? '';
+        _countryController.text = countryRecord.name ?? '';
+        ciModel.companyCountry = countryCode;
 
-      countryCode = code;
-      return matchedCountry.name ?? code;
+        // Fetch states for this country
+        if (selectedCountryId != null) {
+          try {
+            stateModel = await fetchStates(selectedCountryId!);
+
+            // Find and set the existing region/state
+            if (regionData != null && regionData.isNotEmpty && stateModel?.data?.isNotEmpty == true) {
+              final StateRecord foundState = stateModel!.data!.firstWhere(
+                (element) => element.name == regionData,
+                orElse: () => stateModel!.data!.first,
+              );
+
+              selectedState = foundState;
+              _regionController.text = foundState.name ?? '';
+            }
+
+            if (mounted) {
+              setState(() {});
+            }
+          } catch (error) {
+            debugPrint(error.toString());
+          }
+        }
+      }
+    }
+  }
+
+  Future<void> fetchStateData(int countryId) async {
+    try {
+      setState(() {
+        _stateLoader = true;
+        _regionController.clear();
+        selectedState = null;
+        stateModel = null;
+      });
+
+      stateModel = await fetchStates(countryId);
+
+      setState(() {
+        _stateLoader = false;
+      });
+    } catch (error) {
+      setState(() {
+        _stateLoader = false;
+      });
+      debugPrint(error.toString());
     }
   }
 
@@ -220,10 +275,10 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                           decoration: BoxDecoration(
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withAlpha((0.2 * 255).toInt()), // Shadow color
-                                spreadRadius: 2, // How much the shadow spreads
-                                blurRadius: 5, // How blurry the shadow is
-                                offset: const Offset(0, 2), // Shadow offset (X, Y)
+                                color: Colors.black.withAlpha((0.2 * 255).toInt()),
+                                spreadRadius: 2,
+                                blurRadius: 5,
+                                offset: const Offset(0, 2),
                               ),
                             ],
                           ),
@@ -231,7 +286,6 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                             key: _formKey,
                             child: Material(
                               shadowColor: Colors.black,
-                              // color: Colors.white,
                               elevation: 15,
                               child: Padding(
                                 padding: const EdgeInsets.only(
@@ -271,11 +325,11 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                                       isPrefixFilled: true,
                                       prefixIcon: Icons.upload_outlined,
                                       prefixContainerColor: Colors.grey.shade300,
-                                      borderSideColor: const BorderSide(
+                                      borderSide: const BorderSide(
                                         color: Colors.grey,
                                         width: 0.5,
                                       ),
-                                      prefixIconColor: Colors.black,
+                                      prefixIconColor: Theme.of(context).colorScheme.onPrimary,
                                       nextFocusNode: _companyCategoryFocusNode,
                                       isEditable: false,
                                       validator: Validator.fieldRequired,
@@ -305,17 +359,17 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                                       nextFocusNode: _companyEmailFocusNode,
                                       isEditable: false,
                                       suffixIcon: Icons.keyboard_arrow_down_outlined,
-                                      suffixIconColor: Colors.black,
+                                      suffixIconColor: Theme.of(context).colorScheme.onPrimary,
                                       validator: Validator.companyCategoryType,
                                       onIconPressed: () async {
-                                        final categoryType = await showCompanyCategoryType(
+                                        final Map? categoryType = await showCompanyCategoryType(
                                           context,
                                           _companyCategoryController.text,
                                           vendorTypes,
                                         );
-                                        if (categoryType != null) {
-                                          _companyCategoryController.text = categoryType;
-                                          ciModel.companyType = categoryType;
+                                        if (categoryType != null && categoryType.isNotEmpty) {
+                                          _companyCategoryController.text = categoryType['companyCategoryTypeName'];
+                                          ciModel.companyType = categoryType['companyCategoryTypeId'];
                                         }
                                       },
                                     ),
@@ -333,6 +387,7 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                                       },
                                     ),
                                     VendorCustomTextFields(
+                                      borderSide: const BorderSide(color: Colors.grey, width: 0.5),
                                       labelText: VendorAppStrings.phoneNumberLandline.tr,
                                       textStar: VendorAppStrings.asterick.tr,
                                       hintText: VendorAppStrings.enterPhoneNumber.tr,
@@ -349,6 +404,7 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                                       },
                                     ),
                                     VendorCustomTextFields(
+                                      borderSide: const BorderSide(color: Colors.grey, width: 0.5),
                                       labelText: VendorAppStrings.mobileNumber.tr,
                                       textStar: VendorAppStrings.asterick.tr,
                                       hintText: VendorAppStrings.enterMobileNumber.tr,
@@ -374,13 +430,12 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                                       isPrefixFilled: true,
                                       prefixText: ' CN -',
                                       prefixContainerColor: Colors.grey.shade300,
-                                      borderSideColor: const BorderSide(
+                                      borderSide: const BorderSide(
                                         color: Colors.grey,
                                         width: 0.5,
                                       ),
-                                      prefixIconColor: Colors.black,
+                                      prefixIconColor: Theme.of(context).colorScheme.onPrimary,
                                       nextFocusNode: _utlFocusNode,
-                                      // validator: Validator.tradingNumber,
                                       onValueChanged: (value) {
                                         ciModel.tradingLicenseNumber = value;
                                       },
@@ -395,11 +450,11 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                                       isPrefixFilled: true,
                                       prefixIcon: Icons.upload_outlined,
                                       prefixContainerColor: Colors.grey.shade300,
-                                      borderSideColor: const BorderSide(
+                                      borderSide: const BorderSide(
                                         color: Colors.grey,
                                         width: 0.5,
                                       ),
-                                      prefixIconColor: Colors.black,
+                                      prefixIconColor: Theme.of(context).colorScheme.onPrimary,
                                       nextFocusNode: _cAddressFocusNode,
                                       validator: Validator.fieldRequired,
                                       onIconPressed: () async {
@@ -445,10 +500,7 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                                       isEditable: false,
                                       validator: Validator.tradeLicenseNumberExpiryDate,
                                       onIconPressed: () async {
-                                        final result = await showDatePickerDialog(
-                                          context,
-                                          VendorAppStrings.enterTradeLicenseExpiryDate.tr,
-                                        );
+                                        final result = await showDatePickerDialog(context);
                                         if (result != null) {
                                           final date = result.toString().split(' ')[0];
                                           _tradeLicenseNumberExpiryController.text = date;
@@ -463,30 +515,38 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                                       controller: _countryController,
                                       keyboardType: TextInputType.none,
                                       focusNode: _countryFocusNode,
-                                      suffixIconColor: Colors.black,
+                                      suffixIconColor: Theme.of(context).colorScheme.onPrimary,
                                       nextFocusNode: _regionFocusNode,
                                       isEditable: false,
                                       suffixIcon: Icons.keyboard_arrow_down_outlined,
                                       validator: Validator.country,
                                       onIconPressed: () {
-                                        if (countryModel != null && countryModel?.data != null) {
-                                          final List<CountryList> filteredList = countryModel?.data?.list
-                                                  ?.where(
-                                                    (value) => value.code?.toLowerCase() == '+971',
-                                                  )
-                                                  .toList() ??
-                                              [];
+                                        if (countryModel?.data?.list?.isNotEmpty ?? false) {
                                           showDialog(
                                             context: context,
                                             builder: (context) => CountryPickerDialog(
-                                              countryList: filteredList,
+                                              countryList: countryModel!.data!.list!,
                                               currentSelection: _countryController.text,
                                               onCountrySelected: (selectedCountry) {
                                                 setState(() {
                                                   countryCode = selectedCountry.code ?? '';
+                                                  selectedCountryId = selectedCountry.id ?? 0;
                                                   _countryController.text = selectedCountry.name ?? '';
-                                                  ciModel.companyCountry = countryCode;
+
+                                                  // Clear region when country changes
+                                                  _regionController.clear();
+                                                  selectedState = null;
+                                                  stateModel = null;
+
+                                                  // Update model
+                                                  ciModel.companyCountry = selectedCountryId.toString();
+                                                  ciModel.companyRegion = null;
                                                 });
+
+                                                // Fetch states for the selected country
+                                                if (selectedCountryId != null) {
+                                                  fetchStateData(selectedCountryId!);
+                                                }
                                               },
                                             ),
                                           );
@@ -500,19 +560,39 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                                       controller: _regionController,
                                       keyboardType: TextInputType.none,
                                       focusNode: _regionFocusNode,
-                                      suffixIconColor: Colors.black,
+                                      suffixIconColor: Theme.of(context).colorScheme.onPrimary,
                                       nextFocusNode: _nocApplicableFocusNode,
-                                      suffixIcon: Icons.keyboard_arrow_down_outlined,
+                                      suffixIcon:
+                                          _stateLoader ? Icons.hourglass_empty : Icons.keyboard_arrow_down_outlined,
                                       isEditable: false,
                                       validator: Validator.region,
                                       onIconPressed: () async {
-                                        final region = await showRegionDropdown(
-                                          context,
-                                          _regionController.text,
-                                        );
-                                        if (region != null) {
-                                          _regionController.text = region;
-                                          ciModel.companyRegion = region;
+                                        if (_stateLoader) return;
+
+                                        if (stateModel?.data?.isNotEmpty ?? false) {
+                                          showDialog(
+                                            context: context,
+                                            builder: (context) => StatePickerDialog(
+                                              stateList: stateModel!.data!,
+                                              currentSelection: selectedState,
+                                              onStateSelected: (state) {
+                                                setState(() {
+                                                  selectedState = state;
+                                                  _regionController.text = selectedState?.name ?? '';
+
+                                                  // Update model
+                                                  ciModel.companyRegion = state.id?.toString() ?? '0';
+                                                });
+                                              },
+                                            ),
+                                          );
+                                        } else if (selectedCountryId == null) {
+                                          // Show message to select country first
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(
+                                              content: Text(VendorAppStrings.selectCountry.tr),
+                                            ),
+                                          );
                                         }
                                       },
                                     ),
@@ -526,15 +606,13 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                                       isPrefixFilled: true,
                                       prefixIcon: Icons.upload_outlined,
                                       prefixContainerColor: Colors.grey.shade300,
-                                      borderSideColor: const BorderSide(
+                                      borderSide: const BorderSide(
                                         color: Colors.grey,
                                         width: 0.5,
                                       ),
-                                      // Only red on the left side
-                                      prefixIconColor: Colors.black,
+                                      prefixIconColor: Theme.of(context).colorScheme.onPrimary,
                                       isEditable: false,
                                       nextFocusNode: _vatCertificateFocusNode,
-                                      // validator: Validator.fieldRequired,
                                       onIconPressed: () async {
                                         final FilePickerResult? result = await FilePicker.platform.pickFiles(
                                           type: FileType.custom,
@@ -562,13 +640,12 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                                       isPrefixFilled: true,
                                       prefixIcon: Icons.upload_outlined,
                                       prefixContainerColor: Colors.grey.shade300,
-                                      borderSideColor: const BorderSide(
+                                      borderSide: const BorderSide(
                                         color: Colors.grey,
                                         width: 0.5,
                                       ),
-                                      prefixIconColor: Colors.black,
+                                      prefixIconColor: Theme.of(context).colorScheme.onPrimary,
                                       isEditable: false,
-                                      // validator: Validator.fieldRequired,
                                       onIconPressed: () async {
                                         final FilePickerResult? result = await FilePicker.platform.pickFiles(
                                           type: FileType.custom,
@@ -606,9 +683,7 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                                               Text(VendorAppStrings.home.tr),
                                             ],
                                           ),
-                                          const SizedBox(
-                                            width: 20,
-                                          ), // Space between buttons
+                                          const SizedBox(width: 20),
                                           Row(
                                             children: [
                                               const Radio<String>(
@@ -640,19 +715,17 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                 title: VendorAppStrings.saveAndContinue.tr,
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
-                    final result = await updateCompanyInfoData(
-                      ciModel,
-                    );
+                    final result = await updateCompanyInfoData(ciModel);
                     if (result != null) {
                       widget.onNext();
                     }
-                  } else {}
+                  }
                 },
               ),
             ),
             if (mainProvider.isLoading)
               Container(
-                color: Colors.black.withAlpha((0.5 * 255).toInt()), // Semi-transparent background
+                color: Colors.black.withAlpha((0.5 * 255).toInt()),
                 child: const Center(
                   child: CircularProgressIndicator(
                     valueColor: AlwaysStoppedAnimation<Color>(AppColors.peachyPink),
@@ -664,4 +737,14 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
       ),
     );
   }
+}
+
+// Helper function for date picker (if not already defined elsewhere)
+Future<DateTime?> showDatePickerDialog(BuildContext context) async {
+  return showDatePicker(
+    context: context,
+    initialDate: DateTime.now(),
+    firstDate: DateTime.now(),
+    lastDate: DateTime(2100),
+  );
 }

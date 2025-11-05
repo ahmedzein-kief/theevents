@@ -68,7 +68,7 @@ Future<String?> showRegionDropdown(
               title: Text(
                 region,
                 style: TextStyle(
-                  color: region == currentSelection ? AppColors.peachyPink : Colors.black,
+                  color: region == currentSelection ? AppColors.peachyPink : Theme.of(context).colorScheme.onPrimary,
                 ),
               ),
               onTap: () {
@@ -82,14 +82,14 @@ Future<String?> showRegionDropdown(
   );
 }
 
-Future<String?> showCompanyCategoryType(
+Future<Map?> showCompanyCategoryType(
   BuildContext context,
   String currentSelection,
   List<Map<String, dynamic>>? vendorTypes,
 ) async {
   final regionOptions = vendorTypes ?? [];
 
-  return showDialog<String>(
+  return showDialog<Map>(
     context: context,
     builder: (context) => AlertDialog(
       title: Text(VendorAppStrings.selectCcType.tr),
@@ -99,16 +99,22 @@ Future<String?> showCompanyCategoryType(
           shrinkWrap: true,
           itemCount: regionOptions.length,
           itemBuilder: (context, index) {
-            final region = regionOptions[index]['name'] as String;
+            final companyCategoryTypeName = regionOptions[index]['name'] as String;
+            final companyCategoryTypeId = regionOptions[index]['id'];
             return ListTile(
               title: Text(
-                region,
+                companyCategoryTypeName,
                 style: TextStyle(
-                  color: region == currentSelection ? AppColors.peachyPink : Colors.black,
+                  color: companyCategoryTypeName == currentSelection
+                      ? AppColors.peachyPink
+                      : Theme.of(context).colorScheme.onPrimary,
                 ),
               ),
               onTap: () {
-                Navigator.pop(context, region);
+                Navigator.pop(context, {
+                  'companyCategoryTypeName': companyCategoryTypeName,
+                  'companyCategoryTypeId': companyCategoryTypeId
+                });
               },
             );
           },
@@ -118,10 +124,7 @@ Future<String?> showCompanyCategoryType(
   );
 }
 
-Future<String?> showDatePickerDialog(
-  BuildContext context,
-  String format,
-) async {
+Future<String?> showDatePickerDialog(BuildContext context) async {
   final now = DateTime.now();
   final firstDate = now.add(const Duration(days: 1));
   final initialDate = now.isBefore(firstDate) ? firstDate : now;
@@ -140,7 +143,7 @@ Future<String?> showDatePickerDialog(
   );
 
   if (results != null && results.isNotEmpty && results[0] != null) {
-    return DateFormat(format).format(results[0]!);
+    return DateFormat('yyyy-MM-dd').format(results[0]!); // Fixed format
   }
 
   return null;

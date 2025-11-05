@@ -306,6 +306,11 @@ ThemeData lightTheme = ThemeData(
     secondary: Colors.black,
     onPrimary: Colors.black,
   ),
+  textButtonTheme: const TextButtonThemeData(
+    style: ButtonStyle(
+      foregroundColor: WidgetStatePropertyAll(Colors.black),
+    ),
+  ),
   textSelectionTheme: const TextSelectionThemeData(
     cursorColor: AppColors.peachyPink,
     selectionColor: AppColors.peachyPink,
@@ -324,6 +329,11 @@ ThemeData lightTheme = ThemeData(
 
 ThemeData darkTheme = ThemeData(
   brightness: Brightness.dark,
+  textButtonTheme: const TextButtonThemeData(
+    style: ButtonStyle(
+      foregroundColor: WidgetStatePropertyAll(Colors.white),
+    ),
+  ),
   colorScheme: ColorScheme.dark(
     onSecondary: Colors.white,
     onErrorContainer: Colors.grey,

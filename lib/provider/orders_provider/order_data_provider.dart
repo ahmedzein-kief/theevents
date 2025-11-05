@@ -32,8 +32,6 @@ class OrderDataProvider with ChangeNotifier {
 
   OrderDetailModel? get orderDetailModel => _orderDetailModel;
 
-  // Updated getOrders method in OrderDataProvider
-  // Keep the original getOrders method in OrderDataProvider - simple and clean
   Future<void> getOrders(bool isPending) async {
     _isLoading = true;
     var url = '';
@@ -54,26 +52,18 @@ class OrderDataProvider with ChangeNotifier {
         } else {
           _completedOrderHistoryModel = OrderHistoryModel.fromJson(jsonData);
         }
-
-        _isLoading = false;
-        notifyListeners();
       } else {
-        _isLoading = false;
-        notifyListeners();
         AppUtils.showToast(AppStrings.noOrdersFound.tr);
       }
     } catch (e) {
-      _orderHistoryModel = null;
-      _completedOrderHistoryModel = null;
-      _isLoading = false;
-      notifyListeners();
+      // Don't clear existing data, just log/handle the error
+      debugPrint('Error fetching orders: $e');
     } finally {
       _isLoading = false;
       notifyListeners();
     }
   }
 
-// Keep the original clearOrders method
   void clearOrders() {
     _orderHistoryModel = null;
     _completedOrderHistoryModel = null;
@@ -82,31 +72,29 @@ class OrderDataProvider with ChangeNotifier {
 
   Future<void> getOrderDetails(String orderID) async {
     _isLoading = true;
-    final token = await SecurePreferencesUtil.getToken();
-    final url = '${ApiEndpoints.customerOrdersView}/$orderID';
-
-    final headers = {'Authorization': token ?? ''};
-
     notifyListeners();
+
     try {
+      final token = await SecurePreferencesUtil.getToken();
+      final url = '${ApiEndpoints.customerOrdersView}/$orderID';
+      final headers = {'Authorization': token ?? ''};
+
       final response = await _apiResponseHandler.getRequest(
         url,
         headers: headers,
       );
+
       if (response.statusCode == 200) {
         final jsonData = response.data;
         _orderDetailModel = OrderDetailModel.fromJson(jsonData);
-        _isLoading = false;
-        notifyListeners();
       } else {
-        _isLoading = false;
-        notifyListeners();
         AppUtils.showToast(AppStrings.noOrderDetailsFound.tr);
       }
     } catch (e) {
-      _orderDetailModel = null;
-      _isLoading = false;
-      notifyListeners();
+      // Don't clear _orderDetailModel here - keep existing data
+      debugPrint('Error fetching order details: $e');
+      AppUtils.showToast('${AppStrings.error.tr}: $e');
+      rethrow; // Allow UI to catch and handle
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -115,29 +103,26 @@ class OrderDataProvider with ChangeNotifier {
 
   Future<void> cancelOrder(BuildContext context, String orderID) async {
     _isLoading = true;
-    final token = await SecurePreferencesUtil.getToken();
-    final url = '${ApiEndpoints.customerOrdersCancel}/$orderID';
-
-    final headers = {'Authorization': token ?? ''};
-
     notifyListeners();
+
     try {
+      final token = await SecurePreferencesUtil.getToken();
+      final url = '${ApiEndpoints.customerOrdersCancel}/$orderID';
+      final headers = {'Authorization': token ?? ''};
+
       final response = await _apiResponseHandler.getRequest(
         url,
         headers: headers,
       );
+
       if (response.statusCode == 200) {
-        _isLoading = false;
-        notifyListeners();
-        getOrderDetails(orderID);
+        await getOrderDetails(orderID);
       } else {
-        _isLoading = false;
-        notifyListeners();
+        AppUtils.showToast(AppStrings.error.tr);
       }
     } catch (e) {
-      _orderDetailModel = null;
-      _isLoading = false;
-      notifyListeners();
+      debugPrint('Error canceling order: $e');
+      AppUtils.showToast('${AppStrings.error.tr}: $e');
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -151,43 +136,40 @@ class OrderDataProvider with ChangeNotifier {
     String orderId,
   ) async {
     _isLoading = true;
-    final token = await SecurePreferencesUtil.getToken();
-    final url = '${ApiEndpoints.customerOrders}/$orderId/${ApiEndpoints.uploadProof}';
-
-    final headers = {'Authorization': token ?? ''};
-
     notifyListeners();
 
-    final formData = FormData();
-
-    formData.files.add(
-      MapEntry(
-        'file',
-        await MultipartFile.fromFile(
-          filePath,
-          filename: fileName,
-        ),
-      ),
-    );
-
     try {
+      final token = await SecurePreferencesUtil.getToken();
+      final url = '${ApiEndpoints.customerOrders}/$orderId/${ApiEndpoints.uploadProof}';
+      final headers = {'Authorization': token ?? ''};
+
+      final formData = FormData();
+      formData.files.add(
+        MapEntry(
+          'file',
+          await MultipartFile.fromFile(
+            filePath,
+            filename: fileName,
+          ),
+        ),
+      );
+
       final response = await _apiResponseHandler.postDioMultipartRequest(
         url,
         headers: headers,
         formData: formData,
       );
+
       if (response.statusCode == 200) {
-        _isLoading = false;
-        notifyListeners();
+        await getOrderDetails(orderId);
+        return CommonDataResponse.fromJson(response.data);
       } else {
-        _isLoading = false;
-        notifyListeners();
+        AppUtils.showToast(AppStrings.error.tr);
+        return null;
       }
-      getOrderDetails(orderId);
-      return CommonDataResponse.fromJson(response.data);
     } catch (e) {
-      _isLoading = false;
-      notifyListeners();
+      debugPrint('Error uploading proof: $e');
+      AppUtils.showToast('${AppStrings.error.tr}: $e');
       return null;
     } finally {
       _isLoading = false;
@@ -195,70 +177,65 @@ class OrderDataProvider with ChangeNotifier {
     }
   }
 
-// Replace your existing downloadProof method with this:
   Future<Uint8List?> downloadProof(BuildContext context, String orderId) async {
     _isLoading = true;
-    final token = await SecurePreferencesUtil.getToken();
-    final url = '${ApiEndpoints.customerOrders}/$orderId/${ApiEndpoints.downloadProof}';
-
-    final headers = {'Authorization': token ?? ''};
-
     notifyListeners();
+
     try {
+      final token = await SecurePreferencesUtil.getToken();
+      final url = '${ApiEndpoints.customerOrders}/$orderId/${ApiEndpoints.downloadProof}';
+      final headers = {'Authorization': token ?? ''};
+
       final response = await _apiResponseHandler.getRequest(
         url,
         headers: headers,
         responseType: ResponseType.bytes,
       );
+
       if (response.statusCode == 200) {
-        _isLoading = false;
-        notifyListeners();
         return Uint8List.fromList(response.data);
       } else {
-        _isLoading = false;
-        notifyListeners();
+        AppUtils.showToast(AppStrings.error.tr);
+        return null;
       }
     } catch (e) {
-      _isLoading = false;
-      notifyListeners();
+      debugPrint('Error downloading proof: $e');
+      AppUtils.showToast('${AppStrings.error.tr}: $e');
+      return null;
     } finally {
       _isLoading = false;
       notifyListeners();
     }
-    return null;
   }
 
-// Replace your existing getInvoice method with this:
   Future<Uint8List?> getInvoice(BuildContext context, String orderID) async {
     _isLoading = true;
-    final token = await SecurePreferencesUtil.getToken();
-    final url = '${ApiEndpoints.customerOrdersPrint}/$orderID';
-
-    final headers = {'Authorization': token ?? ''};
-
     notifyListeners();
+
     try {
+      final token = await SecurePreferencesUtil.getToken();
+      final url = '${ApiEndpoints.customerOrdersPrint}/$orderID';
+      final headers = {'Authorization': token ?? ''};
+
       final response = await _apiResponseHandler.getRequest(
         url,
         headers: headers,
         responseType: ResponseType.bytes,
       );
+
       if (response.statusCode == 200) {
-        _isLoading = false;
-        notifyListeners();
         return Uint8List.fromList(response.data);
       } else {
-        _isLoading = false;
-        notifyListeners();
+        AppUtils.showToast(AppStrings.error.tr);
+        return null;
       }
     } catch (e) {
-      _orderDetailModel = null;
-      _isLoading = false;
-      notifyListeners();
+      debugPrint('Error getting invoice: $e');
+      AppUtils.showToast('${AppStrings.error.tr}: $e');
+      return null;
     } finally {
       _isLoading = false;
       notifyListeners();
     }
-    return null;
   }
 }

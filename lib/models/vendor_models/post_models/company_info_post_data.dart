@@ -2,7 +2,7 @@ import 'dart:io';
 
 class CompanyInfoPostData {
   String? companyName;
-  String? companyType;
+  int? companyType;
   String? companyEmail;
   String? companyPhoneNumber;
   String? tradingLicenseNumber;
@@ -46,7 +46,7 @@ class CompanyInfoPostData {
   List<MapEntry<String, String>> toMapEntries() => {
         'meta_type': 'company-information',
         'company_name': companyName,
-        'company_type': companyType?.toLowerCase(),
+        'company_type': companyType,
         'company_email': companyEmail,
         'company_phone_code': '971',
         'company_phone_number': companyPhoneNumber,
@@ -57,10 +57,7 @@ class CompanyInfoPostData {
         'company_region': companyRegion,
         'company_country': companyCountry,
         'trading_license_expiry': tradingLicenseExpiryDate,
-      }
-          .entries
-          .map((entry) => MapEntry(entry.key, entry.value.toString()))
-          .toList();
+      }.entries.map((entry) => MapEntry(entry.key, entry.value.toString())).toList();
 
   @override
   String toString() => '''

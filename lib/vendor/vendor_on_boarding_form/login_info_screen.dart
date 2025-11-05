@@ -182,7 +182,7 @@ class _VendorLoginInfoScreenState extends State<VendorLoginInfoScreen> {
                                       textStar: VendorAppStrings.asterick.tr,
                                       controller: _genderController,
                                       // keyboardType: TextInputType.emailAddress,
-                                      suffixIconColor: Colors.black,
+                                      suffixIconColor: Theme.of(context).colorScheme.onPrimary,
                                       keyboardType: TextInputType.none,
                                       focusNode: _genderFocusNode,
                                       nextFocusNode: _passwordFocusNode,
@@ -288,6 +288,7 @@ class _VendorLoginInfoScreenState extends State<VendorLoginInfoScreen> {
                                     VendorCustomTextFields(
                                       prefixText: '+971',
                                       isPrefixFilled: true,
+                                      borderSide: const BorderSide(color: Colors.grey, width: 0.5),
                                       prefixIcon: Icons.keyboard_arrow_down_outlined,
                                       labelText: VendorAppStrings.companyMobileNumber.tr,
                                       hintText: VendorAppStrings.enterMobileNumber.tr,

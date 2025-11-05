@@ -43,6 +43,8 @@ abstract class WalletRepository {
   Future<Either<Failure, void>> updateNotificationPreferences(NotificationPreferences preferences);
 
   Future<Either<Failure, void>> updateNotificationPreferenceByType(String type, NotificationTypePreference preference);
+
+  Future<Either<Failure, void>> releaseFrozenAmount(String orderId);
 }
 
 class WalletRepositoryImpl implements WalletRepository {
@@ -204,6 +206,16 @@ class WalletRepositoryImpl implements WalletRepository {
   ) async {
     try {
       await _walletDataSource.updateNotificationPreferenceByType(type, preference);
+      return const Right(null);
+    } catch (e) {
+      return Left(ErrorHandler(e).failure);
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> releaseFrozenAmount(String orderId) async {
+    try {
+      await _walletDataSource.releaseFrozenAmount(orderId);
       return const Right(null);
     } catch (e) {
       return Left(ErrorHandler(e).failure);

@@ -39,6 +39,7 @@ class Data {
     required this.formatedPriceWithoutVat,
     required this.thanksHeading,
     required this.formatedPriceWithVat,
+    required this.commission,
   });
 
   factory Data.fromJson(Map<dynamic, dynamic> json) => Data(
@@ -54,6 +55,7 @@ class Data {
         storeEmail: json['store_email'],
         formatedPriceWithoutVat: json['formated_price_without_vat'],
         thanksHeading: json['thanks_heading'],
+        commission: json['commission'] ?? '',
       );
 
   String formatedPrice;
@@ -68,6 +70,7 @@ class Data {
   String storeEmail;
   String formatedPriceWithoutVat;
   String thanksHeading;
+  String commission;
 
   Map<dynamic, dynamic> toJson() => {
         'formated_price': formatedPrice,

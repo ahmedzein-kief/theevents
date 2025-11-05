@@ -63,6 +63,7 @@ class _ConsolidatedPaymentScreenState extends State<ConsolidatedPaymentScreen> {
       token,
       null,
       _defaultShippingMethod,
+      paymentMethod: _paymentMethod['payment_method'],
     );
   }
 
@@ -79,6 +80,16 @@ class _ConsolidatedPaymentScreenState extends State<ConsolidatedPaymentScreen> {
       isApply: isApply,
       shippingMethod: _defaultShippingMethod,
     );
+  }
+
+  Future<void> _handlePaymentMethodChange(Map<String, String> method) async {
+    // Update the payment method first
+    setState(() => _paymentMethod = method);
+
+    // If wallet is selected, refetch checkout data
+    // if (method['payment_method'] == 'wallet') {
+    await _handleRefresh();
+    // }
   }
 
   @override
@@ -120,7 +131,7 @@ class _ConsolidatedPaymentScreenState extends State<ConsolidatedPaymentScreen> {
                   PaymentMethodsSection(
                     provider: provider,
                     isDark: isDark,
-                    onMethodChanged: (method) => setState(() => _paymentMethod = method),
+                    onMethodChanged: _handlePaymentMethodChange,
                   ),
                   const SizedBox(height: 20),
                   CouponSection(

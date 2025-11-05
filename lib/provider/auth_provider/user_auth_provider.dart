@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/services/image_picker.dart';
 import 'package:event_app/core/widgets/bottom_navigation_bar.dart';
 import 'package:event_app/provider/api_response_handler.dart';
@@ -68,7 +69,7 @@ class AuthProvider with ChangeNotifier {
         if (context.mounted) {
           AppUtils.showToast(
             isSuccess: true,
-            userLoginModel.message ?? 'Login successfully.',
+            userLoginModel.message ?? 'loginSuccessfully'.tr,
           );
         }
         return userLoginModel;

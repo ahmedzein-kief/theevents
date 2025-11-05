@@ -386,4 +386,19 @@ class VendorAppStrings {
   static const String digitalLinks = 'digitalLinks';
   static const String saved = 'saved';
   static const String unsaved = 'unsaved';
+  static const String completed = 'Completed';
+  static const String tax = 'Tax';
+  static const String totalAmount = 'Total Amount';
+  static const String lastUpdate = 'LAST UPDATE';
+  static const String delivery = 'DELIVERY';
+  static const String paidAmount = 'paidAmount';
+  static const String saveLower = 'saveLower';
+  static const String shippingUp = 'shippingUp';
+  static const String statusUp = 'statusUp';
+  static const String shippingMethodUp = 'shippingMethodUp';
+  static const String downloadInvoice = 'downloadInvoice';
+  static const String updateShippingStatusFull = 'updateShippingStatusFull';
+  static const String weightUp = 'weightUp';
+  static const String editOrder = 'editOrder';
+  static const String orderInformation = 'orderInformation';
 }

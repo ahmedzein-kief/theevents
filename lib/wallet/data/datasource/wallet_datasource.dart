@@ -187,4 +187,16 @@ class WalletDataSource {
       rethrow;
     }
   }
+
+  Future<void> releaseFrozenAmount(orderId) async {
+    try {
+      await _apiResponseHandler.postRequest(
+        ApiEndpoints.releaseFrozenAmount,
+        body: {'order_id': orderId},
+        extra: {ApiConstants.requireAuthKey: true},
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

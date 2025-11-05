@@ -136,7 +136,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                                     });
                                     if (resultVerified != null) {
                                       if (resultVerified.isVerified == true) {
-                                        AppUtils.showToast(VendorAppStrings.accountVerified.tr);
+                                        AppUtils.showToast(VendorAppStrings.accountVerified.tr, isSuccess: true);
 
                                         // Keep this for backward compatibility if needed
                                         SecurePreferencesUtil.setBool(

@@ -4,12 +4,12 @@ import 'package:event_app/core/constants/vendor_app_strings.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/helper/validators/validator.dart';
 import 'package:event_app/models/vendor_models/post_models/authorized_signatory_info_post_data.dart';
+import 'package:event_app/models/wishlist_models/states_cities_models.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 import '../../provider/payment_address/country_picks_provider.dart';
 import '../../views/country_picker/country_pick_screen.dart';
-import '../common_dropdowns.dart';
 import '../components/vendor_custom_text_fields.dart';
 import '../components/vendor_text_style.dart';
 
@@ -50,31 +50,91 @@ class _AuthorizedSignatoryInformationScreenState extends State<AuthorizedSignato
 
   CountryModels? countryModel;
   String countryCode = '';
+  int? selectedCountryId;
+  StateModels? stateModel;
+  StateRecord? selectedState;
+  bool _stateLoader = false;
 
   Future<void> fetchCountryData() async {
     try {
       countryModel = await fetchCountries(context);
       if (countryModel != null) {
-        _nameController.text = widget.asiModel.ownerDisplayName ?? '';
-        _phNumberController.text = widget.asiModel.ownerPhoneNumber ?? '';
-        _countryController.text = findCountryNameUsingCode(widget.asiModel.ownerCountry ?? '');
-        _regionController.text = widget.asiModel.ownerRegion ?? '';
-        _emiratesIdController.text = widget.asiModel.ownerEIDNumber ?? '';
-        _emiratesExpireDateController.text = widget.asiModel.ownerEIDExpiry ?? '';
-        _eidPdfController.text = widget.asiModel.ownerEIDFileName ?? '';
-        _passportController.text = widget.asiModel.passportFileName ?? '';
-        _poaMoaController.text = widget.asiModel.poamoaFileName ?? '';
+        setState(() {
+          _nameController.text = widget.asiModel.ownerDisplayName ?? '';
+          _phNumberController.text = widget.asiModel.ownerPhoneNumber ?? '';
+          _emiratesIdController.text = widget.asiModel.ownerEIDNumber ?? '';
+          _emiratesExpireDateController.text = widget.asiModel.ownerEIDExpiry ?? '';
+          _eidPdfController.text = widget.asiModel.ownerEIDFileName ?? '';
+          _passportController.text = widget.asiModel.passportFileName ?? '';
+          _poaMoaController.text = widget.asiModel.poamoaFileName ?? '';
+        });
+
+        // Setup existing country and region data
+        await _setupExistingData();
       }
     } catch (error) {
       debugPrint(error.toString());
     }
   }
 
-  String findCountryNameUsingCode(String code) {
-    if (code.isEmpty) return '';
+  Future<void> _setupExistingData() async {
+    if (widget.asiModel.ownerCountry != null && widget.asiModel.ownerCountry!.isNotEmpty) {
+      // Find country by name or code
+      final CountryList? countryRecord = countryModel?.data?.list?.firstWhere(
+        (element) => element.name == widget.asiModel.ownerCountry || element.code == widget.asiModel.ownerCountry,
+        orElse: () => countryModel!.data!.list!.first,
+      );
 
-    countryCode = code;
-    return countryModel?.data?.list?.firstWhere((countryData) => countryData.code == code).name ?? '';
+      if (countryRecord != null) {
+        selectedCountryId = countryRecord.id;
+        countryCode = countryRecord.code ?? '';
+        _countryController.text = countryRecord.name ?? '';
+
+        // Fetch states for this country
+        if (selectedCountryId != null) {
+          try {
+            stateModel = await fetchStates(selectedCountryId!);
+
+            // Find and set the existing region/state
+            if (widget.asiModel.ownerRegion != null && stateModel?.data?.isNotEmpty == true) {
+              final StateRecord foundState = stateModel!.data!.firstWhere(
+                (element) => element.name == widget.asiModel.ownerRegion,
+                orElse: () => stateModel!.data!.first,
+              );
+
+              selectedState = foundState;
+              _regionController.text = foundState.name ?? '';
+            }
+
+            setState(() {});
+          } catch (error) {
+            debugPrint(error.toString());
+          }
+        }
+      }
+    }
+  }
+
+  Future<void> fetchStateData(int countryId) async {
+    try {
+      setState(() {
+        _stateLoader = true;
+        _regionController.clear();
+        selectedState = null;
+        stateModel = null;
+      });
+
+      stateModel = await fetchStates(countryId);
+
+      setState(() {
+        _stateLoader = false;
+      });
+    } catch (error) {
+      setState(() {
+        _stateLoader = false;
+      });
+      debugPrint(error.toString());
+    }
   }
 
   @override
@@ -127,10 +187,10 @@ class _AuthorizedSignatoryInformationScreenState extends State<AuthorizedSignato
             decoration: BoxDecoration(
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withAlpha((0.2 * 255).toInt()), // Shadow color
-                  spreadRadius: 2, // How much the shadow spreads
-                  blurRadius: 5, // How blurry the shadow is
-                  offset: const Offset(0, 2), // Shadow offset (X, Y)
+                  color: Colors.black.withAlpha((0.2 * 255).toInt()),
+                  spreadRadius: 2,
+                  blurRadius: 5,
+                  offset: const Offset(0, 2),
                 ),
               ],
             ),
@@ -191,31 +251,39 @@ class _AuthorizedSignatoryInformationScreenState extends State<AuthorizedSignato
                       controller: _countryController,
                       keyboardType: TextInputType.none,
                       focusNode: _countryFocusNode,
-                      suffixIconColor: Colors.black,
+                      suffixIconColor: Theme.of(context).colorScheme.onPrimary,
                       isEditable: false,
                       nextFocusNode: _regionFocusNode,
                       suffixIcon: Icons.keyboard_arrow_down_outlined,
                       validator: Validator.country,
                       onIconPressed: () {
-                        if (countryModel != null && countryModel?.data != null) {
-                          final List<CountryList> filteredList = countryModel?.data?.list
-                                  ?.where(
-                                    (value) => value.code?.toLowerCase() == '+971',
-                                  )
-                                  .toList() ??
-                              [];
+                        if (countryModel?.data?.list?.isNotEmpty ?? false) {
                           showDialog(
                             context: context,
                             builder: (context) => CountryPickerDialog(
-                              countryList: filteredList,
+                              countryList: countryModel!.data!.list!,
                               currentSelection: _countryController.text,
                               onCountrySelected: (selectedCountry) {
                                 setState(() {
                                   countryCode = selectedCountry.code ?? '';
+                                  selectedCountryId = selectedCountry.id ?? 0;
                                   _countryController.text = selectedCountry.name ?? '';
-                                  widget.asiModel.ownerCountry = selectedCountry.code;
+
+                                  // Clear region when country changes
+                                  _regionController.clear();
+                                  selectedState = null;
+                                  stateModel = null;
+
+                                  // Update model
+                                  widget.asiModel.ownerCountry = selectedCountry.id.toString();
+                                  widget.asiModel.ownerRegion = null;
                                   widget.onASIModelUpdate(widget.asiModel);
                                 });
+
+                                // Fetch states for the selected country
+                                if (selectedCountryId != null) {
+                                  fetchStateData(selectedCountryId!);
+                                }
                               },
                             ),
                           );
@@ -229,20 +297,39 @@ class _AuthorizedSignatoryInformationScreenState extends State<AuthorizedSignato
                       controller: _regionController,
                       keyboardType: TextInputType.none,
                       focusNode: _regionFocusNode,
-                      suffixIconColor: Colors.black,
+                      suffixIconColor: Theme.of(context).colorScheme.onPrimary,
                       isEditable: false,
                       nextFocusNode: _emiratesIdFocusNode,
-                      suffixIcon: Icons.keyboard_arrow_down_outlined,
+                      suffixIcon: _stateLoader ? Icons.hourglass_empty : Icons.keyboard_arrow_down_outlined,
                       validator: Validator.region,
                       onIconPressed: () async {
-                        final region = await showRegionDropdown(
-                          context,
-                          _regionController.text,
-                        );
-                        if (region != null) {
-                          _regionController.text = region;
-                          widget.asiModel.ownerRegion = region;
-                          widget.onASIModelUpdate(widget.asiModel);
+                        if (_stateLoader) return;
+
+                        if (stateModel?.data?.isNotEmpty ?? false) {
+                          showDialog(
+                            context: context,
+                            builder: (context) => StatePickerDialog(
+                              stateList: stateModel!.data!,
+                              currentSelection: selectedState,
+                              onStateSelected: (state) {
+                                setState(() {
+                                  selectedState = state;
+                                  _regionController.text = selectedState?.name ?? '';
+
+                                  // Update model
+                                  widget.asiModel.ownerRegion = state.id?.toString() ?? '0';
+                                  widget.onASIModelUpdate(widget.asiModel);
+                                });
+                              },
+                            ),
+                          );
+                        } else if (selectedCountryId == null) {
+                          // Show message to select country first
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(VendorAppStrings.selectCountry.tr),
+                            ),
+                          );
                         }
                       },
                     ),
@@ -273,10 +360,7 @@ class _AuthorizedSignatoryInformationScreenState extends State<AuthorizedSignato
                       suffixIconColor: Colors.grey,
                       validator: Validator.emiratesIdNumberDate,
                       onIconPressed: () async {
-                        final result = await showDatePickerDialog(
-                          context,
-                          VendorAppStrings.ddMmYyyy.tr,
-                        );
+                        final result = await showDatePickerDialog(context);
                         if (result != null) {
                           final date = result.toString().split(' ')[0];
                           _emiratesExpireDateController.text = date;
@@ -295,10 +379,10 @@ class _AuthorizedSignatoryInformationScreenState extends State<AuthorizedSignato
                       nextFocusNode: _passportFocusNode,
                       isPrefixFilled: true,
                       isEditable: false,
-                      prefixIconColor: Colors.black,
+                      prefixIconColor: Theme.of(context).colorScheme.onPrimary,
                       prefixIcon: Icons.upload_outlined,
                       prefixContainerColor: Colors.grey.shade300,
-                      borderSideColor: const BorderSide(color: Colors.grey, width: 0.5),
+                      borderSide: const BorderSide(color: Colors.grey, width: 0.5),
                       validator: Validator.fieldRequired,
                       onIconPressed: () async {
                         final FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -331,8 +415,8 @@ class _AuthorizedSignatoryInformationScreenState extends State<AuthorizedSignato
                       nextFocusNode: _poaMoaFocusNode,
                       prefixIcon: Icons.upload_outlined,
                       prefixContainerColor: Colors.grey.shade300,
-                      prefixIconColor: Colors.black,
-                      borderSideColor: const BorderSide(color: Colors.grey, width: 0.5),
+                      prefixIconColor: Theme.of(context).colorScheme.onPrimary,
+                      borderSide: const BorderSide(color: Colors.grey, width: 0.5),
                       validator: Validator.fieldRequired,
                       onIconPressed: () async {
                         final FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -364,8 +448,8 @@ class _AuthorizedSignatoryInformationScreenState extends State<AuthorizedSignato
                       isPrefixFilled: true,
                       prefixIcon: Icons.upload_outlined,
                       prefixContainerColor: Colors.grey.shade300,
-                      borderSideColor: const BorderSide(color: Colors.grey, width: 0.5),
-                      prefixIconColor: Colors.black,
+                      borderSide: const BorderSide(color: Colors.grey, width: 0.5),
+                      prefixIconColor: Theme.of(context).colorScheme.onPrimary,
                       validator: Validator.fieldRequired,
                       onIconPressed: () async {
                         final FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -395,4 +479,14 @@ class _AuthorizedSignatoryInformationScreenState extends State<AuthorizedSignato
       ],
     );
   }
+}
+
+// Helper function for date picker (if not already defined elsewhere)
+Future<DateTime?> showDatePickerDialog(BuildContext context) async {
+  return showDatePicker(
+    context: context,
+    initialDate: DateTime.now(),
+    firstDate: DateTime.now(),
+    lastDate: DateTime(2100),
+  );
 }

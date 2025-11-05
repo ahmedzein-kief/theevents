@@ -6,6 +6,7 @@ const baseNavImagesPath = '$baseAssetsPath/nav';
 const baseAvatarPath = '$baseAssetsPath/images/avatars';
 const baseNavIconsPath = '$baseAssetsPath/nav';
 const baseWalletPath = '$baseAssetsPath/wallet';
+const baseFontsPath = '$baseAssetsPath/fonts';
 
 class AppAssets {
   ///   APP TOP BAR ICONS
@@ -36,4 +37,10 @@ class AppAssets {
   static const warning = '$baseWalletPath/warning.png';
   static const error = '$baseWalletPath/error.png';
   static const delete = '$baseWalletPath/delete.png';
+  static const vendorAgreementPdf = '$baseAssetsPath/vendor_agreement.pdf';
+
+  static const notoSansArabicRegular = '$baseFontsPath/notoSansArabic/NotoSansArabic-Regular.ttf';
+  static const notoSansArabicMedium = '$baseFontsPath/notoSansArabic/NotoSansArabic-Medium.ttf';
+  static const amiriRegular = '$baseFontsPath/amiri/Amiri-Regular.ttf';
+  static const amiriBold = '$baseFontsPath/amiri/Amiri-Bold.ttf';
 }

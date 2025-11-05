@@ -43,7 +43,7 @@ class OrderDetailData {
     required this.canBeCanceled,
     this.invoiceId,
     required this.id,
-    required this.coupon,
+    required this.coupon, // Changed type
     required this.canBeReturned,
     required this.paymentStatus,
     required this.shippingAmount,
@@ -72,7 +72,8 @@ class OrderDetailData {
         canBeCanceled: json['can_be_canceled'],
         invoiceId: json['invoice_id'],
         id: json['id'],
-        coupon: json['coupon'],
+        // FIXED: Handle coupon as a dynamic type (can be object or string)
+        coupon: json['coupon'] ?? {},
         canBeReturned: json['can_be_returned'],
         paymentStatus: json['payment_status'],
         shippingAmount: json['shipping_amount'],
@@ -98,7 +99,7 @@ class OrderDetailData {
   bool canBeCanceled;
   int? invoiceId;
   int id;
-  String coupon;
+  dynamic coupon; // CHANGED: From String to dynamic
   bool canBeReturned;
   String paymentStatus;
   String shippingAmount;
@@ -111,6 +112,9 @@ class OrderDetailData {
 
   bool get hasUploadedProof => proofFile != null;
 
+  // Helper getter to check if coupon exists
+  bool get hasCoupon => coupon != null && (coupon is Map ? coupon.isNotEmpty : coupon.toString().isNotEmpty);
+
   Map<dynamic, dynamic> toJson() => {
         'is_invoice_available': isInvoiceAvailable,
         'tax_amount': taxAmount,
@@ -122,6 +126,7 @@ class OrderDetailData {
         'shipping': shipping.toJson(),
         'price': price,
         'is_canceled': isCanceled,
+        'proof_file': proofFile,
         'can_be_canceled': canBeCanceled,
         'invoice_id': invoiceId,
         'id': id,

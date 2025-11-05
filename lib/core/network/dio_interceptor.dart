@@ -21,10 +21,17 @@ class ApiInterceptor implements Interceptor {
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) async {
+    // Check if this is the vendor/meta endpoint
+    // final isVendorMetaEndpoint = options.path.contains('vendor/meta') || options.uri.path.contains('vendor/meta');
+
+    // Only add language parameter if NOT vendor/meta endpoint
+    // if (!isVendorMetaEndpoint) {
     final langCode = SecurePreferencesUtil.getLanguage();
-    if (langCode != null && langCode != 'en') {
+
+    if (langCode != null && langCode.isNotEmpty && langCode != 'en') {
       options.queryParameters['language'] = langCode;
     }
+    // }
 
     // Add Authorization header if endpoint requires authentication
     if (options.extra.containsKey(ApiConstants.requireAuthKey)) {

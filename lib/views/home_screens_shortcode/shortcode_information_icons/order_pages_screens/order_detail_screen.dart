@@ -27,56 +27,64 @@ class OrderDetailsScreen extends StatefulWidget {
 }
 
 class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
-  bool _hasInitiallyLoaded = false;
-  int _retryCount = 0;
-  static const int maxRetries = 3;
-  static const Duration retryDelay = Duration(seconds: 2);
+  bool _isInitializing = true;
+  String? _errorMessage;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _fetchOrderDetailsWithRetry(widget.orderID);
+      _fetchOrderDetails();
     });
   }
 
-  Future<void> _fetchOrderDetailsWithRetry(String orderID) async {
+  Future<void> _fetchOrderDetails() async {
     if (!mounted) return;
 
-    final provider = Provider.of<OrderDataProvider>(context, listen: false);
+    setState(() {
+      _isInitializing = true;
+      _errorMessage = null;
+    });
 
     try {
-      await provider.getOrderDetails(orderID);
-      _hasInitiallyLoaded = true;
-      _retryCount = 0;
+      final provider = Provider.of<OrderDataProvider>(context, listen: false);
+      await provider.getOrderDetails(widget.orderID);
 
-      if (provider.orderDetailModel?.data == null && _retryCount < maxRetries) {
-        _retryCount++;
-        await Future.delayed(retryDelay);
-        if (mounted) {
-          _fetchOrderDetailsWithRetry(orderID);
-        }
+      if (mounted) {
+        setState(() {
+          _isInitializing = false;
+          if (provider.orderDetailModel?.data == null) {
+            _errorMessage = AppStrings.noOrderDetailsFound.tr;
+          }
+        });
       }
     } catch (e) {
-      _hasInitiallyLoaded = true;
+      if (mounted) {
+        setState(() {
+          _isInitializing = false;
+          _errorMessage = e.toString();
+        });
+      }
     }
   }
 
   Future<void> uploadProof(String filePath, String fileName) async {
     final provider = Provider.of<OrderDataProvider>(context, listen: false);
-    provider.uploadProof(context, filePath, fileName, widget.orderID);
+    await provider.uploadProof(context, filePath, fileName, widget.orderID);
+    // Refresh order details after upload
+    if (mounted) {
+      await _fetchOrderDetails();
+    }
   }
 
-  Future<void> fetchOrderDetails(BuildContext? context, String orderID) async {
+  Future<void> cancelOrder() async {
     if (!mounted) return;
-    final provider = Provider.of<OrderDataProvider>(context!, listen: false);
-    await provider.getOrderDetails(orderID);
-  }
-
-  Future<void> cancelOrder(BuildContext? context, String orderID) async {
-    if (!mounted) return;
-    final provider = Provider.of<OrderDataProvider>(context!, listen: false);
-    await provider.cancelOrder(context, orderID);
+    final provider = Provider.of<OrderDataProvider>(context, listen: false);
+    await provider.cancelOrder(context, widget.orderID);
+    // Refresh order details after cancellation
+    if (mounted) {
+      await _fetchOrderDetails();
+    }
   }
 
   Future<void> downloadProof() async {
@@ -162,7 +170,8 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
             builder: (context, provider, child) {
               final data = provider.orderDetailModel?.data;
 
-              if (provider.isLoading || !_hasInitiallyLoaded) {
+              // Show loading only during initialization or when provider is loading
+              if (_isInitializing || (provider.isLoading && data == null)) {
                 return const Center(
                   child: CircularProgressIndicator(
                     valueColor: AlwaysStoppedAnimation<Color>(AppColors.peachyPink),
@@ -170,7 +179,8 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                 );
               }
 
-              if (data == null && _hasInitiallyLoaded) {
+              // Show error if we have an error message or no data after initialization
+              if (_errorMessage != null || data == null) {
                 return Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -182,27 +192,28 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        _retryCount >= maxRetries ? AppStrings.noOrderDetailsFound.tr : AppStrings.loading.tr,
+                        _errorMessage ?? AppStrings.noOrderDetailsFound.tr,
                         style: TextStyle(
                           fontSize: 16,
                           color: isDark ? Colors.grey.shade300 : Colors.grey,
                         ),
+                        textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 16),
-                      if (_retryCount >= maxRetries)
-                        ElevatedButton(
-                          onPressed: () {
-                            _retryCount = 0;
-                            _hasInitiallyLoaded = false;
-                            _fetchOrderDetailsWithRetry(widget.orderID);
-                          },
-                          child: Text(AppStrings.retry.tr),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          backgroundColor: AppColors.peachyPink,
                         ),
+                        onPressed: _fetchOrderDetails,
+                        child: Text(AppStrings.retry.tr),
+                      ),
                     ],
                   ),
                 );
               }
 
+              // Show the actual order details
               return Stack(
                 children: [
                   SingleChildScrollView(
@@ -216,7 +227,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                           content: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              _infoRow(isDark, '${AppStrings.orderNumber.tr}:', data!.code),
+                              _infoRow(isDark, '${AppStrings.orderNumber.tr}:', data.code),
                               _infoRow(isDark, '${AppStrings.time.tr}:', data.createdAt),
                               _infoRow(
                                 isDark,
@@ -327,7 +338,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                   onPressed: () async {
                                     final File? file = await MediaServices().getSingleFileFromPicker();
                                     if (file != null) {
-                                      uploadProof(file.path, path.basename(file.path));
+                                      await uploadProof(file.path, path.basename(file.path));
                                     }
                                   },
                                   style: ElevatedButton.styleFrom(
@@ -397,7 +408,8 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                   child: Text(AppStrings.invoice.tr),
                                 ),
                               ),
-                            const SizedBox(width: 16),
+                            // Uncomment if you want to enable cancel button
+                            // const SizedBox(width: 16),
                             // if (data.canBeCanceled)
                             //   Expanded(
                             //     child: ElevatedButton(
@@ -405,9 +417,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                             //         foregroundColor: Colors.white,
                             //         backgroundColor: Colors.red,
                             //       ),
-                            //       onPressed: () {
-                            //         _showCancelConfirmationDialog(context, isDark);
-                            //       },
+                            //       onPressed: cancelOrder,
                             //       child: Text(AppStrings.cancel.tr),
                             //     ),
                             //   ),
@@ -415,7 +425,8 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                         ),
                       ),
                     ),
-                  if (provider.isLoading && _hasInitiallyLoaded)
+                  // Show overlay loading indicator when doing operations on existing data
+                  if (provider.isLoading)
                     Container(
                       color: Colors.black.withAlpha((0.5 * 255).toInt()),
                       child: const Center(
@@ -450,9 +461,12 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                 color: isDark ? Colors.grey.shade400 : Colors.grey[700],
               ),
             ),
-            Text(
-              value,
-              style: valueStyle ?? TextStyle(color: isDark ? Colors.white : Colors.black),
+            Flexible(
+              child: Text(
+                value,
+                style: valueStyle ?? TextStyle(color: isDark ? Colors.white : Colors.black),
+                textAlign: TextAlign.end,
+              ),
             ),
           ],
         ),
@@ -532,54 +546,4 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
           ),
         ),
       );
-
-// void _showCancelConfirmationDialog(BuildContext context, bool isDark) {
-//   showDialog(
-//     context: context,
-//     builder: (BuildContext context) => AlertDialog(
-//       backgroundColor: isDark ? Colors.grey.shade800 : Colors.white,
-//       title: Text(
-//         AppStrings.confirmation.tr,
-//         style: TextStyle(
-//           fontWeight: FontWeight.bold,
-//           fontSize: 18,
-//           color: isDark ? Colors.white : Colors.black87,
-//         ),
-//       ),
-//       content: Text(
-//         AppStrings.confirmationMessage.tr,
-//         style: TextStyle(
-//           color: isDark ? Colors.grey.shade300 : Colors.black87,
-//         ),
-//       ),
-//       actions: [
-//         TextButton(
-//           onPressed: () {
-//             Navigator.of(context).pop();
-//           },
-//           style: TextButton.styleFrom(
-//             foregroundColor: AppColors.lightCoral,
-//           ),
-//           child: Text(
-//             AppStrings.no.tr,
-//             style: const TextStyle(fontSize: 16),
-//           ),
-//         ),
-//         TextButton(
-//           onPressed: () {
-//             cancelOrder(context, widget.orderID);
-//             Navigator.of(context).pop();
-//           },
-//           style: TextButton.styleFrom(
-//             foregroundColor: AppColors.lightCoral,
-//           ),
-//           child: Text(
-//             AppStrings.yes.tr,
-//             style: const TextStyle(fontSize: 16),
-//           ),
-//         ),
-//       ],
-//     ),
-//   );
-// }
 }

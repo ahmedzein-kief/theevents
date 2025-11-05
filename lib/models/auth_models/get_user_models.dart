@@ -10,6 +10,8 @@ class UserModel {
     required this.isVendor,
     required this.isApproved,
     required this.isVerified,
+    required this.isPaid,
+    required this.isExpired,
     this.step,
   });
 
@@ -23,6 +25,8 @@ class UserModel {
         isVendor: json['is_vendor'],
         isApproved: json['is_approved'],
         isVerified: json['is_verified'],
+        isPaid: json['is_paid'],
+        isExpired: json['is_expired'],
         step: json['step'],
       );
   final int id;
@@ -35,4 +39,6 @@ class UserModel {
   final bool? isApproved;
   final bool? isVerified;
   final int? step;
+  final bool isPaid;
+  final bool isExpired;
 }

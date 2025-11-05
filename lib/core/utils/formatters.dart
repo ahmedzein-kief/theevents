@@ -10,7 +10,8 @@ class Formatters {
     final period = dateTime.hour >= 12 ? 'PM' : 'AM';
     final month = months[dateTime.month - 1];
 
-    return '${dateTime.day} $month ${dateTime.year},$hour:${dateTime.minute.toString().padLeft(2, '0')} $period';
+    // Universal format: Day Month Year, Time (works for both LTR and RTL)
+    return '$month ${dateTime.day}, ${dateTime.year} ${hour == 0 ? 12 : hour}:${dateTime.minute.toString().padLeft(2, '0')} $period';
   }
 
   static String formatDate(DateTime dateTime) {

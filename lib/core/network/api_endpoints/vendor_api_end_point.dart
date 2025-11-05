@@ -135,4 +135,6 @@ class VendorApiEndpoints {
   static String get addAttributeToProduct => '${baseUrl}products/add-attribute-to-product/';
 
   static String get rejectionHistory => '${baseUrl}rejection-history/';
+
+  static const String checkSubscription = '${baseUrl}check-subscription';
 }

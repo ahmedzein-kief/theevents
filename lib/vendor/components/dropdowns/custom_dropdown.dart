@@ -117,14 +117,14 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> with MediaQueryMi
         ),
         style: widget.textStyle ??
             TextStyle(
-              color: widget.textColor ?? AppColors.softBlueGrey,
+              color: Theme.of(context).colorScheme.onPrimary,
               overflow: TextOverflow.ellipsis,
             ),
         hint: Text(
           widget.hintText ?? 'Select',
           style: widget.textStyle ??
               TextStyle(
-                color: widget.textColor ?? AppColors.softBlueGrey,
+                color: Theme.of(context).colorScheme.onPrimary,
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
                 overflow: TextOverflow.ellipsis,
@@ -146,7 +146,7 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> with MediaQueryMi
           maxHeight: screenHeight / 1.5,
           padding: const EdgeInsets.only(left: 10),
           decoration: BoxDecoration(
-            color: _getAdaptiveFillColor(context),
+            // color: _getAdaptiveFillColor(context),
             borderRadius: BorderRadius.circular(15),
           ),
         ),

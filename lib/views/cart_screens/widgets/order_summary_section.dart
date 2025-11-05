@@ -25,6 +25,7 @@ class OrderSummarySection extends StatelessWidget {
     final prices = provider.checkoutData?.data?.formattedPrices;
     final couponDiscount = provider.checkoutData?.data?.couponDiscountAmount ?? 0;
     final promoDiscount = provider.checkoutData?.data?.promotionDiscountAmount ?? 0;
+    final walletApplicable = provider.checkoutData?.data?.walletApplicable ?? 0;
 
     return SectionCard(
       isDark: isDark,
@@ -72,6 +73,12 @@ class OrderSummarySection extends StatelessWidget {
               value: '-${prices?.promotionDiscountAmount ?? '0.00 AED'}',
               isDark: isDark,
               isDiscount: true,
+            ),
+          if (walletApplicable > 0)
+            SummaryRow(
+              label: AppStrings.walletApplicable.tr,
+              value: walletApplicable.toString(),
+              isDark: isDark,
             ),
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 8.0),

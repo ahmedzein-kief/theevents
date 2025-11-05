@@ -1,10 +1,12 @@
 import 'package:dio/dio.dart';
+import 'package:event_app/core/helper/di/locator.dart';
 import 'package:event_app/core/helper/extensions/app_localizations_extension.dart';
 import 'package:event_app/core/network/api_endpoints/api_end_point.dart';
 import 'package:event_app/core/utils/app_utils.dart';
 import 'package:event_app/models/dashboard/information_icons_models/gift_card_models/checkout_payment_model.dart';
 import 'package:event_app/provider/api_response_handler.dart';
 import 'package:event_app/views/cart_screens/widgets/coupon_state.dart';
+import 'package:event_app/wallet/data/repo/wallet_repository.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/constants/app_strings.dart';
@@ -153,8 +155,9 @@ class CheckoutProvider with ChangeNotifier {
     String checkoutToken,
     String tokenLogin,
     SessionCheckoutData? sessionCheckoutData,
-    Map<String, String> shippingMethod,
-  ) async {
+    Map<String, String> shippingMethod, {
+    String? paymentMethod,
+  }) async {
     final url = '${ApiEndpoints.checkout}$checkoutToken';
     final headers = {
       'Content-Type': 'application/json',
@@ -165,6 +168,7 @@ class CheckoutProvider with ChangeNotifier {
 
     final Map<String, String> postDataMap = {
       'tracked_start_checkout': checkoutToken,
+      if (paymentMethod != null) 'payment_method': paymentMethod,
     };
 
     if (marketPlaceList.isNotEmpty) {
@@ -410,31 +414,35 @@ class CheckoutProvider with ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        final url = response.data['data']['url'];
-        final urlMobile = '$url?is_mobilesam=1';
+        final responseData = response.data;
+        final String? checkoutUrl = responseData['data']['checkoutUrl'];
+        final orderId = responseData['data']['order_id'];
 
-        final urlResponse = await _apiResponseHandler.getDioRequest(urlMobile);
+        // Check if context is still mounted before navigation
+        if (!context.mounted) return;
 
-        if (urlResponse.statusCode == 200) {
-          final jsonData = urlResponse.data;
-          final orderId = jsonData['order_id'];
-
-          if (context.mounted && orderId != null) {
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(
-                builder: (context) => BaseHomeScreen(
-                  shouldNavigateToOrders: true,
-                  orderId: orderId.toString(),
-                ),
+        if (checkoutUrl == null && orderId != null) {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+              builder: (context) => BaseHomeScreen(
+                shouldNavigateToOrders: true,
+                orderId: orderId.toString(),
               ),
-              (route) => false,
-            );
+            ),
+            (route) => false,
+          );
+        } else if (checkoutUrl != null) {
+          final PaymentResult? result = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => PaymentViewScreen(checkoutUrl: checkoutUrl),
+            ),
+          );
+
+          if (result?.isSuccess == false && orderId != null) {
+            locator<WalletRepository>().releaseFrozenAmount(orderId.toString());
           }
-        } else {
-          final jsonResponse = urlResponse.data;
-          AppUtils.showToast('${AppStrings.paymentFailed.tr} ${jsonResponse["message"]}');
-          throw Exception(AppStrings.failedToLoadData.tr);
         }
       } else {
         final jsonResponse = response.data;

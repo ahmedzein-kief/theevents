@@ -23,6 +23,7 @@ import 'package:provider/provider.dart';
 import 'package:signature/signature.dart';
 
 import '../../core/services/agreement_pdf.dart';
+import '../../models/vendor_models/response_models/subscription_package_response.dart';
 
 class ContractAgreementScreen extends StatefulWidget {
   const ContractAgreementScreen({super.key, required this.onNext});
@@ -93,15 +94,18 @@ class _ContractAgreementScreenState extends State<ContractAgreementScreen> {
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((callback) async {
       await getAllMetaData();
+      await getSubscriptionPackageDetails();
     });
     // _initializeWebView();
     super.initState();
   }
 
-  // // Initialize WebView
-  // void _initializeWebView() {
-  //   _webViewController = WebViewController()..setJavaScriptMode(JavaScriptMode.unrestricted);
-  // }
+  SubscriptionPackageResponse? subscriptionResponse;
+
+  Future<void> getSubscriptionPackageDetails() async {
+    final provider = Provider.of<VendorSignUpProvider>(context, listen: false);
+    subscriptionResponse = await provider.getSubscriptionPackageDetails(context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -205,8 +209,7 @@ class _ContractAgreementScreenState extends State<ContractAgreementScreen> {
                                                     title: VendorAppStrings.previewAgreement.tr,
                                                     onPressed: () async {
                                                       await previewAgreementAndGeneratePdf(
-                                                        context,
-                                                      );
+                                                          context, subscriptionResponse);
                                                     },
                                                   ),
                                                 ),
@@ -403,7 +406,7 @@ class _ContractAgreementScreenState extends State<ContractAgreementScreen> {
                                         isEditable: false,
                                         prefixIcon: Icons.upload_outlined,
                                         prefixContainerColor: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
-                                        borderSideColor: BorderSide(
+                                        borderSide: BorderSide(
                                           color: isDark ? Colors.grey.shade600 : Colors.grey,
                                           width: 0.5,
                                         ),

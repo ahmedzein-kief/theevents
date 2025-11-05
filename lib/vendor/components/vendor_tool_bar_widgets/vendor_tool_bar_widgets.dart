@@ -49,6 +49,7 @@ class VendorToolbarWidgets {
   static Widget vendorReloadButton({
     required VoidCallback onTap, // Updated to use VoidCallback
     required bool isLoading,
+    required BuildContext context,
   }) =>
       wrapUnderElevation(
         child: CustomAppButton(
@@ -64,7 +65,7 @@ class VendorToolbarWidgets {
           padding: const EdgeInsets.symmetric(horizontal: 20),
           borderRadius: 2,
           height: 35,
-          prefixIconColor: Colors.black,
+          prefixIconColor: Theme.of(context).colorScheme.onPrimary,
           isLoading: isLoading,
           onTap: onTap,
         ),

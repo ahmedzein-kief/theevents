@@ -110,8 +110,6 @@ Future<void> _addTextOverlay(
     final isArabic = containsArabic(text);
     final selectedFont = isArabic ? (isBold ? arabicBoldFont : arabicFont) : (isBold ? boldFont : font);
 
-    debugPrint('Drawing text: "$text" at ($x, $y) with ${isArabic ? "Arabic" : "English"} font');
-
     // For Arabic text, use RTL direction
     final format = PdfStringFormat(
       lineAlignment: PdfVerticalAlignment.top,
@@ -150,12 +148,6 @@ Future<void> _addTextOverlay(
   // Get country and region - prefer Arabic if available
   final countryName = vendorData['country_name'] ?? vendorData['company_country_name'] ?? '';
   final countryRegion = vendorData['region_name'] ?? vendorData['company_region_name'] ?? '';
-
-  // Debug logging
-  debugPrint('Country Name: $countryName');
-  debugPrint('Region Name: $countryRegion');
-  debugPrint('Contains Arabic (country): ${containsArabic(countryName)}');
-  debugPrint('Contains Arabic (region): ${containsArabic(countryRegion)}');
 
   // Trade License Expiry Date
   drawText(vendorData['trading_license_expiry'] ?? '', 446, 272, 200, 15);

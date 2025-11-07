@@ -297,6 +297,7 @@ class _PaymentMethodsState extends State<PaymentMethods> {
             final installment = subOptions.firstWhere((s) => s.value == 'PAY_BY_INSTALMENTS');
 
             paymentOptions.add({
+              'id': installment.id,
               'label': 'Tamara',
               'method': method.code,
               'optionKey': method.subOptions.first.key,
@@ -317,6 +318,7 @@ class _PaymentMethodsState extends State<PaymentMethods> {
               }
 
               paymentOptions.add({
+                'id': sub.id,
                 'label': sub.title,
                 'method': method.code,
                 'optionKey': method.subOptions.first.key,
@@ -329,6 +331,7 @@ class _PaymentMethodsState extends State<PaymentMethods> {
           // Add Wallet payment method
           if (method.code == 'wallet') {
             paymentOptions.add({
+              'id': 'wallet',
               'label': 'Wallet',
               'method': method.code,
               'optionKey': 'wallet_payment_type', // Default key for wallet
@@ -341,25 +344,24 @@ class _PaymentMethodsState extends State<PaymentMethods> {
         // Filter options based on payment type
         List<Map<String, dynamic>> filteredOptions = paymentOptions;
         if (widget.paymentType == 'gift_card' || widget.paymentType == 'subscription') {
-          filteredOptions = paymentOptions
-              .where((opt) => opt['label'].toString().toLowerCase() == AppStrings.paymentCard.toLowerCase())
-              .toList();
+          filteredOptions = paymentOptions.where((paymentOption) => paymentOption['id'] == 'telr_payByCard').toList();
         }
 
         // Keep "Card" first otherwise
         filteredOptions.sort((a, b) {
-          if (a['label'].toString().toLowerCase() == AppStrings.paymentCard.toLowerCase()) return -1;
-          if (b['label'].toString().toLowerCase() == AppStrings.paymentCard.toLowerCase()) return 1;
+          if (a['id'] == 'telr_payByCard') return -1;
+          if (b['id'] == 'telr_payByCard') return 1;
           return 0;
         });
 
-        // Add Apple Pay option if on iOS and not restricted payment type
+        // Add Apple Pay option if on iOS and not restricted payment type≈≈≈
         final allOptions = <Map<String, dynamic>>[...filteredOptions];
         final bool shouldShowApplePay =
             Platform.isIOS && widget.paymentType != 'gift_card' && widget.paymentType != 'subscription';
 
         if (shouldShowApplePay) {
           allOptions.insert(0, {
+            'id': 'apple_pay',
             'label': AppStrings.applePay,
             'method': 'apple_pay',
             'optionKey': 'payment_type',
